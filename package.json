@@ -29,6 +29,7 @@
     "prod": "next start",
     "dev": "next dev --experimental-https -p 5001",
     "build": "next build",
+    "start": "next start -p ${PORT:-3000}",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix"
   }
