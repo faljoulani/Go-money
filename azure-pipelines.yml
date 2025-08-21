@@ -1,19 +1,170 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  - main
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  # Names/paths – change if yours differ
+  artifactName: 'gomoney-fe'
+  feSiteName: 'fe1-dev-gomoney.ddns.net'
+  feSiteRoot: 'C:\inetpub\wwwroot\fe1-dev-gomoney.ddns.net'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  # Container bits (kept local on the VM)
+  feImageName: 'fe-gomoney'        # local docker image name
+  feContainer: 'fe-gomoney'        # local docker container name
+  fePort: 3000                      # container/node port the app listens on
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+# -------------------- BUILD --------------------
+- stage: Build
+  displayName: Build & Package Frontend
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        # Use Node 20.x (or change to match your FE)
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
+
+    # Install & build
+    - script: |
+        npm ci
+        npm run build
+      displayName: 'Build frontend'
+
+    # Prepare artifact for the VM to "docker build ." there
+    # We include only what docker build needs as context.
+    - script: |
+        mkdir "$(Build.ArtifactStagingDirectory)\drop"
+        rem Next.js runtime files and public assets (optional if your Dockerfile builds from source)
+        rem If your Dockerfile runs "npm ci && npm run build" itself, you can omit .next here.
+
+        rem Copy files needed by Dockerfile context
+        xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                      "$(Build.ArtifactStagingDirectory)\drop\src"
+        xcopy /E /I /Y "$(Build.SourcesDirectory)\public"                   "$(Build.ArtifactStagingDirectory)\drop\public"
+        copy  /Y       "$(Build.SourcesDirectory)\package.json"             "$(Build.ArtifactStagingDirectory)\drop\"
+        copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"        "$(Build.ArtifactStagingDirectory)\drop\"
+        copy  /Y       "$(Build.SourcesDirectory)\next.config.js"           "$(Build.ArtifactStagingDirectory)\drop\"
+        copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"               "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
+        rem If you keep .env.production in repo:
+        if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
+
+        rem If you maintain web.config in repo as a fallback:
+        if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
+      displayName: 'Prepare FE artifacts'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish FE artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
+        ArtifactName: '$(artifactName)'
+        publishLocation: 'Container'
+
+# -------------------- DEPLOY --------------------
+- stage: Deploy_Dev
+  displayName: Deploy FE to Gomoney-Dev
+  dependsOn: Build
+  jobs:
+
+  # Manual approval gate
+  - job: WaitForApproval
+    displayName: 'Approval: Deploy FE to Gomoney-Dev'
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      inputs:
+        instructions: |
+          Review the FE build. Approve to deploy to the DEV VM.
+          This will build the Docker image **on the VM** and (re)start the container.
+        onTimeout: 'reject'
+        timeout: '12:00:00'
+
+  # Actual deployment on the DEV VM
+  - deployment: DeployToVM
+    displayName: 'Build & Run FE container on DEV VM'
+    dependsOn: WaitForApproval
+    environment:
+      name: 'Gomoney-Dev'          # Environment that targets your dev VM
+      resourceType: 'virtualMachine'
+      resourceName: 'SC-WORKSTATION'  # Exact VM resource name in that environment
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download FE artifact'
+            inputs:
+              buildType: current
+              artifactName: '$(artifactName)'
+              targetPath: '$(Pipeline.Workspace)\fe'
+
+          # If you do NOT keep .env.production in repo, un-comment this block and
+          # synthesize the file from pipeline secrets instead.
+          # - powershell: |
+          #     $envPath = Join-Path "$(Pipeline.Workspace)\fe" ".env.production"
+          #     @"
+          # SITEFINITY_URL=$(SITEFINITY_URL)
+          # SITEFINITY_API_KEY=$(SITEFINITY_API_KEY)
+          # NODE_ENV=production
+          # "@ | Out-File -FilePath $envPath -Encoding UTF8 -Force
+          #   Write-Host "Created .env.production at $envPath"
+          #   displayName: 'Create .env.production from secrets'
+
+          - powershell: |
+              $ctx    = "$(Pipeline.Workspace)\fe"
+              $tag    = "$(Build.BuildId)"
+              $image  = "$(feImageName):$tag"
+              $latest = "$(feImageName):latest"
+              $cname  = "$(feContainer)"
+              $port   = $(fePort)
+
+              Write-Host "Docker build context: $ctx"
+              Push-Location $ctx
+
+              # Build image locally on the VM
+              docker build -t $image .
+
+              if ($LASTEXITCODE -ne 0) {
+                Write-Error "docker build failed with code $LASTEXITCODE"
+                exit $LASTEXITCODE
+              }
+
+              # Tag as 'latest' for convenience
+              docker tag $image $latest
+
+              # Stop/remove previous container if exists
+              $existing = (docker ps -aq -f "name=$cname")
+              if ($existing) {
+                docker stop $cname | Out-Null
+                docker rm   $cname | Out-Null
+              }
+
+              # Ensure the IIS reverse-proxy site path exists (web.config already placed there)
+              if (-not (Test-Path "$(feSiteRoot)")) {
+                New-Item -ItemType Directory -Path "$(feSiteRoot)" | Out-Null
+              }
+
+              # Run container
+              docker run -d --name $cname `
+                -p ${port}:3000 `
+                --env-file .env.production `
+                --restart unless-stopped `
+                $latest
+
+              if ($LASTEXITCODE -ne 0) {
+                Write-Error "docker run failed with code $LASTEXITCODE"
+                exit $LASTEXITCODE
+              }
+
+              Pop-Location
+            displayName: 'docker build & run (local, no registry)'
+
+          # (Optional) bounce the IIS pool hosting the reverse proxy web.config if needed
+          - powershell: |
+              Import-Module WebAdministration
+              try {
+                Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
+              } catch {}
+            displayName: 'Recycle IIS (optional)'
