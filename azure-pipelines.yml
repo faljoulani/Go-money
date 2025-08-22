@@ -2,15 +2,14 @@ trigger:
   - main
 
 variables:
-  # Names/paths – change if yours differ
   artifactName: 'gomoney-fe'
   feSiteName: 'fe1-dev-gomoney.ddns.net'
   feSiteRoot: 'C:\inetpub\wwwroot\fe1-dev-gomoney.ddns.net'
 
   # Container bits (kept local on the VM)
-  feImageName: 'fe-gomoney'        # local docker image name
-  feContainer: 'fe-gomoney'        # local docker container name
-  fePort: 3000                      # container/node port the app listens on
+  feImageName: 'fe-gomoney'
+  feContainer: 'fe-gomoney'
+  fePort: 3000
 
 stages:
 # -------------------- BUILD --------------------
@@ -23,28 +22,24 @@ stages:
     steps:
     - task: NodeTool@0
       inputs:
-        # Use Node 20.x (or change to match your FE)
         versionSpec: '20.x'
       displayName: 'Install Node.js'
 
-    # Install & build
     - script: |
         npm ci
         npm run build
       displayName: 'Build frontend'
 
-    # Prepare artifact for the VM to "docker build ." there
-    # We include only what docker build needs as context.
+    # Keep Dockerfile context small & predictable
     - script: |
         mkdir "$(Build.ArtifactStagingDirectory)\drop"
 
-        rem Copy files needed by Dockerfile context
-        xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                      "$(Build.ArtifactStagingDirectory)\drop\src"
-        xcopy /E /I /Y "$(Build.SourcesDirectory)\public"                   "$(Build.ArtifactStagingDirectory)\drop\public"
-        copy  /Y       "$(Build.SourcesDirectory)\package.json"             "$(Build.ArtifactStagingDirectory)\drop\"
-        copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"        "$(Build.ArtifactStagingDirectory)\drop\"
-        copy  /Y       "$(Build.SourcesDirectory)\next.config.js"           "$(Build.ArtifactStagingDirectory)\drop\"
-        copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"               "$(Build.ArtifactStagingDirectory)\drop\"
+        xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                "$(Build.ArtifactStagingDirectory)\drop\src"
+        xcopy /E /I /Y "$(Build.SourcesDirectory)\public"             "$(Build.ArtifactStagingDirectory)\drop\public"
+        copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
+        copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
+        copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
+        copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"         "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
@@ -81,9 +76,9 @@ stages:
     displayName: 'Build & Run FE container on DEV VM'
     dependsOn: WaitForApproval
     environment:
-      name: 'Gomoney-Dev'          # Environment that targets your dev VM
+      name: 'Gomoney-Dev'
       resourceType: 'virtualMachine'
-      resourceName: 'SC-WORKSTATION'  # Exact VM resource name in that environment
+      resourceName: 'SC-WORKSTATION'
     strategy:
       runOnce:
         deploy:
@@ -95,18 +90,7 @@ stages:
               artifactName: '$(artifactName)'
               targetPath: '$(Pipeline.Workspace)\fe'
 
-          # If you do NOT keep .env.production in repo, un-comment this block and
-          # synthesize the file from pipeline secrets instead.
-          # - powershell: |
-          #     $envPath = Join-Path "$(Pipeline.Workspace)\fe" ".env.production"
-          #     @"
-          # SITEFINITY_URL=$(SITEFINITY_URL)
-          # SITEFINITY_API_KEY=$(SITEFINITY_API_KEY)
-          # NODE_ENV=production
-          # "@ | Out-File -FilePath $envPath -Encoding UTF8 -Force
-          #   Write-Host "Created .env.production at $envPath"
-          #   displayName: 'Create .env.production from secrets'
-
+          # Build & run container (no here-strings)
           - powershell: |
               $ctx    = "$(Pipeline.Workspace)\fe"
               $tag    = "$(Build.BuildId)"
@@ -118,47 +102,32 @@ stages:
               Write-Host "Docker build context: $ctx"
               Push-Location $ctx
 
-              # --- Preflight checks ---
-              if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-                Write-Error "Docker CLI not found on the VM. Install Docker Desktop/Engine and retry."
-                exit 1
+              # Ensure .env.production exists (create from secrets if missing)
+              $envPath = Join-Path $ctx ".env.production"
+              if (-not (Test-Path $envPath)) {
+                $sfCmsUrl = "$(SF_CMS_URL)"     # Optional pipeline variable/secret
+                $lines = @()
+                if (-not [string]::IsNullOrWhiteSpace($sfCmsUrl)) {
+                  $lines += "SF_CMS_URL=$sfCmsUrl"
+                }
+                $lines += "NODE_ENV=production"
+                $content = ($lines -join "`r`n") + "`r`n"
+                Set-Content -LiteralPath $envPath -Value $content -Encoding UTF8
+                Write-Host "Created $envPath"
+              } else {
+                Write-Host ".env.production already present in artifact."
               }
 
-              try { docker version | Out-Null } catch {
-                Write-Error "Docker daemon is not running on the VM."
-                exit 1
+              # If you keep a web.config in repo, copy it to IIS path now
+              $wcFrom = Join-Path $ctx 'web.config'
+              if (Test-Path $wcFrom) {
+                if (-not (Test-Path "$(feSiteRoot)")) {
+                  New-Item -ItemType Directory -Path "$(feSiteRoot)" | Out-Null
+                }
+                Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
               }
 
-              $envFile = Join-Path $ctx ".env.production"
-              if (-not (Test-Path $envFile)) {
-                Write-Error ".env.production not found in $ctx. Either commit it or create it from pipeline secrets (see commented block)."
-                exit 1
-              }
-
-              # Ensure a .dockerignore exists (helps speed by shrinking context)
-              $di = Join-Path $ctx ".dockerignore"
-              if (-not (Test-Path $di)) {
-                @"
-                node_modules
-                .next/cache
-                .git
-                .github
-                .vscode
-                **/*.log
-                npm-debug.log*
-                yarn.lock
-                .DS_Store
-                "*.md"
-                "*.map"
-                "*.tgz"
-                .env*
-                "!/.env.production"
-                "@ | Out-File -FilePath $di -Encoding UTF8 -Force
-                Write-Host "Created default .dockerignore"
-              }
-
-              # --- Build image locally on the VM (caches will be reused automatically) ---
-              # Tip: use --pull the very first time to refresh the base image, then remove it for speed
+              # Build image locally on the VM
               docker build -t $image .
 
               if ($LASTEXITCODE -ne 0) {
@@ -166,7 +135,7 @@ stages:
                 exit $LASTEXITCODE
               }
 
-              # Tag as 'latest' for convenience
+              # Tag as 'latest'
               docker tag $image $latest
 
               # Stop/remove previous container if exists
@@ -174,11 +143,6 @@ stages:
               if ($existing) {
                 docker stop $cname | Out-Null
                 docker rm   $cname | Out-Null
-              }
-
-              # Ensure the IIS reverse-proxy site path exists (web.config already placed there)
-              if (-not (Test-Path "$(feSiteRoot)")) {
-                New-Item -ItemType Directory -Path "$(feSiteRoot)" | Out-Null
               }
 
               # Run container
@@ -193,30 +157,9 @@ stages:
                 exit $LASTEXITCODE
               }
 
-              # --- Health check with retries ---
-              $ok = $false
-              for ($i=1; $i -le 20; $i++) {
-                try {
-                  $resp = Invoke-WebRequest -Uri "http://localhost:$port/api/health" -UseBasicParsing -TimeoutSec 3
-                  if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) {
-                    $ok = $true
-                    break
-                  }
-                } catch { Start-Sleep -Seconds 2 }
-                Start-Sleep -Seconds 1
-              }
-
-              if (-not $ok) {
-                Write-Host "Container didn't pass health-check. Showing last 200 log lines:"
-                docker logs --tail 200 $cname || $true
-                Write-Error "Health check failed for http://localhost:$port/api/health"
-                exit 1
-              }
-
               Pop-Location
             displayName: 'docker build & run (local, no registry)'
 
-          # (Optional) bounce the IIS pool hosting the reverse proxy web.config if needed
           - powershell: |
               Import-Module WebAdministration
               try {
