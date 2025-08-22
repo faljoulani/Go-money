@@ -110,21 +110,16 @@ stages:
               Write-Host "Docker build context: $ctx"
               Push-Location $ctx
 
-              # Ensure .env.production exists (create from secrets if missing)
-              $envPath = Join-Path $ctx ".env.production"
-              if (-not (Test-Path $envPath)) {
-                $sfCmsUrl = "$(SF_CMS_URL)"
-                $lines = @()
-                if (-not [string]::IsNullOrWhiteSpace($sfCmsUrl)) {
-                  $lines += "SF_CMS_URL=$sfCmsUrl"
-                }
-                $lines += "NODE_ENV=production"
-                $content = ($lines -join "`r`n") + "`r`n"
-                Set-Content -LiteralPath $envPath -Value $content -Encoding UTF8
-                Write-Host "Created $envPath"
-              } else {
-                Write-Host ".env.production already present in artifact."
-              }
+              # Always rewrite .env.production from pipeline variables
+              $envPath  = Join-Path $ctx ".env.production"
+              $sfCmsUrl = "$(SF_CMS_URL)"   # <-- set in ADO variables (must include http:// or https://)
+              $lines = @()
+              if (-not [string]::IsNullOrWhiteSpace($sfCmsUrl)) { $lines += "SF_CMS_URL=$sfCmsUrl" }
+              $lines += "NODE_ENV=production"
+              $content = ($lines -join "`r`n") + "`r`n"
+              Set-Content -LiteralPath $envPath -Value $content -Encoding UTF8 -Force
+              Write-Host "Wrote $envPath with:"
+              Get-Content $envPath | ForEach-Object { '  ' + $_ }
 
               # If you keep a web.config in repo, copy it to IIS path now
               $wcFrom = Join-Path $ctx 'web.config'
@@ -152,9 +147,11 @@ stages:
                 docker rm   $cname | Out-Null
               }
 
+              # Run container; inject env directly so we don't depend on any stale file
               docker run -d --name $cname `
                 -p ${port}:3000 `
-                --env-file .env.production `
+                -e SF_CMS_URL="$sfCmsUrl" `
+                -e NODE_ENV=production `
                 --restart unless-stopped `
                 $latest
 
