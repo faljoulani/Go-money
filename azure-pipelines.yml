@@ -153,7 +153,8 @@ stages:
                 $extraHostArg = ""
                 Write-Host "Warning: could not parse host from SF_CMS_URL='$sfCmsUrl'. Running without --add-host."
               } else {
-                $extraHostArg = "--add-host ${cmsHost}:host-gateway"
+                # IMPORTANT: use '=' so PowerShell passes it as one token
+                $extraHostArg = "--add-host=${cmsHost}:host-gateway"
                 Write-Host "Will map ${cmsHost} -> host-gateway"
               }
 
