@@ -112,7 +112,7 @@ stages:
 
               # Always rewrite .env.production from pipeline variables
               $envPath  = Join-Path $ctx ".env.production"
-              $sfCmsUrl = "$(SF_CMS_URL)"   # <-- set in ADO variables (must include http:// or https://)
+              $sfCmsUrl = "$(SF_CMS_URL)"   # must include http:// or https://
               $lines = @()
               if (-not [string]::IsNullOrWhiteSpace($sfCmsUrl)) { $lines += "SF_CMS_URL=$sfCmsUrl" }
               $lines += "NODE_ENV=production"
@@ -147,11 +147,22 @@ stages:
                 docker rm   $cname | Out-Null
               }
 
-              # Run container; inject env directly so we don't depend on any stale file
+              # Map CMS host to the Windows host from inside the container
+              try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
+              if ([string]::IsNullOrWhiteSpace($cmsHost)) {
+                $extraHostArg = ""
+                Write-Host "Warning: could not parse host from SF_CMS_URL='$sfCmsUrl'. Running without --add-host."
+              } else {
+                $extraHostArg = "--add-host ${cmsHost}:host-gateway"
+                Write-Host "Will map ${cmsHost} -> host-gateway"
+              }
+
+              # Run container; inject env directly
               docker run -d --name $cname `
                 -p ${port}:3000 `
                 -e SF_CMS_URL="$sfCmsUrl" `
                 -e NODE_ENV=production `
+                $extraHostArg `
                 --restart unless-stopped `
                 $latest
 
