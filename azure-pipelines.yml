@@ -37,8 +37,6 @@ stages:
     # We include only what docker build needs as context.
     - script: |
         mkdir "$(Build.ArtifactStagingDirectory)\drop"
-        rem Next.js runtime files and public assets (optional if your Dockerfile builds from source)
-        rem If your Dockerfile runs "npm ci && npm run build" itself, you can omit .next here.
 
         rem Copy files needed by Dockerfile context
         xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                      "$(Build.ArtifactStagingDirectory)\drop\src"
@@ -48,10 +46,7 @@ stages:
         copy  /Y       "$(Build.SourcesDirectory)\next.config.js"           "$(Build.ArtifactStagingDirectory)\drop\"
         copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"               "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
-        rem If you keep .env.production in repo:
         if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
-
-        rem If you maintain web.config in repo as a fallback:
         if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
       displayName: 'Prepare FE artifacts'
 
@@ -118,12 +113,52 @@ stages:
               $image  = "$(feImageName):$tag"
               $latest = "$(feImageName):latest"
               $cname  = "$(feContainer)"
-              $port   = $(fePort)
+              $port   = [int]"$(fePort)"
 
               Write-Host "Docker build context: $ctx"
               Push-Location $ctx
 
-              # Build image locally on the VM
+              # --- Preflight checks ---
+              if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+                Write-Error "Docker CLI not found on the VM. Install Docker Desktop/Engine and retry."
+                exit 1
+              }
+
+              try { docker version | Out-Null } catch {
+                Write-Error "Docker daemon is not running on the VM."
+                exit 1
+              }
+
+              $envFile = Join-Path $ctx ".env.production"
+              if (-not (Test-Path $envFile)) {
+                Write-Error ".env.production not found in $ctx. Either commit it or create it from pipeline secrets (see commented block)."
+                exit 1
+              }
+
+              # Ensure a .dockerignore exists (helps speed by shrinking context)
+              $di = Join-Path $ctx ".dockerignore"
+              if (-not (Test-Path $di)) {
+                @"
+                node_modules
+                .next/cache
+                .git
+                .github
+                .vscode
+                **/*.log
+                npm-debug.log*
+                yarn.lock
+                .DS_Store
+                "*.md"
+                "*.map"
+                "*.tgz"
+                .env*
+                "!/.env.production"
+                "@ | Out-File -FilePath $di -Encoding UTF8 -Force
+                Write-Host "Created default .dockerignore"
+              }
+
+              # --- Build image locally on the VM (caches will be reused automatically) ---
+              # Tip: use --pull the very first time to refresh the base image, then remove it for speed
               docker build -t $image .
 
               if ($LASTEXITCODE -ne 0) {
@@ -156,6 +191,26 @@ stages:
               if ($LASTEXITCODE -ne 0) {
                 Write-Error "docker run failed with code $LASTEXITCODE"
                 exit $LASTEXITCODE
+              }
+
+              # --- Health check with retries ---
+              $ok = $false
+              for ($i=1; $i -le 20; $i++) {
+                try {
+                  $resp = Invoke-WebRequest -Uri "http://localhost:$port/api/health" -UseBasicParsing -TimeoutSec 3
+                  if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) {
+                    $ok = $true
+                    break
+                  }
+                } catch { Start-Sleep -Seconds 2 }
+                Start-Sleep -Seconds 1
+              }
+
+              if (-not $ok) {
+                Write-Host "Container didn't pass health-check. Showing last 200 log lines:"
+                docker logs --tail 200 $cname || $true
+                Write-Error "Health check failed for http://localhost:$port/api/health"
+                exit 1
               }
 
               Pop-Location
