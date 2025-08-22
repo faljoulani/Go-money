@@ -36,10 +36,21 @@ stages:
 
         xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                "$(Build.ArtifactStagingDirectory)\drop\src"
         xcopy /E /I /Y "$(Build.SourcesDirectory)\public"             "$(Build.ArtifactStagingDirectory)\drop\public"
+
         copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
         copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
         copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
         copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"         "$(Build.ArtifactStagingDirectory)\drop\"
+
+        rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
+        if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\next-env.d.ts"   copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"   "$(Build.ArtifactStagingDirectory)\drop\"
+
+        rem Optional but harmless: carry common configs used by build tools
+        if exist       "$(Build.SourcesDirectory)\eslint.config.js" copy /Y  "$(Build.SourcesDirectory)\eslint.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\.editorconfig"    copy /Y  "$(Build.SourcesDirectory)\.editorconfig"    "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\.npmrc"           copy /Y  "$(Build.SourcesDirectory)\.npmrc"           "$(Build.ArtifactStagingDirectory)\drop\"
+
         if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
@@ -58,7 +69,6 @@ stages:
   dependsOn: Build
   jobs:
 
-  # Manual approval gate
   - job: WaitForApproval
     displayName: 'Approval: Deploy FE to Gomoney-Dev'
     pool: server
@@ -71,7 +81,6 @@ stages:
         onTimeout: 'reject'
         timeout: '12:00:00'
 
-  # Actual deployment on the DEV VM
   - deployment: DeployToVM
     displayName: 'Build & Run FE container on DEV VM'
     dependsOn: WaitForApproval
@@ -90,7 +99,6 @@ stages:
               artifactName: '$(artifactName)'
               targetPath: '$(Pipeline.Workspace)\fe'
 
-          # Build & run container (no here-strings)
           - powershell: |
               $ctx    = "$(Pipeline.Workspace)\fe"
               $tag    = "$(Build.BuildId)"
@@ -105,7 +113,7 @@ stages:
               # Ensure .env.production exists (create from secrets if missing)
               $envPath = Join-Path $ctx ".env.production"
               if (-not (Test-Path $envPath)) {
-                $sfCmsUrl = "$(SF_CMS_URL)"     # Optional pipeline variable/secret
+                $sfCmsUrl = "$(SF_CMS_URL)"
                 $lines = @()
                 if (-not [string]::IsNullOrWhiteSpace($sfCmsUrl)) {
                   $lines += "SF_CMS_URL=$sfCmsUrl"
@@ -135,7 +143,6 @@ stages:
                 exit $LASTEXITCODE
               }
 
-              # Tag as 'latest'
               docker tag $image $latest
 
               # Stop/remove previous container if exists
@@ -145,7 +152,6 @@ stages:
                 docker rm   $cname | Out-Null
               }
 
-              # Run container
               docker run -d --name $cname `
                 -p ${port}:3000 `
                 --env-file .env.production `
