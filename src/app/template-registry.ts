@@ -1,15 +1,19 @@
 import { TemplateRegistry, defaultTemplateRegistry } from '@progress/sitefinity-nextjs-sdk';
 
+import { GoMoneyTemplate } from '../page-templates/gomoney';
+
 let customTemplateRegistry: TemplateRegistry = {
-    // 'CustomTemplate': {
-    //     title: "Custom NextJS template",
-    //     templateFunction: CustomTemplate
-    // }
+
+  'GoMoney-Template': {
+    title: 'GoMoney-Template',
+    templateFunction: GoMoneyTemplate,
+  },
 };
 
+
 customTemplateRegistry = {
-    ...defaultTemplateRegistry,
-    ...customTemplateRegistry
+  ...defaultTemplateRegistry,
+  ...customTemplateRegistry,
 };
 
 export const templateRegistry: TemplateRegistry = customTemplateRegistry;
