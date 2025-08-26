@@ -43,3 +43,4 @@ customWidgetRegistry.widgets = {
 
 export const widgetRegistry: WidgetRegistry = initRegistry(customWidgetRegistry);
 export default widgetRegistry;
+
