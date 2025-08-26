@@ -10,9 +10,9 @@ export class HeroEntity {
     @ContentSection('Content', 0)
     @DisplayName('Hero item')
     @Content({
-        Type: 'Telerik.Sitefinity.DynamicTypes.Model.Banner.Banner',
+        Type: 'Telerik.Sitefinity.DynamicTypes.Model.Hero.Heroitem',
         AllowMultipleItemsSelection: false,
-        RetrieveData: true
+        RetrieveData: true,
     })
     Hero?: any;
 
@@ -23,7 +23,8 @@ export class HeroEntity {
     @DisplayName('View')
     @ViewSelector([
         { Name: 'Default', Title: 'Default', Value: 'Default' },
-        { Name: 'Background', Title: 'Background', Value: 'Background' }
+        { Name: 'Background', Title: 'Background', Value: 'Background' },
     ])
     ViewName?: string;
 }
+
