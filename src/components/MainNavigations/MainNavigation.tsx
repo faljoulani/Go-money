@@ -21,19 +21,15 @@ export async function MainNavigation(props: WidgetContext<MainNavigationEntity>)
         type: 'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
         culture: props.requestContext.culture,
      fields: [
-        'Id',
-        'Title',
-        'UrlName',
-        'LanguageSwitcher', // will be normalized to array
-        'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
-        // Parents + Related pages children
-        'NavPages($select=Id,Title,Order,UrlName,Link,' +
-          'SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath,HasChildren))',
-        'Navigation($select=Id,Title,Order,UrlName,Link,' +
-          'SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath,HasChildren))',
-        'StoreLinks($select=Id,Title,Url,StoreType,IsVisible,Order,' +
-          'Icon($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
-      ],
+  'Id',
+  'Title',
+  'UrlName',
+  'Languages($select=Id,Title,UrlName)',
+  'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
+  'NavPages($select=Id,Title,Order,UrlName,Link,SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath,HasChildren))',
+  'Navigation($select=Id,Title,Order,UrlName,Link,SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath,HasChildren))',
+  'StoreLinks($select=Id,Title,Url,StoreType,IsVisible,Order,Icon($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
+],
 
       });
     } catch (e) {
