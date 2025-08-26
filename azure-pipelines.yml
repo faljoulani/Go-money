@@ -39,21 +39,35 @@ stages:
 
         copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
         copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
-        copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
+
+        rem Next config (handle js/mjs/cjs)
+        if exist       "$(Build.SourcesDirectory)\next.config.js"   copy /Y  "$(Build.SourcesDirectory)\next.config.js"   "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\next.config.mjs"  copy /Y  "$(Build.SourcesDirectory)\next.config.mjs"  "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\next.config.cjs"  copy /Y  "$(Build.SourcesDirectory)\next.config.cjs"  "$(Build.ArtifactStagingDirectory)\drop\"
+
         copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"         "$(Build.ArtifactStagingDirectory)\drop\"
 
         rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
-        if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
-        if exist       "$(Build.SourcesDirectory)\next-env.d.ts"   copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"   "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\tsconfig.json"    copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"    "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\next-env.d.ts"    copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"    "$(Build.ArtifactStagingDirectory)\drop\"
+
+        rem *** NEW: include Tailwind/PostCSS configs ***
+        if exist       "$(Build.SourcesDirectory)\postcss.config.js"   copy /Y  "$(Build.SourcesDirectory)\postcss.config.js"   "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\postcss.config.mjs"  copy /Y  "$(Build.SourcesDirectory)\postcss.config.mjs"  "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\postcss.config.cjs"  copy /Y  "$(Build.SourcesDirectory)\postcss.config.cjs"  "$(Build.ArtifactStagingDirectory)\drop\"
+
+        if exist       "$(Build.SourcesDirectory)\tailwind.config.js"  copy /Y  "$(Build.SourcesDirectory)\tailwind.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\tailwind.config.cjs" copy /Y  "$(Build.SourcesDirectory)\tailwind.config.cjs" "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\tailwind.config.ts"  copy /Y  "$(Build.SourcesDirectory)\tailwind.config.ts"  "$(Build.ArtifactStagingDirectory)\drop\"
 
         rem Optional but harmless: carry common configs used by build tools
         if exist       "$(Build.SourcesDirectory)\eslint.config.js" copy /Y  "$(Build.SourcesDirectory)\eslint.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.editorconfig"    copy /Y  "$(Build.SourcesDirectory)\.editorconfig"    "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.npmrc"           copy /Y  "$(Build.SourcesDirectory)\.npmrc"           "$(Build.ArtifactStagingDirectory)\drop\"
 
-        if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
-        if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
-        if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\.dockerignore"    copy /Y  "$(Build.SourcesDirectory)\.dockerignore"     "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\.env.production"  copy /Y  "$(Build.SourcesDirectory)\.env.production"   "$(Build.ArtifactStagingDirectory)\drop\"
+        if exist       "$(Build.SourcesDirectory)\web.config"       copy /Y  "$(Build.SourcesDirectory)\web.config"        "$(Build.ArtifactStagingDirectory)\drop\"
       displayName: 'Prepare FE artifacts'
 
     - task: PublishBuildArtifacts@1
