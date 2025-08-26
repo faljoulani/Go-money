@@ -6,25 +6,26 @@ import { HeroEntity } from '../components/Hero/hero.entity';
 const customWidgetRegistry: WidgetRegistry = {
     widgets: {
         Hero: {
-            componentType: HeroDefault,
+            componentType: Hero,
             entity: HeroEntity,
             ssr: true,
             editorMetadata: {
-                Title: 'Hero'
+                Title: 'Hero',
             },
             views: {
-                Default: { Title: 'Default', ViewFunction: HeroDefault },
-                Background: { Title: 'Background', ViewFunction: Hero }
-            }
-        }
-    }
+                Default: { Title: 'Default', ViewFunction: Hero },
+                Background: { Title: 'Background', ViewFunction: HeroDefault },
+            },
+        },
+    },
 };
 
 customWidgetRegistry.widgets = {
     ...defaultWidgetRegistry.widgets,
-    ...customWidgetRegistry.widgets
+    ...customWidgetRegistry.widgets,
 };
 
 export const widgetRegistry: WidgetRegistry = initRegistry(customWidgetRegistry);
 
 export default widgetRegistry;
+
