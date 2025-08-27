@@ -6,6 +6,10 @@ import { HeroEntity } from '../components/Hero/hero.entity';
 import MainNavigation from '../components/MainNavigations/MainNavigation';
 import { MainNavigationEntity } from '../components/MainNavigations/MainNavigation.entity';
 
+import CardSection from '../components/cards/card-section';
+import { CardSectionEntity } from '../components/cards/card-section.entity';
+
+
 // 👇 add these 2 lines
 import Footer from '../components/Footer/Footer';
 import { FooterEntity } from '../components/Footer/Footer.entity';
@@ -23,6 +27,17 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
 
+
+    // ===== Card Section =====
+    CardSection: {
+      componentType: CardSection,
+      entity: CardSectionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Card List' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: CardSection }
+      },
+    },
     MainNavigation: {
       componentType: MainNavigation,
       entity: MainNavigationEntity,
