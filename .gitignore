@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 certificates
+src/app/widget-registry_BACKUP_1445.ts
+src/app/widget-registry_BASE_1445.ts
+src/app/widget-registry_LOCAL_1445.ts
+src/app/widget-registry_REMOTE_1445.ts
