@@ -1,11 +1,11 @@
-import { WidgetContext, htmlAttributes, RestClientForContext } from '@progress/sitefinity-nextjs-sdk';
+import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HeroEntity } from './hero.entity';
+import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
+import Image from 'next/image';
 
 export async function HeroDefault(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
-  let selection =
-    props.model?.Properties?.Hero ??
-    (props.model?.Properties as any)?.Hero;
+  let selection = props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero;
   if (typeof selection === 'string') {
     try {
       selection = JSON.parse(selection);
@@ -16,8 +16,12 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
 
   let item;
   if (selection?.Content?.length) {
+    const id = selection?.ItemIdsOrdered?.[0]?.toString();
+    const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
     try {
-      item = await RestClientForContext.getItem(selection, {
+      item = await RestClient.getItem({
+        id,
+        provider,
         type: selection.Content[0].Type,
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
@@ -30,8 +34,8 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
           'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
           'Images($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
           'RelatedMedia($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
-          'RelatedImages($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)'
-        ]
+          'RelatedImages($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
+        ],
       });
     } catch {
       // ignore
@@ -51,8 +55,7 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
 
   const title = item.Title || '';
   const subtitle = item.Subtitle || '';
-  const firstOrSelf = (field: any) =>
-    Array.isArray(field) ? field[0] : field;
+  const firstOrSelf = (field: any) => (Array.isArray(field) ? field[0] : field);
   let imageField: any =
     firstOrSelf(item.Image) ||
     firstOrSelf(item.Images) ||
@@ -80,13 +83,17 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
             Variations: [
               {
                 Source: imageField.Provider,
-                Filter: { Key: 'Id', Value: imageField.Id }
-              }
-            ]
-          }
-        ]
+                Filter: { Key: 'Id', Value: imageField.Id },
+              },
+            ],
+          },
+        ],
       };
-      const img = await RestClientForContext.getItem(imageSelection, {
+      const id = imageSelection?.ItemIdsOrdered?.[0]?.toString();
+      const provider = imageSelection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
+      const img = await RestClient.getItem({
+        id,
+        provider,
         type: 'Telerik.Sitefinity.Libraries.Model.Image',
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
@@ -98,8 +105,8 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
           'EmbedUrl',
           'Title',
           'AlternativeText',
-          'Urls'
-        ]
+          'Urls',
+        ],
       });
       imageField = { ...img, ...imageField };
     } catch {
@@ -113,10 +120,7 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
     imageField?.EmbedUrl ||
     imageField?.Urls?.Default ||
     imageField?.Urls?.DefaultUrl;
-  const alt =
-    imageField?.AlternativeText ||
-    imageField?.Title ||
-    title;
+  const alt = imageField?.AlternativeText || imageField?.Title || title;
 
   const parseLink = (linkField: any): string | undefined => {
     if (!linkField) {
@@ -139,11 +143,17 @@ export async function HeroDefault(props: WidgetContext<HeroEntity>) {
   const link = item.ActionLink?.Href || parseLink(item.Link);
 
   return (
-    <section
-      {...attrs}
-      className="Hero-widget Hero-default"
-    >
-      {image && <img src={image} alt={alt} />}
+    <section {...attrs} className="Hero-widget Hero-default">
+      {image && (
+        <Image
+          src={image}
+          alt={alt || ''}
+          width={800} // pick a sensible width
+          height={600} // pick a sensible height
+          sizes="100vw" // responsive sizing hint
+          style={{ width: '100%', height: 'auto' }}
+        />
+      )}
       {title && <h2>{title}</h2>}
       {subtitle && <p>{subtitle}</p>}
       {link && (

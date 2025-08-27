@@ -3,13 +3,11 @@ import { TemplateRegistry, defaultTemplateRegistry } from '@progress/sitefinity-
 import { GoMoneyTemplate } from '../page-templates/gomoney';
 
 let customTemplateRegistry: TemplateRegistry = {
-
   'GoMoney-Template': {
     title: 'GoMoney-Template',
     templateFunction: GoMoneyTemplate,
   },
 };
-
 
 customTemplateRegistry = {
   ...defaultTemplateRegistry,
