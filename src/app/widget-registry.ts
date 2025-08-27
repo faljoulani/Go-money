@@ -27,6 +27,7 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
 
+
     // ===== Card Section =====
     CardSection: {
       componentType: CardSection,
