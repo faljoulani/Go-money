@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import AppLink from './ui/AppLink';
+import AppLink from '../ui/AppLink';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 

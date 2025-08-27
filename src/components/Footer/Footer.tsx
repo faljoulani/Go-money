@@ -1,136 +1,222 @@
-import { WidgetContext, htmlAttributes, RestClientForContext } from '@progress/sitefinity-nextjs-sdk';
-import { FooterEntity } from './Footer.entity';
+'use client';
 
-const FOOTER_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.Footer.Footer';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Facebook, Twitter, Instagram, Linkedin, Phone, Mail, MapPin } from 'lucide-react';
+import * as React from 'react';
 
-export async function Footer(props: WidgetContext<FooterEntity>) {
-  const attrs = htmlAttributes(props);
+type FooterLink = { label: string; href: string };
 
-  // read designer selection
-  let selection = props.model?.Properties?.Footer ?? (props.model?.Properties as any)?.Footer;
-  if (typeof selection === 'string') {
-    try { selection = JSON.parse(selection); } catch { selection = undefined; }
-  }
+export default function Footer() {
+    const year = new Date().getFullYear();
 
-  let item: any;
-  if (selection?.Content?.length) {
-    try {
-      item = await RestClientForContext.getItem(selection, {
-        type: FOOTER_TYPE,
-        culture: props.requestContext.culture,
-        traceContext: props.traceContext,
-        fields: [
-          // Root fields
-          'Id',
-          'Title',
-          'UrlName',
-          'Description',
-          'SubTitle',
-          'CopyrightText',
-          'ExtraNote',
+    const explore: FooterLink[] = [
+        { label: 'Home', href: '/' },
+        { label: 'Our Finance Products', href: '/products' },
+        { label: 'Finance Calculator', href: '/calculator' },
+    ];
 
-          // Footer logo (single or multiple)
-          'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
+    const company: FooterLink[] = [
+        { label: 'About Us', href: '/about' },
+        { label: 'Investor Relations', href: '/investors' },
+        { label: 'Careers', href: '/careers' },
+    ];
 
-          // Certifications (Logo as media)
-          'CertificationLinks($select=Id,Title,description,Order,' +
-            'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
+    const support: FooterLink[] = [
+        { label: 'FAQ', href: '/faq' },
+        { label: 'Contact Us', href: '/contact' },
+        { label: 'Inquiries & complaints', href: '/complaints' },
+    ];
 
-          // Navigation pages with URL fields
-          'FooterNavigation($select=Id,SectionTitle,Order,' +
-            'Pages($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath,HasChildren))',
+    const legal: FooterLink[] = [
+        { label: 'Privacy Policy', href: '/privacy' },
+        { label: 'Terms & conditions', href: '/terms' },
+    ];
 
-          // Social links (✅ Icon is the media field)
-          'SocialLinks($select=Id,Title,Url,Order,' +
-            'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
-        ],
-      });
-    } catch (e) {
-      console.error('Error fetching footer:', e);
-    }
-  }
+    return (
+        <footer className='relative text-gray-300'>
+            {/* Background */}
+            <div className='absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15]' />
 
-  if (!item) {
-    if (props.requestContext.isEdit) {
-      return <footer {...attrs} className="Footer-widget">Select a Footer item.</footer>;
-    }
-    return null;
-  }
+            <div className='mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 py-16 lg:py-24'>
+                {/* Heading */}
+                <h2 className='text-white/95 text-4xl sm:text-5xl font-semibold leading-tight max-w-3xl'>
+                    Insights That Drive Your
+                    <br /> Financial Growth
+                </h2>
 
-  // --- helpers ---
-  // Accepts: object | array | null; returns a single normalized media or null
-  const pickOneMedia = (val: any) => {
-    const m = Array.isArray(val) ? val[0] : val;
-    if (!m) return null;
-    return {
-      Id: m.Id,
-      Title: m.Title,
-      Url: m.Url ?? m.MediaUrl,
-      MediaUrl: m.MediaUrl,
-      ThumbnailUrl: m.ThumbnailUrl,
-      EmbedUrl: m.EmbedUrl,
-      AlternativeText: m.AlternativeText,
-      Urls: m.Urls,
-      Provider: m.Provider,
-    };
-  };
+                {/* Divider */}
+                <hr className='my-8 border-white/10' />
 
+                {/* Top grid: brand at left, link columns at right */}
+                {/* container */}
+                <div className='mx-auto w-full max-w-[1240px] px-5 sm:px-8 lg:px-10 py-8'>
+                    {/* grid: 5 cols, 32px gap */}
+                    <div className='grid md:grid-cols-5 gap-8'>
+                        {/* Brand / About -> 1 col */}
+                        <div className='md:col-span-1'>
+                            <div className='flex items-center gap-3'>
+                                <div className='h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15]'>
+                                    <Image
+                                        src='/assets/go_money_logo.png'
+                                        alt='Go Money logo'
+                                        width={102}
+                                        height={45}
+                                        className='h-[45px] w-[102px] object-contain brightness-0 invert'
+                                        priority
+                                    />
+                                </div>
+                            </div>
 
-  const sortByOrder = (arr: any[] = []) =>
-    arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
+                            <p className='mt-4 max-w-[260px] font-lufga font-normal text-[12px] leading-[100%] text-gray-300/90 align-middle'>
+                                Get instant access to micro-financing that aligns with your values. Quick approval,
+                                transparent terms, and a fully digital process.
+                            </p>
 
-  // Normalize shape for React
-  const view = {
-    Id: item.Id,
-    Title: item.Title,
-    UrlName: item.UrlName,
-    Description: item.Description,
-    SubTitle: item.SubTitle,
-    CopyrightText: item.CopyrightText,
-    ExtraNote: item.ExtraNote,
+                            {/* Contact info */}
+                            <div className='mt-6 space-y-4 text-sm text-gray-300'>
+                                <div className='flex items-center gap-3'>
+                                    <Phone className='h-5 w-5 text-primary' />
+                                    <span>+966 800-11111-66</span>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <Mail className='h-5 w-5 text-primary' />
+                                    <span>support@gomoney.com.sa</span>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <MapPin className='h-5 w-5 text-primary' />
+                                    <span>Riyadh, Saudi Arabia</span>
+                                </div>
+                            </div>
 
-    // Footer logo (array-safe)
-    Logo: pickOneMedia(item.Logo),
+                            <div className='mt-4 flex items-center gap-4'>
+                                <SocialIcon href='#' aria='Go Money on Facebook'>
+                                    <Facebook className='h-5 w-5' />
+                                </SocialIcon>
+                                <SocialIcon href='#' aria='Go Money on Twitter/X'>
+                                    <Twitter className='h-5 w-5' />
+                                </SocialIcon>
+                                <SocialIcon href='#' aria='Go Money on Instagram'>
+                                    <Instagram className='h-5 w-5' />
+                                </SocialIcon>
+                                <SocialIcon href='#' aria='Go Money on LinkedIn'>
+                                    <Linkedin className='h-5 w-5' />
+                                </SocialIcon>
+                            </div>
+                        </div>
+                        {/* Link columns -> spans 4 cols, 4 equal columns inside */}
+                        <div className='md:col-span-4 flex flex-col-reverse sm:flex-row sm:flex-wrap gap-8'>
+                            <div className='basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4'>
+                                <FooterColumn title='Explore' links={explore} />
+                            </div>
+                            <div className='basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4'>
+                                <FooterColumn title='Our company' links={company} />
+                            </div>
+                            <div className='basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4'>
+                                <FooterColumn title='Support' links={support} />
+                            </div>
+                            <div className='basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4'>
+                                <FooterColumn title='Legal' links={legal} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    CertificationLinks: sortByOrder(item.CertificationLinks).map((c: any) => ({
-      Id: c.Id,
-      Title: c.Title,
-      Description: c.description,
-      Order: c.Order ?? 0,
-      Logo: pickOneMedia(c.Logo),   // array-safe
-    })),
+                {/* Divider */}
+                <hr className='mt-12 mb-6 border-white/10' />
 
-    FooterNavigation: sortByOrder(item.FooterNavigation).map((g: any) => ({
-      Id: g.Id,
-      SectionTitle: g.SectionTitle,
-      Order: g.Order ?? 0,
-      Pages: (g.Pages ?? []).map((p: any) => ({
-        Id: p.Id,
-        Title: p.Title,
-        UrlName: p.UrlName,
-        ViewUrl: p.ViewUrl,
-        RelativeUrlPath: p.RelativeUrlPath,
-        HasChildren: p.HasChildren,
-      })),
-    })),
+                {/* Bottom row: badges | legal line | copyright (side-by-side on md+) */}
+                <div className='flex flex-col gap-6 md:grid md:grid-cols-3 md:items-center'>
+                    {/* Left: badges (kept to ~614px as per Figma) */}
+                    <div className='flex items-center gap-6 md:w-[614px]'>
+                        <Badge src='/icons/sama-logo.svg' label='SAMA Licensed' labelBottom='License #SA-123456' />
+                        <Badge
+                            src='/icons/sharia-certified.svg'
+                            label='Sharia Certified'
+                            labelBottom='100% Compliant'
+                        />
+                    </div>
 
-    SocialLinks: sortByOrder(item.SocialLinks).map((s: any) => ({
-      Id: s.Id,
-      Title: s.Title,
-      Url: s.Url,
-      Order: s.Order ?? 0,
-      Logo: pickOneMedia(s.Logo),   // ✅ array-safe, correct field
-    })),
-  };
+                    {/* Center: copyright (remains centered, independent of left/right widths) */}
+                    <div className='text-center'>
+                        <p className='font-[Lufga] font-normal text-[12px] leading-[100%] tracking-[0] text-gray-400'>
+                            © {year} Go-money. All rights reserved.
+                        </p>
+                    </div>
 
-  return (
-    <footer {...attrs} className="Footer-debug">
-      <h2>Footer Debug</h2>
-      <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#f9f9f9', padding: 10 }}>
-        {JSON.stringify(view, null, 2)}
-      </pre>
-    </footer>
-  );
+                    {/* Right: legal line (right-aligned on md+) */}
+                    <div className='md:justify-self-end'>
+                        <div className='font-[Lufga] font-normal text-[12px] leading-[100%] tracking-[0] text-gray-400'>
+                            Licensed by SAMA | Sharia Compliant Financing
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
 }
 
-export default Footer;
+/* ----------------- subcomponents ----------------- */
+
+function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
+    return (
+        <nav aria-label={title} className='flex flex-col'>
+            <h3 className='text-white text-lg font-normal font-lufga'>{title}</h3>
+            <ul className='mt-4 space-y-3'>
+                {links.map((link) => (
+                    <li key={link.href}>
+                        <Link
+                            href={link.href}
+                            className='
+                                        font-lufga
+                                        font-medium
+                                        text-[14px]
+                                        leading-[100%]
+                                        no-underline
+                                        text-gray-300
+                                        hover:text-primary
+                                        transition-colors
+                                        align-middle
+                                    '
+                        >
+                            {link.label}
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    );
+}
+
+function SocialIcon({ href, aria, children }: { href: string; aria: string; children: React.ReactNode }) {
+    return (
+        <Link
+            href={href}
+            aria-label={aria}
+            className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-gray-300 
+                       hover:border-primary/40 hover:text-primary transition-colors'
+        >
+            {children}
+        </Link>
+    );
+}
+
+function Badge({ src, label, labelBottom }: { src: string; label: string; labelBottom: string }) {
+    return (
+        <div className='flex items-center gap-4'>
+            <Image
+                src={src}
+                alt={label}
+                width={160}
+                height={64}
+                className='h-10 w-auto object-contain shrink-0'
+                priority
+            />
+            <div className='leading-[100%] text-left'>
+                <div className='font-lufga font-bold text-[14px] leading-[100%] text-white'>{label}</div>
+                <div className='font-lufga font-normal text-[12px] leading-[100%] text-gray-400'>{labelBottom}</div>
+            </div>
+        </div>
+    );
+}
+
