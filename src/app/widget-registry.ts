@@ -3,9 +3,9 @@ import {
   initRegistry,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
-import Hero from '../components/Hero/hero';
-import HeroDefault from '../components/Hero/herodefault';
-import { HeroEntity } from '../components/Hero/hero.entity';
+import Hero from '../components/hero/hero';
+import HeroDefault from '../components/hero/herodefault';
+import { HeroEntity } from '../components/hero/hero.entity';
 import MainNavigation from '../components/MainNavigation/MainNavigation';
 import { MainNavigationEntity } from '../components/MainNavigation/MainNavigation.entity';
 
