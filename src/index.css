@@ -3,9 +3,9 @@
 @import url('https://fonts.cdnfonts.com/css/lufga'); /* Example CDN */
 
 @layer base {
-    .font-lufga {
-        font-family: 'Lufga', sans-serif;
-    }
+  .font-lufga {
+    font-family: 'Lufga', sans-serif;
+  }
 }
 
 /* index.css */
