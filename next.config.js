@@ -9,7 +9,7 @@ const cspHeader = `
     default-src 'self'`;
 
 module.exports = {
-  webpack: (config, options) => {
+  webpack: (config) => {
     config.resolve['alias']['@widgetregistry'] = path.resolve(__dirname, 'src/app/widget-registry');
     return config;
   },
@@ -17,21 +17,18 @@ module.exports = {
   output: process.env.SF_BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
   experimental: {
     proxyTimeout: 60000,
+    // ⬇️ turn off Lightning CSS optimization to avoid the native module crash
+    optimizeCss: false
   },
   logging: {
-    fetches: {
-      fullUrl: true,
-    },
+    fetches: { fullUrl: true },
   },
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, ''),
-          },
+          { key: 'Content-Security-Policy', value: cspHeader.replace(/\n/g, '') }
         ],
       },
     ];

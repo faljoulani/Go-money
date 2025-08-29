@@ -30,12 +30,12 @@ RUN node -e "console.log('resolve lightningcss =>', require.resolve('lightningcs
 RUN node -e "console.log('resolve @tailwindcss/postcss =>', require.resolve('@tailwindcss/postcss'))"
 RUN node -e "console.log('postcss version =>', require('postcss/package.json').version)"
 
-# Print configs and first lines of CSS entry
+# Print configs and the first lines of the CSS entry
 RUN echo '--- BEGIN postcss.config.js ---' && sed -n '1,120p' postcss.config.js && echo '--- END postcss.config.js ---'
 RUN echo '--- BEGIN src/index.css (first 60 lines) ---' && sed -n '1,60p' src/index.css && echo '--- END src/index.css ---'
 # ------------------------------------------------------------------------------
 
-# Build (this is where Webpack/PostCSS/LightningCSS runs)
+# Build (this is where Webpack/PostCSS runs; with optimizeCss:false it won't load lightningcss)
 RUN npm run build
 
 # Optional: slim dependencies for runtime
