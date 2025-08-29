@@ -6,34 +6,46 @@
 FROM node:20-bookworm-slim AS build
 WORKDIR /app
 
-# Minimal OS tools + toolchain to build native addons from source (for lightningcss)
+# minimal OS tools (no rustc/cargo from apt — too old)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl git python3 pkg-config build-essential rustc cargo \
+      ca-certificates curl git python3 pkg-config build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# We'll skip scripts during npm ci (scripts/ not copied yet), but allow them later
-ENV npm_config_ignore_scripts=false
-# If prebuilt binaries are blocked, build native modules from source
-ENV npm_config_build_from_source=true
+# Install modern Rust via rustup (needed to build lightningcss from source)
+RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN rustc --version && cargo --version
 
-# ---- install deps WITHOUT running postinstall (scripts) yet
+# Ensure npm scripts can run later; we skip them during npm ci
+ENV npm_config_ignore_scripts=false
+# IMPORTANT: tell napi-rs to build native addons from source
+ENV NAPI_BUILD_FROM_SOURCE=1
+
+# Better caching for deps: install WITHOUT scripts (scripts/ not copied yet)
 COPY package*.json ./
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci --ignore-scripts
 
-# ---- copy the rest of the sources (now scripts/ exists)
+# Copy the rest
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # -------------------- DEBUG: Tailwind/PostCSS/LightningCSS --------------------
+# Fail fast if key files are missing
 RUN test -f postcss.config.js || (echo "ERROR: postcss.config.js missing" && exit 1)
 RUN test -f src/index.css       || (echo "ERROR: src/index.css missing" && exit 1)
+
+# Show versions & resolvable modules
 RUN node -v && npm -v
 RUN echo "npm ignore-scripts = $(npm config get ignore-scripts)"
 RUN npm ls --depth=0 tailwindcss @tailwindcss/postcss postcss lightningcss || true
+RUN node -e "console.log('platform=',process.platform,'arch=',process.arch,'node=',process.versions.node)"
+
+# Print configs and the first lines of CSS entry
+RUN echo '--- BEGIN postcss.config.js ---' && sed -n '1,120p' postcss.config.js && echo '--- END postcss.config.js ---'
+RUN echo '--- BEGIN src/index.css (first 60 lines) ---' && sed -n '1,60p' src/index.css && echo '--- END src/index.css ---'
 # ------------------------------------------------------------------------------
 
-# -------- ALWAYS rebuild lightningcss and verify the native binary ------------
-# Rebuild (downloads prebuilt or compiles from source via cargo, depending on env)
+# -------- Build lightningcss from source & verify the native binary -----------
 RUN npm rebuild lightningcss --foreground-scripts
 
 # Verify native .node exists; fail fast if missing
@@ -56,6 +68,7 @@ RUN npm prune --omit=dev
 FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 
+# tiny HTTP client for healthchecks
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
