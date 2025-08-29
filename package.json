@@ -45,6 +45,6 @@
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
-    "postinstall": "node -e \"require('lightningcss'); console.log('lightningcss OK')\""
+    "postinstall": "node scripts/postinstall-lightningcss.js"
   }
 }
