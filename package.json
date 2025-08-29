@@ -15,7 +15,8 @@
     "react-dom": "19.0.0",
     "react-i18next": "15.4.0",
     "react-mobile-app-button": "^1.2.19",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "lightningcss": "^1.25.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.12",
@@ -43,6 +44,7 @@
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint . --quiet",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "postinstall": "node -e \"require('lightningcss'); console.log('lightningcss OK')\""
   }
 }

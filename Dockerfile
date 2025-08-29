@@ -9,6 +9,9 @@ WORKDIR /app
 # minimal OS tools
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
+# Ensure npm scripts are allowed (defensive)
+ENV npm_config_ignore_scripts=false
+
 # Better caching for deps
 COPY package*.json ./
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci
@@ -24,23 +27,36 @@ RUN test -f src/index.css       || (echo "ERROR: src/index.css missing" && exit 
 
 # Show versions & resolvable modules
 RUN node -v && npm -v
+RUN echo "npm ignore-scripts = $(npm config get ignore-scripts)"
 RUN npm ls --depth=0 tailwindcss @tailwindcss/postcss postcss lightningcss || true
 RUN node -e "console.log('platform=',process.platform,'arch=',process.arch,'node=',process.versions.node)"
-RUN node -e "console.log('resolve lightningcss =>', require.resolve('lightningcss'))"
-RUN node -e "console.log('resolve @tailwindcss/postcss =>', require.resolve('@tailwindcss/postcss'))"
-RUN node -e "console.log('postcss version =>', require('postcss/package.json').version)"
 
-# Print configs and the first lines of the CSS entry
+# Print configs and the first lines of CSS entry
 RUN echo '--- BEGIN postcss.config.js ---' && sed -n '1,120p' postcss.config.js && echo '--- END postcss.config.js ---'
 RUN echo '--- BEGIN src/index.css (first 60 lines) ---' && sed -n '1,60p' src/index.css && echo '--- END src/index.css ---'
 # ------------------------------------------------------------------------------
 
-# Build (this is where Webpack/PostCSS runs; with optimizeCss:false it won't load lightningcss)
+# -------- Attempt to ensure Lightning CSS native binary is present ------------
+# 1) Can we resolve the JS wrapper?
+RUN node -e "try{console.log('resolve lightningcss =>', require.resolve('lightningcss'))}catch(e){console.error('resolve lightningcss failed:', e.message); process.exit(1)}"
+
+# 2) Is the native .node file there?
+RUN ls -la node_modules/lightningcss || true
+RUN ls -la node_modules/lightningcss/*.node || true
+
+# 3) If missing, re-run postinstall to fetch the native binary (needs scripts enabled)
+RUN npm rebuild lightningcss --foreground-scripts || true
+
+# 4) Verify again
+RUN ls -la node_modules/lightningcss || true
+RUN ls -la node_modules/lightningcss/*.node || (echo 'ERROR: lightningcss native binary still missing' && exit 1)
+# ------------------------------------------------------------------------------
+
+# Build (now the CSS pipeline should find lightningcss)
 RUN npm run build
 
 # Optional: slim dependencies for runtime
 RUN npm prune --omit=dev
-
 
 ########################
 # 2) Runtime stage
