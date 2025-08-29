@@ -6,54 +6,45 @@
 FROM node:20-bookworm-slim AS build
 WORKDIR /app
 
-# minimal OS tools
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+# Minimal OS tools + toolchain to build native addons from source (for lightningcss)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates curl git python3 pkg-config build-essential rustc cargo \
+    && rm -rf /var/lib/apt/lists/*
 
-# Ensure npm scripts are allowed (defensive)
+# We'll skip scripts during npm ci (scripts/ not copied yet), but allow them later
 ENV npm_config_ignore_scripts=false
+# If prebuilt binaries are blocked, build native modules from source
+ENV npm_config_build_from_source=true
 
-# Better caching for deps
+# ---- install deps WITHOUT running postinstall (scripts) yet
 COPY package*.json ./
-# IMPORTANT: don't run postinstall yet (scripts folder not copied). Skip scripts here.
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci --ignore-scripts
 
-# Copy the rest
+# ---- copy the rest of the sources (now scripts/ exists)
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # -------------------- DEBUG: Tailwind/PostCSS/LightningCSS --------------------
-# Fail fast if key files are missing
 RUN test -f postcss.config.js || (echo "ERROR: postcss.config.js missing" && exit 1)
 RUN test -f src/index.css       || (echo "ERROR: src/index.css missing" && exit 1)
-
-# Show versions & resolvable modules
 RUN node -v && npm -v
 RUN echo "npm ignore-scripts = $(npm config get ignore-scripts)"
 RUN npm ls --depth=0 tailwindcss @tailwindcss/postcss postcss lightningcss || true
-RUN node -e "console.log('platform=',process.platform,'arch=',process.arch,'node=',process.versions.node)"
-
-# Print configs and the first lines of CSS entry
-RUN echo '--- BEGIN postcss.config.js ---' && sed -n '1,120p' postcss.config.js && echo '--- END postcss.config.js ---'
-RUN echo '--- BEGIN src/index.css (first 60 lines) ---' && sed -n '1,60p' src/index.css && echo '--- END src/index.css ---'
 # ------------------------------------------------------------------------------
 
-# -------- Ensure Lightning CSS native binary is present ------------------------
-# 1) Can we resolve the JS wrapper? (this should succeed)
-RUN node -e "try{console.log('resolve lightningcss =>', require.resolve('lightningcss'))}catch(e){console.error('resolve lightningcss failed:', e.message); process.exit(1)}"
+# -------- ALWAYS rebuild lightningcss and verify the native binary ------------
+# Rebuild (downloads prebuilt or compiles from source via cargo, depending on env)
+RUN npm rebuild lightningcss --foreground-scripts
 
-# 2) Check current state
-RUN ls -la node_modules/lightningcss || true
-RUN ls -la node_modules/lightningcss/*.node || true
-
-# 3) Now run scripts to fetch the OS-specific .node binary
-RUN npm rebuild lightningcss --foreground-scripts || true
-
-# 4) Verify native binary exists (fail fast if still missing)
+# Verify native .node exists; fail fast if missing
 RUN ls -la node_modules/lightningcss || true
 RUN ls -la node_modules/lightningcss/*.node || (echo 'ERROR: lightningcss native binary still missing' && exit 1)
+
+# Also confirm it loads
+RUN node -e "try{require('lightningcss');console.log('lightningcss OK')}catch(e){console.error('lightningcss load failed:',e);process.exit(1)}"
 # ------------------------------------------------------------------------------
 
-# Build (now the CSS pipeline should find lightningcss)
+# Build (Tailwind v4 + PostCSS run here)
 RUN npm run build
 
 # Optional: slim dependencies for runtime
@@ -65,7 +56,6 @@ RUN npm prune --omit=dev
 FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 
-# tiny HTTP client for healthchecks
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
