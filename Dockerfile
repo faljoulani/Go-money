@@ -3,8 +3,11 @@
 ########################
 # 1) Build stage
 ########################
-FROM node:20-alpine AS build
+FROM node:20-bookworm-slim AS build
 WORKDIR /app
+
+# minimal OS tools
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Better caching for deps
 COPY package*.json ./
@@ -14,45 +17,43 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# -------------------- DEBUG: Tailwind/PostCSS presence --------------------
+# -------------------- DEBUG: Tailwind/PostCSS/LightningCSS --------------------
 # Fail fast if key files are missing
 RUN test -f postcss.config.js || (echo "ERROR: postcss.config.js missing" && exit 1)
 RUN test -f src/index.css       || (echo "ERROR: src/index.css missing" && exit 1)
 
-# Show Node/NPM and installed libs (do not fail pipeline on npm ls warnings)
+# Show versions & resolvable modules
 RUN node -v && npm -v
-RUN npm ls --depth=0 @tailwindcss/postcss tailwindcss postcss || true
-
-# Show we can resolve the plugins at runtime
-RUN node -e "console.log('RESOLVE @tailwindcss/postcss =>', require.resolve('@tailwindcss/postcss'))"
-RUN node -e "console.log('RESOLVE tailwindcss =>', require.resolve('tailwindcss'))"
+RUN npm ls --depth=0 tailwindcss @tailwindcss/postcss postcss lightningcss || true
+RUN node -e "console.log('platform=',process.platform,'arch=',process.arch,'node=',process.versions.node)"
+RUN node -e "console.log('resolve lightningcss =>', require.resolve('lightningcss'))"
+RUN node -e "console.log('resolve @tailwindcss/postcss =>', require.resolve('@tailwindcss/postcss'))"
 RUN node -e "console.log('postcss version =>', require('postcss/package.json').version)"
 
-# Show config files and the first lines of the CSS entry
-RUN ls -l postcss.config.* tailwind.config.* || true
+# Print configs and first lines of CSS entry
 RUN echo '--- BEGIN postcss.config.js ---' && sed -n '1,120p' postcss.config.js && echo '--- END postcss.config.js ---'
 RUN echo '--- BEGIN src/index.css (first 60 lines) ---' && sed -n '1,60p' src/index.css && echo '--- END src/index.css ---'
-# -------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-# Build (this is where Webpack/PostCSS will fail if anything is wrong)
+# Build (this is where Webpack/PostCSS/LightningCSS runs)
 RUN npm run build
 
 # Optional: slim dependencies for runtime
 RUN npm prune --omit=dev
 
+
 ########################
 # 2) Runtime stage
 ########################
-FROM node:20-alpine AS runtime
+FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 
-# Add a tiny HTTP client for health checks
-RUN apk add --no-cache curl
+# tiny HTTP client for healthchecks
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
-# Next listens on all interfaces
 ENV HOSTNAME=0.0.0.0
 
 # Copy only what runtime needs
@@ -64,4 +65,7 @@ COPY --from=build /app/next.config.js ./
 
 EXPOSE 3000
 
-# Probe the cheap h
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
+  CMD curl -fsS http://127.0.0.1:${PORT}/api/health || exit 1
+
+CMD ["npm", "run", "start", "--", "-p", "3000"]
