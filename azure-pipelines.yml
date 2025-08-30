@@ -182,7 +182,7 @@ stages:
                                   Select-Object -First 1).IPAddressToString
                       } catch { $cmsIp = $null }
                       if (-not [string]::IsNullOrWhiteSpace($cmsIp)) {
-                        $extraHostArg = "--add-host=$cmsHost:$cmsIp"
+                        $extraHostArg = "--add-host=$($cmsHost):$($cmsIp)"
                         Write-Host "Will map $cmsHost -> $cmsIp"
                       } else {
                         Write-Host "DNS failed for $cmsHost on host; running without --add-host."
