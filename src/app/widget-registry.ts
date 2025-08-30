@@ -6,33 +6,60 @@ import {
 import Hero from '../components/Hero/hero';
 import HeroDefault from '../components/Hero/herodefault';
 import { HeroEntity } from '../components/Hero/hero.entity';
+
 import MainNavigation from '../components/MainNavigation/MainNavigation';
 import { MainNavigationEntity } from '../components/MainNavigation/MainNavigation.entity';
+
+import CardSection from '../components/cards/card-section';
+import { CardSectionEntity } from '../components/cards/card-section.entity';
+
+// 👇 add these 2 lines
+import Footer from '../components/Footer/Footer-template';
+import { FooterEntity } from '../components/Footer/Footer.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
-      componentType: Hero,
+      componentType: HeroDefault,
       entity: HeroEntity,
       ssr: true,
-      editorMetadata: {
-        Title: 'Hero',
-      },
+      editorMetadata: { Title: 'Hero' },
       views: {
         Default: { Title: 'Default', ViewFunction: HeroDefault },
         Background: { Title: 'Background', ViewFunction: Hero },
       },
     },
 
+    // ===== Card Section =====
+    CardSection: {
+      componentType: CardSection,
+      entity: CardSectionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Card List' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: CardSection },
+      },
+    },
     MainNavigation: {
       componentType: MainNavigation,
       entity: MainNavigationEntity,
       ssr: true,
-      editorMetadata: {
-        Title: 'Main Navigation',
-      },
+      editorMetadata: { Title: 'Main Navigation' },
       views: {
         Default: { Title: 'Default', ViewFunction: MainNavigation },
+      },
+    },
+
+    // 👇 new: Footer
+    Footer: {
+      componentType: Footer,
+      entity: FooterEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Footer' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: Footer },
+        // Optional extra view if you created it:
+        // Compact: { Title: 'Compact', ViewFunction: Footer },
       },
     },
   },
