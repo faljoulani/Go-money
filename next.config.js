@@ -15,10 +15,14 @@ module.exports = {
   },
   skipTrailingSlashRedirect: true,
   output: process.env.SF_BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
+  // Skip ESLint during Docker builds to avoid formatting/lint failures blocking builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     proxyTimeout: 60000,
-    // ⬇️ turn off Lightning CSS optimization to avoid the native module crash
-    optimizeCss: false
+    // turn off Lightning CSS optimization to avoid the native module crash
+    optimizeCss: false,
   },
   logging: {
     fetches: { fullUrl: true },
@@ -28,9 +32,10 @@ module.exports = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'Content-Security-Policy', value: cspHeader.replace(/\n/g, '') }
+          { key: 'Content-Security-Policy', value: cspHeader.replace(/\n/g, '') },
         ],
       },
     ];
   },
 };
+

@@ -6,61 +6,80 @@
 FROM node:20-bookworm-slim AS build
 WORKDIR /app
 
-# minimal OS tools (no rustc/cargo from apt — too old)
+# ---- OS deps ---------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl git python3 pkg-config build-essential \
+      ca-certificates curl findutils \
     && rm -rf /var/lib/apt/lists/*
 
-# Install modern Rust via rustup (needed to build lightningcss from source)
-RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustc --version && cargo --version
-
-# Ensure npm scripts can run later; we skip them during npm ci
-ENV npm_config_ignore_scripts=false
-# IMPORTANT: tell napi-rs to build native addons from source
-ENV NAPI_BUILD_FROM_SOURCE=1
-
-# Better caching for deps: install WITHOUT scripts (scripts/ not copied yet)
-COPY package*.json ./
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm npm ci --ignore-scripts
-
-# Copy the rest
-COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=development
+# keep optional deps on (silences the warn and ensures optional deps flow)
+ENV npm_config_optional=true
+# oxide/lightningcss helpers can run; we also add prebuilts explicitly
+ENV npm_config_ignore_scripts=false
 
-# -------------------- DEBUG: Tailwind/PostCSS/LightningCSS --------------------
-# Fail fast if key files are missing
+# ---- NPM install (base deps) ----------------------------------------------
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
+    npm install --ignore-scripts
+
+# ---- App code --------------------------------------------------------------
+COPY . .
+
+# ---- Show Prettier EOL & format to repo rules ------------------------------
+# This makes lint happy regardless of host OS line endings.
+RUN node -e "try{const p=require('prettier'); const c=p.resolveConfig.sync(process.cwd()); console.log('Prettier endOfLine:', (c&&c.endOfLine)||'(default) lf'); }catch(e){console.log('Prettier not found (will still try npx).')}"
+RUN npx prettier --loglevel warn --write . || true
+
+# ---- Quick presence checks -------------------------------------------------
 RUN test -f postcss.config.js || (echo "ERROR: postcss.config.js missing" && exit 1)
-RUN test -f src/index.css       || (echo "ERROR: src/index.css missing" && exit 1)
+RUN test -f src/index.css     || (echo "ERROR: src/index.css missing" && exit 1)
 
-# Show versions & resolvable modules
-RUN node -v && npm -v
-RUN echo "npm ignore-scripts = $(npm config get ignore-scripts)"
-RUN npm ls --depth=0 tailwindcss @tailwindcss/postcss postcss lightningcss || true
-RUN node -e "console.log('platform=',process.platform,'arch=',process.arch,'node=',process.versions.node)"
+# ---- Print platform + Node/NAPI/glibc -------------------------------------
+RUN node -e "const r=(process.report&&process.report.getReport&&process.report.getReport())||{}; console.log(['node '+process.version,'platform='+process.platform,'arch='+process.arch,'napi='+(process.versions.napi||'none'),'glibc='+(r.header?.glibcVersionRuntime||'n/a')].join(' | '))"
 
-# Print configs and the first lines of CSS entry
-RUN echo '--- BEGIN postcss.config.js ---' && sed -n '1,120p' postcss.config.js && echo '--- END postcss.config.js ---'
-RUN echo '--- BEGIN src/index.css (first 60 lines) ---' && sed -n '1,60p' src/index.css && echo '--- END src/index.css ---'
-# ------------------------------------------------------------------------------
+# ---- Install BOTH prebuilts in one shot -----------------------------------
+# (Doing them together avoids the second install pruning the first as extraneous.)
+RUN set -eux; \
+  oxVer=$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version"); \
+  lcVer=$(node -p "require('./node_modules/lightningcss/package.json').version"); \
+  echo "Selecting prebuilts: oxide=${oxVer}, lightningcss=${lcVer}"; \
+  npm i --no-save \
+    "@tailwindcss/oxide-linux-x64-gnu@${oxVer}" \
+    "lightningcss-linux-x64-gnu@${lcVer}"
 
-# -------- Build lightningcss from source & verify the native binary -----------
-RUN npm rebuild lightningcss --foreground-scripts
+# ---- Wire lightningcss’ .node to where its wrapper expects it --------------
+RUN set -eux; \
+  src="node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node"; \
+  dst="node_modules/lightningcss/lightningcss.linux-x64-gnu.node"; \
+  test -f "$src" || (echo "FATAL: missing $src after prebuilt install" && exit 37); \
+  cp -f "$src" "$dst"; \
+  ls -lh "$dst"
 
-# Verify native .node exists; fail fast if missing
-RUN ls -la node_modules/lightningcss || true
-RUN ls -la node_modules/lightningcss/*.node || (echo 'ERROR: lightningcss native binary still missing' && exit 1)
+# ---- Assert that both natives really load (CJS requires) -------------------
+RUN set -eux; \
+  echo '--- ASSERT: require("@tailwindcss/oxide")'; \
+  node -e "const ox=require('@tailwindcss/oxide'); console.log('OK oxide exports:', Object.keys(ox).slice(0,5))"; \
+  echo '--- ASSERT: require("lightningcss")'; \
+  node -e "const lc=require('lightningcss'); console.log('OK lightningcss transform:', typeof lc.transform)"; \
+  echo '--- Paths'; \
+  node -e "console.log('oxide pkg:', require.resolve('@tailwindcss/oxide/package.json'))"; \
+  node -e "console.log('oxide prebuilt pkg:', require.resolve('@tailwindcss/oxide-linux-x64-gnu/package.json'))"; \
+  node -e "console.log('lightningcss entry:', require.resolve('lightningcss'))"; \
+  node -e "const p=require('path'),fs=require('fs');const base=p.dirname(require.resolve('lightningcss'));console.log('lightningcss .node exists:',fs.existsSync(p.join(base,'lightningcss.linux-x64-gnu.node')))"; \
+  echo '--- Native .node files'; \
+  /bin/sh -lc "find node_modules -maxdepth 4 -type f -name '*.node' -print -ls | grep -E 'oxide|lightningcss' || true"
 
-# Also confirm it loads
-RUN node -e "try{require('lightningcss');console.log('lightningcss OK')}catch(e){console.error('lightningcss load failed:',e);process.exit(1)}"
-# ------------------------------------------------------------------------------
+# ---- Guard: if oxide prebuilt vanished, fail early with message ------------
+RUN test -f node_modules/@tailwindcss/oxide-linux-x64-gnu/tailwindcss-oxide.linux-x64-gnu.node || \
+    (echo 'FATAL: @tailwindcss/oxide prebuilt missing before build. This usually happens if an npm install removed an extraneous package. Ensure prebuilts are installed together or add them to optionalDependencies.' && exit 39)
 
-# Build (Tailwind v4 + PostCSS run here)
+# ---- Build (Tailwind runs here) -------------------------------------------
 RUN npm run build
 
-# Optional: slim dependencies for runtime
+# ---- Slim prod deps --------------------------------------------------------
 RUN npm prune --omit=dev
+
 
 ########################
 # 2) Runtime stage
@@ -68,7 +87,6 @@ RUN npm prune --omit=dev
 FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 
-# tiny HTTP client for healthchecks
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
@@ -76,7 +94,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Copy only what runtime needs
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/public ./public
@@ -84,7 +101,6 @@ COPY --from=build /app/.next ./.next
 COPY --from=build /app/next.config.js ./
 
 EXPOSE 3000
-
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD curl -fsS http://127.0.0.1:${PORT}/api/health || exit 1
 
