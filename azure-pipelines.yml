@@ -160,7 +160,7 @@ stages:
                               if ($mappings -ne $null) {
                                 foreach($m in $mappings){
                                   if ($m.HostPort -eq $port.ToString()) {
-                                    Write-Host "Freeing host port $port: removing container $id"
+                                    Write-Host "Freeing host port $($port): removing container $id"
                                     docker stop $id | Out-Null
                                     docker rm   $id | Out-Null
                                   }
