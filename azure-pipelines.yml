@@ -172,10 +172,24 @@ stages:
                       }
                     } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
 
-                    # Windows containers do not support '--add-host=:host-gateway'.
-                    # Also not needed if SF_CMS_URL is a public DNS name.
+                    # For Windows containers, map CMS host to a resolved IPv4 to avoid DNS issues inside container
+                    try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
-                    Write-Host "Skipping --add-host mapping for Windows containers."
+                    if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
+                      try {
+                        $cmsIp = ([System.Net.Dns]::GetHostAddresses($cmsHost) |
+                                  Where-Object { $_.AddressFamily -eq 'InterNetwork' } |
+                                  Select-Object -First 1).IPAddressToString
+                      } catch { $cmsIp = $null }
+                      if (-not [string]::IsNullOrWhiteSpace($cmsIp)) {
+                        $extraHostArg = "--add-host=$cmsHost:$cmsIp"
+                        Write-Host "Will map $cmsHost -> $cmsIp"
+                      } else {
+                        Write-Host "DNS failed for $cmsHost on host; running without --add-host."
+                      }
+                    } else {
+                      Write-Host "SF_CMS_URL not set or invalid; running without --add-host."
+                    }
 
                     # Run container; inject env directly
                     docker run -d --name $cname `
