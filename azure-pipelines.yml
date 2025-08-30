@@ -45,13 +45,14 @@ stages:
         if exist       "$(Build.SourcesDirectory)\next.config.mjs"  copy /Y  "$(Build.SourcesDirectory)\next.config.mjs"  "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\next.config.cjs"  copy /Y  "$(Build.SourcesDirectory)\next.config.cjs"  "$(Build.ArtifactStagingDirectory)\drop\"
 
-        copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"         "$(Build.ArtifactStagingDirectory)\drop\"
+        rem *** IMPORTANT: use the Windows Dockerfile ***
+        copy  /Y       "$(Build.SourcesDirectory)\Dockerfile.win"    "$(Build.ArtifactStagingDirectory)\drop\Dockerfile"
 
-        rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
+        rem **** include TS config so Docker build targets ES2018+ ****
         if exist       "$(Build.SourcesDirectory)\tsconfig.json"    copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"    "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\next-env.d.ts"    copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"    "$(Build.ArtifactStagingDirectory)\drop\"
 
-        rem *** NEW: include Tailwind/PostCSS configs ***
+        rem Tailwind/PostCSS configs
         if exist       "$(Build.SourcesDirectory)\postcss.config.js"   copy /Y  "$(Build.SourcesDirectory)\postcss.config.js"   "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\postcss.config.mjs"  copy /Y  "$(Build.SourcesDirectory)\postcss.config.mjs"  "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\postcss.config.cjs"  copy /Y  "$(Build.SourcesDirectory)\postcss.config.cjs"  "$(Build.ArtifactStagingDirectory)\drop\"
@@ -60,7 +61,7 @@ stages:
         if exist       "$(Build.SourcesDirectory)\tailwind.config.cjs" copy /Y  "$(Build.SourcesDirectory)\tailwind.config.cjs" "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\tailwind.config.ts"  copy /Y  "$(Build.SourcesDirectory)\tailwind.config.ts"  "$(Build.ArtifactStagingDirectory)\drop\"
 
-        rem Optional but harmless: carry common configs used by build tools
+        rem Optional common configs
         if exist       "$(Build.SourcesDirectory)\eslint.config.js" copy /Y  "$(Build.SourcesDirectory)\eslint.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.editorconfig"    copy /Y  "$(Build.SourcesDirectory)\.editorconfig"    "$(Build.ArtifactStagingDirectory)\drop\"
         if exist       "$(Build.SourcesDirectory)\.npmrc"           copy /Y  "$(Build.SourcesDirectory)\.npmrc"           "$(Build.ArtifactStagingDirectory)\drop\"
@@ -144,7 +145,7 @@ stages:
                 Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
               }
 
-              # Build image locally on the VM
+              # Build image locally on the VM (uses the Windows Dockerfile we copied as 'Dockerfile')
               docker build -t $image .
 
               if ($LASTEXITCODE -ne 0) {
@@ -167,7 +168,6 @@ stages:
                 $extraHostArg = ""
                 Write-Host "Warning: could not parse host from SF_CMS_URL='$sfCmsUrl'. Running without --add-host."
               } else {
-                # IMPORTANT: use '=' so PowerShell passes it as one token
                 $extraHostArg = "--add-host=${cmsHost}:host-gateway"
                 Write-Host "Will map ${cmsHost} -> host-gateway"
               }
