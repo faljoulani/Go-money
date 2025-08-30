@@ -147,6 +147,31 @@ stages:
                       docker rm   $cname | Out-Null
                     }
 
+                    # Ensure host port is free (remove any container publishing host port $port)
+                    try {
+                      $all = docker ps -aq
+                      foreach($id in $all){
+                        try {
+                          $ins = docker inspect $id | ConvertFrom-Json
+                          $ports = $ins[0].NetworkSettings.Ports
+                          if ($ports -ne $null) {
+                            foreach($prop in $ports.PSObject.Properties){
+                              $mappings = $prop.Value
+                              if ($mappings -ne $null) {
+                                foreach($m in $mappings){
+                                  if ($m.HostPort -eq $port.ToString()) {
+                                    Write-Host "Freeing host port $port: removing container $id"
+                                    docker stop $id | Out-Null
+                                    docker rm   $id | Out-Null
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        } catch {}
+                      }
+                    } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
+
                     # Windows containers do not support '--add-host=:host-gateway'.
                     # Also not needed if SF_CMS_URL is a public DNS name.
                     $extraHostArg = ""
