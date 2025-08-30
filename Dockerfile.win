@@ -106,6 +106,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV PATH="C:\\node;C:\\Windows\\System32;C:\\Windows;%PATH%"
 
 WORKDIR C:\\app
 
@@ -137,5 +138,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-Command","try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:$env:PORT/api/health).StatusCode -eq 200 } catch { exit 1 }"]
 
-# Use absolute cmd + node + npm-cli to start (no PATH reliance)
-CMD ["C:\\Windows\\System32\\cmd.exe","/S","/C","C:\\node\\node.exe","C:\\node\\node_modules\\npm\\bin\\npm-cli.js","run","start","--","-p","3000"]
+# Start Next.js directly (avoid npm script env expansion issues)
+CMD ["C:\\Windows\\System32\\cmd.exe","/S","/C","node node_modules\\next\\dist\\bin\\next start -H 0.0.0.0 -p %PORT%"]
