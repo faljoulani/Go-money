@@ -20,7 +20,7 @@ import { FooterEntity } from '../components/Footer/Footer.entity';
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
-      componentType: HeroDefault,
+      componentType: Hero,
       entity: HeroEntity,
       ssr: true,
       editorMetadata: { Title: 'Hero' },
