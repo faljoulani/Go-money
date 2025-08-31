@@ -49,7 +49,7 @@ export async function FaqSection(props: WidgetContext<FaqEntity>) {
       });
       categories = (res?.Items ?? []).sort((a: any, b: any) => (a.Order ?? 0) - (b.Order ?? 0));
     } catch (e) {
-      console.error('❌ Error fetching FAQ categories:', e);
+      console.error(' Error fetching FAQ categories:', e);
     }
   }
 
@@ -80,7 +80,7 @@ export async function FaqSection(props: WidgetContext<FaqEntity>) {
       const items = (res?.Items ?? []) as FaqItem[];
       return items.sort((a: any, b: any) => (a.Order ?? 0) - (b.Order ?? 0));
     } catch (e) {
-      console.error(`❌ Error fetching items for category ${cat.Title}:`, e);
+      console.error(` Error fetching items for category ${cat.Title}:`, e);
       return [];
     }
   }
