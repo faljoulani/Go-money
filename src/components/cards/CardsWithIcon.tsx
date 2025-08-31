@@ -24,7 +24,6 @@ const getImageUrl = (img: any): string | undefined =>
 export async function CardsWithIcon(props: WidgetContext<CardSectionEntity>) {
   const attrs = htmlAttributes(props);
 
-  // 🟢 جلب بيانات الـ Parent
   const parentSelection = props.model?.Properties?.CardListData;
   let cardList: any = undefined;
 
@@ -43,7 +42,6 @@ export async function CardsWithIcon(props: WidgetContext<CardSectionEntity>) {
     }
   }
 
-  // 🟢 جلب بيانات الأطفال
   let cardSelection = props.model?.Properties?.Cards;
   if (typeof cardSelection === 'string') {
     try { cardSelection = JSON.parse(cardSelection); } catch { cardSelection = undefined; }
@@ -74,7 +72,6 @@ export async function CardsWithIcon(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attrs} className="CardsWithIcon-section">
       <div className="CardsWithIcon-inner">
-        {/* ✅ طباعة بيانات الـ Parent */}
         <div className="CardsWithIcon-header">
           {cardList?.Eyebrow && <span className="CardsWithIcon-eyebrow">{cardList.Eyebrow}</span>}
           {cardList?.Title && <h2 className="CardsWithIcon-title">{cardList.Title}</h2>}
@@ -91,7 +88,7 @@ export async function CardsWithIcon(props: WidgetContext<CardSectionEntity>) {
           )}
         </div>
 
-        {/* ✅ طباعة بيانات الـ Cards */}
+
         <div className="CardsWithIcon-grid">
           {cards.map((item, i) => {
             const imgField = firstOrSelf(item.Image);
