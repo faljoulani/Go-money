@@ -1,10 +1,14 @@
-import { WidgetRegistry, initRegistry, defaultWidgetRegistry } from '@progress/sitefinity-nextjs-sdk';
+import {
+  WidgetRegistry,
+  initRegistry,
+  defaultWidgetRegistry,
+} from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/Hero/hero';
 import HeroDefault from '../components/Hero/herodefault';
 import { HeroEntity } from '../components/Hero/hero.entity';
 
-import MainNavigation from '../components/MainNavigations/MainNavigation';
-import { MainNavigationEntity } from '../components/MainNavigations/MainNavigation.entity';
+import MainNavigation from '../components/MainNavigation/MainNavigation';
+import { MainNavigationEntity } from '../components/MainNavigation/MainNavigation.entity';
 
 import CardSection from '../components/cards/card-section';
 import { CardSectionEntity } from '../components/cards/card-section.entity';
@@ -12,7 +16,7 @@ import { CardSectionEntity } from '../components/cards/card-section.entity';
  
 
 // 👇 add these 2 lines
-import Footer from '../components/Footer/Footer';
+import Footer from '../components/Footer/Footer-template';
 import { FooterEntity } from '../components/Footer/Footer.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
@@ -23,11 +27,10 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Hero' },
       views: {
-        Default:   { Title: 'Default',   ViewFunction: HeroDefault },
-        Background:{ Title: 'Background',ViewFunction: Hero },
+        Default: { Title: 'Default', ViewFunction: HeroDefault },
+        Background: { Title: 'Background', ViewFunction: Hero },
       },
     },
-
 
     // ===== Card Section =====
     CardSection: {
@@ -36,7 +39,7 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Card List' },
       views: {
-        Default: { Title: 'Default', ViewFunction: CardSection }
+        Default: { Title: 'Default', ViewFunction: CardSection },
       },
     },
     MainNavigation: {
@@ -73,3 +76,4 @@ customWidgetRegistry.widgets = {
 
 export const widgetRegistry: WidgetRegistry = initRegistry(customWidgetRegistry);
 export default widgetRegistry;
+

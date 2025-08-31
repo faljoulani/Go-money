@@ -5,24 +5,29 @@ import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/co
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
-@WidgetEntity('Hero', 'Hero')
-export class HeroEntity {
+/**
+ * Lets an editor pick ONE MainNavigation dynamic item.
+ * Type: Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation
+ */
+@WidgetEntity('MainNavigation', 'MainNavigation')
+export class MainNavigationEntity {
   @ContentSection('Content', 0)
-  @DisplayName('Hero item')
+  @DisplayName('Main navigation item')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Hero.Heroitem',
+    // Your dynamic module (parent)
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
     AllowMultipleItemsSelection: false,
   })
-  Hero?: any;
+  MainNavigation?: any;
 
   @WidgetLabel()
-  SfWidgetLabel = 'Hero';
+  SfWidgetLabel = 'MainNavigation';
 
   @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
     { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'Background', Title: 'Background', Value: 'Background' },
+    { Name: 'Compact', Title: 'Compact', Value: 'Compact' },
   ])
   ViewName?: string;
 }
