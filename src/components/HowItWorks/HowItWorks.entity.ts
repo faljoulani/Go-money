@@ -8,29 +8,27 @@ import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorator
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
 /**
- * Lets an editor pick ONE MainNavigation dynamic item.
- * Type: Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation
+ * Lets an editor pick ONE "How it works" section item.
+ * Type: Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection
  */
-@WidgetEntity('MainNavigation', 'MainNavigation')
-export class MainNavigationEntity {
+@WidgetEntity('HowItWork', 'How it works')
+export class HowItWorkEntity {
   @ContentSection('Content', 0)
-  @DisplayName('Main navigation item')
+  @DisplayName('How it works section')
   @Content({
-    // Your dynamic module (parent)
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection',
     AllowMultipleItemsSelection: false,
     RetrieveData: true,
   })
-  MainNavigation?: any;
+  HowItWork?: any;
 
   @WidgetLabel()
-  SfWidgetLabel = 'MainNavigation';
+  SfWidgetLabel = 'How it works';
 
   @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
-    { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'Compact', Title: 'Compact', Value: 'Compact' },
+    { Name: 'Default', Title: 'Default', Value: 'Default' }
   ])
   ViewName?: string;
 }

@@ -1,284 +1,240 @@
-'use client';
-
-import React from 'react';
+import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
+import { MainNavigationEntity } from './MainNavigation.entity';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import AppLink from '../ui/AppLink';
-import { ChevronDown } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
+import ClientNav, {
+  NavItem as ClientNavItem,
+  NavLink as ClientNavLink,
+} from './MainNavigationClient';
 
-interface BaseNavItem {
-    label: string;
-    href: string;
+type CmsLink = { Href?: string; OpenInNewTab?: boolean };
+type CmsNode = {
+  Id: string;
+  Title: string;
+  UrlName?: string;
+  ViewUrl?: string;
+  RelativeUrlPath?: string;
+  Link?: CmsLink | null;
+  Order?: number;
+  HasChildren?: boolean;
+  SubNavigation?: CmsNode[] | null;
+};
+
+type CmsImage = { Url?: string; MediaUrl?: string; Title?: string; AlternativeText?: string };
+type CmsStoreLink = {
+  Id: string;
+  Title: string;
+  Url: string | null;
+  StoreType: 'Apple' | 'Google' | 'Huawei' | string;
+  IsVisible?: boolean;
+  Order?: number;
+  Icon?: CmsImage | CmsImage[] | null;
+};
+
+function nodeHref(node: CmsNode): string {
+  return (
+    node?.Link?.Href ||
+    node?.ViewUrl ||
+    node?.RelativeUrlPath ||
+    (node?.UrlName ? `/${node.UrlName}` : '#')
+  );
 }
-export interface NavLink extends BaseNavItem {}
-export interface NavDropdown extends BaseNavItem {
-    children: NavLink[];
+
+function toNavItem(node: CmsNode): ClientNavItem {
+  const href = nodeHref(node);
+  const kids = (node.SubNavigation || [])?.slice().sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0));
+
+  if (kids?.length) {
+    return {
+      label: node.Title,
+      href,
+      children: kids.map<ClientNavLink>((c) => ({ label: c.Title, href: nodeHref(c) })),
+    };
+  }
+  return { label: node.Title, href };
 }
-export type NavItem = NavLink | NavDropdown;
 
-export const NAV: NavItem[] = [
-    { label: 'Home', href: '/' },
-    {
-        label: 'About',
-        href: '/about',
-        children: [
-            { label: 'Company', href: '/about/company' },
-            { label: 'Leadership', href: '/about/leadership' },
-            { label: 'Press', href: '/about/press' },
-        ],
-    },
-    {
-        label: 'Our Products',
-        href: '/products',
-        children: [
-            { label: 'Cards', href: '/products/cards' },
-            { label: 'Payments', href: '/products/payments' },
-            { label: 'Insights', href: '/products/insights' },
-        ],
-    },
-    {
-        label: 'Help',
-        href: '/help',
-        children: [
-            { label: 'Support Center', href: '/help/support' },
-            { label: 'FAQ', href: '/help/faq' },
-        ],
-    },
-    { label: 'Careers', href: '/careers' },
-];
+export default async function MainNavigation(props: WidgetContext<MainNavigationEntity>) {
+  const attrs = htmlAttributes(props);
 
-function Logo() {
-    return (
-        <Link href='/' className='flex items-center gap-2'>
-            <Image
-                src='/assets/logo.png'
-                alt='Go Money Logo'
+  let selection: any =
+    props.model?.Properties?.MainNavigation ?? (props.model?.Properties as any)?.MainNavigation;
+  if (typeof selection === 'string') {
+    try {
+      selection = JSON.parse(selection);
+    } catch {
+      selection = undefined;
+    }
+  }
+
+  if (!selection?.Content?.length) {
+    if (props.requestContext.isEdit) {
+      return (
+        <section {...attrs} className="p-4 border rounded text-sm text-gray-600">
+          Select a MainNavigation item in the designer.
+        </section>
+      );
+    }
+    return null;
+  }
+
+  const id = selection?.ItemIdsOrdered?.[0]?.toString() ?? '';
+  const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
+
+  let navRoot: any | null = null;
+  try {
+    navRoot = await RestClient.getItem({
+      type: 'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
+      id,
+      culture: props.requestContext.culture,
+      provider,
+      fields: [
+        'Id',
+        'Title',
+        'UrlName',
+        'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,Title,AlternativeText)',
+        'Navigation($select=Id,Title,Order,UrlName,Link,ViewUrl,RelativeUrlPath,HasChildren,SubNavigation($select=Id,Title,Order,UrlName,Link,ViewUrl,RelativeUrlPath,HasChildren))',
+        'NavPages($select=Id,Title,Order,UrlName,Link,ViewUrl,RelativeUrlPath,HasChildren,SubNavigation($select=Id,Title,Order,UrlName,Link,ViewUrl,RelativeUrlPath,HasChildren))',
+        'StoreLinks($select=Id,Title,Url,StoreType,IsVisible,Order,Icon($select=Id,Url,MediaUrl,ThumbnailUrl,Title,AlternativeText))',
+      ],
+    });
+  } catch (e) {
+    console.error('Error fetching MainNavigation:', e);
+  }
+
+  if (!navRoot) {
+    if (props.requestContext.isEdit) {
+      return (
+        <section {...attrs} className="p-4 border rounded text-sm text-red-600">
+          Couldn’t load MainNavigation item. Check console.
+        </section>
+      );
+    }
+    return null;
+  }
+
+  const logoUrl: string | undefined = navRoot?.Logo?.MediaUrl || navRoot?.Logo?.Url || undefined;
+  const logoAlt: string =
+    navRoot?.Logo?.AlternativeText || navRoot?.Logo?.Title || navRoot?.Title || 'Logo';
+
+  const rawNodes: CmsNode[] =
+    (Array.isArray(navRoot?.Navigation) && navRoot.Navigation) ||
+    (Array.isArray(navRoot?.NavPages) && navRoot.NavPages) ||
+    [];
+
+  const navItems: ClientNavItem[] = rawNodes
+    .slice()
+    .sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0))
+    .map(toNavItem);
+
+  const storeLinks: CmsStoreLink[] = Array.isArray(navRoot?.StoreLinks)
+    ? navRoot.StoreLinks.filter((s: CmsStoreLink) => s.IsVisible !== false)
+        .slice()
+        .sort((a: any, b: any) => (a.Order ?? 0) - (b.Order ?? 0))
+    : [];
+
+  const currentPath = (props.requestContext as any)?.url ?? '';
+
+  return (
+    <header {...attrs} className="sticky top-0 z-50 w-full bg-white">
+      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between bg-white/40 backdrop-blur-[20px] px-8 py-4">
+        <div className="flex h-[76px] w-full max-w-[1440px] items-center justify-between bg-white px-8 py-4">
+          {/* Left: Logo */}
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2" aria-label="Home">
+              <Image
+                src={logoUrl || '/assets/logo.png'}
+                alt={logoAlt}
                 width={102}
                 height={45}
                 priority
-                className='opacity-100'
-            />
-        </Link>
-    );
-}
+                className="opacity-100"
+              />
+            </Link>
+          </div>
 
-function NavItem({ item, active }: { item: NavItem; active: boolean }) {
-    const pathname = usePathname() ?? '';
-    const [open, setOpen] = useState(false);
-    const hasChildren = 'children' in item && Array.isArray(item.children);
+          {/* Center: Click-controlled nav */}
+          <ClientNav
+            items={navItems}
+            currentPath={currentPath}
+            className="hidden lg:flex items-center gap-1"
+          />
 
-    return (
-        <div className='relative group'>
-            <AppLink
-                href={item.href}
-                onMouseEnter={() => setOpen(true)}
-                onMouseLeave={() => setOpen(false)}
-                className={[
-                    'px-3 py-2 text-sm font-medium inline-flex items-center gap-1 no-underline transition-colors',
-                    active ? 'text-[#010663]' : 'text-gray-800 hover:text-primary',
-                ].join(' ')}
-            >
-                {item.label}
-                {hasChildren && <ChevronDown className='h-4 w-4 opacity-70' />}
-            </AppLink>
+          {/* Right: Store icons */}
+          <div className="flex items-center gap-2">
+            {(storeLinks ?? []).map((link) => {
+              const icon: CmsImage | undefined = Array.isArray(link.Icon)
+                ? link.Icon[0]
+                : link.Icon || undefined;
+              const key = `${link.StoreType}::${link.Title}::${link.Url ?? 'no-url'}`;
+              const iconSrc = icon?.MediaUrl || icon?.Url || '';
 
-            {/* Active underline */}
-            {active && <div className='absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full bg-primary' />}
-
-            {/* Dropdown */}
-            {hasChildren && (
-                <div
-                    onMouseEnter={() => setOpen(true)}
-                    onMouseLeave={() => setOpen(false)}
-                    className={[
-                        'absolute top-full left-0 mt-2 min-w-[220px] rounded-xl border border-black/5 bg-white p-2 shadow-xl transition',
-                        open ? 'opacity-100 visible' : 'opacity-0 invisible',
-                    ].join(' ')}
+              return (
+                <a
+                  key={key}
+                  href={link.Url ?? '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200"
+                  aria-label={link.Title}
+                  title={link.Title}
                 >
-                    {item.children!.map((child) => {
-                        const childActive = pathname === child.href;
-                        return (
-                            <Link
-                                key={child.href}
-                                href={child.href}
-                                className={`block rounded-lg px-3 py-2 text-sm no-underline ${
-                                    childActive ? 'text-primary bg-slate-50' : 'text-gray-700 hover:bg-slate-50'
-                                }`}
-                            >
-                                {child.label}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
-}
-
-function DesktopNav() {
-    const pathname = usePathname();
-
-    return (
-        <nav className='hidden lg:flex items-center gap-1'>
-            {NAV.map((item) => {
-                const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
-
-                return <NavItem key={item.href} item={item} active={active} />;
+                  {iconSrc ? (
+                    <Image
+                      src={iconSrc}
+                      alt={icon?.AlternativeText || icon?.Title || link.Title}
+                      width={20}
+                      height={20}
+                      unoptimized
+                    />
+                  ) : (
+                    <span className="text-[10px]">{link.StoreType}</span>
+                  )}
+                </a>
+              );
             })}
-        </nav>
-    );
-}
 
-function StoreIcons() {
-    return (
-        <div className='w-[136px] h-10 opacity-100 flex items-center justify-between gap-2'>
-            {/* Apple */}
-            <a
-                href='https://apps.apple.com/app/idXXXXXXXX'
-                target='_blank'
-                rel='noreferrer'
-                className='w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200'
-                aria-label='App Store'
-            >
-                <Image src='/icons/apple-store.svg' alt='Apple Store' width={20} height={20} />
-            </a>
-
-            {/* Google Play */}
-            <a
-                href='https://play.google.com/store/apps/details?id=XXXXXXXX'
-                target='_blank'
-                rel='noreferrer'
-                className='w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200'
-                aria-label='Google Play'
-            >
-                <Image src='/icons/play-store.svg' alt='Google Play' width={20} height={20} />
-            </a>
-
-            {/* Huawei AppGallery */}
-            <a
-                href='https://appgallery.huawei.com/'
-                target='_blank'
-                rel='noreferrer'
-                className='w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200'
-                aria-label='Huawei AppGallery'
-            >
-                <Image src='/icons/huawei-store.svg' alt='Huawei AppGallery' width={20} height={20} />
-            </a>
-        </div>
-    );
-}
-
-function RightControls() {
-    const [dark, setDark] = useState<boolean>(false);
-    useEffect(() => {
-        const saved = localStorage.getItem('theme');
-        const isDark = saved === 'dark';
-        setDark(isDark);
-        document.documentElement.classList.toggle('dark', isDark);
-    }, []);
-    const toggleTheme = () => {
-        const next = !dark;
-        setDark(next);
-        document.documentElement.classList.toggle('dark', next);
-        localStorage.setItem('theme', next ? 'dark' : 'light');
-    };
-    const [langOpen, setLangOpen] = useState(false);
-    const [lang, setLang] = useState<'En' | 'Ar'>('En');
-    const langRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const saved = (localStorage.getItem('lang') as 'En' | 'Ar') || 'En';
-        setLang(saved);
-    }, []);
-    useEffect(() => {
-        const onDocClick = (e: MouseEvent) => {
-            if (!langRef.current?.contains(e.target as Node)) setLangOpen(false);
-        };
-        document.addEventListener('click', onDocClick);
-        return () => document.removeEventListener('click', onDocClick);
-    }, []);
-    const chooseLang = (val: 'En' | 'Ar') => {
-        setLang(val);
-        setLangOpen(false);
-        localStorage.setItem('lang', val);
-        window.dispatchEvent(new CustomEvent('languagechange', { detail: { lang: val } }));
-    };
-    return (
-        <div className='flex items-center gap-4'>
-            {/* Theme toggle */}
-            <button
-                onClick={toggleTheme}
-                aria-label='Toggle theme'
-                className='grid h-9 w-9 place-items-center text-slate-800 hover:bg-slate-200'
-            >
-                <Image src='/icons/moon.svg' alt='Apple Store' width={20} height={20} />
-            </button>
-
-            {/* Language dropdown */}
-            <div className='relative' ref={langRef}>
-                <button
-                    onClick={() => setLangOpen((v) => !v)}
-                    className='hidden sm:inline-flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-sm text-[#424242] hover:bg-slate-100'
-                    aria-haspopup='listbox'
-                    aria-expanded={langOpen}
+            {/* Optional fallback if CMS has none */}
+            {!storeLinks?.length && (
+              <>
+                <a
+                  href="https://apps.apple.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200"
+                  aria-label="App Store"
                 >
-                    {lang} <ChevronDown className='h-4 w-4' />
-                </button>
-
-                {langOpen && (
-                    <div
-                        className='absolute right-0 z-40 mt-2 w-28 rounded-xl border border-black/5 bg-white p-1 shadow-xl'
-                        role='listbox'
-                    >
-                        {(['En', 'Ar'] as const).map((l) => (
-                            <button
-                                key={l}
-                                onClick={() => chooseLang(l)}
-                                className={`w-full text-left rounded-lg px-3 py-2 text-sm hover:bg-slate-100 ${
-                                    lang === l ? 'text-primary' : 'text-[#424242]'
-                                }`}
-                                role='option'
-                                aria-selected={lang === l}
-                            >
-                                {l}
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Divider */}
-            <span className='hidden sm:inline-block h-6 w-px bg-black/10' aria-hidden />
-            <StoreIcons />
+                  <Image src="/icons/apple-store.svg" alt="Apple Store" width={20} height={20} />
+                </a>
+                <a
+                  href="https://play.google.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200"
+                  aria-label="Google Play"
+                >
+                  <Image src="/icons/play-store.svg" alt="Google Play" width={20} height={20} />
+                </a>
+                <a
+                  href="https://appgallery.huawei.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-10 h-10 rounded-2xl bg-slate-100 ring-1 ring-black/5 grid place-items-center hover:bg-slate-200"
+                  aria-label="Huawei AppGallery"
+                >
+                  <Image
+                    src="/icons/huawei-store.svg"
+                    alt="Huawei AppGallery"
+                    width={20}
+                    height={20}
+                  />
+                </a>
+              </>
+            )}
+          </div>
         </div>
-    );
+      </div>
+    </header>
+  );
 }
-
-export default function MainNavigation() {
-    return (
-        <header className='sticky top-0 z-50 w-full bg-white'>
-            <div
-                className='mx-auto flex h-[76px] max-w-[1440px] items-center justify-between 
-                            bg-white/40 backdrop-blur-[20px] px-8 py-4'
-            >
-                <div className='flex h-[76px] w-full max-w-[1440px] items-center justify-between bg-white px-8 py-4'>
-                    {/* Left: Logo */}
-                    <div className='flex items-center gap-3'>
-                        <Logo />
-                    </div>
-                    {/* Center: Nav (desktop) */}
-                    <div className='text-red-500'>
-                        <DesktopNav />
-                    </div>
-                    {/* Right: Icons */}
-                    <div>
-                        <RightControls />
-                    </div>
-                </div>
-            </div>
-        </header>
-    );
-}
-

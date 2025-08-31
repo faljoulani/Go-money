@@ -9,31 +9,31 @@ const cspHeader = `
     default-src 'self'`;
 
 module.exports = {
-    webpack: (config, options) => {
-        config.resolve['alias']['@widgetregistry'] = path.resolve(__dirname, 'src/app/widget-registry');
-        return config;
+  webpack: (config, options) => {
+    config.resolve['alias']['@widgetregistry'] = path.resolve(__dirname, 'src/app/widget-registry');
+    return config;
+  },
+  skipTrailingSlashRedirect: true,
+  output: process.env.SF_BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
+  experimental: {
+    proxyTimeout: 60000,
+  },
+  logging: {
+    fetches: {
+      fullUrl: true,
     },
-    skipTrailingSlashRedirect: true,
-    output: process.env.SF_BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
-    experimental: {
-        proxyTimeout: 60000
-    },
-    logging: {
-        fetches: {
-            fullUrl: true
-        }
-    },
-    async headers() {
-        return [
-            {
-                source: '/(.*)',
-                headers: [
-                    {
-                        key: 'Content-Security-Policy',
-                        value: cspHeader.replace(/\n/g, '')
-                    }
-                ]
-            }
-        ];
-    }
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspHeader.replace(/\n/g, ''),
+          },
+        ],
+      },
+    ];
+  },
 };
