@@ -27,7 +27,9 @@ export async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
         type: selection.Content[0].Type,
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
-        fields: ['Id', 'Title', 'Description', 'Eyebrow']
+        fields: ['Id', 'Title', 'Description', 'Eyebrow', 'CtaText', 'CtaUrl',
+            'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)'
+        ] // ✅ أضف الحقول هنا
       });
 
       // ✅ Debug: اطبع البيانات الكاملة
@@ -52,11 +54,15 @@ export async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
   const title = item.Title;
   const description = item.Description;
   const eyebrow = item.Eyebrow;
+  const ctaText = item.CtaText;
+  const ctaUrl = typeof item.CtaUrl === 'string' ? item.CtaUrl : item.CtaUrl?.[0]?.Href || item.CtaUrl?.Href;
 
   // ✅ Debug فردي لكل فيلد
   console.log('🧠 Eyebrow:', eyebrow);
   console.log('📌 Title:', title);
   console.log('📝 Description:', description);
+  console.log('🔗 CTA Text:', ctaText);
+  console.log('➡️ CTA Url:', ctaUrl);
 
   return (
     <section {...attrs} className="ExpandBox-widget">
@@ -67,6 +73,11 @@ export async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
           className="ExpandBox-description"
           dangerouslySetInnerHTML={{ __html: description }}
         />
+      )}
+      {ctaUrl && (
+        <a href={ctaUrl} className="ExpandBox-link">
+          {ctaText || 'Learn more →'}
+        </a>
       )}
     </section>
   );
