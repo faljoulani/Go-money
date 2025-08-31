@@ -25,7 +25,7 @@ export class CardSectionEntity {
 @ViewSelector([
   { Name: 'Default', Title: 'Default', Value: 'Default' },
   { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
-  { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' } // ✅ أضف هذا
+  { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' } 
 ])
 
 

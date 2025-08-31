@@ -38,7 +38,7 @@ export async function CardsWithIcon(props: WidgetContext<CardSectionEntity>) {
       });
       cardList = res?.Items?.[0];
     } catch (e) {
-      console.error('❌ Error fetching parent card list:', e);
+      console.error(' Error fetching parent card list:', e);
     }
   }
 
@@ -61,7 +61,7 @@ export async function CardsWithIcon(props: WidgetContext<CardSectionEntity>) {
       });
       cards = (res?.Items ?? []).sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0));
     } catch (e) {
-      console.error('❌ Error fetching child cards:', e);
+      console.error(' Error fetching child cards:', e);
     }
   }
 

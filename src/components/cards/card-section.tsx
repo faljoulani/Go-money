@@ -19,7 +19,6 @@ const getImageUrl = (img: any): string | undefined =>
 export async function CardSection(props: WidgetContext<CardSectionEntity>) {
   const attrs = htmlAttributes(props);
 
-  // ✅ Get parent Card List data
   const parentSelection = props.model?.Properties?.CardListData;
   let cardList: any = undefined;
 
@@ -33,13 +32,12 @@ export async function CardSection(props: WidgetContext<CardSectionEntity>) {
           'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)'],
       });
       cardList = res?.Items?.[0];
-      console.log('✅ Card List (Parent):', cardList);
+      console.log(' Card List (Parent):', cardList);
     } catch (e) {
-      console.error('❌ Error fetching parent Card List:', e);
+      console.error(' Error fetching parent Card List:', e);
     }
   }
 
-  // ✅ Get child cards
   let cardSelection = props.model?.Properties?.Cards;
   if (typeof cardSelection === 'string') {
     try { cardSelection = JSON.parse(cardSelection); } catch { cardSelection = undefined; }
@@ -58,9 +56,9 @@ export async function CardSection(props: WidgetContext<CardSectionEntity>) {
         ]
       });
       cards = (res?.Items ?? []).sort((a: any, b: any) => (a.Order ?? 0) - (b.Order ?? 0));
-      console.log('✅ Cards (Child):', cards);
+      console.log(' Cards (Child):', cards);
     } catch (e) {
-      console.error('❌ Error fetching cards:', e);
+      console.error(' Error fetching cards:', e);
     }
   }
 
@@ -70,7 +68,7 @@ export async function CardSection(props: WidgetContext<CardSectionEntity>) {
 
   return (
   <section {...attrs} className="CardSection">
-    {/* ✅ Print parent data */}
+    
     {cardList?.Title && <h2 className="CardSection-title">{cardList.Title}</h2>}
     {cardList?.Description && (
       <div
@@ -84,7 +82,6 @@ export async function CardSection(props: WidgetContext<CardSectionEntity>) {
     {cardList.MoreText}
   </a>
 )}
-
 
     <div className="CardGrid">
       {cards.map((item: any, i: number) => {

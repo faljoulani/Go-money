@@ -24,8 +24,7 @@ const getImageUrl = (img: any): string | undefined =>
 
 export async function CardsRight(props: WidgetContext<CardSectionEntity>) {
   const attrs = htmlAttributes(props);
-
-  // 🟢 Get parent Card List (minimal fields)
+ 
   const parentSelection = props.model?.Properties?.CardListData;
   let cardList: any = undefined;
 
@@ -42,11 +41,11 @@ export async function CardsRight(props: WidgetContext<CardSectionEntity>) {
       });
       cardList = res?.Items?.[0];
     } catch (e) {
-      console.error('❌ Error fetching parent card list:', e);
+      console.error(' Error fetching parent card list:', e);
     }
   }
 
-  // 🟢 Get child cards (minimal fields)
+  
   let cardSelection = props.model?.Properties?.Cards;
   if (typeof cardSelection === 'string') {
     try { cardSelection = JSON.parse(cardSelection); } catch { cardSelection = undefined; }
@@ -66,7 +65,7 @@ export async function CardsRight(props: WidgetContext<CardSectionEntity>) {
       });
       cards = res?.Items ?? [];
     } catch (e) {
-      console.error('❌ Error fetching cards:', e);
+      console.error(' Error fetching cards:', e);
     }
   }
 
@@ -88,7 +87,7 @@ export async function CardsRight(props: WidgetContext<CardSectionEntity>) {
         )}
 
         <div className="CardsRight-content">
-          {/* 🟩 Left Text Content */}
+         
           <div className="CardsRight-left">
             {cardList?.Title && <h2 className="CardsRight-title">{cardList.Title}</h2>}
 
@@ -99,7 +98,7 @@ export async function CardsRight(props: WidgetContext<CardSectionEntity>) {
             )}
           </div>
 
-          {/* 🟦 Right Cards */}
+          
           <div className="CardsRight-right">
             {cards.map((item, i) => {
               const imgField = firstOrSelf(item.Image);
