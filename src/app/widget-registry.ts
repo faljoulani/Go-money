@@ -18,6 +18,9 @@ import ScrollableCards from '../components/widgets/cards/scrollableCards';
 import Footer from '../components/widgets/footer/footerTemplate';
 import { FooterEntity } from '../components/widgets/footer/footer.entity';
 
+import HowItWorks from '../components/HowItWorks/HowItWorks';
+import { HowItWorkEntity } from '../components/HowItWorks/HowItWorks.entity';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -58,6 +61,16 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Footer' },
       views: {
         Default: { Title: 'Default', ViewFunction: Footer },
+      },
+    },
+     HowItWorks: {
+      componentType: HowItWorks,
+      entity: HowItWorkEntity,
+      ssr: true,
+      editorMetadata: { Title: 'HowItWorks' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: HowItWorks },
+       
       },
     },
   },
