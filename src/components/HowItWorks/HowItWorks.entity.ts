@@ -1,6 +1,4 @@
-import {
-  WidgetEntity,
-} from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
+import { WidgetEntity } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
 import { ContentSection } from '@progress/sitefinity-widget-designers-sdk/decorators/content-section';
 import { DisplayName } from '@progress/sitefinity-widget-designers-sdk/decorators/display-name';
 import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/content';
@@ -18,7 +16,6 @@ export class HowItWorkEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true,
   })
   HowItWork?: any;
 
@@ -27,8 +24,7 @@ export class HowItWorkEntity {
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-  @ViewSelector([
-    { Name: 'Default', Title: 'Default', Value: 'Default' }
-  ])
+  @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
   ViewName?: string;
 }
+
