@@ -3,24 +3,25 @@ import {
   initRegistry,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
-import Hero from '../components/Hero/hero';
-import HeroDefault from '../components/Hero/herodefault';
-import { HeroEntity } from '../components/Hero/hero.entity';
+import Hero from '../components/widgets/hero/hero';
+import HeroDefault from '../components/widgets/hero/herodefault';
+import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
-import MainNavigation from '../components/MainNavigation/MainNavigation';
-import { MainNavigationEntity } from '../components/MainNavigation/MainNavigation.entity';
+import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
+import { MainNavigationEntity } from '../components/widgets/mainNavigation/mainNavigation.entity';
+import { CardSectionEntity } from '../components/widgets/cards/card-section.entity';
 
-import CardSection from '../components/cards/card-section';
-import { CardSectionEntity } from '../components/cards/card-section.entity';
+import GridOfCards from '../components/widgets/cards/gridOfCards';
+import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
 // 👇 add these 2 lines
-import Footer from '../components/Footer/Footer-template';
-import { FooterEntity } from '../components/Footer/Footer.entity';
+import Footer from '../components/widgets/footer/footerTemplate';
+import { FooterEntity } from '../components/widgets/footer/footer.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
-      componentType: HeroDefault,
+      componentType: Hero,
       entity: HeroEntity,
       ssr: true,
       editorMetadata: { Title: 'Hero' },
@@ -29,15 +30,14 @@ const customWidgetRegistry: WidgetRegistry = {
         Background: { Title: 'Background', ViewFunction: Hero },
       },
     },
-
-    // ===== Card Section =====
     CardSection: {
-      componentType: CardSection,
+      componentType: GridOfCards,
       entity: CardSectionEntity,
       ssr: true,
-      editorMetadata: { Title: 'Card List' },
+      editorMetadata: { Title: 'Card Section' },
       views: {
-        Default: { Title: 'Default', ViewFunction: CardSection },
+        Default: { Title: 'Grid', ViewFunction: GridOfCards },
+        Scrollable: { Title: 'Scrollable', ViewFunction: ScrollableCards },
       },
     },
     MainNavigation: {
@@ -58,8 +58,6 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Footer' },
       views: {
         Default: { Title: 'Default', ViewFunction: Footer },
-        // Optional extra view if you created it:
-        // Compact: { Title: 'Compact', ViewFunction: Footer },
       },
     },
   },
