@@ -34,7 +34,6 @@ function parseSelection(raw: unknown) {
 }
 
 function firstIdFromSelection(sel: any) {
-  // Works with both simple “Id” and CardListData-like shapes
   if (!sel) return undefined;
   if (sel.Id) return sel.Id;
   const ids = sel?.CardListData?.ItemIdsOrdered ?? sel?.ItemIdsOrdered;
@@ -46,7 +45,6 @@ function firstIdFromSelection(sel: any) {
 function linkToHref(link: CmsLink): string | undefined {
   if (!link) return undefined;
   if (typeof link === 'string') return link;
-  // can be array or object from Sitefinity selector
   const anyLink = link as any;
   if (Array.isArray(anyLink)) {
     const first = anyLink[0];
@@ -81,7 +79,6 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
     ) : null;
   }
 
-  // 2) Fetch the ExpandBox dynamic item
   const item = await RestClient.getItem({
     type: 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox',
     id,
@@ -102,7 +99,7 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
   console.log('ITEM =========== >>>>>>>>>>>>> ' + JSON.stringify(item));
   const eyebrow: string | undefined = item.Eyebrow;
   const title: string | undefined = item.Title;
-  const description: string | undefined = item.Description; // HTML
+  const description: string | undefined = item.Description;
   const ctaText: string | undefined = item.CtaText || 'More details';
   const ctaHref: string | undefined = linkToHref(item.CtaUrl);
   const imgSrc: string | undefined = imageUrl(
