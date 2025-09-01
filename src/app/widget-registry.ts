@@ -17,6 +17,9 @@ import { CardSectionEntity } from '../components/cards/card-section.entity';
 import Footer from '../components/Footer/Footer-template';
 import { FooterEntity } from '../components/Footer/Footer.entity';
 
+import HowItWorks from '../components/HowItWorks/HowItWorks';
+import { HowItWorkEntity } from '../components/HowItWorks/HowItWorks.entity';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -60,6 +63,16 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: Footer },
         // Optional extra view if you created it:
         // Compact: { Title: 'Compact', ViewFunction: Footer },
+      },
+    },
+     HowItWorks: {
+      componentType: HowItWorks,
+      entity: HowItWorkEntity,
+      ssr: true,
+      editorMetadata: { Title: 'HowItWorks' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: HowItWorks },
+       
       },
     },
   },
