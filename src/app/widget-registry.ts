@@ -3,20 +3,22 @@ import {
   initRegistry,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
-import Hero from '../components/widgets/hero/hero';
-import HeroDefault from '../components/widgets/hero/herodefault';
-import { HeroEntity } from '../components/widgets/hero/hero.entity';
+import Hero from '../components/hero/hero';
+import HeroDefault from '../components/hero/herodefault';
+import { HeroEntity } from '../components/hero/hero.entity';
 
-import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/widgets/mainNavigation/mainNavigation.entity';
+import MainNavigation from '../components/mainNavigation/mainNavigation';
+import { MainNavigationEntity } from '../components/mainNavigation/mainNavigation.entity';
 import { CardSectionEntity } from '../components/widgets/cards/card-section.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
-// 👇 add these 2 lines
-import Footer from '../components/widgets/footer/footerTemplate';
-import { FooterEntity } from '../components/widgets/footer/footer.entity';
+import Footer from '../components/footer/Footer-template';
+import { FooterEntity } from '../components/footer/Footer.entity';
+
+import ExpandBox from '../components/widgets/expandBox/expandbox';
+import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
 
 import HowItWorks from '../components/HowItWorks/HowItWorks';
 import { HowItWorkEntity } from '../components/HowItWorks/HowItWorks.entity';
@@ -52,8 +54,6 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: MainNavigation },
       },
     },
-
-    // 👇 new: Footer
     Footer: {
       componentType: Footer,
       entity: FooterEntity,
@@ -63,14 +63,13 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: Footer },
       },
     },
-     HowItWorks: {
-      componentType: HowItWorks,
-      entity: HowItWorkEntity,
+    ExpandBox: {
+      componentType: ExpandBox,
+      entity: ExpandBoxEntity,
       ssr: true,
-      editorMetadata: { Title: 'HowItWorks' },
+      editorMetadata: { Title: 'ExpandBox' },
       views: {
-        Default: { Title: 'Default', ViewFunction: HowItWorks },
-       
+        Default: { Title: 'Default', ViewFunction: ExpandBox },
       },
     },
   },
