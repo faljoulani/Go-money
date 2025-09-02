@@ -1,5 +1,9 @@
-import { WidgetContext, htmlAttributes, RestClientForContext } from '@progress/sitefinity-nextjs-sdk';
-import { BoardReportEntity } from './BoardReport.entity';
+import {
+  WidgetContext,
+  htmlAttributes,
+  RestClientForContext,
+} from '@progress/sitefinity-nextjs-sdk';
+import { BoardReportEntity } from './boardReport.entity';
 
 const BOARD_REPORT_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.BoardReports.BoardReport';
 
@@ -7,9 +11,14 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
   const attrs = htmlAttributes(props);
 
   // read designer selection (MixedContent)
-  let selection = props.model?.Properties?.BoardReport ?? (props.model?.Properties as any)?.BoardReport;
+  let selection =
+    props.model?.Properties?.BoardReport ?? (props.model?.Properties as any)?.BoardReport;
   if (typeof selection === 'string') {
-    try { selection = JSON.parse(selection); } catch { selection = undefined; }
+    try {
+      selection = JSON.parse(selection);
+    } catch {
+      selection = undefined;
+    }
   }
 
   let item: any;
@@ -26,9 +35,9 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
           'UrlName',
           'Description',
           'MainTitle',
-          'PageSize',         // NEW name
-          'AllowPagination',  // NEW name
-          'ItemsToSkip',      // NEW name
+          'PageSize', // NEW name
+          'AllowPagination', // NEW name
+          'ItemsToSkip', // NEW name
 
           // Related data
           'Files($select=Id,Title,UrlName)',
@@ -41,23 +50,28 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
 
   if (!item) {
     if (props.requestContext.isEdit) {
-      return <section {...attrs} className="BoardReport-widget">Select a “Board report” item.</section>;
+      return (
+        <section {...attrs} className="BoardReport-widget">
+          Select a “Board report” item.
+        </section>
+      );
     }
     return null;
   }
 
   // helpers
   const normalizeFiles = (files: any[] = []) =>
-    (Array.isArray(files) ? files : []).map(f => ({
+    (Array.isArray(files) ? files : []).map((f) => ({
       Id: f?.Id,
       Title: f?.Title,
       UrlName: f?.UrlName,
     }));
 
   const toInt = (v: any, fallback = 0) =>
-    typeof v === 'number' ? v : (parseInt(String(v ?? ''), 10) || fallback);
+    typeof v === 'number' ? v : parseInt(String(v ?? ''), 10) || fallback;
 
-  const toBool = (v: any) => (typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true');
+  const toBool = (v: any) =>
+    typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true';
 
   // view model
   const view = {
@@ -73,9 +87,10 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
   };
 
   // (optional) example of applying the paging to Files locally
-  const visibleFiles = view.AllowPagination && view.PageSize > 0
-    ? view.Files.slice(view.ItemsToSkip, view.ItemsToSkip + view.PageSize)
-    : view.Files;
+  const visibleFiles =
+    view.AllowPagination && view.PageSize > 0
+      ? view.Files.slice(view.ItemsToSkip, view.ItemsToSkip + view.PageSize)
+      : view.Files;
 
   return (
     <section {...attrs} className="BoardReport-debug">
@@ -86,12 +101,18 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
 
       {/* Example rendering using the applied paging */}
       <div style={{ marginTop: 8 }}>
-        <strong>Rendered files ({visibleFiles.length} of {view.Files.length}):</strong>
+        <strong>
+          Rendered files ({visibleFiles.length} of {view.Files.length}):
+        </strong>
         <ul>
-          {visibleFiles.map(f => <li key={f.Id}>{f.Title}</li>)}
+          {visibleFiles.map((f) => (
+            <li key={f.Id}>{f.Title}</li>
+          ))}
         </ul>
         {view.AllowPagination && view.PageSize > 0 && (
-          <small>Offset (ItemsToSkip): {view.ItemsToSkip} • Page size: {view.PageSize}</small>
+          <small>
+            Offset (ItemsToSkip): {view.ItemsToSkip} • Page size: {view.PageSize}
+          </small>
         )}
       </div>
     </section>
@@ -99,3 +120,4 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
 }
 
 export default BoardReport;
+
