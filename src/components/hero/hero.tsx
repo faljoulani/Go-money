@@ -1,8 +1,8 @@
-import heroBg from './HeroBackground.jpg';
-import { WidgetContext, htmlAttributes} from '@progress/sitefinity-nextjs-sdk';
+import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
-import Image  from 'next/image';
+import Image from 'next/image';
+import heroBg from './HeroBackground.jpg';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -11,7 +11,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   // 1) Read selection from widget model (Module Builder "Hero" selector)
   let selection = props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero;
   if (typeof selection === 'string') {
-    try { selection = JSON.parse(selection); } catch { selection = undefined; }
+    try {
+      selection = JSON.parse(selection);
+    } catch {
+      selection = undefined;
+    }
   }
 
   // 2) Fetch the selected item with ONLY the fields we need
@@ -33,7 +37,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           'Eyebrow',
           'CtaText',
           'CtaUrl',
-          'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)'
+          'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
         ],
       });
       console.log('Hero item', item);
@@ -73,7 +77,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
   const pickUrl = (m: any): string | undefined =>
     m?.Url ||
-   m?.MediaUrl || m?.ThumbnailUrl || m?.EmbedUrl || m?.Urls?.Default || m?.Urls?.DefaultUrl;
+    m?.MediaUrl ||
+    m?.ThumbnailUrl ||
+    m?.EmbedUrl ||
+    m?.Urls?.Default ||
+    m?.Urls?.DefaultUrl;
 
   // 5) Map fields from Module Builder
   const eyebrow = item.Eyebrow || '';
@@ -85,8 +93,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   // 6) Resolve BackgroundImage (handles when only Id/Provider is present)
   let bgMedia = firstOrSelf(item.BackgroundImage);
   if (bgMedia && !pickUrl(bgMedia) && bgMedia.Id) {
-
-try {
+    try {
       const full = await RestClient.getItem({
         type: 'Telerik.Sitefinity.Libraries.Model.Image',
         id: bgMedia.Id?.toString(),
@@ -108,7 +115,7 @@ try {
     } catch (err) {
       console.error('Hero failed:', err);
     }
- }
+  }
   const bgUrl = pickUrl(bgMedia);
   const bgAlt = bgMedia?.AlternativeText || bgMedia?.Title || title;
 
@@ -117,64 +124,62 @@ try {
   const backgroundImage = bgUrl
     ? `linear-gradient(135deg, rgba(6,182,212,1) 0%, rgba(79,70,229,0.9) 60 %), url(${bgUrl})`
     : undefined;
-const toAbsolute = (u?: string) => {
-  if (!u) return undefined;
-  if (/^https?:\/\//i.test(u)) return u; // already absolute
+  const toAbsolute = (u?: string) => {
+    if (!u) return undefined;
+    if (/^https?:\/\//i.test(u)) return u; // already absolute
 
-  // Prefer Sitefinity site URL; otherwise use window origin (client-side)
-  const base =
-    (props.requestContext as any)?.siteData?.SiteUrl ??
-    (typeof window !== 'undefined' ? window.location.origin : undefined);
+    // Prefer Sitefinity site URL; otherwise use window origin (client-side)
+    const base =
+      (props.requestContext as any)?.siteData?.SiteUrl ??
+      (typeof window !== 'undefined' ? window.location.origin : undefined);
 
-  try {
-    return base ? new URL(u, base).toString() : u; // keep relative if no base
-  } catch {
-    return u;
-  }
-};
+    try {
+      return base ? new URL(u, base).toString() : u; // keep relative if no base
+    } catch {
+      return u;
+    }
+  };
 
-const heroImgUrl = toAbsolute(bgUrl);
+  const heroImgUrl = toAbsolute(bgUrl);
   return (
     <>
-  
-    <section
-      {...attrs}
-      className="relative overflow-hidden text-white"
-      style={{
-    backgroundImage: `url(${heroBg.src})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  }}
-      // style={backgroundImage ? { backgroundImage, backgroundSize: 'cover', backgroundPosition: 'center', backgroundBlendMode: 'overlay' } : undefined}
-    >
-   
-      {/* If no image, fall back to the pure gradient classes */}
-      
-        
-          <div aria-hidden className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl" />
-          <div aria-hidden className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl" />
-          {/* <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700" /> */}
-        
-      
+      <section
+        {...attrs}
+        className="relative overflow-hidden text-white"
+        style={{
+          backgroundImage: `url(${heroBg.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+        // style={backgroundImage ? { backgroundImage, backgroundSize: 'cover', backgroundPosition: 'center', backgroundBlendMode: 'overlay' } : undefined}
+      >
+        {/* If no image, fall back to the pure gradient classes */}
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-16">
-      
-        <div>
-          {eyebrow && (
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
-              {eyebrow}
-            </p>
-          )}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
+        />
+        {/* <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700" /> */}
 
-          {title && (
-            <h1 className="mt-3 max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-              {title}
-            </h1>
-          )}
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-16">
+          <div>
+            {eyebrow && (
+              <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
+                {eyebrow}
+              </p>
+            )}
 
-          {description && (
-            <p className="mt-6 max-w-lg text-white/85">{description}</p>
-          )}
+            {title && (
+              <h1 className="mt-3 max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+                {title}
+              </h1>
+            )}
+
+            {description && <p className="mt-6 max-w-lg text-white/85">{description}</p>}
             <div className="mt-10">
               <a
                 href={ctaUrl}
@@ -184,7 +189,7 @@ const heroImgUrl = toAbsolute(bgUrl);
                 <span aria-hidden>→</span>
               </a>
             </div>
-          {/* {ctaUrl && (
+            {/* {ctaUrl && (
             <div className="mt-10">
               <a
                 href={ctaUrl}
@@ -195,30 +200,26 @@ const heroImgUrl = toAbsolute(bgUrl);
               </a>
             </div>
           )} */}
+          </div>
+
+          <div className=" relative h-[720px] w-[160%] animate-float">
+            {heroImgUrl ? (
+              <Image
+                src={heroImgUrl!}
+                alt="hero iamge"
+                fill
+                className="object-contain"
+                quality={90}
+                priority
+              />
+            ) : (
+              <div className="aspect-[4/3] w-full rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />
+            )}{' '}
+          </div>
         </div>
-
-          
-          
-               <div className=" relative h-[720px] w-[160%] animate-float">
-  {heroImgUrl ? (
-    <Image
-    src={heroImgUrl!}
-
-    alt="hero iamge"
-    fill
-    className="object-contain"
-    quality={90}
-    priority
-  />
-  ) : (
-    <div className="aspect-[4/3] w-full rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />
-  )}            </div>
-        
-      </div>
-    </section>
+      </section>
     </>
   );
 }
 
 export default Hero;
-
