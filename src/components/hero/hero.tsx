@@ -11,7 +11,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   // 1) Read selection from widget model (Module Builder "Hero" selector)
   let selection = props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero;
   if (typeof selection === 'string') {
-    try { selection = JSON.parse(selection); } catch { selection = undefined; }
+    try {
+      selection = JSON.parse(selection);
+    } catch {
+      selection = undefined;
+    }
   }
 
   // 2) Fetch the selected item with ONLY the fields we need
@@ -140,8 +144,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       }}
     >
       {/* decorative glows */}
-      <div aria-hidden className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
+      />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-16">
         <div>
