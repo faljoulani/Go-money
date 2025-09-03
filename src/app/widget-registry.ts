@@ -1,6 +1,7 @@
 import {
   WidgetRegistry,
   initRegistry,
+  addWidgetViews,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/widgets/hero/hero';
@@ -23,6 +24,8 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -32,7 +35,6 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Hero' },
       views: {
         Default: { Title: 'Default', ViewFunction: HeroDefault },
-        Background: { Title: 'Background', ViewFunction: Hero },
       },
     },
     CardSection: {
@@ -72,8 +74,21 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
       },
     },
+    HowItWorks: {
+      componentType: HowItWorks,
+      entity: HowItWorkEntity,
+      ssr: true,
+      editorMetadata: { Title: 'How It Works' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: HowItWorks },
+      },
+    },
   },
 };
+
+addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
+  Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
+});
 
 customWidgetRegistry.widgets = {
   ...defaultWidgetRegistry.widgets,
