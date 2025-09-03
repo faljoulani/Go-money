@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { HowItWorkEntity } from './HowItWorks.entity';
+import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 
 import HowItWorksRings from './HowItWorksRings.png';
@@ -16,7 +16,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   // Read designer selection
   let selection = props.model?.Properties?.HowItWork ?? (props.model?.Properties as any)?.HowItWork;
   if (typeof selection === 'string') {
-    try { selection = JSON.parse(selection); } catch { selection = undefined; }
+    try {
+      selection = JSON.parse(selection);
+    } catch {
+      selection = undefined;
+    }
   }
 
   // Fetch selected section (only necessary fields)
@@ -32,8 +36,15 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
         fields: [
-          'Id','Title','UrlName','SubTitle','HeaderText','IntroLead','IntroSubLead',
-          'CTALabel','CTAExternalUrl',
+          'Id',
+          'Title',
+          'UrlName',
+          'SubTitle',
+          'HeaderText',
+          'IntroLead',
+          'IntroSubLead',
+          'CTALabel',
+          'CTAExternalUrl',
           'CTAInternalPage($select=Id,Title,DefaultUrl)',
           'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
           'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
@@ -47,7 +58,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
   if (!item) {
     if (props.requestContext.isEdit) {
-      return <section {...attrs} className="HowItWork-widget">Select a “How it works” item.</section>;
+      return (
+        <section {...attrs} className="HowItWork-widget">
+          Select a “How it works” item.
+        </section>
+      );
     }
     return null;
   }
@@ -197,7 +212,9 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                         {logoSrc ? (
                           <img src={logoSrc} alt={logoAlt} className="h-12 w-12" />
                         ) : (
-                          <span className="text-2xl" aria-hidden>🖼️</span>
+                          <span className="text-2xl" aria-hidden>
+                            🖼️
+                          </span>
                         )}
                       </div>
 
@@ -225,7 +242,13 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                                backdrop-blur-[2px] hover:bg-white/10 transition"
                   >
                     <span>{view.CTALabel}</span>
-                    <svg viewBox="0 0 20 20" className="size-4 translate-x-0 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <svg
+                      viewBox="0 0 20 20"
+                      className="size-4 translate-x-0 transition-transform group-hover:translate-x-0.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
                       <path d="M7 4l6 6-6 6M12 10H3" />
                     </svg>
                   </a>
@@ -240,3 +263,4 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 }
 
 export default HowItWork;
+

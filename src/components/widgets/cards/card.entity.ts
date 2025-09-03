@@ -12,7 +12,6 @@ export class CardSectionEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
     AllowMultipleItemsSelection: true,
-    RetrieveData: true
   })
   Cards?: any;
 
@@ -21,14 +20,11 @@ export class CardSectionEntity {
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-
-@ViewSelector([
-  { Name: 'Default', Title: 'Default', Value: 'Default' },
-  { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
-  { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' } 
-])
-
-
+  @ViewSelector([
+    { Name: 'Default', Title: 'Default', Value: 'Default' },
+    { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
+    { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
+  ])
   ViewName?: string;
 
   @ContentSection('Parent Card List Info', 2)
@@ -36,7 +32,7 @@ export class CardSectionEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true
   })
   CardListData?: any;
 }
+

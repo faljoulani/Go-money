@@ -1,24 +1,30 @@
 import {
   WidgetRegistry,
   initRegistry,
+  addWidgetViews,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
-import Hero from '../components/Hero/hero';
-import HeroDefault from '../components/Hero/herodefault';
-import { HeroEntity } from '../components/Hero/hero.entity';
+import Hero from '../components/widgets/hero/hero';
+import HeroDefault from '../components/widgets/hero/herodefault';
+import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
-import MainNavigation from '../components/MainNavigation/MainNavigation';
-import { MainNavigationEntity } from '../components/MainNavigation/MainNavigation.entity';
+import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
+import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
-import CardSection from '../components/cards/card-section';
-import { CardSectionEntity } from '../components/cards/card-section.entity';
+import GridOfCards from '../components/widgets/cards/gridOfCards';
+import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
-// 👇 add these 2 lines
-import Footer from '../components/Footer/Footer-template';
-import { FooterEntity } from '../components/Footer/Footer.entity';
+import Footer from '../components/widgets/footer/Footer-template';
+import { FooterEntity } from '../components/widgets/footer/Footer.entity';
 
-import HowItWorks from '../components/HowItWorks/HowItWorks';
-import { HowItWorkEntity } from '../components/HowItWorks/HowItWorks.entity';
+import FinanceRepaymentBanner from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner';
+import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner.entity';
+
+import HowItWorks from '../components/widgets/howItWorks/howItWorks';
+import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
+
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -29,18 +35,16 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Hero' },
       views: {
         Default: { Title: 'Default', ViewFunction: HeroDefault },
-        Background: { Title: 'Background', ViewFunction: Hero },
       },
     },
-
-    // ===== Card Section =====
     CardSection: {
-      componentType: CardSection,
+      componentType: ScrollableCards,
       entity: CardSectionEntity,
       ssr: true,
-      editorMetadata: { Title: 'Card List' },
+      editorMetadata: { Title: 'Card Section' },
       views: {
-        Default: { Title: 'Default', ViewFunction: CardSection },
+        Default: { Title: 'Grid', ViewFunction: ScrollableCards },
+        Scrollable: { Title: 'Scrollable', ViewFunction: GridOfCards },
       },
     },
     MainNavigation: {
@@ -52,8 +56,6 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: MainNavigation },
       },
     },
-
-    // 👇 new: Footer
     Footer: {
       componentType: Footer,
       entity: FooterEntity,
@@ -61,22 +63,32 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Footer' },
       views: {
         Default: { Title: 'Default', ViewFunction: Footer },
-        // Optional extra view if you created it:
-        // Compact: { Title: 'Compact', ViewFunction: Footer },
       },
     },
-     HowItWorks: {
+    BannerTwo: {
+      componentType: FinanceRepaymentBanner,
+      entity: FinanceRepaymentBannerEntity,
+      ssr: true,
+      editorMetadata: { Title: 'BannerTwo' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
+      },
+    },
+    HowItWorks: {
       componentType: HowItWorks,
       entity: HowItWorkEntity,
       ssr: true,
-      editorMetadata: { Title: 'HowItWorks' },
+      editorMetadata: { Title: 'How It Works' },
       views: {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
-       
       },
     },
   },
 };
+
+addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
+  Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
+});
 
 customWidgetRegistry.widgets = {
   ...defaultWidgetRegistry.widgets,
