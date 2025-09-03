@@ -1,7 +1,7 @@
 import {
   WidgetRegistry,
   initRegistry,
-  addWidgetViews, 
+  addWidgetViews,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/hero/hero';
@@ -9,7 +9,7 @@ import HeroDefault from '../components/hero/herodefault';
 import { HeroEntity } from '../components/hero/hero.entity';
 
 import MainNavigation from '../components/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/mainNavigation/mainNavigation.entity';
+import { MainNavigationEntity } from '../components/mainNavigation/MainNavigation.entity';
 import { CardSectionEntity } from '../components/widgets/cards/card-section.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
@@ -74,15 +74,21 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: ExpandBox },
       },
     },
+    HowItWorks: {
+      componentType: HowItWorks,
+      entity: HowItWorkEntity,
+      ssr: true,
+      editorMetadata: { Title: 'How It Works' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: HowItWorks },
+      },
+    },
   },
-
 };
-
 
 addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
   Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
 });
-
 
 customWidgetRegistry.widgets = {
   ...defaultWidgetRegistry.widgets,
