@@ -1,36 +1,39 @@
 import React from 'react';
+import clsx from 'clsx';
 
 type Props = {
   children: React.ReactNode;
   className?: string;
   align?: 'left' | 'center' | 'right';
-  /** Constrain width when centered. */
-  maxWidth?: string; // e.g., '40rem' (defaults to 48rem)
-  colorClassName?: string; // tailwind color utility override
+  maxWidth?: number | string;
+  color?: string;
 };
 
 export default function Description({
   children,
-  className = '',
+  className,
   align = 'center',
-  maxWidth = '48rem', // ~max-w-3xl
-  colorClassName = 'text-slate-600',
+  maxWidth = 686,
+  color = 'var(--Text-text-default, #424242)',
 }: Props) {
   const alignClass =
     align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
 
-  const widthClass = align === 'center' ? 'mx-auto' : '';
+  const style: React.CSSProperties = {
+    maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
+    color,
+  };
 
   return (
     <p
-      className={[
-        'mt-4 text-base md:text-lg',
-        colorClassName,
+      className={clsx(
+        'font-lufga text-[16px] font-normal leading-[100%] tracking-normal',
+        'mt-4',
         alignClass,
-        widthClass,
+        align === 'center' && 'mx-auto',
         className,
-      ].join(' ')}
-      style={{ maxWidth: align === 'center' ? maxWidth : undefined }}
+      )}
+      style={style}
     >
       {children}
     </p>

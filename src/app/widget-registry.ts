@@ -3,25 +3,25 @@ import {
   initRegistry,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
-import Hero from '../components/hero/hero';
-import HeroDefault from '../components/hero/herodefault';
-import { HeroEntity } from '../components/hero/hero.entity';
+import Hero from '../components/widgets/hero/hero';
+import HeroDefault from '../components/widgets/hero/herodefault';
+import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
-import MainNavigation from '../components/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/mainNavigation/mainNavigation.entity';
-import { CardSectionEntity } from '../components/widgets/cards/card-section.entity';
+import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
+import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
-import Footer from '../components/footer/Footer-template';
-import { FooterEntity } from '../components/footer/Footer.entity';
+import Footer from '../components/widgets/footer/Footer-template';
+import { FooterEntity } from '../components/widgets/footer/Footer.entity';
 
-import FinanceRepaymentBanner from '../components/widgets/bannerTwo/FinanceRepaymentBanner';
-import { FinanceRepaymentBannerEntity } from '../components/widgets/bannerTwo/FinanceRepaymentBanner.entity';
+import FinanceRepaymentBanner from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner';
+import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner.entity';
 
-import HowItWorks from '../components/HowItWorks/HowItWorks';
-import { HowItWorkEntity } from '../components/HowItWorks/HowItWorks.entity';
+import HowItWorks from '../components/widgets/howItWorks/howItWorks';
+import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -36,13 +36,13 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
     CardSection: {
-      componentType: GridOfCards,
+      componentType: ScrollableCards,
       entity: CardSectionEntity,
       ssr: true,
       editorMetadata: { Title: 'Card Section' },
       views: {
-        Default: { Title: 'Grid', ViewFunction: GridOfCards },
-        Scrollable: { Title: 'Scrollable', ViewFunction: ScrollableCards },
+        Default: { Title: 'Grid', ViewFunction: ScrollableCards },
+        Scrollable: { Title: 'Scrollable', ViewFunction: GridOfCards },
       },
     },
     MainNavigation: {

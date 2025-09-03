@@ -1,17 +1,18 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import type { FinanceRepaymentBannerEntity } from './FinanceRepaymentBanner.entity';
+import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import type { FinanceRepaymentBannerEntity } from './financeRepaymentBanner.entity';
 
 import Title from '../../atoms/title/title';
 
-function firstIdFromSelection(sel: any) {
-  if (!sel) return undefined;
-  if (sel.Id) return sel.Id;
-  const ids = sel?.CardListData?.ItemIdsOrdered ?? sel?.ItemIdsOrdered;
-  if (Array.isArray(ids) && ids.length) return ids[0];
-  const maybeContentId = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value?.split(',')?.[0];
-  return maybeContentId || undefined;
+interface ExpandBoxItem {
+  Id: string;
+  Title?: string;
+  Eyebrow?: string;
+  Description?: string;
+  CtaText?: string;
+  CtaUrl?: string | { Href?: string } | Array<{ Href?: string }>;
+  Image?: any | any[];
 }
 
 export default async function FinanceRepaymentBanner(
@@ -28,7 +29,8 @@ export default async function FinanceRepaymentBanner(
       selection = undefined;
     }
   }
-  const id = firstIdFromSelection(selection);
+
+  const id = extractSelectionId(selection);
 
   if (!id) {
     return isEdit ? (
@@ -42,23 +44,26 @@ export default async function FinanceRepaymentBanner(
     ) : null;
   }
 
-  let item: any;
-  try {
-    item = await RestClient.getItem({
-      type: selection.Content[0].Type,
-      id,
-      culture,
-      fields: [
-        'Id',
-        'Title',
-        'Description',
-        'Eyebrow',
-        'CtaText',
-        'CtaUrl',
-        'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
-      ],
-    });
-  } catch {}
+  const item = await fetchData(
+    [id],
+    null,
+    culture,
+    [
+      'Id',
+      'Title',
+      'Description',
+      'Eyebrow',
+      'CtaText',
+      'CtaUrl',
+      'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
+    ],
+    {
+      itemType: selection?.Content?.[0]?.Type,
+      single: true,
+    },
+  );
+
+  const typedItem = item as ExpandBoxItem;
 
   if (!item) {
     return isEdit ? (
@@ -71,15 +76,15 @@ export default async function FinanceRepaymentBanner(
     ) : null;
   }
 
-  const title = item.Title as string | undefined;
-  const description = item.Description as string | undefined;
-  const ctaText = (item.CtaText as string) || 'Learn more →';
+  const title = typedItem.Title ?? undefined;
+  const ctaText = typedItem.CtaText ?? 'Learn more →';
   const ctaUrl =
-    typeof item.CtaUrl === 'string'
-      ? item.CtaUrl
-      : item.CtaUrl?.[0]?.Href || item.CtaUrl?.Href || '#';
+    typeof typedItem.CtaUrl === 'string'
+      ? typedItem.CtaUrl
+      : (typedItem.CtaUrl as any)?.[0]?.Href || (typedItem.CtaUrl as any)?.Href || '#';
 
-  const imgs = Array.isArray(item.Image) ? item.Image : [item.Image].filter(Boolean);
+  const imgs = Array.isArray(typedItem.Image) ? typedItem.Image : [typedItem.Image].filter(Boolean);
+
   const byTitle = (t: string) =>
     imgs.find((im: any) => (im?.Title || '').toLowerCase().includes(t));
 
