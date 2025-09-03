@@ -9,7 +9,7 @@ import HeroDefault from '../components/hero/herodefault';
 import { HeroEntity } from '../components/hero/hero.entity';
 
 import MainNavigation from '../components/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/mainNavigation/MainNavigation.entity';
+import { MainNavigationEntity } from '../components/mainNavigation/mainNavigation.entity';
 import { CardSectionEntity } from '../components/widgets/cards/card-section.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
