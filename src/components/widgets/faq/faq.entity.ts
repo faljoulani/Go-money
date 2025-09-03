@@ -15,7 +15,6 @@ export class FaqSectionEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FAQS',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true
   })
   FaqRoot?: any;
 
@@ -24,7 +23,6 @@ export class FaqSectionEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategory',
     AllowMultipleItemsSelection: true,
-    RetrieveData: true
   })
   FaqCategories?: any;
 
