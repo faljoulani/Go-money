@@ -26,6 +26,8 @@ import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.ent
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
+import StackLayout from '../components/widgets/layouts/stackLayout';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -81,6 +83,14 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'How It Works' },
       views: {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
+      },
+    },
+    StackLayout: {
+      componentType: StackLayout,
+      ssr: true,
+      editorMetadata: { Title: 'Stack Layout (Column)', Category: 'Layout & Presets' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: StackLayout },
       },
     },
   },
