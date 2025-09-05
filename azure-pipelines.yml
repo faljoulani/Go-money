@@ -103,6 +103,7 @@ stages:
                     buildType: current
                     artifactName: '$(artifactName)'
                     targetPath: '$(Pipeline.Workspace)\fe'
+                    cleanDestinationFolder: true
 
                 - powershell: |
                     $ctx    = "$(Pipeline.Workspace)\fe"
@@ -135,8 +136,8 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build Windows image locally on the VM using Dockerfile.win
-                    docker build -f Dockerfile.win -t $image .
+                    # Build Windows image locally on the VM using Dockerfile.win (no cache to avoid stale context)
+                    docker build --no-cache -f Dockerfile.win -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
                       Write-Error "docker build failed with code $LASTEXITCODE"
