@@ -40,7 +40,8 @@ stages:
               copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
               copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
               copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
-              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"         "$(Build.ArtifactStagingDirectory)\drop\"
+              rem Use the Windows container Dockerfile
+              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile.win"     "$(Build.ArtifactStagingDirectory)\drop\Dockerfile.win"
 
               rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
               if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
@@ -129,8 +130,8 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build image locally on the VM
-                    docker build -t $image .
+                    # Build Windows image locally on the VM
+                    docker build -f Dockerfile.win -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
                       Write-Error "docker build failed with code $LASTEXITCODE"
@@ -146,15 +147,15 @@ stages:
                       docker rm   $cname | Out-Null
                     }
 
-                    # Map CMS host to the Windows host from inside the container
+                    # Easiest mapping: use a pipeline variable for the CMS IP (e.g., 192.168.10.102)
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
-                    if ([string]::IsNullOrWhiteSpace($cmsHost)) {
-                      $extraHostArg = ""
-                      Write-Host "Warning: could not parse host from SF_CMS_URL='$sfCmsUrl'. Running without --add-host."
+                    $cmsIp   = "$(SF_CMS_HOST_IP)"  # set this in pipeline variables
+                    $extraHostArg = ""
+                    if (-not [string]::IsNullOrWhiteSpace($cmsHost) -and -not [string]::IsNullOrWhiteSpace($cmsIp)) {
+                      $extraHostArg = "--add-host=$($cmsHost):$($cmsIp)"
+                      Write-Host "Will map $cmsHost -> $cmsIp"
                     } else {
-                      # IMPORTANT: use '=' so PowerShell passes it as one token
-                      $extraHostArg = "--add-host=${cmsHost}:host-gateway"
-                      Write-Host "Will map ${cmsHost} -> host-gateway"
+                      Write-Host "No --add-host mapping configured (either SF_CMS_URL host or SF_CMS_HOST_IP missing)."
                     }
 
                     # Run container; inject env directly
