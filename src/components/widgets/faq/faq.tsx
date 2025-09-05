@@ -151,10 +151,10 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
     // 3) Headers (bearer optional)
 const headers: Record<string, string> = {
   'x-sf-service-request': 'true',
-  Accept: 'application/json',
-   Authorization: `Bearer ${process.env.SF_API_BEARER!.trim()}`
+  // Accept: 'application/json',
+   Authorization: `Bearer ${process.env.SF_API_BEARER!.trim()}`,
   // optional but nice for OData:
-  // 'Accept': 'application/json;odata.metadata=minimal',
+  'Accept': 'application/json;odata.metadata=minimal',
 };    console.log('BEARER:', process.env.SF_API_BEARER);
     if (process.env.SF_API_BEARER) headers.Authorization = `Bearer ${process.env.SF_API_BEARER}`;
 
@@ -202,7 +202,7 @@ const headers: Record<string, string> = {
 
   return (
     <section {...attrs} className={`FaqSection FaqSection-${viewName}`}>
-      <div className="mx-auto max-w-3xl text-center px-6 py-10">
+      <div className="mx-auto w-full  flex flex-col justify-center items-center gap-2 px-6 pt-12 pb-4">
         {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && <Title>{rootData.Title}</Title>}
         {rootData?.Description && <Description>{rootData.Description}</Description>}

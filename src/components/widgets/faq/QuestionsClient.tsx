@@ -10,10 +10,10 @@ export default function QuestionsClient({
 }) {
   const [active, setActive] = useState<string>(categories[0]?.Id);
   const questions = grouped[(active ?? '').toLowerCase()] ?? [];
-
+    console.log('GROUPED:', grouped, 'ACTIVE:', active, 'QUESTIONS:', questions);
   return (
-    <div className="ml-[250px] max-w-6xl grid grid-cols-6 gap-10 px-6">
-      <aside className="col-span-2 md:col-span-2 lg:col-span-3">
+    <div className="flex  gap-8 p-12">
+      <aside className="w-[25%]">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
             const isActive = active === cat.Id;
@@ -23,7 +23,7 @@ export default function QuestionsClient({
                 aria-current={isActive ? 'true' : undefined}
                 onClick={() => setActive(cat.Id)}
                 className={[
-                  'flex cursor-pointer items-center justify-between px-6 py-5 text-[15px]',
+                  'flex hover:cursor-pointer items-center justify-between px-6 py-5 text-[15px]',
                   'border-t border-slate-200 first:border-t-0',
                   isActive
                     ? 'bg-[#0B1C5A] text-white'
@@ -51,7 +51,7 @@ export default function QuestionsClient({
         </ul>
       </aside>
 
-      <div className="col-span-2">
+      <div className="w-[75%]">
         <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white/70">
           {questions.length === 0 && (
             <div className="p-6 text-slate-500">No questions in this category yet.</div>
