@@ -19,7 +19,12 @@ stages:
       - job: Build
         pool:
           vmImage: 'windows-latest'
+        workspace:
+          clean: all
         steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 0
           - task: NodeTool@0
             inputs:
               versionSpec: '20.x'
