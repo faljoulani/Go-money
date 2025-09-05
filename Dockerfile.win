@@ -1,0 +1,142 @@
+################################################################################
+# Windows containers: Next.js + Tailwind v4 + lightningcss prebuilts (win-x64)
+################################################################################
+
+# Choose the Node-on-Windows base image here. If the default fails, try 18-ltsc2022.
+ARG NODE_BASE=mcr.microsoft.com/windows/node:20-ltsc2022
+ARG NODE_RUNTIME_BASE=mcr.microsoft.com/windows/node:20-ltsc2022
+
+########################
+# 1) Build stage (dev deps installed)
+########################
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS build
+
+# Use absolute PowerShell to avoid PATH dependency
+SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-Command"]
+
+ENV NODE_VERSION=20.19.0
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV npm_config_optional=true
+ENV npm_config_ignore_scripts=false
+ENV NEXT_DISABLE_ESLINT=1
+
+WORKDIR C:\\app
+
+# Prepare TLS12 for downloads
+RUN [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+
+# Install Node (ZIP) in small, separate steps for reliability
+RUN $ProgressPreference='SilentlyContinue'; $u = \"https://nodejs.org/dist/v$($env:NODE_VERSION)/node-v$($env:NODE_VERSION)-win-x64.zip\"; Invoke-WebRequest -Uri $u -OutFile C:\\node.zip
+RUN Expand-Archive -Path C:\\node.zip -DestinationPath C:\\ -Force
+RUN if (Test-Path 'C:\\node') { Remove-Item -Recurse -Force 'C:\\node' }
+RUN $dir = Get-ChildItem -Path C:\\ -Directory -Filter 'node-v*-win-x64' | Select-Object -First 1; \
+    if (-not $dir) { throw 'Node folder not found after extract' }; \
+    if (Test-Path 'C:\\node') { Remove-Item -Recurse -Force 'C:\\node' }; \
+    Rename-Item -Path $dir.FullName -NewName 'node'
+RUN Remove-Item 'C:\\node.zip' -Force
+
+# Do not modify PATH; we will call node/npm by absolute paths
+
+# ---- NPM install (base deps) -----------------------------------------------
+COPY package.json package-lock.json ./
+
+# Use absolute node + npm-cli.js directly
+RUN & 'C:\\node\\node.exe' -v
+RUN & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' -v
+RUN $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+    & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' ci --no-audit --no-fund --ignore-scripts
+
+# ---- App code ---------------------------------------------------------------
+COPY . .
+
+# ---- Install Windows prebuilts for oxide + lightningcss --------------------
+# Ensure the platform-native .node files are present to avoid node-gyp builds
+RUN $oxJson = Get-Content -Raw "node_modules/@tailwindcss/oxide/package.json" | ConvertFrom-Json; \
+    $lcJson = Get-Content -Raw "node_modules/lightningcss/package.json" | ConvertFrom-Json; \
+    $oxVer = $oxJson.version; \
+    $lcVer = $lcJson.version; \
+    Write-Host "Selecting prebuilts: oxide=$oxVer lightningcss=$lcVer"; \
+    $pkg1 = '@tailwindcss/oxide-win32-x64-msvc@' + $oxVer; \
+    $pkg2 = 'lightningcss-win32-x64-msvc@' + $lcVer; \
+    $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+    & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg1 $pkg2
+
+# ---- Wire lightningcss .node to wrapper path (defensive) -------------------
+RUN $src = Join-Path $(Resolve-Path 'node_modules') 'lightningcss-win32-x64-msvc\\lightningcss.win32-x64-msvc.node'; \
+    $dst = Join-Path $(Resolve-Path 'node_modules/lightningcss') 'lightningcss.win32-x64-msvc.node'; \
+    if (Test-Path $src) { Copy-Item -Force $src $dst; } \
+    else { Write-Host "WARN: missing $src after prebuilt install; skipping copy" }
+
+# ---- Assert natives load (via cmd to avoid PowerShell quoting) -------------
+SHELL ["cmd", "/S", "/C"]
+RUN C:\\node\\node.exe -p "Object.keys(require('@tailwindcss/oxide')).slice(0,5).join(',')"
+RUN C:\\node\\node.exe -p "typeof require('lightningcss').transform"
+SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-Command"]
+
+# ---- Build (Next + Tailwind) -----------------------------------------------
+RUN Write-Host '--- running npm run build ---'; \
+    $env:NODE_ENV = 'production'; \
+    $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+    & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' run build
+
+# ---- Slim prod deps ---------------------------------------------------------
+RUN Write-Host '--- npm prune (omit dev) ---'; \
+    $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+    & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' prune --omit=dev
+
+# ---- Stage runtime bundle to a single folder (simpler COPY) ----------------
+RUN New-Item -ItemType Directory -Path C:\\bundle | Out-Null; \
+    Copy-Item -Recurse -Force C:\\app\\package*.json C:\\bundle\\; \
+    Copy-Item -Recurse -Force C:\\app\\node_modules C:\\bundle\\node_modules; \
+    Copy-Item -Recurse -Force C:\\app\\public C:\\bundle\\public; \
+    Copy-Item -Recurse -Force C:\\app\\.next C:\\bundle\\.next; \
+    Copy-Item -Force C:\\app\\next.config.js C:\\bundle\\next.config.js
+
+
+########################
+# 2) Runtime stage
+########################
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS runtime
+
+SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-Command"]
+
+ENV NODE_VERSION=20.19.0
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+ENV PATH="C:\\node;C:\\Windows\\System32;C:\\Windows;%PATH%"
+
+WORKDIR C:\\app
+
+# Prepare TLS12 for downloads
+RUN [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+
+# Install Node runtime (ZIP) in separate steps
+RUN $ProgressPreference='SilentlyContinue'; $u = \"https://nodejs.org/dist/v$($env:NODE_VERSION)/node-v$($env:NODE_VERSION)-win-x64.zip\"; Invoke-WebRequest -Uri $u -OutFile C:\\node.zip
+RUN Expand-Archive -Path C:\\node.zip -DestinationPath C:\\ -Force
+RUN if (Test-Path 'C:\\node') { Remove-Item -Recurse -Force 'C:\\node' }
+RUN $dir = Get-ChildItem -Path C:\\ -Directory -Filter 'node-v*-win-x64' | Select-Object -First 1; \
+    if (-not $dir) { throw 'Node folder not found after extract' }; \
+    if (Test-Path 'C:\\node') { Remove-Item -Recurse -Force 'C:\\node' }; \
+    Rename-Item -Path $dir.FullName -NewName 'node'
+RUN Remove-Item 'C:\\node.zip' -Force
+
+## Do not change PATH; call commands by absolute path
+
+# Copy bundled artifacts from build stage
+COPY --from=build C:\\bundle .\\
+
+
+
+
+
+EXPOSE 3000
+
+# Simple PowerShell-based healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
+  CMD ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-Command","try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:$env:PORT/api/health).StatusCode -eq 200 } catch { exit 1 }"]
+
+# Start Next.js directly (avoid npm script env expansion issues)
+CMD ["C:\\Windows\\System32\\cmd.exe","/S","/C","node node_modules\\next\\dist\\bin\\next start -H 0.0.0.0 -p %PORT%"]
