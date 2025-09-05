@@ -42,7 +42,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
           // Related data
           'Files($select=Id,Title,UrlName)',
         ],
-      });
+      } as any);
     } catch (e) {
       console.error('Error fetching BoardReport item:', e);
     }

@@ -19,7 +19,7 @@ export class BoardReportEntity {
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.BoardReports.BoardReport',
     AllowMultipleItemsSelection: false,
     RetrieveData: true,
-  })
+  } as any)
   BoardReport?: any;
 
   @WidgetLabel()

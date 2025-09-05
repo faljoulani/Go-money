@@ -24,6 +24,10 @@ module.exports = {
     // turn off Lightning CSS optimization to avoid the native module crash
     optimizeCss: false,
   },
+  // Avoid requiring sharp at runtime/build for next/image
+  images: {
+    unoptimized: true,
+  },
   logging: {
     fetches: { fullUrl: true },
   },

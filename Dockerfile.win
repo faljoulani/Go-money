@@ -62,6 +62,16 @@ RUN $oxJson = Get-Content -Raw "node_modules/@tailwindcss/oxide/package.json" | 
     $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
     & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg1 $pkg2
 
+# ---- Ensure sharp native binary is present ---------------------------------
+# We skipped scripts during npm ci, so run sharp's install scripts explicitly.
+RUN if (Test-Path 'node_modules/sharp/package.json') { \
+      Write-Host 'Rebuilding sharp to fetch win32-x64 binary'; \
+      $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+      & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' rebuild sharp --foreground-scripts --no-audit --no-fund; \
+    } else { \
+      Write-Host 'sharp not present in node_modules; skipping rebuild.' \
+    }
+
 # ---- Wire lightningcss .node to wrapper path (defensive) -------------------
 RUN $src = Join-Path $(Resolve-Path 'node_modules') 'lightningcss-win32-x64-msvc\\lightningcss.win32-x64-msvc.node'; \
     $dst = Join-Path $(Resolve-Path 'node_modules/lightningcss') 'lightningcss.win32-x64-msvc.node'; \

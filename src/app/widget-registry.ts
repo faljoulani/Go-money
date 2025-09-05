@@ -9,7 +9,7 @@ import HeroDefault from '../components/widgets/hero/herodefault';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+import { MainNavigationEntity } from '../components/widgets/mainNavigation/mainNavigation.entity';
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
@@ -24,7 +24,7 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/BreadcrumbCustom';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
 

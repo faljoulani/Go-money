@@ -1,12 +1,12 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { MainNavigationEntity } from './MainNavigation.entity';
+import { MainNavigationEntity } from './mainNavigation.entity';
 import Link from 'next/link';
 import Image from 'next/image';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import ClientNav, {
   NavItem as ClientNavItem,
   NavLink as ClientNavLink,
-} from './MainNavigationClient';
+} from './mainNavigationClient';
 
 type CmsLink = { Href?: string; OpenInNewTab?: boolean };
 type CmsNode = {

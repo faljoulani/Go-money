@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes, RestClientForContext } from '@progress/sitefinity-nextjs-sdk';
-import { FaqSectionEntity } from './faq-section.entity';
+import { FaqSectionEntity } from './faq.entity';
 
 const FAQ_ROOT_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FAQS';
 const FAQ_CATEGORY_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategory';

@@ -4,7 +4,7 @@ import {
   htmlAttributes,
   RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
-import { ContactSubscriptionEntity } from './ContactSubscription.entity';
+import { ContactSubscriptionEntity } from './contactSubscription.entity';
 
 const SUBSCRIPTION_TYPE =
   'Telerik.Sitefinity.DynamicTypes.Model.ContactSubscription.Contactsubscription';
@@ -87,7 +87,7 @@ export default async function ContactSubscription(
             '$select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner' +
           ')',
         ],
-      });
+      } as any);
     } catch (e) {
       console.error('Error fetching ContactSubscription item:', e);
     }

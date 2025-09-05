@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { FooterEntity } from './Footer.entity';
-import { CmsImage } from '../../types/Type';
+import { CmsImage } from '../../../types/Type';
 
 type CmsPage = {
     Id: string;

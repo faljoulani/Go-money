@@ -19,7 +19,7 @@ export class ContactSubscriptionEntity {
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.ContactSubscription.Contactsubscription',
     AllowMultipleItemsSelection: false,
     RetrieveData: true,
-  })
+  } as any)
   ContactSubscription?: any;
 
   @WidgetLabel()

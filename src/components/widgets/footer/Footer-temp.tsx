@@ -44,7 +44,7 @@ export async function Footer(props: WidgetContext<FooterEntity>) {
           'SocialLinks($select=Id,Title,Url,Order,' +
             'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
         ],
-      });
+      } as any);
     } catch (e) {
       console.error('Error fetching footer:', e);
     }

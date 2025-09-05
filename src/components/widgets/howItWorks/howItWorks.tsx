@@ -2,11 +2,12 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 
-import HowItWorksRings from './HowItWorksRings.png';
-import NavyBackground from './NavyBackground.webp';
-import pocketImg from './pocketHQ.webp';
-import transparentNavy from './transparentNavy.png';
-import Mobile from './Mobile.png';
+// Use public asset paths to avoid Next static image pipeline (no sharp at build)
+const HowItWorksRingsUrl = '/assets/widgets/howItWorks/HowItWorksRings.png';
+const NavyBackgroundUrl = '/assets/widgets/howItWorks/NavyBackground.webp';
+const pocketImgUrl = '/assets/widgets/howItWorks/pocketHQ.webp';
+const transparentNavyUrl = '/assets/widgets/howItWorks/transparentNavy.png';
+const MobileUrl = '/assets/widgets/howItWorks/Mobile.png';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
@@ -120,7 +121,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     })),
   };
 
-  const phoneSrc = mediaSrc(view.PhoneMockup) ?? Mobile.src;
+  const phoneSrc = mediaSrc(view.PhoneMockup) ?? MobileUrl;
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
   // ---------- render ----------
@@ -147,7 +148,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       <div
         className="relative h-[1600px] flex flex-col justify-center items-center"
         style={{
-          backgroundImage: `url(${HowItWorksRings.src})`,
+          backgroundImage: `url(${HowItWorksRingsUrl})`,
           backgroundSize: 'cover',
           backgroundPosition: '50% 10%',
         }}
@@ -164,20 +165,20 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           <div
             className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
             style={{
-              backgroundImage: `url(${NavyBackground.src})`,
+              backgroundImage: `url(${NavyBackgroundUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
-              src={transparentNavy.src}
+              src={transparentNavyUrl}
               alt=""
               className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
             />
             {/* pocket lip */}
             <img
-              src={pocketImg.src}
+              src={pocketImgUrl}
               alt=""
               aria-hidden
               className="pointer-events-none select-none absolute w-full -top-8 left-0 z-50"
