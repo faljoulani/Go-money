@@ -105,7 +105,7 @@ export default function QuestionsClient({
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
                 <span
-                  className="grid place-items-center w-8 h-8 rounded-lg bg-[#0B1C5A] text-white"
+                  className={`grid place-items-center w-8 h-8 rounded-lg ${isActive ?   'text-white' : 'text-[#0b1C5A]'}`}
                   aria-hidden
                 >
                   <svg
