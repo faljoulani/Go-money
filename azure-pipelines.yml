@@ -28,7 +28,6 @@ stages:
           - checkout: self
             clean: true
             fetchDepth: 0
-
           - task: NodeTool@0
             inputs:
               versionSpec: '20.x'
@@ -101,17 +100,19 @@ stages:
           runOnce:
             deploy:
               steps:
-                # Hard-clean both the old 'fe' folder and the current artifact folder
                 - powershell: |
                     $root = "$(Pipeline.Workspace)"
-                    $paths = @(
-                      Join-Path $root "fe",
-                      Join-Path $root "$(artifactName)"
+                    Write-Host "Workspace root: $root"
+                    $toRemove = @(
+                      (Join-Path -Path $root -ChildPath "fe"),
+                      (Join-Path -Path $root -ChildPath "$(artifactName)")
                     )
-                    foreach($p in $paths){
-                      if (Test-Path $p) {
+                    foreach ($p in $toRemove) {
+                      if (Test-Path -LiteralPath $p) {
                         Write-Host "Removing stale folder: $p"
-                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $p
+                        Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue
+                      } else {
+                        Write-Host "Not present: $p"
                       }
                     }
                   displayName: 'Pre-clean deploy workspace'
@@ -124,7 +125,6 @@ stages:
                     targetPath: '$(Pipeline.Workspace)\$(artifactName)'
                     cleanDestinationFolder: true
 
-                # Guard in the SAME folder the artifact was downloaded to
                 - powershell: |
                     $ctx = "$(Pipeline.Workspace)\$(artifactName)"
                     Write-Host "Scanning $ctx for known-stale files..."
@@ -185,7 +185,7 @@ stages:
                       docker rm   $cname | Out-Null
                     }
 
-                    # Ensure host port is free
+                    # Ensure host port is free (remove any container publishing host port $port)
                     try {
                       $all = docker ps -aq
                       foreach($id in $all){
@@ -210,7 +210,7 @@ stages:
                       }
                     } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
 
-                    # Map CMS host to IPv4 if resolvable
+                    # For Windows containers, map CMS host to a resolved IPv4 to avoid DNS issues inside container
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
                     if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
@@ -227,7 +227,7 @@ stages:
                       }
                     }
 
-                    # Run container
+                    # Run container; inject env directly
                     docker run -d --name $cname `
                       -p ${port}:3000 `
                       -e SF_CMS_URL="$sfCmsUrl" `
