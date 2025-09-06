@@ -29,28 +29,6 @@ stages:
             clean: true
             fetchDepth: 0
 
-          # NEW (1): hard reset & clean to kill any case-insensitive leftovers
-          - powershell: |
-              Set-Location "$(Build.SourcesDirectory)"
-              git --version
-              Write-Host "Branch: $(Build.SourceBranch)"
-              Write-Host "Commit: $(Build.SourceVersion)"
-              git fetch --all --prune
-              git reset --hard $(Build.SourceVersion)
-              git clean -fdx
-            displayName: 'Workspace hard reset & clean'
-
-          # NEW (2): verify & remove the stale path in sources if it still exists
-          - powershell: |
-              $stale = Join-Path "$(Build.SourcesDirectory)" "src\components\cards\card-section.entity.ts"
-              if (Test-Path $stale) {
-                Write-Warning "Removing stale file from sources: $stale"
-                Remove-Item -Force $stale
-              } else {
-                Write-Host "No stale file in sources."
-              }
-            displayName: 'Guard (sources): remove card-section.entity.ts if present'
-
           - task: NodeTool@0
             inputs:
               versionSpec: '20.x'
@@ -88,17 +66,6 @@ stages:
               if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
             displayName: 'Prepare FE artifacts'
 
-          # NEW (3): double-check artifact folder and delete stale file if copied
-          - powershell: |
-              $stale = Join-Path "$(Build.ArtifactStagingDirectory)\drop" "src\components\cards\card-section.entity.ts"
-              if (Test-Path $stale) {
-                Write-Warning "Artifact drop contains stale file. Deleting: $stale"
-                Remove-Item -Force $stale
-              } else {
-                Write-Host "Artifact drop is clean (no card-section.entity.ts)."
-              }
-            displayName: 'Guard (artifact): ensure stale file is not published'
-
           - task: PublishBuildArtifacts@1
             displayName: 'Publish FE artifact'
             inputs:
@@ -134,28 +101,44 @@ stages:
           runOnce:
             deploy:
               steps:
+                # Hard-clean both the old 'fe' folder and the current artifact folder
+                - powershell: |
+                    $root = "$(Pipeline.Workspace)"
+                    $paths = @(
+                      Join-Path $root "fe",
+                      Join-Path $root "$(artifactName)"
+                    )
+                    foreach($p in $paths){
+                      if (Test-Path $p) {
+                        Write-Host "Removing stale folder: $p"
+                        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $p
+                      }
+                    }
+                  displayName: 'Pre-clean deploy workspace'
+
                 - task: DownloadPipelineArtifact@2
                   displayName: 'Download FE artifact (this run)'
                   inputs:
                     buildType: current
                     artifactName: '$(artifactName)'
-                    targetPath: '$(Pipeline.Workspace)\fe'
+                    targetPath: '$(Pipeline.Workspace)\$(artifactName)'
                     cleanDestinationFolder: true
 
-                # Keep this guard to fail fast if anything slips through
+                # Guard in the SAME folder the artifact was downloaded to
                 - powershell: |
-                    $ctx  = "$(Pipeline.Workspace)\fe"
-                    $old  = Join-Path $ctx "src\components\cards\card-section.entity.ts"
-                    if (Test-Path $old) {
-                      Write-Error "Found STALE file in artifact: $old"
-                      exit 1
+                    $ctx = "$(Pipeline.Workspace)\$(artifactName)"
+                    Write-Host "Scanning $ctx for known-stale files..."
+                    $bad = Get-ChildItem -Path $ctx -Recurse -File -Filter 'card-section.entity.ts' -ErrorAction SilentlyContinue
+                    if ($bad) {
+                      $bad | ForEach-Object { Write-Host "FOUND STALE: $($_.FullName)" }
+                      throw "Found stale file(s) in downloaded artifact."
+                    } else {
+                      Write-Host "Artifact $(artifactName) is clean."
                     }
-                    Write-Host "Artifact looks clean."
                   displayName: 'Guard: detect stale file'
 
                 - powershell: |
-                    $ctx    = "$(Pipeline.Workspace)\fe"
-                    Set-Location $ctx
+                    $ctx    = "$(Pipeline.Workspace)\$(artifactName)"
                     $tag    = "$(Build.BuildId)"
                     $image  = "$(feImageName):$tag"
                     $latest = "$(feImageName):latest"
@@ -185,8 +168,8 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build Windows image locally on the VM
-                    docker build --no-cache -f Dockerfile.win -t $image .
+                    # Build Windows image locally on the VM using Dockerfile.win
+                    docker build -f Dockerfile.win -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
                       Write-Error "docker build failed with code $LASTEXITCODE"
@@ -202,7 +185,7 @@ stages:
                       docker rm   $cname | Out-Null
                     }
 
-                    # Ensure host port is free (remove any container publishing host port $port)
+                    # Ensure host port is free
                     try {
                       $all = docker ps -aq
                       foreach($id in $all){
@@ -227,7 +210,7 @@ stages:
                       }
                     } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
 
-                    # For Windows containers, map CMS host to a resolved IPv4
+                    # Map CMS host to IPv4 if resolvable
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
                     if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
@@ -242,10 +225,9 @@ stages:
                       } else {
                         Write-Host "DNS failed for $cmsHost on host; running without --add-host."
                       }
-                    } else {
-                      Write-Host "SF_CMS_URL not set or invalid; running without --add-host."
                     }
 
+                    # Run container
                     docker run -d --name $cname `
                       -p ${port}:3000 `
                       -e SF_CMS_URL="$sfCmsUrl" `
