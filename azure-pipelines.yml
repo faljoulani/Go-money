@@ -110,6 +110,7 @@ stages:
 
                 - powershell: |
                     $ctx    = "$(Pipeline.Workspace)\fe"
+                    Set-Location $ctx
                     $tag    = "$(Build.BuildId)"
                     $image  = "$(feImageName):$tag"
                     $latest = "$(feImageName):latest"
