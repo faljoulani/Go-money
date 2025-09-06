@@ -24,7 +24,7 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-import faqSection from  '../components/widgets/faq/faq';
+import faqSection from '../components/widgets/faq/faq';
 import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';

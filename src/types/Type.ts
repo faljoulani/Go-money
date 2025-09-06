@@ -10,3 +10,13 @@ export type CmsImage = {
   Provider?: string;
 };
 
+export interface ApiNavLink {
+  title: string;
+  url: string;
+  urlName?: string;
+}
+export interface ApiNavDropdown extends ApiNavLink {
+  children: ApiNavLink[];
+}
+export type ApiNavItem = ApiNavLink | ApiNavDropdown;
+

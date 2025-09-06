@@ -3,38 +3,51 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { MainNavigationEntity } from './MainNavigation.entity';
 import Link from 'next/link';
 import Image from 'next/image';
-import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import ClientNavbar, {
-  ApiNavItem as ClientNavItem,
-  ApiNavLink as ClientNavLink,
-} from './MainNavigationClient';
 
-/* ---------- small utils ---------- */
-function mergeClasses(...xs: Array<string | undefined | false | null>) {
-  return xs.filter(Boolean).join(' ');
-}
+// ✅ shared helpers
+import { mergeClasses, toAbsolute } from '../../../utils/utils';
+import { parseSelection, extractSelectionId, fetchData } from '../../../utils/sitefinity';
+import { ApiNavItem as ClientNavItem, ApiNavLink as ClientNavLink } from '../../../types/type';
+import ClientNavbar from './MainNavigationClient';
 
-/** Try to compute a base URL from env or requestContext, then prefix relative URLs */
-function computeBaseUrl(ctx: WidgetContext<any>['requestContext']): string {
-  const fromEnv = process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL; // e.g. https://dev-sfall.ddns.net:9095
-  if (fromEnv) return fromEnv.replace(/\/+$/, '');
+/* ---------- Types from Sitefinity shapes ---------- */
+type SfImage = {
+  Url?: string;
+  ThumbnailUrl?: string;
+  Title?: string;
+  AlternativeText?: string;
+};
+type SfLink = { Href?: string; OpenInNewTab?: boolean };
+type SfSubNav = {
+  Title?: string;
+  UrlName?: string;
+  ViewUrl?: string;
+  RelativeUrlPath?: string;
+};
+type SfNavPage = {
+  Title?: string;
+  Order?: number;
+  UrlName?: string;
+  Link?: SfLink | SfLink[] | null;
+  SubNavigation?: SfSubNav[];
+};
+type SfStoreLink = {
+  Title?: string;
+  Url?: string | null;
+  StoreType?: string;
+  IsVisible?: boolean;
+  Order?: number;
+  Icon?: SfImage[] | SfImage | null;
+};
 
-  const anyCtx = ctx as any;
-  const origin =
-    anyCtx?.origin ||
-    anyCtx?.siteUrl ||
-    (anyCtx?.scheme && anyCtx?.host ? `${anyCtx.scheme}://${anyCtx.host}` : null);
-
-  return (origin || '').toString().replace(/\/+$/, '');
-}
-
-function toAbsolute(u: string | undefined | null, ctx: WidgetContext<any>['requestContext']) {
-  if (!u) return '';
-  if (/^(data:|blob:)/i.test(u)) return u;
-  if (/^https?:\/\//i.test(u)) return u;
-  const base = computeBaseUrl(ctx);
-  return base ? `${base}${u.startsWith('/') ? u : `/${u}`}` : u;
-}
+type MainNavItem = {
+  Id: string;
+  UrlName?: string;
+  Title?: string;
+  Logo?: SfImage[] | SfImage | null;
+  NavPages?: SfNavPage[];
+  StoreLinks?: SfStoreLink[];
+};
 
 /* ---------- Normalized shapes ---------- */
 type NormalizedImage = {
@@ -160,17 +173,7 @@ function normalizeFromRaw(raw: any): NormalizedMainNav {
 /* ---------- Server Component ---------- */
 export default async function MainNavigation(props: WidgetContext<MainNavigationEntity>) {
   const attrs = htmlAttributes(props);
-
-  // Read selection from widget designer
-  let selection: any =
-    props.model?.Properties?.MainNavigation ?? (props.model?.Properties as any)?.MainNavigation;
-  if (typeof selection === 'string') {
-    try {
-      selection = JSON.parse(selection);
-    } catch {
-      selection = undefined;
-    }
-  }
+  const selection = parseSelection((props.model?.Properties as any)?.MainNavigation);
 
   if (!selection?.Content?.length) {
     return props.requestContext.isEdit ? (
@@ -180,30 +183,27 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
     ) : null;
   }
 
-  const id = selection?.ItemIdsOrdered?.[0]?.toString() ?? '';
-  const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
+  const id = extractSelectionId(selection);
 
-  // Fetch & normalize
-  let data: NormalizedMainNav | null = null;
-  try {
-    const raw = await RestClient.getItem({
-      type: 'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
-      id,
-      culture: props.requestContext.culture,
-      provider,
-      fields: [
-        'Id',
-        'Title',
-        'UrlName',
-        'Logo($select=Url,ThumbnailUrl,Title,AlternativeText)',
-        'NavPages($select=Title,Order,UrlName,Link,SubNavigation($select=Title,UrlName,ViewUrl,RelativeUrlPath))',
-        'StoreLinks($select=Title,Url,StoreType,IsVisible,Order,Icon($select=Url,ThumbnailUrl,Title,AlternativeText))',
-      ],
-    });
-    data = normalizeFromRaw(raw);
-  } catch (e) {
-    console.error('Error fetching MainNavigation:', e);
-  }
+  const FIELDS = [
+    'Id',
+    'Title',
+    'UrlName',
+    'Logo($select=Url,ThumbnailUrl,Title,AlternativeText)',
+    'NavPages($select=Title,Order,UrlName,Link,SubNavigation($select=Title,UrlName,ViewUrl,RelativeUrlPath))',
+    'StoreLinks($select=Title,Url,StoreType,IsVisible,Order,Icon($select=Url,ThumbnailUrl,Title,AlternativeText))',
+  ];
+
+  const raw = await fetchData([id], null, props.requestContext.culture, FIELDS, {
+    itemType:
+      selection?.Content?.[0]?.Type ??
+      'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
+    single: true,
+  });
+
+  const data: NormalizedMainNav | null = raw
+    ? normalizeFromRaw((Array.isArray(raw) ? raw[0] : raw) as unknown as MainNavItem)
+    : null;
 
   if (!data) {
     return props.requestContext.isEdit ? (
@@ -220,7 +220,7 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
   );
   const logoAlt = data.logo?.alt || data.logo?.title || data.title || 'Logo';
 
-  // Build items in API shape expected by ClientNavbar (title/url/children)
+  // Build items for ClientNavbar
   const navItems: ClientNavItem[] = (data.navPages ?? [])
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
@@ -232,7 +232,6 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-  // current path (can include query; ClientNavbar handles stripping for matching)
   const currentPath = (props.requestContext as any)?.url ?? '';
 
   return (

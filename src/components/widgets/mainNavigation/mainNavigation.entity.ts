@@ -14,7 +14,6 @@ export class MainNavigationEntity {
   @ContentSection('Content', 0)
   @DisplayName('Main navigation item')
   @Content({
-    // Your dynamic module (parent)
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
     AllowMultipleItemsSelection: false,
   })
