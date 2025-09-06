@@ -3,16 +3,91 @@ import React, { useState } from 'react';
 
 export default function QuestionsClient({
   categories,
-  grouped,
 }: {
   categories: Array<{ Id: string; Title: string }>;
-  grouped: Record<string, Array<{ Id: string; Title: string; Answer?: string; Order?: number }>>;
 }) {
   const [active, setActive] = useState<string>(categories[0]?.Id);
-  const questions = grouped[(active ?? '').toLowerCase()] ?? [];
-    console.log('GROUPED:', grouped, 'ACTIVE:', active, 'QUESTIONS:', questions);
+
+  // 🔹 Static fallback questions, grouped by ParentId (category Id)
+  const staticGrouped: Record<string, Array<{ Id: string; Title: string; Answer?: string }>> = {
+    [categories[0]?.Id]: [
+      {
+        Id: '1',
+        Title: 'What makes Go-money Sharia-compliant?',
+        Answer:
+          'All our services are structured in compliance with Islamic finance principles, reviewed by certified Sharia boards.',
+      },
+      {
+        Id: '2',
+        Title: 'Is Go-money licensed and regulated?',
+        Answer: 'Yes, we are licensed and regulated by the Saudi Central Bank.',
+      },
+      {
+        Id: '3',
+        Title: 'What documents do I need to apply?',
+        Answer:
+          'You typically need a valid national ID, proof of income, and bank account details.',
+      },
+      {
+        Id: '4',
+        Title: 'What makes Go-money Sharia-compliant?',
+        Answer:
+          'All our services are structured in compliance with Islamic finance principles, reviewed by certified Sharia boards.',
+      },
+      {
+        Id: '5',
+        Title: 'Is Go-money licensed and regulated?',
+        Answer: 'Yes, we are licensed and regulated by the Saudi Central Bank.',
+      },
+      {
+        Id: '6',
+        Title: 'What documents do I need to apply?',
+        Answer:
+          'You typically need a valid national ID, proof of income, and bank account details.',
+      },
+      {
+        Id: '7',
+        Title: 'What makes Go-money Sharia-compliant?',
+        Answer:
+          'All our services are structured in compliance with Islamic finance principles, reviewed by certified Sharia boards.',
+      },
+      {
+        Id: '8',
+        Title: 'Is Go-money licensed and regulated?',
+        Answer: 'Yes, we are licensed and regulated by the Saudi Central Bank.',
+      },
+      {
+        Id: '9',
+        Title: 'What documents do I need to apply?',
+        Answer:
+          'You typically need a valid national ID, proof of income, and bank account details.',
+      },
+    ],
+    [categories[1]?.Id]: [
+      {
+        Id: '10',
+        Title: 'What types of financing does Go-money offer?',
+        Answer:
+          'We provide microfinance loans, education loans, travel loans, and emergency financing tailored to your needs.',
+      },
+      {
+        Id: '11',
+        Title: 'Are there any hidden fees?',
+        Answer: 'No, our financing is fully transparent with no hidden fees.',
+      },
+      {
+        Id: '12',
+        Title: 'What happens if I miss a payment?',
+        Answer:
+          'If you miss a payment, you may incur late fees and your credit history could be affected.',
+      },
+    ],
+  };
+
+  const questions = staticGrouped[active] ?? [];
+
   return (
-    <div className="flex  gap-8 p-12">
+    <div className="flex gap-8 p-12">
       <aside className="w-[25%]">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
@@ -22,13 +97,11 @@ export default function QuestionsClient({
                 key={cat.Id}
                 aria-current={isActive ? 'true' : undefined}
                 onClick={() => setActive(cat.Id)}
-                className={[
-                  'flex hover:cursor-pointer items-center justify-between px-6 py-5 text-[15px]',
-                  'border-t border-slate-200 first:border-t-0',
-                  isActive
-                    ? 'bg-[#0B1C5A] text-white'
-                    : 'bg-white text-slate-900 hover:bg-slate-50',
-                ].join(' ')}
+                className={`
+                  flex hover:cursor-pointer items-center justify-between px-6 py-5 text-[15px]
+                  border-t border-slate-200 first:border-t-0
+                  ${isActive ? 'bg-[#0B1C5A] text-white' : 'bg-white text-slate-900 hover:bg-slate-50'}
+                `}
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
                 <span
