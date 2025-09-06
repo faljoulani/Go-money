@@ -5,32 +5,34 @@ import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/co
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
-@WidgetEntity('FaqSection', 'FAQ Section')
-export class FaqSectionEntity {
-  @WidgetLabel()
-  SfWidgetLabel = 'FAQ Section';
-
+@WidgetEntity('CardSection', 'Card Section')
+export class CardSectionEntity {
   @ContentSection('Content', 0)
-  @DisplayName('FAQ Root')
+  @DisplayName('Cards')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FAQS',
-    AllowMultipleItemsSelection: false,
-  })
-  FaqRoot?: any;
-
-  @ContentSection('Content', 1)
-  @DisplayName('FAQ Categories')
-  @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategory',
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
     AllowMultipleItemsSelection: true,
   })
-  FaqCategories?: any;
+  Cards?: any;
 
-  @ContentSection('Design', 2)
+  @WidgetLabel()
+  SfWidgetLabel = 'Card Section';
+
+  @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
     { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'Accordion', Title: 'Accordion', Value: 'Accordion' },
+    { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
+    { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
   ])
   ViewName?: string;
+
+  @ContentSection('Parent Card List Info', 2)
+  @DisplayName('Card List Info')
+  @Content({
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
+    AllowMultipleItemsSelection: false,
+  })
+  CardListData?: any;
 }
+
