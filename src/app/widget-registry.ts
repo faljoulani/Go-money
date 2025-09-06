@@ -24,6 +24,9 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
+import faqSection from  '../components/widgets/faq/faq';
+import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
+
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
@@ -91,6 +94,15 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Stack Layout (Column)', Category: 'Layout & Presets' },
       views: {
         Default: { Title: 'Default', ViewFunction: StackLayout },
+      },
+    },
+    FAQ: {
+      componentType: faqSection,
+      entity: FaqSectionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'FAQ' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: faqSection },
       },
     },
   },
