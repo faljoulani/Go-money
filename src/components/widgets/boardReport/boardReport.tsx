@@ -4,21 +4,20 @@ import {
   RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
 import { BoardReportEntity } from './boardReport.entity';
-
-const BOARD_REPORT_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.BoardReports.BoardReport';
-
+import ReportGridClient from './reportGridClient';
+import React from 'react';
+const BOARD_REPORT_TYPE =
+  'Telerik.Sitefinity.DynamicTypes.Model.BoardReports.BoardReport';
 export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
   const attrs = htmlAttributes(props);
 
   // read designer selection (MixedContent)
   let selection =
-    props.model?.Properties?.BoardReport ?? (props.model?.Properties as any)?.BoardReport;
+    props.model?.Properties?.BoardReport ??
+    (props.model?.Properties as any)?.BoardReport;
+
   if (typeof selection === 'string') {
-    try {
-      selection = JSON.parse(selection);
-    } catch {
-      selection = undefined;
-    }
+    try { selection = JSON.parse(selection); } catch { selection = undefined; }
   }
 
   let item: any;
@@ -29,17 +28,14 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
         fields: [
-          // Root fields
           'Id',
           'Title',
           'UrlName',
           'Description',
           'MainTitle',
-          'PageSize', // NEW name
-          'AllowPagination', // NEW name
-          'ItemsToSkip', // NEW name
-
-          // Related data
+          'PageSize',
+          'AllowPagination',
+          'ItemsToSkip',
           'Files($select=Id,Title,UrlName)',
         ],
       });
@@ -51,7 +47,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
   if (!item) {
     if (props.requestContext.isEdit) {
       return (
-        <section {...attrs} className="BoardReport-widget">
+        <section {...attrs} className="p-6 rounded-xl border border-dashed">
           Select a “Board report” item.
         </section>
       );
@@ -79,45 +75,28 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
     Title: item.Title,
     UrlName: item.UrlName,
     Description: item.Description,
-    MainTitle: item.MainTitle,
     PageSize: toInt(item.PageSize, 0),
     ItemsToSkip: toInt(item.ItemsToSkip, 0),
     AllowPagination: toBool(item.AllowPagination),
+        MainTitle: item.MainTitle,
     Files: normalizeFiles(item.Files),
   };
 
-  // (optional) example of applying the paging to Files locally
-  const visibleFiles =
-    view.AllowPagination && view.PageSize > 0
-      ? view.Files.slice(view.ItemsToSkip, view.ItemsToSkip + view.PageSize)
-      : view.Files;
-
   return (
-    <section {...attrs} className="BoardReport-debug">
-      <h2>Board Report Debug</h2>
-      <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, background: '#f9f9f9', padding: 10 }}>
-        {JSON.stringify(view, null, 2)}
-      </pre>
-
-      {/* Example rendering using the applied paging */}
-      <div style={{ marginTop: 8 }}>
-        <strong>
-          Rendered files ({visibleFiles.length} of {view.Files.length}):
-        </strong>
-        <ul>
-          {visibleFiles.map((f) => (
-            <li key={f.Id}>{f.Title}</li>
-          ))}
-        </ul>
-        {view.AllowPagination && view.PageSize > 0 && (
-          <small>
-            Offset (ItemsToSkip): {view.ItemsToSkip} • Page size: {view.PageSize}
-          </small>
-        )}
-      </div>
+    <section
+      {...attrs}
+      className="rounded-[20px] bg-white p-6 md:p-8 border border-slate-200"
+    >
+      <ReportGridClient
+        title={view.Title}
+        description={view.Description}
+        files={view.Files}
+        pageSize={view.PageSize}
+        initialOffset={view.ItemsToSkip}
+        allowPagination={view.AllowPagination}
+      />
     </section>
   );
 }
 
 export default BoardReport;
-

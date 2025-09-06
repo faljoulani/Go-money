@@ -24,6 +24,9 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
+import boardReport from '../components/widgets/boardReport/boardReport';
+import { BoardReportEntity } from '../components/widgets/boardReport/boardReport.entity';
+
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
 const customWidgetRegistry: WidgetRegistry = {
@@ -83,7 +86,24 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
       },
     },
-  },
+    FinanceRepaymentBanner: {
+      componentType: FinanceRepaymentBanner,
+      entity: FinanceRepaymentBannerEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Finance Repayment Banner' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
+      },
+    },
+    BoardReport: {
+      componentType: boardReport,
+      entity: BoardReportEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Board Report' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: boardReport },
+      },
+    },  },
 };
 
 addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {

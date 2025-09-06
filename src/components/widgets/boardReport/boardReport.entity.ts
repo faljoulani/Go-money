@@ -18,7 +18,6 @@ export class BoardReportEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.BoardReports.BoardReport',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true,
   })
   BoardReport?: any;
 
