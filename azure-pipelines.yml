@@ -54,6 +54,25 @@ stages:
               npm ci
               npm run build
             displayName: 'Build frontend'
+          - script: |
+              rem Prepare artifact from tracked files only (HEAD)
+              if exist "$(Build.ArtifactStagingDirectory)\drop_tracked" (
+                echo Removing previous drop_tracked folder...
+                rmdir /S /Q "$(Build.ArtifactStagingDirectory)\drop_tracked"
+              )
+              mkdir "$(Build.ArtifactStagingDirectory)\drop_tracked"
+
+              pushd "$(Build.SourcesDirectory)"
+              git --version
+              git rev-parse HEAD
+              git archive --format=zip -o "$(Build.ArtifactStagingDirectory)\src.zip" HEAD
+              popd
+
+              powershell -NoProfile -Command ^
+                "Expand-Archive -Path '$(Build.ArtifactStagingDirectory)\src.zip' -DestinationPath '$(Build.ArtifactStagingDirectory)\drop_tracked' -Force"
+
+              del /q "$(Build.ArtifactStagingDirectory)\src.zip"
+            displayName: 'Prepare FE artifacts (tracked files only)'
 
           # Keep Dockerfile context small & predictable
           - script: |
