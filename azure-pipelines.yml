@@ -29,21 +29,27 @@ stages:
             clean: true
             fetchDepth: 0
 
-          # NEW: verify branch/commit and remove stale file if present (case-rename issues)
+          # NEW (1): hard reset & clean to kill any case-insensitive leftovers
           - powershell: |
+              Set-Location "$(Build.SourcesDirectory)"
+              git --version
               Write-Host "Branch: $(Build.SourceBranch)"
               Write-Host "Commit: $(Build.SourceVersion)"
-              git --version
-              git rev-parse HEAD
-              git status --porcelain
+              git fetch --all --prune
+              git reset --hard $(Build.SourceVersion)
+              git clean -fdx
+            displayName: 'Workspace hard reset & clean'
+
+          # NEW (2): verify & remove the stale path in sources if it still exists
+          - powershell: |
               $stale = Join-Path "$(Build.SourcesDirectory)" "src\components\cards\card-section.entity.ts"
               if (Test-Path $stale) {
-                Write-Warning "Removing stale file: $stale"
+                Write-Warning "Removing stale file from sources: $stale"
                 Remove-Item -Force $stale
               } else {
-                Write-Host "No stale file present after checkout."
+                Write-Host "No stale file in sources."
               }
-            displayName: 'Verify checkout & remove stale path if present'
+            displayName: 'Guard (sources): remove card-section.entity.ts if present'
 
           - task: NodeTool@0
             inputs:
@@ -54,25 +60,6 @@ stages:
               npm ci
               npm run build
             displayName: 'Build frontend'
-          - script: |
-              rem Prepare artifact from tracked files only (HEAD)
-              if exist "$(Build.ArtifactStagingDirectory)\drop_tracked" (
-                echo Removing previous drop_tracked folder...
-                rmdir /S /Q "$(Build.ArtifactStagingDirectory)\drop_tracked"
-              )
-              mkdir "$(Build.ArtifactStagingDirectory)\drop_tracked"
-
-              pushd "$(Build.SourcesDirectory)"
-              git --version
-              git rev-parse HEAD
-              git archive --format=zip -o "$(Build.ArtifactStagingDirectory)\src.zip" HEAD
-              popd
-
-              powershell -NoProfile -Command ^
-                "Expand-Archive -Path '$(Build.ArtifactStagingDirectory)\src.zip' -DestinationPath '$(Build.ArtifactStagingDirectory)\drop_tracked' -Force"
-
-              del /q "$(Build.ArtifactStagingDirectory)\src.zip"
-            displayName: 'Prepare FE artifacts (tracked files only)'
 
           # Keep Dockerfile context small & predictable
           - script: |
@@ -100,6 +87,17 @@ stages:
               if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
               if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
             displayName: 'Prepare FE artifacts'
+
+          # NEW (3): double-check artifact folder and delete stale file if copied
+          - powershell: |
+              $stale = Join-Path "$(Build.ArtifactStagingDirectory)\drop" "src\components\cards\card-section.entity.ts"
+              if (Test-Path $stale) {
+                Write-Warning "Artifact drop contains stale file. Deleting: $stale"
+                Remove-Item -Force $stale
+              } else {
+                Write-Host "Artifact drop is clean (no card-section.entity.ts)."
+              }
+            displayName: 'Guard (artifact): ensure stale file is not published'
 
           - task: PublishBuildArtifacts@1
             displayName: 'Publish FE artifact'
@@ -136,26 +134,18 @@ stages:
           runOnce:
             deploy:
               steps:
-                - powershell: |
-                    $ctx = "$(Pipeline.Workspace)\fe"
-                    if (Test-Path $ctx) { Remove-Item -Recurse -Force $ctx }
-                    New-Item -ItemType Directory -Path $ctx | Out-Null
-                  displayName: 'Pre-clean artifact folder on VM'
-
                 - task: DownloadPipelineArtifact@2
                   displayName: 'Download FE artifact (this run)'
                   inputs:
-                    buildType: specific
-                    project: '$(System.TeamProject)'
-                    definition: '$(System.DefinitionId)'
-                    buildId: '$(Build.BuildId)'
+                    buildType: current
                     artifactName: '$(artifactName)'
                     targetPath: '$(Pipeline.Workspace)\fe'
                     cleanDestinationFolder: true
 
+                # Keep this guard to fail fast if anything slips through
                 - powershell: |
-                    $ctx = "$(Pipeline.Workspace)\fe"
-                    $old = Join-Path $ctx "src\components\cards\card-section.entity.ts"
+                    $ctx  = "$(Pipeline.Workspace)\fe"
+                    $old  = Join-Path $ctx "src\components\cards\card-section.entity.ts"
                     if (Test-Path $old) {
                       Write-Error "Found STALE file in artifact: $old"
                       exit 1
@@ -195,7 +185,7 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build Windows image locally on the VM (NO CACHE)
+                    # Build Windows image locally on the VM
                     docker build --no-cache -f Dockerfile.win -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
@@ -212,7 +202,7 @@ stages:
                       docker rm   $cname | Out-Null
                     }
 
-                    # Ensure host port is free
+                    # Ensure host port is free (remove any container publishing host port $port)
                     try {
                       $all = docker ps -aq
                       foreach($id in $all){
@@ -237,7 +227,7 @@ stages:
                       }
                     } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
 
-                    # Map CMS host to IPv4
+                    # For Windows containers, map CMS host to a resolved IPv4
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
                     if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
