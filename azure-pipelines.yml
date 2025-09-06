@@ -28,6 +28,7 @@ stages:
           - checkout: self
             clean: true
             fetchDepth: 0
+
           - task: NodeTool@0
             inputs:
               versionSpec: '20.x'
@@ -100,13 +101,35 @@ stages:
           runOnce:
             deploy:
               steps:
+                # Hard-clean the target folder on the VM to avoid stale files
+                - powershell: |
+                    $ctx = "$(Pipeline.Workspace)\fe"
+                    if (Test-Path $ctx) { Remove-Item -Recurse -Force $ctx }
+                    New-Item -ItemType Directory -Path $ctx | Out-Null
+                  displayName: 'Pre-clean artifact folder on VM'
+
+                # Download the artifact from THIS EXACT RUN (no cross-run mix-ups)
                 - task: DownloadPipelineArtifact@2
-                  displayName: 'Download FE artifact'
+                  displayName: 'Download FE artifact (this run)'
                   inputs:
-                    buildType: current
+                    buildType: specific
+                    project: '$(System.TeamProject)'
+                    definition: '$(System.DefinitionId)'
+                    buildId: '$(Build.BuildId)'
                     artifactName: '$(artifactName)'
                     targetPath: '$(Pipeline.Workspace)\fe'
                     cleanDestinationFolder: true
+
+                # Guard: fail fast if the old file appears in the artifact
+                - powershell: |
+                    $ctx = "$(Pipeline.Workspace)\fe"
+                    $old = Join-Path $ctx "src\components\cards\card-section.entity.ts"
+                    if (Test-Path $old) {
+                      Write-Error "Found STALE file in artifact: $old"
+                      exit 1
+                    }
+                    Write-Host "Artifact looks clean."
+                  displayName: 'Guard: detect stale file'
 
                 - powershell: |
                     $ctx    = "$(Pipeline.Workspace)\fe"
@@ -140,8 +163,8 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build Windows image locally on the VM using Dockerfile.win
-                    docker build -f Dockerfile.win -t $image .
+                    # Build Windows image locally on the VM (NO CACHE to avoid stale context)
+                    docker build --no-cache -f Dockerfile.win -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
                       Write-Error "docker build failed with code $LASTEXITCODE"
