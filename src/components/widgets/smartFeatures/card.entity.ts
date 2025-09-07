@@ -5,26 +5,34 @@ import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/co
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
-/**
- * Lets an editor pick ONE "Contact Subscription" item.
- * Type: Telerik.Sitefinity.DynamicTypes.Model.ContactSubscription.Contactsubscription
- */
-@WidgetEntity('ContactSubscription', 'Contact Subscription')
-export class ContactSubscriptionEntity {
+@WidgetEntity('CardSection', 'Card Section')
+export class CardSectionEntity {
   @ContentSection('Content', 0)
-  @DisplayName('Contact subscription')
+  @DisplayName('Cards')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.ContactSubscription.Contactsubscription',
-    AllowMultipleItemsSelection: false,
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
+    AllowMultipleItemsSelection: true,
   })
-  ContactSubscription?: any;
+  Cards?: any;
 
   @WidgetLabel()
-  SfWidgetLabel = 'Contact Subscription';
+  SfWidgetLabel = 'Card Section';
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-  @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
+  @ViewSelector([
+    { Name: 'Default', Title: 'Default', Value: 'Default' },
+    { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
+    { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
+  ])
   ViewName?: string;
+
+  @ContentSection('Parent Card List Info', 2)
+  @DisplayName('Card List Info')
+  @Content({
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
+    AllowMultipleItemsSelection: false,
+  })
+  CardListData?: any;
 }
 

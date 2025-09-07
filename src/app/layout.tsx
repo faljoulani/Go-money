@@ -11,7 +11,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body className="container-fluid">{children}</body>
+      <body className="container-fluid">
+        <div className="px-5">{children}</div>
+      </body>
     </html>
   );
 }
