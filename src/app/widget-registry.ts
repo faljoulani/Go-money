@@ -32,6 +32,8 @@ import StackLayout from '../components/widgets/layouts/stackLayout';
 import ExpandBox from '../components/widgets/expandBox/expandbox';
 import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
 
+import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
+import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
 import SmartFeatures from '../components/widgets/smartFeatures/smartFeatures';
 
 const customWidgetRegistry: WidgetRegistry = {
@@ -129,6 +131,15 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'SmartFeatures' },
       views: {
         Default: { Title: 'Default', ViewFunction: SmartFeatures },
+      },
+    },
+    ContactSubscription: {
+      componentType: ContactSubscription,
+      entity: ContactSubscriptionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'ContactSubscription' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ContactSubscription },
       },
     },
   },

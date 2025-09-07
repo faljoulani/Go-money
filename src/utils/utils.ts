@@ -67,3 +67,14 @@ export function displayTitle(raw: string): string {
 export const sortByOrder = <T extends { Order?: number }>(arr: T[] = []) =>
   arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
+export function parseMaybeJson<T = any>(value: unknown): T | undefined {
+  if (value == null || value === '') return undefined;
+  if (typeof value === 'object') return value as T;
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value) as T;
+    } catch {}
+  }
+  return undefined;
+}
+

@@ -1,45 +1,56 @@
-import Link from 'next/link';
-import {
-  WidgetContext,
-  htmlAttributes,
-  RestClientForContext,
-} from '@progress/sitefinity-nextjs-sdk';
+import Image from 'next/image';
+import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { ContactSubscriptionEntity } from './ContactSubscription.entity';
+import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import { parseMaybeJson } from '../../../utils/utils';
 
-const SUBSCRIPTION_TYPE =
-  'Telerik.Sitefinity.DynamicTypes.Model.ContactSubscription.Contactsubscription';
+import CTA from '../../atoms/cta/cta';
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
 
-// Helpers
-const toBool = (v: any) =>
-  typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true';
+type ContactBox = {
+  Id?: string;
+  Title?: string;
+  SubTitle?: string;
+  ButtonLabel?: string;
+  EmailLabel?: string;
+  EmailText?: string;
+  EmailPlaceholder?: string;
+  CallUsLabel?: string;
+  CallUsText?: string;
+  hasLabelCorner?: boolean;
+  HasLabelCorner?: boolean;
+  CTAURL?: unknown;
+  Variant?: 'subscribe' | 'contact';
+  Mode?: 'subscribe' | 'contact';
+  Layout?: 'subscribe' | 'contact';
+  IsSubscribeOnly?: boolean | string;
+};
+
+type ContactSubscriptionParent = {
+  Id: string;
+  Title?: string;
+  UrlName?: string;
+  Box?: ContactBox[] | ContactBox | null;
+};
 
 type ParsedLink = { href: string; text?: string; target?: string } | null;
+const toBool = (v: any) => (typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true');
 
-/**
- * Sitefinity link fields (LinkItemModel) are stored as JSON (often an array).
- * This parser is defensive against: string, object, array, null/undefined.
- */
 function parseLink(value: any): ParsedLink {
   if (!value) return null;
-
   let raw: any = value;
 
-  // If it's a JSON string, try to parse
   if (typeof raw === 'string') {
+    const s = raw.trim();
+    if (!s) return null;
     try {
-      raw = JSON.parse(raw);
+      raw = JSON.parse(s);
     } catch {
-      // If it's just a plain URL string
-      const href = String(raw || '').trim();
-      return href ? { href } : null;
+      return { href: s };
     }
   }
-
-  // If array, take the first truthy object
-  if (Array.isArray(raw)) {
-    raw = raw.find((x) => !!x) ?? null;
-  }
-
+  if (Array.isArray(raw)) raw = raw.find(Boolean) ?? null;
   if (!raw || typeof raw !== 'object') return null;
 
   const href = String(raw.Href ?? raw.href ?? '').trim();
@@ -47,163 +58,266 @@ function parseLink(value: any): ParsedLink {
 
   const text = String(raw.Text ?? raw.text ?? raw.Title ?? '').trim() || undefined;
   const target = String(raw.Target ?? raw.target ?? '').trim() || undefined;
-
   return { href, text, target };
 }
 
-const single = <T,>(v: T | T[] | null | undefined): T | null =>
-  Array.isArray(v) ? (v[0] ?? null) : (v ?? null);
+type NormalizedBox = {
+  Id?: string;
+  Title?: string;
+  SubTitle?: string;
+  ButtonLabel?: string;
+  EmailLabel?: string;
+  EmailText?: string;
+  EmailPlaceholder?: string;
+  CallUsLabel?: string;
+  CallUsText?: string;
+  HasLabelCorner: boolean;
+  CTA: ParsedLink;
+  variant: 'subscribe' | 'contact';
+};
 
-export default async function ContactSubscription(
-  props: WidgetContext<ContactSubscriptionEntity>
-) {
-  const attrs = htmlAttributes(props);
-
-  // read designer selection (MixedContent)
-  let selection =
-    props.model?.Properties?.ContactSubscription ??
-    (props.model?.Properties as any)?.ContactSubscription;
-  if (typeof selection === 'string') {
-    try {
-      selection = JSON.parse(selection);
-    } catch {
-      selection = undefined;
-    }
-  }
-
-  let item: any;
-  if (selection?.Content?.length) {
-    try {
-      item = await RestClientForContext.getItem(selection, {
-        type: SUBSCRIPTION_TYPE,
-        culture: props.requestContext.culture,
-        traceContext: props.traceContext,
-        fields: [
-          'Id',
-          'Title',
-          'UrlName',
-          // Expand all related ContactBox items; include your exact fields
-          'Box(' +
-            '$select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner' +
-          ')',
-        ],
-      });
-    } catch (e) {
-      console.error('Error fetching ContactSubscription item:', e);
-    }
-  }
-
-  if (!item) {
-    if (props.requestContext.isEdit) {
-      return (
-        <section {...attrs} className="p-4 border rounded text-sm text-gray-600">
-          Select a “Contact subscription” item.
-        </section>
-      );
-    }
-    return null;
-  }
-
-  // Normalize ContactBox items + CTAURL
-  const boxes = (Array.isArray(item.Box) ? item.Box : []).map((b: any) => {
+function normalizeBoxes(boxes: ContactBox[]): NormalizedBox[] {
+  return (boxes || []).map((b) => {
+    const hasCorner = toBool(b.hasLabelCorner) || toBool((b as any).HasLabelCorner);
     const cta = parseLink(b.CTAURL);
-    const hasCorner =
-      toBool((b as any).hasLabelCorner) || toBool((b as any).HasLabelCorner);
+
+    const hasInput = !!b.EmailPlaceholder && String(b.EmailPlaceholder).trim().length > 0;
+
+    const variant: 'subscribe' | 'contact' = hasCorner
+      ? 'contact'
+      : hasInput
+        ? 'subscribe'
+        : 'contact';
 
     return {
       Id: b.Id,
       Title: b.Title,
       SubTitle: b.SubTitle,
-      CallUsLabel: b.CallUsLabel,
-      CallUsText: b.CallUsText,
+      ButtonLabel: b.ButtonLabel,
       EmailLabel: b.EmailLabel,
       EmailText: b.EmailText,
       EmailPlaceholder: b.EmailPlaceholder,
-      ButtonLabel: b.ButtonLabel,
+      CallUsLabel: b.CallUsLabel,
+      CallUsText: b.CallUsText,
       HasLabelCorner: hasCorner,
-      CTA: cta, // { href, text?, target? } | null
+      CTA: cta,
+      variant,
     };
   });
+}
 
-  const view = {
-    Id: item.Id,
-    Title: item.Title,
-    UrlName: item.UrlName,
-    Boxes: boxes,
-  };
+export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
+  const attrs = htmlAttributes(props);
+  const { culture, isEdit } = props.requestContext;
+
+  const properties = (props.model?.Properties || {}) as any;
+  const rawSel = parseMaybeJson(properties?.ContactSubscription) ?? properties?.ContactSubscription;
+
+  const parentId = extractSelectionId(rawSel);
+  if (!parentId) {
+    return isEdit ? (
+      <section {...attrs} className="ContactSubscription">
+        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-slate-600">
+          <strong>Contact Subscription</strong>
+          <div className="mt-1">Open the designer and select a Contact Subscription item.</div>
+        </div>
+      </section>
+    ) : null;
+  }
+
+  const parent = (await fetchData(
+    [parentId],
+    null,
+    culture,
+    [
+      'Id',
+      'Title',
+      'UrlName',
+      'Box(' +
+        '$select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner' +
+        ')',
+    ],
+    { itemType: rawSel?.Content?.[0]?.Type, single: true },
+  )) as ContactSubscriptionParent | null;
+
+  const rawBoxes = Array.isArray(parent.Box) ? parent.Box : parent.Box ? [parent.Box] : [];
+  const boxes = normalizeBoxes(rawBoxes);
 
   return (
-    <section {...attrs} className="ContactSubscription">
-      {/* Optional title */}
-      {item.Title ? (
-        <h2 className="mb-4 text-xl font-semibold">{item.Title}</h2>
-      ) : null}
-
-      <ul className="grid gap-4 md:grid-cols-2">
-        {boxes.map((box) => (
-          <li
-            key={box.Id}
-            className="relative rounded-lg border border-gray-200 p-4"
+    <section
+      {...attrs}
+      className="ContactSubscription bg-[var(--Background-background-neutral-200,_#EEEEEE)] py-10 md:py-14"
+    >
+      <div className="mx-auto max-w-[1240px] px-5">
+        {parent.Title && (
+          <Title
+            as="h2"
+            align="left"
+            fontSize={40}
+            fontWeight={400}
+            lineHeight="100%"
+            letterSpacing="-0.02em"
+            maxWidth={710}
+            className="mb-8"
           >
-            {/* Corner ribbon */}
-            {box.HasLabelCorner ? (
-              <span className="absolute -right-1 -top-1 rounded-bl-lg bg-black px-2 py-1 text-xs font-medium text-white">
-                {box.ButtonLabel || 'Info'}
-              </span>
-            ) : null}
+            {parent.Title}
+          </Title>
+        )}
 
-            <div className="mb-2 text-lg font-medium">{box.Title}</div>
-            {box.SubTitle ? (
-              <div className="mb-3 text-sm text-gray-600">{box.SubTitle}</div>
-            ) : null}
+        {/* Stretch items so all cards have equal height */}
+        <div className="grid items-stretch gap-6 md:grid-cols-2">
+          {boxes.map((box) => (
+            <div
+              key={box.Id ?? box.Title}
+              className="relative flex h-full flex-col overflow-visible rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8"
+            >
+              {/* Corner ribbon (from public/icons) */}
+              {box.HasLabelCorner && (
+                <div className="pointer-events-none absolute -right-10 -top-10 z-10">
+                  <Image
+                    src="/icons/corner-ribbon.svg"
+                    alt="Corner Ribbon"
+                    width={144}
+                    height={144}
+                    priority
+                    unoptimized
+                  />
+                </div>
+              )}
 
-            {(box.CallUsLabel || box.CallUsText) && (
-              <div className="mb-2">
-                <span className="font-medium">{box.CallUsLabel || 'Call us'}</span>
-                {box.CallUsText ? <span>: {box.CallUsText}</span> : null}
-              </div>
-            )}
+              {/* Title / Subtitle */}
+              {box.Title && (
+                <Title
+                  as="h3"
+                  align="left"
+                  variant="section"
+                  fontSize={28}
+                  fontWeight={700}
+                  lineHeight="100%"
+                  letterSpacing="-0.02em"
+                  color="var(--Text-text-primary, #010663)"
+                  maxWidth="none"
+                  className="mb-2"
+                >
+                  {box.Title}
+                </Title>
+              )}
 
-            {(box.EmailLabel || box.EmailText) && (
-              <div className="mb-3">
-                <span className="font-medium">{box.EmailLabel || 'Email'}</span>
-                {box.EmailText ? <span>: {box.EmailText}</span> : null}
-                {box.EmailPlaceholder ? (
-                  <div className="text-xs text-gray-500">
-                    Placeholder: {box.EmailPlaceholder}
+              {box.SubTitle && (
+                <Description
+                  align="left"
+                  color="var(--Text-text-default, #424242)"
+                  maxWidth="none"
+                  className="mb-6 mt-0 text-[18px] leading-[100%] tracking-[0]"
+                >
+                  {box.SubTitle}
+                </Description>
+              )}
+
+              {/* Variant content + CTA pinned to bottom */}
+              {box.variant === 'subscribe' ? (
+                <div className="flex h-full flex-col">
+                  <div className="flex-1">
+                    <label className="sr-only">{box.EmailLabel || 'Email'}</label>
+                    <div className="mb-4 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
+                      <input
+                        type="email"
+                        inputMode="email"
+                        placeholder={box.EmailPlaceholder || 'Enter your email address'}
+                        aria-label={box.EmailLabel || 'Email'}
+                        className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
+                      />
+                    </div>
                   </div>
-                ) : null}
-              </div>
-            )}
 
-            {box.CTA ? (
-              <Link
-                href={box.CTA.href}
-                target={box.CTA.target}
-                rel={box.CTA.target === '_blank' ? 'noopener noreferrer' : undefined}
-                className="inline-flex items-center rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-50"
-              >
-                {box.ButtonLabel || box.CTA.text || 'Learn more'}
-              </Link>
-            ) : (
-              <div className="text-sm italic text-gray-500">No CTA link</div>
-            )}
-          </li>
-        ))}
-      </ul>
+                  <CTA
+                    color="#010663"
+                    borderColor="#010663"
+                    variant="outline"
+                    width={525.2}
+                    height={56.56}
+                    className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
+                  >
+                    {box.ButtonLabel || 'Subscribe Now'}
+                  </CTA>
+                </div>
+              ) : (
+                <div className="flex h-full flex-col items-center text-center">
+                  <div className="mb-5 grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-[500px]">
+                    {/* Call block */}
+                    <div className="rounded-xl border border-[#E7E9EF] px-4 py-3">
+                      <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
+                        <svg
+                          aria-hidden
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="shrink-0"
+                        >
+                          <path
+                            d="M6 2h4l1 5-2 1a12 12 0 005 5l1-2 5 1v4c0 1-1 2-2 2A16 16 0 014 6c0-1 1-2 2-2z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>{box.CallUsLabel || 'Call Us'}</span>
+                      </div>
+                      <div className="mt-2 h-px bg-[#EAEDF3]" />
+                      <div className="mt-2 text-[14px] text-[#424242]">
+                        {box.CallUsText || '+966 11 123 4567'}
+                      </div>
+                    </div>
 
-      {/* Debug JSON (remove in production) */}
-      <pre
-        style={{
-          whiteSpace: 'pre-wrap',
-          fontSize: 12,
-          background: '#f9f9f9',
-          padding: 10,
-        }}
-        className="mt-4"
-      >
-        {JSON.stringify(view, null, 2)}
-      </pre>
+                    {/* Email block */}
+                    <div className="rounded-xl border border-[#E7E9EF] px-4 py-3">
+                      <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
+                        <svg
+                          aria-hidden
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="shrink-0"
+                        >
+                          <path
+                            d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm0 0l8 6 8-6"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>{box.EmailLabel || 'Email'}</span>
+                      </div>
+                      <div className="mt-2 h-px bg-[#EAEDF3]" />
+                      <div className="mt-2 text-[14px] text-[#424242]">
+                        {box.EmailText || 'support@go-money.sa'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <CTA
+                    href={box.CTA?.href || '#'}
+                    target={(box.CTA?.target as '_self' | '_blank') || '_self'}
+                    color="#010663"
+                    borderColor="#010663"
+                    variant="outline"
+                    width={525.2}
+                    height={56.56}
+                    className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
+                  >
+                    {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
+                  </CTA>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
+
