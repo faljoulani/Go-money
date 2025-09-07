@@ -9,18 +9,11 @@ type Base = {
   title: string;
   description: string;
   className?: string;
-
-  /** CTA label. If omitted, no button is rendered. */
   ctaText?: string;
-
-  /** Brand color for the CTA (border/text/hover fill). */
-  ctaColor?: string; // default: #0B2A8E
-
-  /** Outline (default) or solid CTA button. */
+  ctaColor?: string;
   ctaVariant?: 'outline' | 'solid';
 };
 
-// CTA can be a link OR a button (or absent)
 type AsLink = { href: string; onClick?: never };
 type AsButton = { href?: never; onClick: () => void };
 type NoCta = { href?: never; onClick?: never };
@@ -37,9 +30,8 @@ export default function InfoCard({
   ctaVariant = 'outline',
   ...rest
 }: InfoCardProps) {
-  const wrapper = clsx('flex flex-col items-center text-center', 'px-6 py-8', className);
+  const wrapper = clsx('flex flex-col items-start text-left', 'px-6 py-8', className);
 
-  // CTA styles
   const commonCta =
     'group inline-flex items-center justify-center rounded-full px-5 py-2.5 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
   const outline =
@@ -49,7 +41,6 @@ export default function InfoCard({
   const ctaClasses = clsx(commonCta, ctaVariant === 'solid' ? solid : outline);
   const style = { ['--accent' as any]: ctaColor };
 
-  // Helper to render CTA with arrow
   const Arrow = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

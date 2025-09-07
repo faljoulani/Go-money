@@ -12,7 +12,6 @@ import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainN
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
-import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
 import Footer from '../components/widgets/footer/Footer-template';
 import { FooterEntity } from '../components/widgets/footer/Footer.entity';
@@ -47,14 +46,10 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
     CardSection: {
-      componentType: ScrollableCards,
+      componentType: GridOfCards,
       entity: CardSectionEntity,
       ssr: true,
       editorMetadata: { Title: 'Card Section' },
-      views: {
-        Default: { Title: 'Grid', ViewFunction: ScrollableCards },
-        Scrollable: { Title: 'Scrollable', ViewFunction: GridOfCards },
-      },
     },
     MainNavigation: {
       componentType: MainNavigation,
