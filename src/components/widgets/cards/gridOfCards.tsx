@@ -24,6 +24,14 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
 
+  // Detect selected view and log for debugging
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+  try { console.log('[CardSection] Rendering view (Grid):', selectedView); } catch {}
+
   const isEdit = props.requestContext.isEdit;
   const id = extractSelectionId(selection);
   console.log('ID OF PARENT ========== >>>>>>>>>>>>> ' + JSON.stringify(id));
@@ -108,6 +116,7 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
     cardItems = Array.isArray(fetched) ? fetched : fetched ? [fetched] : [];
   }
 
+  const showIcons = selectedView === 'CardsWithIcon';
   const items = cardItems.map((c: any) => {
     const itemHrefRaw = c?.CtaUrl;
     const itemHref =
@@ -129,11 +138,16 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
       icon?.MediaUrl ||
       undefined;
 
+    const iconEl = iconUrl ? (
+      // Using a plain img here to avoid server-side sharp dependency
+      <img src={iconUrl} alt={c?.Title || 'icon'} className="h-12 w-12 object-contain" />
+    ) : undefined;
+
     return {
       title: c?.Title ?? '',
       description: c?.Description ?? '',
       href: itemHref || undefined,
-      iconUrl,
+      icon: showIcons ? iconEl : undefined,
     };
   });
 
@@ -142,6 +156,7 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
   return (
     <section
       {...attributes}
+      data-selected-view={selectedView}
       className="w-full bg-gradient-to-b from-[#F6F7F9] to-[#EFF1F4] py-16 md:py-24"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

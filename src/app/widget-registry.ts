@@ -47,13 +47,14 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
     CardSection: {
-      componentType: ScrollableCards,
+      componentType: GridOfCards,
       entity: CardSectionEntity,
       ssr: true,
       editorMetadata: { Title: 'Card Section' },
       views: {
-        Default: { Title: 'Grid', ViewFunction: ScrollableCards },
-        Scrollable: { Title: 'Scrollable', ViewFunction: GridOfCards },
+        Default: { Title: 'Default', ViewFunction: GridOfCards },
+        CardsRight: { Title: 'Cards Right', ViewFunction: ScrollableCards },
+        CardsWithIcon: { Title: 'Cards With Icon', ViewFunction: GridOfCards },
       },
     },
     MainNavigation: {

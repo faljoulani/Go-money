@@ -25,6 +25,14 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const selection = (props.model?.Properties || {}) as any;
   const { culture, isEdit } = props.requestContext;
 
+  // Detect selected view and log for debugging
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+  try { console.log('[CardSection] Rendering view (Scrollable):', selectedView); } catch {}
+
   const id = extractSelectionId(selection);
 
   if (!id) {
@@ -121,7 +129,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   });
 
   return (
-    <section {...attributes} className="w-full bg-white">
+    <section {...attributes} data-selected-view={selectedView} className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-8">
         {/* Heading */}
         <div className="text-center">
