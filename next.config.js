@@ -25,6 +25,8 @@ module.exports = {
   },
   experimental: {
     proxyTimeout: 60000,
+    // Keep Lightning CSS optimization off to avoid style stripping in some setups
+    optimizeCss: false,
   },
   logging: {
     fetches: {
