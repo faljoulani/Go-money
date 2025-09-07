@@ -12,7 +12,7 @@ variables:
   # Container bits (kept local on the VM)
   feImageName: 'fe-gomoney'
   feContainer: 'fe-gomoney'
-  fePort: 3000
+  fePort: 9097
 
 stages:
   # -------------------- BUILD --------------------
@@ -229,7 +229,7 @@ stages:
 
                     # Run container; inject env directly
                     docker run -d --name $cname `
-                      -p ${port}:3000 `
+                      -p ${port}:9097 `
                       -e SF_CMS_URL="$sfCmsUrl" `
                       -e NODE_ENV=production `
                       $extraHostArg `

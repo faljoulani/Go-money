@@ -91,7 +91,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf 
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+ENV PORT=9097
 ENV HOSTNAME=0.0.0.0
 
 COPY --from=build /app/package*.json ./
@@ -100,8 +100,8 @@ COPY --from=build /app/public ./public
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/next.config.js ./
 
-EXPOSE 3000
+EXPOSE 9097
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD curl -fsS http://127.0.0.1:${PORT}/api/health || exit 1
 
-CMD ["npm", "run", "start", "--", "-p", "3000"]
+CMD ["npm", "run", "start", "--", "-p", "9097"]
