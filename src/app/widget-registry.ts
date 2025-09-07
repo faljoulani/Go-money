@@ -5,7 +5,6 @@ import {
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/widgets/hero/hero';
-import HeroDefault from '../components/widgets/hero/herodefault';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
@@ -31,6 +30,11 @@ import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCus
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
 
+import ExpandBox from '../components/widgets/expandBox/expandbox';
+import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
+
+import SmartFeatures from '../components/widgets/smartFeatures/smartFeatures';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -39,7 +43,7 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Hero' },
       views: {
-        Default: { Title: 'Default', ViewFunction: HeroDefault },
+        Default: { Title: 'Default', ViewFunction: Hero },
       },
     },
     CardSection: {
@@ -103,6 +107,33 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'FAQ' },
       views: {
         Default: { Title: 'Default', ViewFunction: faqSection },
+      },
+    },
+    FinanceRepaymentBanner: {
+      componentType: FinanceRepaymentBanner,
+      entity: FinanceRepaymentBannerEntity,
+      ssr: true,
+      editorMetadata: { Title: 'FinanceRepaymentBanner' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
+      },
+    },
+    ExpandBox: {
+      componentType: ExpandBox,
+      entity: ExpandBoxEntity,
+      ssr: true,
+      editorMetadata: { Title: 'ExpandBox' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ExpandBox },
+      },
+    },
+    SmartFeatures: {
+      componentType: SmartFeatures,
+      entity: CardSectionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'SmartFeatures' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: SmartFeatures },
       },
     },
   },
