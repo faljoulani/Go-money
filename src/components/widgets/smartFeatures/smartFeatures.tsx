@@ -2,8 +2,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-
-type AnySel = any;
+import { parseMaybeJson } from '../../../utils/utils';
 
 type Card = {
   Id: string;
@@ -22,19 +21,7 @@ type ParentMeta = {
   Content?: any;
 };
 
-// ---------- utils ----------
-function parseMaybeJson<T = any>(value: unknown): T | undefined {
-  if (value == null || value === '') return undefined;
-  if (typeof value === 'object') return value as T;
-  if (typeof value === 'string') {
-    try {
-      return JSON.parse(value) as T;
-    } catch {}
-  }
-  return undefined;
-}
-
-function idsFrom(selection?: AnySel): string[] {
+function idsFrom(selection?: any): string[] {
   if (!selection) return [];
   const sel = parseMaybeJson(selection) ?? selection;
 
@@ -59,7 +46,6 @@ function findImageByTitle(images: any[] | undefined, needle: string) {
   return images.find((im) => (im?.Title || '').toLowerCase().includes(n));
 }
 
-// ---- store-only helpers (by CARD TITLE) ----
 const isApple = (t: string) => /apple store|app store|apple|ios/i.test(t);
 const isGoogle = (t: string) => /play store|google play|google/i.test(t);
 const isHuawei = (t: string) => /huawei|appgallery|app gallery/i.test(t);
@@ -84,27 +70,15 @@ function getNonStoreCards(cards: Card[]): Card[] {
   });
 }
 
-function Placeholder() {
-  return (
-    <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
-      <strong>Smart Features</strong>
-      <div className="mt-1">Open the designer and select a Card List.</div>
-    </div>
-  );
-}
-const EmptyNode = () => <div className="sr-only" aria-hidden />;
-
 // ---------- component ----------
 export default async function SmartFeatures(props: WidgetContext<CardSectionEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  // Normalize selections
   const properties = (props.model?.Properties || {}) as any;
   const cardsSel = parseMaybeJson(properties?.Cards) ?? properties?.Cards;
   const listSel = parseMaybeJson(properties?.CardListData) ?? properties?.CardListData;
 
-  // Parent comes from CardListData
   const parentId = extractSelectionId(listSel);
   if (!parentId) {
     return isEdit ? (
@@ -114,13 +88,15 @@ export default async function SmartFeatures(props: WidgetContext<CardSectionEnti
         style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
       >
         <div className="relative z-10 flex h-full w-full items-center justify-center p-10">
-          <Placeholder />
+          <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
+            <strong>Smart Features</strong>
+            <div className="mt-1">Open the designer and select a Card List.</div>
+          </div>
         </div>
       </section>
     ) : null;
   }
 
-  // 1) Fetch parent (title/description/phone image + ordered children)
   const parentFetched = await fetchData(
     [parentId],
     null,
@@ -141,13 +117,11 @@ export default async function SmartFeatures(props: WidgetContext<CardSectionEnti
   );
   const parent = parentFetched as ParentMeta | null;
 
-  // 2) Resolve child IDs
   const cardIds: string[] =
     Array.isArray(parent?.ItemIdsOrdered) && parent!.ItemIdsOrdered.length
       ? parent!.ItemIdsOrdered
       : idsFrom(cardsSel);
 
-  // 3) Fetch child cards (need Title, Description, Image)
   let cardsList: Card[] = [];
   if (cardIds.length) {
     const cards = (await fetchData(
@@ -174,11 +148,9 @@ export default async function SmartFeatures(props: WidgetContext<CardSectionEnti
 
   const hasContent = !!parent;
 
-  // Parent Title/Description
   const heading = parent?.Title || 'Download Go Money App Today';
   const description = parent?.Description || parent?.SubTitle || '';
 
-  // Left image: "mobile" from parent images
   const parentImages = Array.isArray(parent?.Image)
     ? parent!.Image
     : parent?.Image
@@ -187,11 +159,9 @@ export default async function SmartFeatures(props: WidgetContext<CardSectionEnti
   const mobileImg = findImageByTitle(parentImages, 'mobile') || parentImages[0];
   const mobileUrl = mobileImg ? imgUrl(mobileImg) : '';
 
-  // Store badges (images only)
   const stores = pickStoreBadges(cardsList);
   const orderedBadges = [stores.apple, stores.google, stores.huawei].filter(Boolean) as any[];
 
-  // Non-store feature cards (take first two; one row)
   const infoCards = getNonStoreCards(cardsList).slice(0, 2);
 
   return (
@@ -203,9 +173,12 @@ export default async function SmartFeatures(props: WidgetContext<CardSectionEnti
       <div className="relative z-10 flex h-full w-full items-center justify-between gap-[64px] p-10">
         {!hasContent ? (
           isEdit ? (
-            <Placeholder />
+            <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
+              <strong>Smart Features</strong>
+              <div className="mt-1">Open the designer and select a Card List.</div>
+            </div>
           ) : (
-            <EmptyNode />
+            <div className="sr-only" aria-hidden />
           )
         ) : (
           <>
