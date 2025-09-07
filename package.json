@@ -11,11 +11,13 @@
     "i18next": "24.2.1",
     "lucide-react": "^0.541.0",
     "next": "15.2.4",
+    "sharp": "^0.33.5",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-i18next": "15.4.0",
     "react-mobile-app-button": "^1.2.19",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "lightningcss": "^1.25.1"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
@@ -44,6 +46,7 @@
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint . --quiet",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "postinstall": "node scripts/postinstall-lightningcss.js"
   }
 }

@@ -2,49 +2,44 @@ const path = require('path');
 
 const cspHeader = `
     script-src https://cdn.insight.sitefinity.com https://dec.azureedge.net https://player.vimeo.com/api/player.js https://www.youtube.com/iframe_api *.googleapis.com 'unsafe-eval' 'unsafe-inline' 'self';
-    style-src https://cdn.insight.sitefinity.com https://dec.azureedge.net *.googleapis.com https://fonts.cdnfonts.com 'self' 'unsafe-inline';
+    style-src https://cdn.insight.sitefinity.com https://dec.azureedge.net *.googleapis.com 'self' 'unsafe-inline';
     img-src https://cdn.insight.sitefinity.com https://dec.azureedge.net https://*.frontify.com https://*.cloudinary.com 'self' data: blob:;
     connect-src https://*.insight.sitefinity.com https://*.dec.sitefinity.com 'self';
-    font-src fonts.gstatic.com https://fonts.cdnfonts.com 'self' data:;
+    font-src fonts.gstatic.com 'self' data:;
     default-src 'self'`;
 
 module.exports = {
-  webpack: (config, options) => {
+  webpack: (config) => {
     config.resolve['alias']['@widgetregistry'] = path.resolve(__dirname, 'src/app/widget-registry');
     return config;
   },
   skipTrailingSlashRedirect: true,
   output: process.env.SF_BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
+  // Skip ESLint during Docker builds to avoid formatting/lint failures blocking builds
   eslint: {
-    // Minimal fix: skip linting during production builds to avoid formatting failures blocking build
     ignoreDuringBuilds: true,
-  },
-  images: {
-    // Avoid requiring sharp for next/image
-    unoptimized: true,
   },
   experimental: {
     proxyTimeout: 60000,
-    // Keep Lightning CSS optimization off to avoid style stripping in some setups
+    // turn off Lightning CSS optimization to avoid the native module crash
     optimizeCss: false,
   },
+  // Avoid requiring sharp at runtime/build for next/image
+  images: {
+    unoptimized: true,
+  },
   logging: {
-    fetches: {
-      fullUrl: true,
-    },
+    fetches: { fullUrl: true },
   },
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, ''),
-          },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Content-Security-Policy', value: cspHeader.replace(/\n/g, '') },
         ],
       },
     ];
   },
 };
+
