@@ -1,80 +1,112 @@
-import React from 'react';
-import Link from 'next/link';
+'use client';
+
+import * as React from 'react';
+import { useRouter } from 'next/navigation';
 
 type BaseProps = {
   children: React.ReactNode;
   className?: string;
-  color?: string; // brand color (border/text/hover fill)
-  disabled?: boolean;
+  color?: string;
+  borderColor?: string;
   variant?: 'outline' | 'solid';
+  disabled?: boolean;
+  arrow?: boolean;
+  width?: number;
+  height?: number;
+  target?: '_self' | '_blank';
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
 };
 
-type LinkProps = BaseProps & { href: string };
-type ButtonProps = BaseProps & { onClick: () => void };
-type Props = LinkProps | ButtonProps;
+type Linkish = {
+  href?: string;
+};
 
-function isLinkProps(p: Props): p is LinkProps {
-  return (p as LinkProps).href !== undefined;
-}
+type Props = BaseProps & Linkish;
 
-const baseClasses = `
-  inline-flex items-center justify-center gap-2
-  rounded-full px-8 py-3 font-semibold
-  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-  transition-colors
-  shadow-[inset_0_1px_0_rgba(255,255,255,.8)]
-`;
+export default function CTA({
+  children,
+  className = '',
+  color = '#0B2A8E',
+  borderColor = 'var(--background, #F7FAFC)',
+  variant = 'outline',
+  disabled = false,
+  arrow = true,
+  width = 250,
+  height = 56,
+  target = '_self',
+  href,
+  onClick,
+}: Props) {
+  const router = useRouter();
 
-export default function CTA(props: Props) {
-  const {
-    children,
-    className = '',
-    color = '#0B2A8E',
-    disabled = false,
-    variant = 'outline',
-  } = props;
+  const styleVars: React.CSSProperties = {
+    ['--cta-text' as any]: color,
+    ['--cta-border' as any]: borderColor,
+  };
 
-  const common = [baseClasses, className, disabled ? 'opacity-60 cursor-not-allowed' : ''].join(
-    ' ',
-  );
+  const base =
+    'inline-flex items-center justify-center gap-[10px] rounded-[20px] border font-semibold select-none ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-colors ' +
+    'shadow-[inset_0_1px_0_rgba(255,255,255,.8)]';
 
-  const outlineClasses = `
-    border ring-1 ring-inset
-    border-[color:var(--cta,#0B2A8E)]/60
-    ring-[color:var(--cta,#0B2A8E)]/20
-    text-[color:var(--cta,#0B2A8E)]
-    hover:bg-[color:var(--cta,#0B2A8E)] hover:text-white
-  `;
-  const solidClasses = `bg-[color:var(--cta,#0B2A8E)] text-white hover:brightness-95`;
+  const size = 'px-6 py-[18px]';
 
-  const classes = `${common} ${variant === 'solid' ? solidClasses : outlineClasses}`;
-  const style = { ['--cta' as any]: color };
+  const outline =
+    'bg-transparent border-[color:var(--cta-border)] text-[color:var(--cta-text)] ' +
+    'hover:bg-[color:var(--cta-border)]/10';
 
-  if (isLinkProps(props)) {
-    const hrefUrl: string | URL = disabled ? '#' : props.href; // guaranteed non-undefined
-    return (
-      <Link
-        href={hrefUrl}
-        aria-disabled={disabled}
-        onClick={disabled ? (e) => e.preventDefault() : undefined}
-        className={classes}
-        style={style}
-      >
-        {children}
-      </Link>
-    );
-  }
+  const solid = 'text-white border-transparent ' + 'bg-[color:var(--cta-text)] hover:brightness-95';
 
-  // Button variant
+  const disabledCls = disabled ? 'opacity-60 cursor-not-allowed' : '';
+
+  const classes = [base, size, variant === 'solid' ? solid : outline, disabledCls, className]
+    .filter(Boolean)
+    .join(' ');
+
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled) return;
+    if (onClick) {
+      await onClick(e);
+      if (e.defaultPrevented) return;
+    }
+
+    if (href) {
+      if (target === '_blank') {
+        window.open(href, '_blank', 'noopener,noreferrer');
+      } else {
+        router.push(href);
+      }
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={disabled ? undefined : props.onClick}
+      onClick={handleClick}
       aria-disabled={disabled}
+      role={href ? 'link' : 'button'}
       className={classes}
-      style={style}
+      style={{ ...styleVars, width, height }}
     >
-      {children}
+      <span className="whitespace-nowrap">{children}</span>
+
+      {arrow && (
+        <svg
+          className="shrink-0"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12h14"></path>
+          <path d="M13 5l7 7-7 7"></path>
+        </svg>
+      )}
     </button>
   );
 }

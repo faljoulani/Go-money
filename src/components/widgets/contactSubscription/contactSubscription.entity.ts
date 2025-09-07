@@ -1,6 +1,4 @@
-import {
-  WidgetEntity,
-} from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
+import { WidgetEntity } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
 import { ContentSection } from '@progress/sitefinity-widget-designers-sdk/decorators/content-section';
 import { DisplayName } from '@progress/sitefinity-widget-designers-sdk/decorators/display-name';
 import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/content';
@@ -18,7 +16,6 @@ export class ContactSubscriptionEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.ContactSubscription.Contactsubscription',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true,
   })
   ContactSubscription?: any;
 
@@ -30,3 +27,4 @@ export class ContactSubscriptionEntity {
   @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
   ViewName?: string;
 }
+

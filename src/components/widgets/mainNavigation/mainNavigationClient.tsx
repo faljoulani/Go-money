@@ -4,80 +4,23 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-function mergeClasses(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(' ');
-}
-
-/* ---------- API item shapes (your response) ---------- */
-export interface ApiNavLink {
-  title: string;
-  url: string;
-  urlName?: string;
-}
-export interface ApiNavDropdown extends ApiNavLink {
-  children: ApiNavLink[];
-}
-export type ApiNavItem = ApiNavLink | ApiNavDropdown;
+import { cleanHref, normalizePath, mergeClasses, displayTitle } from '../../../utils/utils';
+import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/type';
 
 /* ---------- Normalized (with href) ---------- */
 type NormalizedLink = ApiNavLink & { href: string };
 type NormalizedDropdown = NormalizedLink & { children: NormalizedLink[] };
 type NormalizedItem = NormalizedLink | NormalizedDropdown;
 
-/* ---------- Utilities ---------- */
-const cleanHref = (href: string) => href.split('#')[0].split('?')[0];
-
-function normalizePath(input: string): string {
-  if (!input) return '/';
-  let s = input.trim();
-
-  // If it's an absolute URL, take just the pathname
-  if (/^https?:\/\//i.test(s)) {
-    try {
-      const u = new URL(s);
-      s = u.pathname + (u.search ?? '') + (u.hash ?? '');
-    } catch {}
-  }
-
-  // Strip query/hash for matching
-  s = s.split('#')[0].split('?')[0];
-
-  // Remove leading locale prefix: /en, /ar, /en-US, /ar-JO, etc.
-  s = s.replace(/^\/[a-z]{2}(?:-[A-Z]{2})?(?=\/|$)/, '');
-
-  // Collapse multiple slashes
-  s = s.replace(/\/{2,}/g, '/');
-
-  // Trailing slash (except root)
-  if (s.length > 1 && s.endsWith('/')) s = s.slice(0, -1);
-
-  // Ensure leading slash
-  if (!s.startsWith('/')) s = '/' + s;
-
-  // Treat /home as /
-  if (s === '/home') return '/';
-
-  return s;
+/* ---------- Local, union-specific guards ---------- */
+function isApiDropdown(item: ApiNavItem): item is ApiNavDropdown {
+  return Array.isArray((item as any)?.children);
+}
+/** Guard for the *normalized* union (after normalization) */
+function isNormalizedDropdown(item: NormalizedItem): item is NormalizedDropdown {
+  return Array.isArray((item as any)?.children);
 }
 
-/* ---------- Type guards ---------- */
-function isDropdown(item: ApiNavItem): item is ApiNavDropdown;
-function isDropdown(item: NormalizedItem): item is NormalizedDropdown;
-function isDropdown(item: any): item is { children: unknown[] } {
-  return Array.isArray(item?.children);
-}
-
-/* ---------- Title humanizer ---------- */
-function displayTitle(raw: string): string {
-  if (!raw) return '';
-  const looksSluggy = /[-_]/.test(raw) || raw === raw.toLowerCase();
-  if (!looksSluggy) return raw;
-  const spaced = raw.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
-  const lower = spaced.toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
-}
-
-/* ---------- Component ---------- */
 export default function ClientNavbar({
   items,
   currentPath,
@@ -85,15 +28,14 @@ export default function ClientNavbar({
   stripQuery = true,
 }: {
   items: ApiNavItem[];
-  currentPath?: string; // optional; falls back to usePathname()
+  currentPath?: string;
   className?: string;
   stripQuery?: boolean;
 }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
-  const pathname = usePathname(); // fallback if currentPath not passed
+  const pathname = usePathname();
 
-  // Figma link typography
-  const figmaLinkCls = 'font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal'; // 14px, 500
+  const figmaLinkCls = 'font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal';
 
   const normalized: NormalizedItem[] = useMemo(() => {
     const norm = (it: ApiNavLink): NormalizedLink => ({
@@ -102,13 +44,14 @@ export default function ClientNavbar({
     });
 
     return items.map((item) => {
-      if (isDropdown(item)) {
+      if (isApiDropdown(item)) {
         return { ...norm(item), children: item.children.map(norm) } as NormalizedDropdown;
       }
       return norm(item) as NormalizedLink;
     });
   }, [items, stripQuery]);
 
+  // Active path (normalize for robust matching)
   const rawPath = currentPath ?? pathname ?? '';
   const pathForMatch = normalizePath(stripQuery ? cleanHref(rawPath) : rawPath);
 
@@ -116,9 +59,7 @@ export default function ClientNavbar({
     <nav className={mergeClasses('flex items-center gap-4', 'pointer-events-auto', className)}>
       {normalized.map((item, i) => {
         const itemMatch = normalizePath(item.href);
-
-        // Child active check first (so dropdown highlights when a child is active)
-        const childActive = isDropdown(item)
+        const childActive = isNormalizedDropdown(item)
           ? item.children.some((c) => {
               const cMatch = normalizePath(c.href);
               return pathForMatch === cMatch || (cMatch !== '/' && pathForMatch.startsWith(cMatch));
@@ -130,21 +71,19 @@ export default function ClientNavbar({
 
         const active = childActive || selfActive;
 
-        // Base uses Figma typography + layout; no underline by default
         const base = mergeClasses(
           'relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline',
           figmaLinkCls,
         );
 
-        // Underline ONLY when active
         const decoration = 'decoration-[#010663] decoration-2 underline-offset-4';
-        const inactiveColor = 'text-[var(--Text-text-default,#424242)]'; // no hover underline
+        const inactiveColor = 'text-[var(--Text-text-default,#424242)]';
         const activeColor = mergeClasses('text-[#010663]', 'underline', decoration);
         const activeClasses = active ? activeColor : inactiveColor;
 
         return (
           <div key={`${item.href}-${i}`} className="relative">
-            {isDropdown(item) ? (
+            {isNormalizedDropdown(item) ? (
               <button
                 type="button"
                 aria-haspopup="menu"
@@ -174,7 +113,7 @@ export default function ClientNavbar({
             )}
 
             {/* Dropdown */}
-            {isDropdown(item) && openIdx === i && (
+            {isNormalizedDropdown(item) && openIdx === i && (
               <div
                 role="menu"
                 className={mergeClasses(

@@ -1,9 +1,7 @@
-import {
-  WidgetEntity,
-} from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
+import { WidgetEntity } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
 import { ContentSection } from '@progress/sitefinity-widget-designers-sdk/decorators/content-section';
 import { DisplayName } from '@progress/sitefinity-widget-designers-sdk/decorators/display-name';
-import { Content } from '@progress/sitefinity-widget-designERS-sdk/decorators/content';
+import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/content';
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
@@ -17,9 +15,8 @@ export class FooterEntity {
   @ContentSection('Content', 0)
   @DisplayName('Footer item')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Footer.Footer', // <-- adjust if needed
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Footer.Footer',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true,
   })
   Footer?: any;
 
@@ -34,3 +31,4 @@ export class FooterEntity {
   ])
   ViewName?: string;
 }
+
