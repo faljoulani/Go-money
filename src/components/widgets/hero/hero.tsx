@@ -3,7 +3,7 @@ import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
 import heroBg from './HeroBackground.jpg';
-import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
+import BreadcrumbCustomView from '../breadcrumb/breadcrumbCustom';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
@@ -152,6 +152,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         <div className=" max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
             <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
+            {/* <div className="mb-6">
+              <BreadcrumbCustomView
+                requestContext={props.requestContext}
+                items={[]}
+                widgetContext={props}
+                attributes={{}}
+              />
+            </div> */}
           </div>
           {title && (
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">

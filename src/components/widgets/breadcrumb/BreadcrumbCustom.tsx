@@ -1,23 +1,72 @@
-import { BreadcrumbEntity, BreadcrumbViewProps } from '@progress/sitefinity-nextjs-sdk/widgets';
+import {
+  BreadcrumbEntity,
+  BreadcrumbViewProps,
+} from '@progress/sitefinity-nextjs-sdk/widgets';
 
-export default function BreadcrumbCustomView(props: BreadcrumbViewProps<BreadcrumbEntity>) {
-  const items = props.items ?? [];
+type CustomBreadcrumbProps = BreadcrumbViewProps<BreadcrumbEntity> & {
+  requestContext?: any;
+};
+
+function resolveItems(props: CustomBreadcrumbProps) {
+  if (props.items?.length) return props.items;
+
+  const rc =
+    props.requestContext ||
+    (props as any)?._requestContext;
+
+  let items: Array<{ Title: string; ViewUrl: string }> = [];
+
+  const direct =
+    rc?.breadcrumbs ||
+    rc?.pageBreadcrumbs ||
+    rc?.currentPage?.Breadcrumb ||
+    [];
+
+  if (Array.isArray(direct) && direct.length) {
+    items = direct.map((n: any) => ({
+      Title: n.Title ?? n.title ?? n.Name ?? 'Untitled',
+      ViewUrl: n.ViewUrl ?? n.viewUrl ?? n.Url ?? n.url ?? '/',
+    }));
+  } else if (rc?.siteMapNode) {
+    const chain: any[] = [];
+    let node: any = rc.siteMapNode;
+    while (node) {
+      chain.push(node);
+      node = node.Parent || node.parent;
+    }
+    chain.reverse();
+    items = chain.map((n: any) => ({
+      Title: n.Title ?? n.title ?? n.Name ?? 'Untitled',
+      ViewUrl: n.ViewUrl ?? n.viewUrl ?? n.Url ?? n.url ?? '/',
+    }));
+  } else {
+    const title =
+      rc?.pageTitle || rc?.currentPage?.Title || 'Current page';
+    items = [
+      { Title: 'Home', ViewUrl: '/' },
+      { Title: title, ViewUrl: '' },
+    ];
+  }
+
+  return items;
+}
+
+export default function BreadcrumbCustomView(props: CustomBreadcrumbProps) {
+  const items = resolveItems(props);
 
   return (
     <nav {...props.attributes} aria-label="Breadcrumb">
-      <ol className="flex flex-wrap items-center gap-3 text-lg sm:text-2xl leading-none">
+      <ol className="flex flex-wrap justify-center items-center gap-3 text-lg sm:text-2xl leading-none">
         {items.map((node, idx) => {
           const isLast = idx === items.length - 1;
 
           return (
             <li key={node.ViewUrl ?? idx} className="flex items-center gap-3">
               {isLast ? (
-                // current page highlight
                 <span className="whitespace-nowrap font-extrabold bg-gradient-to-r from-[#42F0B6] to-[#4EA6FF] bg-clip-text text-transparent">
                   {node.Title}
                 </span>
               ) : (
-                // links — white 
                 <a
                   href={node.ViewUrl}
                   className="whitespace-nowrap text-white/90 hover:text-white transition"
@@ -26,7 +75,6 @@ export default function BreadcrumbCustomView(props: BreadcrumbViewProps<Breadcru
                 </a>
               )}
 
-              {/* chevron separator (hide after last) */}
               {!isLast && (
                 <svg
                   viewBox="0 0 20 20"

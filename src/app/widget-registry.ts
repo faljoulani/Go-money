@@ -44,6 +44,7 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Hero' },
       views: {
         Default: { Title: 'Default', ViewFunction: Hero },
+        Simple: { Title: 'Simple', ViewFunction: Hero },
       },
     },
     CardSection: {
