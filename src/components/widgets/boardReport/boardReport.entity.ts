@@ -1,6 +1,4 @@
-import {
-  WidgetEntity,
-} from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
+import { WidgetEntity } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-entity';
 import { ContentSection } from '@progress/sitefinity-widget-designers-sdk/decorators/content-section';
 import { DisplayName } from '@progress/sitefinity-widget-designers-sdk/decorators/display-name';
 import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/content';
@@ -18,7 +16,6 @@ export class BoardReportEntity {
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.BoardReports.BoardReport',
     AllowMultipleItemsSelection: false,
-    RetrieveData: true,
   })
   BoardReport?: any;
 
@@ -27,8 +24,7 @@ export class BoardReportEntity {
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-  @ViewSelector([
-    { Name: 'Default', Title: 'Default', Value: 'Default' }
-  ])
+  @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
   ViewName?: string;
 }
+
