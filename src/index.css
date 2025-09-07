@@ -1,25 +1,30 @@
-/*sc- is a selector prefix meaning 'sitefinity core'. It can be changed by your preference*/
 @import 'tailwindcss';
-@import url('https://fonts.cdnfonts.com/css/lufga'); /* Example CDN */
+@import url('https://fonts.cdnfonts.com/css/lufga');
 
+/* tokens */
+:root {
+  --Background-background-neutral-200: #eeeeee;
+}
+
+/* base helpers */
 @layer base {
   .font-lufga {
     font-family: 'Lufga', sans-serif;
   }
 }
 
-/* index.css */
-
-@tailwind utilities;
-
-@theme {
-  --animate-float: float 1.5s ease-in-out infinite alternate;
+/* utilities & animations */
+@layer utilities {
   @keyframes float {
-    0%,{
+    0% {
       transform: translateY(-25px);
     }
     100% {
       transform: translateY(25px);
     }
   }
+  .animate-float {
+    animation: float 1.5s ease-in-out infinite alternate;
+  }
 }
+
