@@ -121,7 +121,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   });
 
   return (
-    <section {...attributes} className="w-full bg-white py-16">
+    <section {...attributes} className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-8">
         {/* Heading */}
         <div className="text-center">
@@ -131,57 +131,53 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         </div>
 
         {/* Alternating frame */}
-        <div className="mt-10 rounded-2xl p-10">
+        <div className="mt-10 px-[205px]">
           <div className="space-y-16">
             {items.map((card, i) => {
               const isRight = i % 2 === 1;
               const rowTemplate = isRight
-                ? '[grid-template-columns:minmax(0,1fr)_494px]'
-                : '[grid-template-columns:494px_minmax(0,1fr)]';
+                ? '[grid-template-columns:minmax(0,1fr)_330px]'
+                : '[grid-template-columns:330px_minmax(0,1fr)]';
 
               return (
-                <div key={card.id ?? i} className={`grid items-center ${rowTemplate} gap-6`}>
+                <div key={card.id ?? i} className={`grid items-center ${rowTemplate}`}>
                   {/* Image side */}
                   <div
                     className={isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'}
                   >
                     <div className="relative">
+                      {/* Card image */}
                       <div
                         className="
-                          relative overflow-hidden
-                          rounded-tl-lg rounded-tr-3xl rounded-br-lg rounded-bl-lg
-                          shadow-sm ring-1 ring-black/5
-                          w-[494px] h-[360px]
-                        "
+                        relative overflow-hidden
+                        rounded-xl
+                        w-[330px] h-[250px]"
                       >
                         {card.imgUrl && (
-                          <CardImage
-                            img={card.imgUrl}
-                            alt={card.title || 'card image'}
-                            sizes="494px"
-                          />
+                          <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
                         )}
                       </div>
-                      {/* decorative chip */}
+
+                      {/* Decorative chip */}
                       <div
-                        className={`absolute ${isRight ? 'left-6 -bottom-6' : 'right-6 -bottom-6'}`}
+                        className={`absolute ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
                       >
-                        <div className="w-20 h-20 rounded-[18px] bg-[#2330E6]" />
+                        {/* Blue block */}
+                        <div
+                          className={`relative w-18 h-18 ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
+                        >
+                          {/* White square cutout */}
+                          <div
+                            className={`absolute w-10 h-10 bg-white ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
+                          ></div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Text side */}
-                  <div className={isRight ? 'order-1 -mr-8' : 'order-2 ml-8'}>
-                    <div
-                      className="
-                        rounded-[24px]
-                        bg-gradient-to-r from-[#C9FFF2] to-[#D8EDFF]
-                        shadow-[0_12px_30px_rgba(15,23,42,0.12)]
-                        ring-1 ring-white/60
-                        p-6 max-w-[38rem]
-                      "
-                    >
+                  <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
+                    <div className="max-w-[38rem]">
                       <h3 className="text-[1.8rem] leading-tight font-extrabold text-[color:var(--navy,#0B2A8E)]">
                         {card.title}
                       </h3>
@@ -201,7 +197,15 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         {/* Parent CTA */}
         {ctaText && (
           <div className="mt-10 text-center">
-            <CTA href={(ctaHref || '').trim() || '#'} color="#0B2A8E" variant="outline">
+            <CTA
+              href={(ctaHref || '').trim() || '#'}
+              color="#010663"
+              borderColor='#001081'
+              variant="outline"
+              width={248}
+              height={56}
+              className="rounded-[20px] px-6 py-[18px] border opacity-100"
+            >
               {ctaText}
             </CTA>
           </div>
