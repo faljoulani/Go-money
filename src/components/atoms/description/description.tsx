@@ -7,7 +7,9 @@ type Props = {
   align?: 'left' | 'center' | 'right';
   maxWidth?: number | string;
   color?: string;
+  style?: React.CSSProperties; 
 };
+
 
 export default function Description({
   children,
@@ -15,28 +17,28 @@ export default function Description({
   align = 'center',
   maxWidth = 686,
   color = 'var(--Text-text-default, #424242)',
+  style, 
 }: Props) {
   const alignClass =
     align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
 
-  const style: React.CSSProperties = {
+  const combinedStyle: React.CSSProperties = {
     maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
     color,
+    ...style, 
   };
 
   return (
     <p
       className={clsx(
-        'font-lufga text-[16px] font-normal leading-[100%] tracking-normal',
-        'mt-4',
+        'font-lufga tracking-normal', 
         alignClass,
         align === 'center' && 'mx-auto',
         className,
       )}
-      style={style}
+      style={combinedStyle}
     >
       {children}
     </p>
   );
 }
-
