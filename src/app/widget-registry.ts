@@ -5,11 +5,10 @@ import {
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/widgets/hero/hero';
-import HeroDefault from '../components/widgets/hero/herodefault';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+import { MainNavigationEntity } from '../components/widgets/mainNavigation/mainNavigation.entity';
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
@@ -27,7 +26,7 @@ import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.ent
 import faqSection from '../components/widgets/faq/faq';
 import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
 
-import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/BreadcrumbCustom';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
 
@@ -39,7 +38,7 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Hero' },
       views: {
-        Default: { Title: 'Default', ViewFunction: HeroDefault },
+        Default: { Title: 'Default', ViewFunction: Hero },
       },
     },
     CardSection: {

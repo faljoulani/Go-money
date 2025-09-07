@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cleanHref, normalizePath, mergeClasses, displayTitle } from '../../../utils/utils';
-import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/type';
+import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/Type';
 
 /* ---------- Normalized (with href) ---------- */
 type NormalizedLink = ApiNavLink & { href: string };

@@ -1,14 +1,14 @@
 // MainNavigation.tsx
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { MainNavigationEntity } from './MainNavigation.entity';
+import { MainNavigationEntity } from './mainNavigation.entity';
 import Link from 'next/link';
 import Image from 'next/image';
 
 // ✅ shared helpers
 import { mergeClasses, toAbsolute } from '../../../utils/utils';
 import { parseSelection, extractSelectionId, fetchData } from '../../../utils/sitefinity';
-import { ApiNavItem as ClientNavItem, ApiNavLink as ClientNavLink } from '../../../types/type';
-import ClientNavbar from './MainNavigationClient';
+import { ApiNavItem as ClientNavItem, ApiNavLink as ClientNavLink } from '../../../types/Type';
+import ClientNavbar from './mainNavigationClient';
 
 /* ---------- Types from Sitefinity shapes ---------- */
 type SfImage = {
