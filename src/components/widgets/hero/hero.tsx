@@ -1,19 +1,28 @@
+
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
 import heroBg from './HeroBackground.jpg';
+import BreadCrumbCustomView from '../breadcrumb/BreadCrumbCustom';
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
-  const attrs = htmlAttributes(props);
 
-  // 1) Read selection from widget model (Module Builder "Hero" selector)
+  const attrs = htmlAttributes(props);
+    const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+  try { console.log('[Hero] Rendering view:', selectedView); } catch {}
+
   let selection = props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero;
   if (typeof selection === 'string') {
     try { selection = JSON.parse(selection); } catch { selection = undefined; }
   }
 
-  // 2) Fetch the selected item with ONLY the fields we need
   let item: any;
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
@@ -35,9 +44,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
         ],
       });
-    } catch {
-      // ignore
-    }
+    } catch {/* ignore */}
   }
 
   if (!item) {
@@ -67,14 +74,12 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const pickUrl = (m: any): string | undefined =>
     m?.Url || m?.MediaUrl || m?.ThumbnailUrl || m?.EmbedUrl || m?.Urls?.Default || m?.Urls?.DefaultUrl;
 
-  // Map fields
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
   const ctaUrl = parseLink(item.CtaUrl);
 
-  // Resolve BackgroundImage if only Id/Provider present
   let bgMedia = firstOrSelf(item.BackgroundImage);
   if (bgMedia && !pickUrl(bgMedia) && bgMedia.Id) {
     try {
@@ -94,7 +99,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const bgUrl = pickUrl(bgMedia);
   const bgAlt = bgMedia?.AlternativeText || bgMedia?.Title || title;
 
-  // Make absolute if needed
   const toAbsolute = (u?: string) => {
     if (!u) return undefined;
     if (/^https?:\/\//i.test(u)) return u;
@@ -105,6 +109,44 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
+  // const isSimple = selectedView === 'Simple' || (!eyebrow && !ctaUrl && !heroImgUrl);
+  const isSimple = selectedView === 'Simple'
+
+  if (isSimple) {
+    return (
+      <section
+        {...attrs}
+        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col"
+        style={{
+          backgroundImage: `url(${heroBg.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+    
+  
+
+        <div className=" max-w-4xl px-6 pb-20 text-center">
+             <div className="mx-auto max-w-7xl px-6 pt-8">
+          <div className="mb-6" data-sfcontainer="Breadcrumb">
+          </div>
+        </div>
+          {title && (
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
+              {title}
+            </h1>
+          )}
+          {description && (
+            <p className="mt-6 text-lg sm:text-xl text-white/85">
+              {description}
+            </p>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+   
   return (
     <section
       {...attrs}
@@ -122,7 +164,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-16">
         <div>
           {eyebrow && (
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/80">{eyebrow}</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
+              {eyebrow}
+            </p>
           )}
           {title && (
             <h1 className="mt-3 max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
@@ -131,15 +175,17 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
           {description && <p className="mt-6 max-w-lg text-white/85">{description}</p>}
 
-          <div className="mt-10">
-            <a
-              href={ctaUrl}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-900 shadow-lg ring-1 ring-white/20 transition hover:translate-y-[-1px] hover:shadow-xl"
-            >
-              {ctaText}
-              <span aria-hidden>→</span>
-            </a>
-          </div>
+          {ctaUrl && (
+            <div className="mt-10">
+              <a
+                href={ctaUrl}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-900 shadow-lg ring-1 ring-white/20 transition hover:translate-y-[-1px] hover:shadow-xl"
+              >
+                {ctaText}
+                <span aria-hidden>→</span>
+              </a>
+            </div>
+          )}
         </div>
 
         <div className="relative h-[720px] w-[160%] animate-float">
