@@ -208,11 +208,16 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
 
         {ctaText && (
           <div className="mt-12 text-center">
-            <CTA href={(ctaHref || '').trim() || '#'} color={navy}>
+            <CTA
+              href={(ctaHref || '').trim() || '#'}
+              color="#0B2A8E"
+              borderColor="var(--Button-button-border-primary, #010663)"
+              variant="outline"
+              width={248}
+              height={56}
+              arrow={true}
+            >
               {ctaText}
-              <span aria-hidden className="translate-y-px">
-                ›
-              </span>
             </CTA>
           </div>
         )}
