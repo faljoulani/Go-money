@@ -1,4 +1,3 @@
-
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
@@ -7,18 +6,23 @@ import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
-
   const attrs = htmlAttributes(props);
-    const selectedView =
+  const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
-  try { console.log('[Hero] Rendering view:', selectedView); } catch {}
+  try {
+    console.log('[Hero] Rendering view:', selectedView);
+  } catch {}
 
   let selection = props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero;
   if (typeof selection === 'string') {
-    try { selection = JSON.parse(selection); } catch { selection = undefined; }
+    try {
+      selection = JSON.parse(selection);
+    } catch {
+      selection = undefined;
+    }
   }
 
   let item: any;
@@ -42,7 +46,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
         ],
       });
-    } catch {/* ignore */}
+    } catch {
+      /* ignore */
+    }
   }
 
   if (!item) {
@@ -64,13 +70,20 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       try {
         const parsed = JSON.parse(linkField);
         return parsed?.[0]?.href || parsed?.[0]?.Href;
-      } catch { return linkField; }
+      } catch {
+        return linkField;
+      }
     }
     if (Array.isArray(linkField)) return linkField[0]?.href || linkField[0]?.Href;
     return linkField.href || linkField.Href || linkField;
   };
   const pickUrl = (m: any): string | undefined =>
-    m?.Url || m?.MediaUrl || m?.ThumbnailUrl || m?.EmbedUrl || m?.Urls?.Default || m?.Urls?.DefaultUrl;
+    m?.Url ||
+    m?.MediaUrl ||
+    m?.ThumbnailUrl ||
+    m?.EmbedUrl ||
+    m?.Urls?.Default ||
+    m?.Urls?.DefaultUrl;
 
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
@@ -87,7 +100,16 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         provider: bgMedia.Provider?.toString(),
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
-        fields: ['Id','Url','MediaUrl','ThumbnailUrl','EmbedUrl','Title','AlternativeText','Urls'],
+        fields: [
+          'Id',
+          'Url',
+          'MediaUrl',
+          'ThumbnailUrl',
+          'EmbedUrl',
+          'Title',
+          'AlternativeText',
+          'Urls',
+        ],
       });
       bgMedia = { ...full, ...bgMedia };
     } catch (err) {
@@ -103,12 +125,16 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     const base =
       (props.requestContext as any)?.siteData?.SiteUrl ??
       (typeof window !== 'undefined' ? window.location.origin : undefined);
-    try { return base ? new URL(u, base).toString() : u; } catch { return u; }
+    try {
+      return base ? new URL(u, base).toString() : u;
+    } catch {
+      return u;
+    }
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
   // const isSimple = selectedView === 'Simple' || (!eyebrow && !ctaUrl && !heroImgUrl);
-  const isSimple = selectedView === 'Simple'
+  const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
     return (
@@ -121,30 +147,21 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           backgroundPosition: 'center',
         }}
       >
-    
-  
-
         <div className=" max-w-4xl px-6 pb-20 text-center">
-             <div className="mx-auto max-w-7xl px-6 pt-8">
-          <div className="mb-6" data-sfcontainer="Breadcrumb">
+          <div className="mx-auto max-w-7xl px-6 pt-8">
+            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
           </div>
-        </div>
           {title && (
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
               {title}
             </h1>
           )}
-          {description && (
-            <p className="mt-6 text-lg sm:text-xl text-white/85">
-              {description}
-            </p>
-          )}
+          {description && <p className="mt-6 text-lg sm:text-xl text-white/85">{description}</p>}
         </div>
       </section>
     );
   }
 
-   
   return (
     <section
       {...attrs}
@@ -156,8 +173,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       }}
     >
       {/* decorative glows */}
-      <div aria-hidden className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
+      />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-16">
         <div>
