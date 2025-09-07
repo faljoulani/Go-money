@@ -2,8 +2,6 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
-import heroBg from './HeroBackground.jpg';
-import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
@@ -144,7 +142,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         {...attrs}
         className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col"
         style={{
-          backgroundImage: `url(${heroBg.src})`,
+          backgroundImage: heroImgUrl ? `url(${heroImgUrl})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -169,7 +167,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       {...attrs}
       className="relative overflow-hidden text-white"
       style={{
-        backgroundImage: `url(${heroBg.src})`,
+        backgroundImage: heroImgUrl ? `url(${heroImgUrl})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
