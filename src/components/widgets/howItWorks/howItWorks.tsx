@@ -2,7 +2,11 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 
-// Avoid static image imports to prevent requiring sharp during build on Windows
+import HowItWorksRings from './HowItWorksRings.png';
+import NavyBackground from './NavyBackground.webp';
+import pocketImg from './pocketHQ.webp';
+import transparentNavy from './transparentNavy.png';
+import Mobile from './Mobile.png';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
@@ -116,7 +120,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     })),
   };
 
-  const phoneSrc = mediaSrc(view.PhoneMockup) ?? undefined;
+  const phoneSrc = mediaSrc(view.PhoneMockup) ?? Mobile.src;
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
   // ---------- render ----------
@@ -143,12 +147,14 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       <div
         className="relative h-[1600px] flex flex-col justify-center items-center"
         style={{
-          background: 'radial-gradient(60% 60% at 50% 10%, rgba(13,249,196,0.08), transparent 70%)',
+          backgroundImage: `url(${HowItWorksRings.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: '50% 10%',
         }}
       >
         <div className="pointer-events-none h-[85%] absolute inset-0 z-40">
           <div className="sticky top-[28vh] flex justify-center">
-            {phoneSrc ? <img src={phoneSrc} alt={phoneAlt} /> : null}
+            <img src={phoneSrc} alt={phoneAlt} />
           </div>
         </div>
         <div className="h-[120vh]" />
@@ -156,12 +162,26 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         {/* Navy pocket section */}
         <section className="relative w-full">
           <div
-            className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden bg-[#0B1C5A]"
+            className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
+            style={{
+              backgroundImage: `url(${NavyBackground.src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
           >
             {/* semi-transparent curved overlay to keep top crop and blend */}
-            {/* overlay removed to avoid static asset dependency */}
+            <img
+              src={transparentNavy.src}
+              alt=""
+              className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
+            />
             {/* pocket lip */}
-            {/* pocket image removed to avoid static asset dependency */}
+            <img
+              src={pocketImg.src}
+              alt=""
+              aria-hidden
+              className="pointer-events-none select-none absolute w-full -top-8 left-0 z-50"
+            />
 
             {/* Content */}
             <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
