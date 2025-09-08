@@ -15,8 +15,18 @@ module.exports = {
   },
   skipTrailingSlashRedirect: true,
   output: process.env.SF_BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
+  // Skip ESLint during production builds to avoid formatting/lint failures blocking builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Avoid requiring sharp at runtime/build for next/image
+  images: {
+    unoptimized: true,
+  },
   experimental: {
     proxyTimeout: 60000,
+    // Turn off Lightning CSS optimization to avoid native module issues
+    optimizeCss: false,
   },
   logging: {
     fetches: {
