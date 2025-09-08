@@ -142,7 +142,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col"
+        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col rounded-2xl"
         style={{
           backgroundImage: `url(${heroBg.src})`,
           backgroundSize: 'cover',
@@ -175,7 +175,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative overflow-hidden text-white"
+      className="relative overflow-hidden text-white rounded-2xl"
       style={{
         backgroundImage: `url(${heroBg.src})`,
         backgroundSize: 'cover',
