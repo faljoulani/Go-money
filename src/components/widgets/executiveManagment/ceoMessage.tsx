@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { LeadershipEntity } from './leadership.entity';
+import type { ExecutiveManagmentEntity } from './executiveManagment.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
 import Card from '../../atoms/card/card';
@@ -8,7 +8,7 @@ import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 
-interface Leadership {
+interface CeoMessage {
   Id: string;
   Title?: string;
   SubTitle?: string;
@@ -19,7 +19,7 @@ interface Leadership {
   Image?: any | any[];
 }
 
-export default async function Leadership(props: WidgetContext<LeadershipEntity>) {
+export default async function CeoMessage(props: WidgetContext<ExecutiveManagmentEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
@@ -61,7 +61,7 @@ export default async function Leadership(props: WidgetContext<LeadershipEntity>)
       single: true,
     },
   );
-  const parent = parentFetched as Leadership;
+  const parent = parentFetched as CeoMessage;
 
   const eyebrow = parent?.Eyebrow ?? '';
   const title = parent?.Title ?? 'Cards';
@@ -136,61 +136,81 @@ export default async function Leadership(props: WidgetContext<LeadershipEntity>)
       iconUrl,
     };
   });
-
   return (
-    <section {...attributes} className="w-full px-20 pt-5 pb-14 bg-[#EEEEEE]">
-      <div className="mb-10">
-        <Title variant="hero" className="text-start h-[63px] w-[650px] ml-0">
-          {title}
-        </Title>
-        {subtitle && (
-          <Description className="text-start ml-0 mt-1.5 text-[17px]">{subtitle}</Description>
-        )}
-      </div>
+    <section {...attributes} className="bg-[#EEEEEE] w-full px-20 pb-10">
+      <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8">
+        <div className="absolute top-0 right-12 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-white"></div>
+        </div>
+        <div className="absolute top-[204px] right-2">
+          <img src="/icons/Floating-button.svg" alt="Floating-button" />
+        </div>
+        <div className="relative justify-start">
+          <img
+            src={items[0]?.iconUrl}
+            alt={items[0]?.title}
+            className="rounded-[20px] w-[417px] h-[506px] object-cover"
+          />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
+            {items[0]?.description && (
+              <Description
+                align="left"
+                style={{
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                }}
+              >
+                {items[0]?.description}
+              </Description>
+            )}
+            {items[0]?.title && (
+              <Title
+                align="left"
+                style={{
+                  fontSize: '24px',
+                  color: 'var(--Text-text-primary, #010663)',
+                  fontWeight: 500,
+                }}
+              >
+                {items[0]?.title}
+              </Title>
+            )}
+          </div>
+        </div>
 
-      <div className="bg-gradient-to-br from-[#10CEBB] to-[#0357AD] rounded-[30px] pt-10.5 pb-14 px-[142px]">
-        <div className="grid grid-cols-3 gap-x-25">
-          {/* First 3 items */}
-          {items.slice(0, 3).map((item: any, i: number) => (
-            <div key={i} className="flex flex-col items-center">
-              {item.iconUrl && (
-                <img
-                  src={item.iconUrl}
-                  alt={item.title}
-                  className="rounded-full w-[251px] h-[363px]"
-                />
-              )}
-              <div className="text-center mt-8.5">
-                <h1 className="text-white text-[25px] whitespace-nowrap font-bold">{item.title}</h1>
-                <p className="text-white text-lg">{item.description}</p>
-              </div>
-            </div>
-          ))}
-
-          {/* Last 2 items */}
-          <div className="col-span-3 flex justify-center gap-x-25 mt-14.5">
-            {items.slice(3, 5).map((item: any, i: number) => (
-              <div key={i} className="flex flex-col items-center">
-                {item.iconUrl && (
-                  <img
-                    src={item.iconUrl}
-                    alt={item.title}
-                    className="rounded-full w-[251px] h-[363px]"
-                  />
-                )}
-                <div className="text-center mt-8.5">
-                  <h1 className="text-white text-[26px] whitespace-nowrap font-bold">
-                    {item.title}
-                  </h1>
-                  <p className="text-white text-lg">{item.description}</p>
-                </div>
-              </div>
-            ))}
+        <div className="text-start w-[522px] space-y-3">
+          <div className="space-y-3">
+            {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
+            {title && (
+              <Title
+                align="left"
+                style={{
+                  fontSize: '33px',
+                  color: 'var(--Text-text-primary, #010663)',
+                  fontWeight: 700,
+                }}
+              >
+                {title}
+              </Title>
+            )}
+          </div>
+          <div>
+            {subtitle && (
+              <Description
+                align="left"
+                style={{
+                  fontWeight: 400,
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                }}
+              >
+                {subtitle}
+              </Description>
+            )}
           </div>
         </div>
       </div>
-
-      
     </section>
   );
 }

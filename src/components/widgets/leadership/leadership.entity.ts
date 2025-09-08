@@ -14,7 +14,6 @@ export class LeadershipEntity {
     AllowMultipleItemsSelection: true,
   })
   Cards?: any;
-
   @WidgetLabel()
   SfWidgetLabel = 'Leadership';
 

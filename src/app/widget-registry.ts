@@ -23,7 +23,7 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-import CeoMessage from '../components/widgets/executiveManagment/ceoMessage';
+import CeoMessage from '../components/widgets/executiveManagment/ceoMessage'
 import { ExecutiveManagmentEntity } from './../components/widgets/executiveManagment/executiveManagment.entity';
 
 import Leadership from '../components/widgets/leadership/leadership';
