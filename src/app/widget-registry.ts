@@ -34,6 +34,10 @@ import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
 
 import BoardReport from '../components/widgets/boardReport/boardReport';
 import { BoardReportEntity } from '../components/widgets/boardReport/boardReport.entity';
+
+import ContactBox from '../components/widgets/gotQuestions/contactBox';
+import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.entity';
+
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
 const customWidgetRegistry: WidgetRegistry = {
@@ -94,7 +98,7 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
       },
     },
-    FAQ : {
+    FAQ: {
       componentType: faq,
       entity: FaqSectionEntity,
       ssr: true,
@@ -128,6 +132,16 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Leadership' },
       views: {
         Default: { Title: 'Default', ViewFunction: Leadership },
+      },
+    },
+    GotQuestions: {
+      componentType: ContactBox,
+      entity: ContactBoxEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Contact Box' },
+      views: {
+        Default: { Title: 'CTA (Default)', ViewFunction: ContactBox },
+        EmailAndPhone: { Title: 'Email And Phone', ViewFunction: ContactBox },
       },
     },
   },
