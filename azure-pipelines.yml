@@ -63,6 +63,11 @@ stages:
               if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
               if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
               if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
+
+              rem ---- Include Tailwind/PostCSS configs so Docker build can generate CSS ----
+              if exist       "$(Build.SourcesDirectory)\postcss.config.js" copy /Y  "$(Build.SourcesDirectory)\postcss.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\tailwind.config.ts" copy /Y "$(Build.SourcesDirectory)\tailwind.config.ts" "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\tailwind.config.js" copy /Y "$(Build.SourcesDirectory)\tailwind.config.js" "$(Build.ArtifactStagingDirectory)\drop\"
             displayName: 'Prepare FE artifacts'
 
           - task: PublishBuildArtifacts@1
