@@ -24,6 +24,8 @@ import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.ent
 
 import faqSection from '../components/widgets/faq/faq';
 import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
+import BoardReport from '../components/widgets/boardReport/boardReport';
+import { BoardReportEntity } from '../components/widgets/boardReport/boardReport.entity';
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
@@ -140,6 +142,15 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'ContactSubscription' },
       views: {
         Default: { Title: 'Default', ViewFunction: ContactSubscription },
+      },
+    },
+    BoardReport: {
+      componentType: BoardReport,
+      entity: BoardReportEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Board Report' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: BoardReport },
       },
     },
   },
