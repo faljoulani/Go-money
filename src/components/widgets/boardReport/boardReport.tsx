@@ -1,8 +1,8 @@
 import {
   WidgetContext,
   htmlAttributes,
-  RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
+import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { BoardReportEntity } from './boardReport.entity';
 import ReportGridClient from './reportGridClient';
 import React from 'react';
@@ -11,7 +11,6 @@ const BOARD_REPORT_TYPE =
 export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
   const attrs = htmlAttributes(props);
 
-  // read designer selection (MixedContent)
   let selection =
     props.model?.Properties?.BoardReport ??
     (props.model?.Properties as any)?.BoardReport;
@@ -22,8 +21,12 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
 
   let item: any;
   if (selection?.Content?.length) {
+     const id = selection?.ItemIdsOrdered?.[0]?.toString();
+    const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
     try {
-      item = await RestClientForContext.getItem(selection, {
+      item = await RestClient.getItem({
+        id,
+        provider,
         type: BOARD_REPORT_TYPE,
         culture: props.requestContext.culture,
         traceContext: props.traceContext,
@@ -78,7 +81,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
     PageSize: toInt(item.PageSize, 0),
     ItemsToSkip: toInt(item.ItemsToSkip, 0),
     AllowPagination: toBool(item.AllowPagination),
-        MainTitle: item.MainTitle,
+    Years :item.MainTitle.split(',').map((y:string) => y.trim()),
     Files: normalizeFiles(item.Files),
   };
 
@@ -92,6 +95,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
         description={view.Description}
         files={view.Files}
         pageSize={view.PageSize}
+        years={view.Years}
         initialOffset={view.ItemsToSkip}
         allowPagination={view.AllowPagination}
       />
