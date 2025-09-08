@@ -24,7 +24,10 @@ export class HowItWorkEntity {
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-  @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
+  @ViewSelector([
+    { Name: 'Default', Title: 'Default', Value: 'Default' },
+    { Name: 'Simple', Title: 'Simple', Value: 'Simple' },
+  ])
   ViewName?: string;
 }
 

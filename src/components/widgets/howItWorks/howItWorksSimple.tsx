@@ -1,22 +1,14 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import {HowItWorksSimple} from './howItWorksSimple';
-import HowItWorksRings from './HowItWorksRings.png';
+
 import NavyBackground from './NavyBackground.webp';
-import pocketImg from './pocketHQ.webp';
-import transparentNavy from './transparentNavy.png';
-import Mobile from './Mobile.png';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
-export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
+export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   const attrs = htmlAttributes(props);
-const selectedView =
-    (props.model as any)?.ViewName ||
-    (props.model?.Properties as any)?.ViewName ||
-    (props as any)?.viewName ||
-    'Default';
+  
   // Read designer selection
   let selection = props.model?.Properties?.HowItWork ?? (props.model?.Properties as any)?.HowItWork;
   if (typeof selection === 'string') {
@@ -124,15 +116,10 @@ const selectedView =
     })),
   };
 
-  const phoneSrc = mediaSrc(view.PhoneMockup) ?? Mobile.src;
-  const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
+
+ 
   // ---------- render ----------
-   if(selectedView === "Simple"){
-    return (
-        <HowItWorksSimple {...props}/>
-    )
-  }
   return (
     <section {...attrs} className="relative">
       {/* Top headline block */}
@@ -154,19 +141,10 @@ const selectedView =
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative h-[1600px] flex flex-col justify-center items-center"
-        style={{
-          backgroundImage: `url(${HowItWorksRings.src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: '50% 10%',
-        }}
+        className="relative h-[800px] flex flex-col justify-center items-center"
+
       >
-        <div className="pointer-events-none h-[85%] absolute inset-0 z-40">
-          <div className="sticky top-[28vh] flex justify-center">
-            <img src={phoneSrc} alt={phoneAlt} />
-          </div>
-        </div>
-        <div className="h-[120vh]" />
+      
 
         {/* Navy pocket section */}
         <section className="relative w-full">
@@ -178,19 +156,7 @@ const selectedView =
               backgroundPosition: 'center',
             }}
           >
-            {/* semi-transparent curved overlay to keep top crop and blend */}
-            <img
-              src={transparentNavy.src}
-              alt=""
-              className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
-            />
-            {/* pocket lip */}
-            <img
-              src={pocketImg.src}
-              alt=""
-              aria-hidden
-              className="pointer-events-none select-none absolute w-full -top-8 left-0 z-50"
-            />
+           
 
             {/* Content */}
             <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
@@ -271,5 +237,5 @@ const selectedView =
   );
 }
 
-export default HowItWork;
+export default HowItWorksSimple;
 
