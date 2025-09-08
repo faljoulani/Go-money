@@ -12,6 +12,7 @@ import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainN
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
+import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
 import Footer from '../components/widgets/footer/Footer-template';
 import { FooterEntity } from '../components/widgets/footer/Footer.entity';
@@ -22,21 +23,13 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-import faqSection from '../components/widgets/faq/faq';
-import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
-import BoardReport from '../components/widgets/boardReport/boardReport';
-import { BoardReportEntity } from '../components/widgets/boardReport/boardReport.entity';
+import CeoMessage from '../components/widgets/executiveManagment/ceoMessage';
+import { ExecutiveManagmentEntity } from './../components/widgets/executiveManagment/executiveManagment.entity';
+
+import Leadership from '../components/widgets/leadership/leadership';
+import { LeadershipEntity } from '../components/widgets/leadership/leadership.entity';
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
-
-import StackLayout from '../components/widgets/layouts/stackLayout';
-
-import ExpandBox from '../components/widgets/expandBox/expandbox';
-import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
-
-import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
-import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
-import SmartFeatures from '../components/widgets/smartFeatures/smartFeatures';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -51,10 +44,14 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
     CardSection: {
-      componentType: GridOfCards,
+      componentType: ScrollableCards,
       entity: CardSectionEntity,
       ssr: true,
       editorMetadata: { Title: 'Card Section' },
+      views: {
+        Default: { Title: 'Grid', ViewFunction: ScrollableCards },
+        Scrollable: { Title: 'Scrollable', ViewFunction: GridOfCards },
+      },
     },
     MainNavigation: {
       componentType: MainNavigation,
@@ -92,66 +89,22 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
       },
     },
-    StackLayout: {
-      componentType: StackLayout,
+    CeoMessage: {
+      componentType: CeoMessage,
+      entity: ExecutiveManagmentEntity,
       ssr: true,
-      editorMetadata: { Title: 'Stack Layout (Column)', Category: 'Layout & Presets' },
+      editorMetadata: { Title: 'CEO Message' },
       views: {
-        Default: { Title: 'Default', ViewFunction: StackLayout },
+        Default: { Title: 'CEO Message', ViewFunction: CeoMessage },
       },
     },
-    FAQ: {
-      componentType: faqSection,
-      entity: FaqSectionEntity,
+    Leadership: {
+      componentType: Leadership,
+      entity: LeadershipEntity,
       ssr: true,
-      editorMetadata: { Title: 'FAQ' },
+      editorMetadata: { Title: 'Leadership' },
       views: {
-        Default: { Title: 'Default', ViewFunction: faqSection },
-      },
-    },
-    FinanceRepaymentBanner: {
-      componentType: FinanceRepaymentBanner,
-      entity: FinanceRepaymentBannerEntity,
-      ssr: true,
-      editorMetadata: { Title: 'FinanceRepaymentBanner' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
-      },
-    },
-    ExpandBox: {
-      componentType: ExpandBox,
-      entity: ExpandBoxEntity,
-      ssr: true,
-      editorMetadata: { Title: 'ExpandBox' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: ExpandBox },
-      },
-    },
-    SmartFeatures: {
-      componentType: SmartFeatures,
-      entity: CardSectionEntity,
-      ssr: true,
-      editorMetadata: { Title: 'SmartFeatures' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: SmartFeatures },
-      },
-    },
-    ContactSubscription: {
-      componentType: ContactSubscription,
-      entity: ContactSubscriptionEntity,
-      ssr: true,
-      editorMetadata: { Title: 'ContactSubscription' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: ContactSubscription },
-      },
-    },
-    BoardReport: {
-      componentType: BoardReport,
-      entity: BoardReportEntity,
-      ssr: true,
-      editorMetadata: { Title: 'Board Report' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: BoardReport },
+        Default: { Title: 'Default', ViewFunction: Leadership },
       },
     },
   },
