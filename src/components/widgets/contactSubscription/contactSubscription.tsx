@@ -173,15 +173,10 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
             >
               {/* Corner ribbon (from public/icons) */}
               {box.HasLabelCorner && (
-                <div className="pointer-events-none absolute -right-10 -top-10 z-10">
-                  <Image
-                    src="/icons/corner-ribbon.svg"
-                    alt="Corner Ribbon"
-                    width={144}
-                    height={144}
-                    priority
-                    unoptimized
-                  />
+                <div className="absolute w-18 h-18 bg-[#1919E5] rounded-bl-3xl top-0 right-0">
+                  <div
+                    className='absolute w-10 h-10 bg-white right-0 top-0'
+                  ></div>
                 </div>
               )}
 
