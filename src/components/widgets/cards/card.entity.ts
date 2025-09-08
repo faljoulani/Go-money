@@ -23,6 +23,7 @@ export class CardSectionEntity {
   @ViewSelector([
     { Title: 'Grid', Value: 'GridOfCards' },
     { Title: 'ScrollableCards', Value: 'ScrollableCards' },
+    { Title: 'FeatureCards', Value: 'FeatureCards' },
   ])
   ViewName?: string;
 
