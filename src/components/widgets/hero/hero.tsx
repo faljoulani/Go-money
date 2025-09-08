@@ -135,13 +135,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
-  const isSimple = !eyebrow && !ctaUrl && !heroImgUrl;
+  // const isSimple = selectedView === 'Simple' || (!eyebrow && !ctaUrl && !heroImgUrl);
+  const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
     return (
       <section
         {...attrs}
-        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col"
+        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col rounded-2xl"
         style={{
           backgroundImage: `url(${heroBg.src})`,
           backgroundSize: 'cover',
@@ -151,6 +152,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         <div className=" max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
             <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
+            {/* <div className="mb-6">
+              <BreadcrumbCustomView
+                requestContext={props.requestContext}
+                items={[]}
+                widgetContext={props}
+                attributes={{}}
+              />
+            </div> */}
           </div>
           {title && (
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">

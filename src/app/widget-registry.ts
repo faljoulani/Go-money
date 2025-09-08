@@ -29,6 +29,11 @@ import { ExecutiveManagmentEntity } from './../components/widgets/executiveManag
 import Leadership from '../components/widgets/leadership/leadership';
 import { LeadershipEntity } from '../components/widgets/leadership/leadership.entity';
 
+import faq from '../components/widgets/faq/faq';
+import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
+
+import BoardReport from '../components/widgets/boardReport/boardReport';
+import { BoardReportEntity } from '../components/widgets/boardReport/boardReport.entity';
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
 const customWidgetRegistry: WidgetRegistry = {
@@ -87,6 +92,24 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'How It Works' },
       views: {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
+      },
+    },
+    FAQ : {
+      componentType: faq,
+      entity: FaqSectionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'FAQ' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: faq },
+      },
+    },
+    BoardReport: {
+      componentType: BoardReport,
+      entity: BoardReportEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Board Report' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: BoardReport },
       },
     },
     CeoMessage: {
