@@ -21,8 +21,9 @@ export class CardSectionEntity {
   @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
-    { Title: 'Grid', Value: 'GridOfCards' },
-    { Title: 'ScrollableCards', Value: 'ScrollableCards' },
+    { Name: 'Default', Title: 'Default', Value: 'Default' },
+    { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
+    { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
   ])
   ViewName?: string;
 

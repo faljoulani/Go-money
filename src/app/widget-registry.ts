@@ -1,10 +1,10 @@
 import {
   WidgetRegistry,
   initRegistry,
+  addWidgetViews,
   defaultWidgetRegistry,
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/widgets/hero/hero';
-import HeroDefault from '../components/widgets/hero/herodefault';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
@@ -23,6 +23,19 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
+import CeoMessage from '../components/widgets/executiveManagment/ceoMessage';
+import { ExecutiveManagmentEntity } from './../components/widgets/executiveManagment/executiveManagment.entity';
+
+import Leadership from '../components/widgets/leadership/leadership';
+import { LeadershipEntity } from '../components/widgets/leadership/leadership.entity';
+
+import faq from '../components/widgets/faq/faq';
+import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
+
+import BoardReport from '../components/widgets/boardReport/boardReport';
+import { BoardReportEntity } from '../components/widgets/boardReport/boardReport.entity';
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -31,8 +44,8 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Hero' },
       views: {
-        Default: { Title: 'Default', ViewFunction: HeroDefault },
-        Background: { Title: 'Background', ViewFunction: Hero },
+        Default: { Title: 'Default', ViewFunction: Hero },
+        Simple: { Title: 'Simple', ViewFunction: Hero },
       },
     },
     CardSection: {
@@ -72,8 +85,57 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
       },
     },
+    HowItWorks: {
+      componentType: HowItWorks,
+      entity: HowItWorkEntity,
+      ssr: true,
+      editorMetadata: { Title: 'How It Works' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: HowItWorks },
+      },
+    },
+    FAQ : {
+      componentType: faq,
+      entity: FaqSectionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'FAQ' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: faq },
+      },
+    },
+    BoardReport: {
+      componentType: BoardReport,
+      entity: BoardReportEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Board Report' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: BoardReport },
+      },
+    },
+    CeoMessage: {
+      componentType: CeoMessage,
+      entity: ExecutiveManagmentEntity,
+      ssr: true,
+      editorMetadata: { Title: 'CEO Message' },
+      views: {
+        Default: { Title: 'CEO Message', ViewFunction: CeoMessage },
+      },
+    },
+    Leadership: {
+      componentType: Leadership,
+      entity: LeadershipEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Leadership' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: Leadership },
+      },
+    },
   },
 };
+
+addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
+  Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
+});
 
 customWidgetRegistry.widgets = {
   ...defaultWidgetRegistry.widgets,

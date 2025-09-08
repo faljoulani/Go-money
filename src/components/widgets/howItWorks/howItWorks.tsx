@@ -1,18 +1,19 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import pocketImg from './pocketHQ.webp';
+
 import HowItWorksRings from './HowItWorksRings.png';
-import Mobile from './Mobile.png';
 import NavyBackground from './NavyBackground.webp';
-import BlackCurved from './BlackCurved.webp';
+import pocketImg from './pocketHQ.webp';
+import transparentNavy from './transparentNavy.png';
+import Mobile from './Mobile.png';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
 export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const attrs = htmlAttributes(props);
 
-  // read designer selection
+  // Read designer selection
   let selection = props.model?.Properties?.HowItWork ?? (props.model?.Properties as any)?.HowItWork;
   if (typeof selection === 'string') {
     try {
@@ -22,6 +23,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     }
   }
 
+  // Fetch selected section (only necessary fields)
   let item: any;
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
@@ -43,12 +45,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           'IntroSubLead',
           'CTALabel',
           'CTAExternalUrl',
-
-          // Relations
           'CTAInternalPage($select=Id,Title,DefaultUrl)',
           'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
-
-          // Steps (child items)
           'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
             'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
         ],
@@ -68,8 +66,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     }
     return null;
   }
-  console.log('props', props);
 
+  // ---------- helpers ----------
   const first = (v: any) => (Array.isArray(v) ? v[0] : v) || null;
 
   const pickOneMedia = (val: any) => {
@@ -95,7 +93,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  // Normalize shape for React (debug object)
+  // ---------- normalize for view ----------
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -111,24 +109,24 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
     PhoneMockup: pickOneMedia(item.PhoneMockup),
 
-    Steps: sortByOrder(item.Steps)
-      // .filter((s: any) => s?.IsVisible !== false)
-      .map((s: any) => ({
-        Id: s.Id,
-        Title: s.Title,
-        Description: s.Description,
-        Order: s.Order ?? 0,
-        StepNumber: s.StepNumber ?? null,
-        Logo: pickOneMedia(s.Logo),
-        IsVisible: s.IsVisible ?? true,
-      })),
+    Steps: sortByOrder(item.Steps).map((s: any) => ({
+      Id: s.Id,
+      Title: s.Title,
+      Description: s.Description,
+      Order: s.Order ?? 0,
+      StepNumber: s.StepNumber ?? null,
+      Logo: pickOneMedia(s.Logo),
+      IsVisible: s.IsVisible ?? true,
+    })),
   };
 
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? Mobile.src;
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
+  // ---------- render ----------
   return (
     <section {...attrs} className="relative">
+      {/* Top headline block */}
       <div className="mx-auto max-w-3xl text-center px-6 py-10">
         {view.SubTitle && (
           <p className="text-[11px] md:text-xs uppercase font-semibold tracking-[0.25em] text-[#0B1C5A]/80">
@@ -145,6 +143,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         )}
       </div>
 
+      {/* Rings background + sticky phone */}
       <div
         className="relative h-[1600px] flex flex-col justify-center items-center"
         style={{
@@ -153,11 +152,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundPosition: '50% 10%',
         }}
       >
-        {/* <div className="pointer-events-none h-[85%] absolute inset-0 z-40">
-          <div className="sticky top-[28vh] flex justify-center">
-            <img src={Mobile.src} alt="" />
-          </div>
-        </div> */}
         <div className="pointer-events-none h-[85%] absolute inset-0 z-40">
           <div className="sticky top-[28vh] flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} />
@@ -165,16 +159,23 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         </div>
         <div className="h-[120vh]" />
 
+        {/* Navy pocket section */}
         <section className="relative w-full">
-          {/* DARK POCKET BASE */}
           <div
-            className="relative  rounded-t-[28px] overflow-hidden"
+            className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
             style={{
               backgroundImage: `url(${NavyBackground.src})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
+            {/* semi-transparent curved overlay to keep top crop and blend */}
+            <img
+              src={transparentNavy.src}
+              alt=""
+              className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
+            />
+            {/* pocket lip */}
             <img
               src={pocketImg.src}
               alt=""
@@ -182,15 +183,15 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               className="pointer-events-none select-none absolute w-full -top-8 left-0 z-50"
             />
 
-            {/* CONTENT */}
-            <div className="relative z-70 mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
+            {/* Content */}
+            <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light pt-10  text-[28px] md:text-[40px]">
+                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px]">
                   {view.IntroLead}
                 </h2>
               )}
 
-              {/* CARDS */}
+              {/* Steps */}
               <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {view.Steps.map((s, i) => {
                   const logoSrc = mediaSrc(s.Logo);
@@ -201,11 +202,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                     <div
                       key={s.Id || `${s.Title}-${i}`}
                       className="relative rounded-[28px] p-10 text-white
-                               ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
-                               shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_80px_rgba(0,0,0,0.35)]
-                               before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
-                               before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
-                               before:pointer-events-none"
+                                 ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
+                                 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_80px_rgba(0,0,0,0.35)]
+                                 before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
+                                 before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
+                                 before:pointer-events-none"
                     >
                       <div className="mx-auto mb-6 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 ring-1 ring-white/15">
                         {logoSrc ? (
@@ -230,14 +231,15 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                 })}
               </div>
 
+              {/* CTA */}
               {view.CTALabel && (
                 <div className="mt-12 flex justify-center">
                   <a
                     href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
                     className="group inline-flex items-center gap-2 rounded-full px-6 py-3
-                             text-white/95 font-medium
-                             shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
-                             backdrop-blur-[2px] hover:bg-white/10 transition"
+                               text-white/95 font-medium
+                               shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
+                               backdrop-blur-[2px] hover:bg-white/10 transition"
                   >
                     <span>{view.CTALabel}</span>
                     <svg

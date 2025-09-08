@@ -1,77 +1,102 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export interface NavLink {
-  label: string;
-  href: string;
+import { cleanHref, normalizePath, mergeClasses, displayTitle } from '../../../utils/utils';
+import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/type';
+
+/* ---------- Normalized (with href) ---------- */
+type NormalizedLink = ApiNavLink & { href: string };
+type NormalizedDropdown = NormalizedLink & { children: NormalizedLink[] };
+type NormalizedItem = NormalizedLink | NormalizedDropdown;
+
+/* ---------- Local, union-specific guards ---------- */
+function isApiDropdown(item: ApiNavItem): item is ApiNavDropdown {
+  return Array.isArray((item as any)?.children);
 }
-export interface NavDropdown extends NavLink {
-  children: NavLink[];
-}
-export type NavItem = NavLink | NavDropdown;
-function isDropdown(item: NavItem): item is NavDropdown {
-  return (item as NavDropdown).children !== undefined;
+/** Guard for the *normalized* union (after normalization) */
+function isNormalizedDropdown(item: NormalizedItem): item is NormalizedDropdown {
+  return Array.isArray((item as any)?.children);
 }
 
-export default function ClientNav({
+export default function ClientNavbar({
   items,
   currentPath,
   className,
+  stripQuery = true,
 }: {
-  items: NavItem[];
-  currentPath: string;
+  items: ApiNavItem[];
+  currentPath?: string;
   className?: string;
+  stripQuery?: boolean;
 }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
-  // Close on outside click
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (!rootRef.current) return;
-      if (!rootRef.current.contains(e.target as Node)) setOpenIdx(null);
-    }
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, []);
+  const figmaLinkCls = 'font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal';
 
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpenIdx(null);
-    }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, []);
+  const normalized: NormalizedItem[] = useMemo(() => {
+    const norm = (it: ApiNavLink): NormalizedLink => ({
+      ...it,
+      href: stripQuery ? cleanHref(it.url) : it.url,
+    });
+
+    return items.map((item) => {
+      if (isApiDropdown(item)) {
+        return { ...norm(item), children: item.children.map(norm) } as NormalizedDropdown;
+      }
+      return norm(item) as NormalizedLink;
+    });
+  }, [items, stripQuery]);
+
+  // Active path (normalize for robust matching)
+  const rawPath = currentPath ?? pathname ?? '';
+  const pathForMatch = normalizePath(stripQuery ? cleanHref(rawPath) : rawPath);
 
   return (
-    <nav ref={rootRef} className={className ?? 'hidden lg:flex items-center gap-1'}>
-      {items.map((item, i) => {
-        const isActive =
-          currentPath &&
-          (currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href)));
+    <nav className={mergeClasses('flex items-center gap-4', 'pointer-events-auto', className)}>
+      {normalized.map((item, i) => {
+        const itemMatch = normalizePath(item.href);
+        const childActive = isNormalizedDropdown(item)
+          ? item.children.some((c) => {
+              const cMatch = normalizePath(c.href);
+              return pathForMatch === cMatch || (cMatch !== '/' && pathForMatch.startsWith(cMatch));
+            })
+          : false;
 
-        const base =
-          'relative px-3 py-2 text-sm font-medium inline-flex items-center gap-1 no-underline transition-colors';
-        const activeClasses = isActive ? 'text-[#010663]' : 'text-gray-800 hover:text-primary';
+        const selfActive =
+          pathForMatch === itemMatch || (itemMatch !== '/' && pathForMatch.startsWith(itemMatch));
+
+        const active = childActive || selfActive;
+
+        const base = mergeClasses(
+          'relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline',
+          figmaLinkCls,
+        );
+
+        const decoration = 'decoration-[#010663] decoration-2 underline-offset-4';
+        const inactiveColor = 'text-[var(--Text-text-default,#424242)]';
+        const activeColor = mergeClasses('text-[#010663]', 'underline', decoration);
+        const activeClasses = active ? activeColor : inactiveColor;
 
         return (
-          <div key={item.label + item.href} className="relative">
-            {isDropdown(item) ? (
+          <div key={`${item.href}-${i}`} className="relative">
+            {isNormalizedDropdown(item) ? (
               <button
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={openIdx === i}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenIdx(openIdx === i ? null : i);
-                }}
-                className={`${base} ${activeClasses}`}
+                onClick={() => setOpenIdx(openIdx === i ? null : i)}
+                className={mergeClasses(base, activeClasses)}
               >
-                {item.label}
+                {displayTitle(item.title)}
                 <svg
-                  className={`h-4 w-4 opacity-70 transition-transform ${openIdx === i ? 'rotate-180' : ''}`}
+                  className={mergeClasses(
+                    'h-4 w-4 opacity-70 transition-transform',
+                    openIdx === i && 'rotate-180',
+                  )}
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
@@ -82,39 +107,41 @@ export default function ClientNav({
                 </svg>
               </button>
             ) : (
-              <Link href={item.href} className={`${base} ${activeClasses}`}>
-                {item.label}
+              <Link href={item.href} className={mergeClasses(base, activeClasses)}>
+                {displayTitle(item.title)}
               </Link>
             )}
 
-            {isActive && (
-              <div className="absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full bg-primary" />
-            )}
-
-            {isDropdown(item) && openIdx === i && (
+            {/* Dropdown */}
+            {isNormalizedDropdown(item) && openIdx === i && (
               <div
-                className="
-                  absolute top-full left-0 mt-2 min-w-[220px] rounded-xl border border-black/5
-                  bg-white p-2 shadow-xl z-50
-                "
                 role="menu"
+                className={mergeClasses(
+                  'absolute top-full left-0 mt-2 min-w-[200px] rounded-xl',
+                  'border border-white/20 bg-white/70 backdrop-blur-md backdrop-saturate-150',
+                  'shadow-xl z-50 pointer-events-auto',
+                  'p-2',
+                )}
               >
                 {item.children.map((child) => {
-                  const childActive = currentPath && currentPath === child.href;
+                  const cMatch = normalizePath(child.href);
+                  const cActive =
+                    pathForMatch === cMatch || (cMatch !== '/' && pathForMatch.startsWith(cMatch));
                   return (
                     <Link
                       key={child.href}
                       href={child.href}
                       onClick={() => setOpenIdx(null)}
-                      className={[
-                        'block rounded-lg px-3 py-2 text-sm no-underline',
-                        childActive
-                          ? 'text-primary bg-slate-50'
-                          : 'text-gray-700 hover:bg-slate-50',
-                      ].join(' ')}
                       role="menuitem"
+                      className={mergeClasses(
+                        'block rounded-lg px-3 py-2 no-underline',
+                        figmaLinkCls,
+                        cActive
+                          ? mergeClasses('text-primary underline', decoration)
+                          : 'text-[var(--Text-text-default,#424242)] hover:bg-white/70',
+                      )}
                     >
-                      {child.label}
+                      {displayTitle(child.title)}
                     </Link>
                   );
                 })}

@@ -5,8 +5,8 @@ import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/co
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
-@WidgetEntity('CardSection', 'Card Section')
-export class CardSectionEntity {
+@WidgetEntity('ExecutiveManagment', 'Executive Managment')
+export class ExecutiveManagmentEntity {
   @ContentSection('Content', 0)
   @DisplayName('Cards')
   @Content({
@@ -16,13 +16,14 @@ export class CardSectionEntity {
   Cards?: any;
 
   @WidgetLabel()
-  SfWidgetLabel = 'Card Section';
+  SfWidgetLabel = 'CeoMessage';
 
   @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
-    { Title: 'Grid', Value: 'GridOfCards' },
-    { Title: 'ScrollableCards', Value: 'ScrollableCards' },
+    { Name: 'Default', Title: 'Default', Value: 'Default' },
+    { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
+    { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
   ])
   ViewName?: string;
 
