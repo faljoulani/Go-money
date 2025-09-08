@@ -23,6 +23,7 @@ export class ExpandBoxEntity {
   @ViewSelector([
     { Name: 'Default', Title: 'Default', Value: 'Default' },
     { Name: 'WithHeading', Title: 'With heading', Value: 'WithHeading' },
+    { Name: 'ContentWithImage', Title: 'Content With Image', Value: 'ContentWithImage' },
   ])
   ViewName?: string;
 }
