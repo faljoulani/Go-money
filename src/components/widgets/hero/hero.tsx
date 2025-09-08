@@ -1,12 +1,8 @@
-
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
 import heroBg from './HeroBackground.jpg';
-import BreadcrumbCustomView from '../breadcrumb/breadcrumbCustom';
-import Title from '../../atoms/title/title';
-import Description from '../../atoms/description/description';
 import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -139,73 +135,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
-  // const isSimple = selectedView === 'Simple' || (!eyebrow && !ctaUrl && !heroImgUrl);
-  const isSimple = selectedView === 'Simple';
-
-  if (isSimple) {
-    return (
-      <section
-        {...attrs}
-        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col rounded-2xl"
-        style={{
-          backgroundImage: `url(${heroBg.src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className=" max-w-4xl px-6 pb-20 text-center">
-          <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
-            {/* <div className="mb-6">
-              <BreadcrumbCustomView
-                requestContext={props.requestContext}
-                items={[]}
-                widgetContext={props}
-                attributes={{}}
-              />
-            </div> */}
-          </div>
-          {title && (
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-              {title}
-            </h1>
-          )}
-          {description && <p className="mt-6 text-lg sm:text-xl text-white/85">{description}</p>}
-        </div>
-      </section>
-    );
-  }
-
-  // const isSimple = selectedView === 'Simple' || (!eyebrow && !ctaUrl && !heroImgUrl);
-  const isSimple = selectedView === 'Simple';
-
-  if (isSimple) {
-    return (
-      <section
-        {...attrs}
-        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col"
-        style={{
-          backgroundImage: `url(${heroBg.src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className=" max-w-4xl px-6 pb-20 text-center">
-          <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
-          </div>
-          {title && (
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-              {title}
-            </h1>
-          )}
-          {description && <p className="mt-6 text-lg sm:text-xl text-white/85">{description}</p>}
-        </div>
-      </section>
-    );
-  }
-
-  // ---- decide which view to render ----
   const isSimple = !eyebrow && !ctaUrl && !heroImgUrl;
 
   if (isSimple) {
@@ -219,30 +148,22 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           backgroundPosition: 'center',
         }}
       >
-    
-  
-
         <div className=" max-w-4xl px-6 pb-20 text-center">
-             <div className="mx-auto max-w-7xl px-6 pt-8">
-          <div className="mb-6" data-sfcontainer="Breadcrumb">
+          <div className="mx-auto max-w-7xl px-6 pt-8">
+            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
           </div>
-        </div>
           {title && (
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
               {title}
             </h1>
           )}
-          {description && (
-            <p className="mt-6 text-lg sm:text-xl text-white/85">
-              {description}
-            </p>
-          )}
+          {description && <p className="mt-6 text-lg sm:text-xl text-white/85">{description}</p>}
         </div>
       </section>
     );
   }
 
-  // DEFAULT hero 
+  // DEFAULT hero
   return (
     <section
       {...attrs}
