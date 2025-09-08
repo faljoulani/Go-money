@@ -5,7 +5,7 @@ import type { ExpandBoxEntity } from './expandbox.entity';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
-import CTA from '../../atoms/cta/cta';
+import ContentWithImage from './ContentWithImage';
 
 type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
 type CmsImage =
@@ -21,6 +21,7 @@ type CmsImage =
   | null
   | undefined;
 
+/* ---------- helpers ---------- */
 function parseSelection(raw: unknown) {
   if (!raw) return undefined;
   if (typeof raw === 'string') {
@@ -58,8 +59,42 @@ function imageUrl(img: CmsImage): string | undefined {
   return img.MediaUrl || img.Url || img.ThumbnailUrl || img.EmbedUrl;
 }
 
+function EmptySafe({ isEdit, label }: { isEdit: boolean; label: string }) {
+  return isEdit ? (
+    <div className="p-6 border border-dashed rounded-2xl text-center text-slate-500">
+      <strong>{label}</strong>
+      <div className="mt-1">Open the designer and select an item.</div>
+    </div>
+  ) : (
+    <div /> // keep a node; don't return null to avoid enhancer crashes
+  );
+}
+
+/* ---------- main component ---------- */
 export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
-  const attrs = htmlAttributes(props);
+  const attrs = htmlAttributes(props); // enhancer expects this element to exist
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+
+  // Stable root for Sitefinity enhancer; React content lives inside inner wrapper
+  return (
+    <section {...attrs} data-view={selectedView}>
+      <div data-react-root>
+        {selectedView === 'ContentWithImage' ? (
+          <ContentWithImage {...props} />
+        ) : (
+          <ExpandBoxDefault {...props} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- default view only (isolated side-effects/logs here) ---------- */
+async function ExpandBoxDefault(props: WidgetContext<ExpandBoxEntity>) {
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection(
@@ -67,17 +102,7 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
   );
   const id = firstIdFromSelection(selection);
 
-  if (!id) {
-    return isEdit ? (
-      <section
-        {...attrs}
-        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
-      >
-        <strong>ExpandBox</strong>
-        <div className="mt-1">Open the designer and select an ExpandBox item.</div>
-      </section>
-    ) : null;
-  }
+  if (!id) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
   const item = await RestClient.getItem({
     type: 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox',
@@ -94,9 +119,13 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
     ],
   });
 
-  if (!item) return null;
+  if (!item) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
-  console.log('ITEM =========== >>>>>>>>>>>>> ' + JSON.stringify(item));
+  if (process.env.NODE_ENV === 'development') {
+    // log only in dev and only for the default path
+    console.log('[ExpandBoxDefault] itemId=%s', item.Id);
+  }
+
   const eyebrow: string | undefined = item.Eyebrow;
   const title: string | undefined = item.Title;
   const description: string | undefined = item.Description;
@@ -111,22 +140,17 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
     'illustration';
 
   return (
-    <section
-      {...attrs}
-      className="relative overflow-hidden rounded-[28px] bg-[#CFE8F1] p-6 md:p-10 lg:p-14"
-    >
+    <div className="relative overflow-hidden rounded-[28px] bg-[#CFE8F1] p-6 md:p-10 lg:p-14">
       <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
         {/* Left: copy */}
         <div className="max-w-xl text-left">
           <div>
             {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-
             {title && (
               <Title align="left" variant="hero">
                 {title}
               </Title>
             )}
-
             {description && <Description align="left">{description}</Description>}
           </div>
 
@@ -144,21 +168,21 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
             </div>
           ) : null}
         </div>
+
         {/* Right: artwork / image panel */}
         <div className="relative mx-auto w-full">
           <div className="relative mx-auto h-[346.89px] w-[346.89px] rounded-[20px] overflow-hidden">
             {/* Gradient shadow outside (top + right) */}
             <div
               className="
-        pointer-events-none absolute -top-6 -right-6
-        h-[120%] w-[120%]
-        bg-[linear-gradient(210.86deg,#6BE5BF_0%,#6BE5BF_100%)]
-        rounded-[30px]
-        blur-2xl opacity-40
-        -z-10
-      "
+                pointer-events-none absolute -top-6 -right-6
+                h-[120%] w-[120%]
+                bg-[linear-gradient(210.86deg,#6BE5BF_0%,#6BE5BF_100%)]
+                rounded-[30px]
+                blur-2xl opacity-40
+                -z-10
+              "
             />
-
             {/* Actual content */}
             {imgSrc ? (
               <img
@@ -173,7 +197,7 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
