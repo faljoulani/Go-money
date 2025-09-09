@@ -1,93 +1,49 @@
-import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { SmartFeaturesEntity} from './card.entity';
+import type { SmartFeaturesEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { parseMaybeJson } from '../../../utils/utils';
 
-type Card = {
+import Card from '../../atoms/card/card';
+import Eyebrow from '../../atoms/eyebrow/eyebrow';
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
+import CTA from '../../atoms/cta/cta';
+
+interface MinimizedDownloadNow {
   Id: string;
   Title?: string;
-  Description?: string;
-  Image?: any | any[];
-};
-
-type ParentMeta = {
-  Id: string;
-  Title?: string;
-  Description?: string;
   SubTitle?: string;
-  ItemIdsOrdered?: string[];
+  Eyebrow?: string;
+  Description?: string;
+  CtaText?: string;
+  CtaUrl?: string | { Href?: string } | Array<{ Href?: string }>;
   Image?: any | any[];
-  Content?: any;
-};
-
-function idsFrom(selection?: any): string[] {
-  if (!selection) return [];
-  const sel = parseMaybeJson(selection) ?? selection;
-
-  if (Array.isArray(sel?.ItemIdsOrdered) && sel.ItemIdsOrdered.length) {
-    return sel.ItemIdsOrdered.filter(Boolean);
-  }
-  const filterVal = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value as string | undefined;
-  if (typeof filterVal === 'string' && filterVal.trim()) {
-    return filterVal.split(',').map((s) => s.trim()).filter(Boolean);
-  }
-  return [];
-}
-
-const imgUrl = (im: any) => im?.MediaUrl || im?.Url || im?.ThumbnailUrl || '';
-
-const isApple = (t: string) => /apple store|app store|apple|ios/i.test(t);
-const isGoogle = (t: string) => /play store|google play|google/i.test(t);
-const isHuawei = (t: string) => /huawei|appgallery|app gallery/i.test(t);
-
-function pickStoreBadges(cards: Card[]) {
-  const out: { apple?: any; google?: any; huawei?: any } = {};
-  for (const c of cards) {
-    const t = (c.Title || '').toLowerCase();
-    const firstImg = Array.isArray(c.Image) ? c.Image[0] : c.Image;
-    if (!firstImg) continue;
-    if (!out.apple && isApple(t)) out.apple = firstImg;
-    else if (!out.google && isGoogle(t)) out.google = firstImg;
-    else if (!out.huawei && isHuawei(t)) out.huawei = firstImg;
-  }
-  return out;
-}
-
-function findImageByTitle(images: any[] | undefined, needle: string) {
-  if (!images) return undefined;
-  const n = needle.toLowerCase();
-  return images.find((im) => (im?.Title || '').toLowerCase().includes(n));
 }
 
 export default async function MinimizedDownloadNow(props: WidgetContext<SmartFeaturesEntity>) {
-  const attrs = htmlAttributes(props);
-  const { culture, isEdit } = props.requestContext;
+  const attributes = htmlAttributes(props);
+  const selection = (props.model?.Properties || {}) as any;
+  const { culture } = props.requestContext;
 
-  const properties = (props.model?.Properties || {}) as any;
-  const cardsSel = parseMaybeJson(properties?.Cards) ?? properties?.Cards;
-  const listSel = parseMaybeJson(properties?.CardListData) ?? properties?.CardListData;
+  const isEdit = props.requestContext.isEdit;
+  const id = extractSelectionId(selection);
+  console.log('ID OF PARENT ========== >>>>>>>>>>>>> ' + JSON.stringify(id));
 
-  const parentId = extractSelectionId(listSel);
-  if (!parentId) {
+  console.log('selection ========== >>>>>>>>>>>>> ' + JSON.stringify(selection));
+
+  if (!id) {
     return isEdit ? (
       <section
-        {...attrs}
-        className="relative mx-auto h-[320px] max-w-[1240px]  rounded-3xl"
-        style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
+        {...attributes}
+        className="p-6 border border-dashed rounded-lg text-center text-slate-500"
       >
-        <div className="relative z-10 flex h-full w-full items-center justify-center p-10">
-          <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
-            <strong>Smart Features</strong>
-            <div className="mt-1">Open the designer and select a Card List.</div>
-          </div>
-        </div>
+        <strong>Cards</strong>
+        <div className="mt-1">Open the designer and select a Card List.</div>
       </section>
     ) : null;
   }
 
   const parentFetched = await fetchData(
-    [parentId],
+    [id],
     null,
     culture,
     [
@@ -95,126 +51,160 @@ export default async function MinimizedDownloadNow(props: WidgetContext<SmartFea
       'Title',
       'Description',
       'SubTitle',
-      'ItemIdsOrdered',
+      'Eyebrow',
+      'CtaText',
+      'CtaUrl',
       'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
-      'Content',
     ],
     {
-      itemType: listSel?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
+      itemType: selection?.CardListData?.Content?.[0]?.Type,
       single: true,
     },
   );
-  const parent = parentFetched as ParentMeta | null;
+  const parent = parentFetched as MinimizedDownloadNow;
 
-  const cardIds: string[] =
-    Array.isArray(parent?.ItemIdsOrdered) && parent!.ItemIdsOrdered.length
-      ? parent!.ItemIdsOrdered
-      : idsFrom(cardsSel);
+  const eyebrow = parent?.Eyebrow ?? '';
+  const title = parent?.Title ?? 'Cards';
+  const subtitle = parent?.Description ?? parent?.SubTitle ?? '';
+  const ctaText = parent?.CtaText ?? '';
+  const ctaUrlRaw = parent?.CtaUrl;
+  const ctaHref =
+    typeof ctaUrlRaw === 'string'
+      ? ctaUrlRaw
+      : Array.isArray(ctaUrlRaw)
+        ? (ctaUrlRaw.find((x) => x?.Href)?.Href ?? '')
+        : (ctaUrlRaw?.Href ?? '');
 
-  let cardsList: Card[] = [];
-  if (cardIds.length) {
-    const cards = (await fetchData(
-      cardIds,
+  const parentImage = Array.isArray(parent?.Image) ? parent.Image[0] : parent?.Image;
+
+  const parentImgUrl =
+    parentImage?.Url ||
+    parentImage?.MediaUrl ||
+    parentImage?.ThumbnailUrl ||
+    parentImage?.Urls?.[0] ||
+    parentImage?.EmbedUrl ||
+    undefined;
+
+  const selectedIds: string[] = (() => {
+    const raw = selection?.Cards;
+    if (!raw) return [];
+    if (Array.isArray(raw)) return raw as string[];
+    if (Array.isArray((raw as any)?.ItemIdsOrdered)) return (raw as any).ItemIdsOrdered as string[];
+    return [];
+  })();
+
+  console.log('DATA OF PARENT =========== >>>>>>>>>>>> ' + JSON.stringify(parent));
+
+  let cardItems: any[] = [];
+  if (selectedIds.length > 0) {
+    const fetched = await fetchData(
+      selectedIds,
       null,
       culture,
       [
         'Id',
         'Title',
         'Description',
+        'Eyebrow',
+        'CtaText',
+        'CtaUrl',
         'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
       ],
       {
-        itemType:
-          cardsSel?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
+        itemType: selection?.Cards?.Content?.[0]?.Type ?? selection?.Content?.[0]?.Type,
         single: false,
       },
-    )) as Card[] | Card | null;
-
-    cardsList = Array.isArray(cards) ? cards : cards ? [cards] : [];
-    const order = new Map(cardIds.map((id, i) => [id, i]));
-    cardsList.sort((a, b) => (order.get(a.Id) ?? 0) - (order.get(b.Id) ?? 0));
+    );
+    cardItems = Array.isArray(fetched) ? fetched : fetched ? [fetched] : [];
   }
 
-  const heading = parent?.Title || 'Download our app';
-  const description = parent?.Description || parent?.SubTitle || '';
+  const items = cardItems.map((c: any) => {
+    const itemHrefRaw = c?.CtaUrl;
+    const itemHref =
+      typeof itemHrefRaw === 'string'
+        ? itemHrefRaw
+        : Array.isArray(itemHrefRaw)
+          ? (itemHrefRaw.find((x) => x?.Href)?.Href ?? '')
+          : (itemHrefRaw?.Href ?? c?.LinkUrl ?? undefined);
 
-  const parentImages = Array.isArray(parent?.Image)
-    ? parent!.Image
-    : parent?.Image
-      ? [parent.Image]
-      : [];
-  const mobileImg = findImageByTitle(parentImages, 'mobile') || parentImages[0];
-  const mobileUrl = mobileImg ? imgUrl(mobileImg) : '';
-  
-  const stores = pickStoreBadges(cardsList);
-  const orderedLogos = [stores.apple, stores.google, stores.huawei].filter(Boolean) as any[];
-  console.log("orderedlogos:", orderedLogos );
+    const img = Array.isArray(c?.Image) ? c.Image[0] : c?.Image;
+    const icon = Array.isArray(c?.Icon) ? c.Icon[0] : c?.Icon;
+    const iconUrl =
+      img?.Url ||
+      img?.MediaUrl ||
+      img?.ThumbnailUrl ||
+      img?.Urls?.[0] ||
+      img?.EmbedUrl ||
+      icon?.Url ||
+      icon?.MediaUrl ||
+      undefined;
+
+    return {
+      title: c?.Title ?? '',
+      description: c?.Description ?? '',
+      href: itemHref || undefined,
+      iconUrl,
+    };
+  });
 
   return (
-    <section
-      {...attrs}
-      className="relative mx-auto h-[200px] w-[1600px]  overflow-hidden rounded-3xl"
-      style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
-    >
+    <section {...attributes}>
       <div
-        aria-hidden
-        className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 h-[240px] w-[260px] rounded-[28px]"
-        style={{ background: 'rgba(179, 223, 239, 0.65)' }}
-      />
-
-      <div className="relative flex h-full w-full gap-6  px-20">
-        {/* LEFT: phone image */}
-        <div className="relative z-30 h-[600px] w-[25%]">
-          {mobileUrl && (
-            <Image
-              src={mobileUrl}
-              alt={mobileImg?.AlternativeText || 'Mobile'}
-              width={360}
-              height={720}
-              priority
-              className="absolute left-0 top-1/2 -translate-y-1/2"
-              style={{ filter: 'drop-shadow(22px -14px 36px rgba(0,0,0,0.35))' }}
-            />
-          )}
-        </div>
-
-        {/* RIGHT: text + logos */}
-        <div className="flex h-full w-[75%] items-center justify-between">
-          <div className="w-full max-w-[620px] text-[#0A1B2E]">
-            <h2 className="text-[40px] font-[800] leading-[1.05] tracking-[-0.02em] text-[#00145A]">
-              {heading}
-            </h2>
-
-            {description && (
-              <div
-                className="mt-3 text-[15px] leading-relaxed opacity-90"
-                dangerouslySetInnerHTML={{ __html: description }}
+        className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-25"
+        style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
+      >
+        <div className="relative flex h-full w-full gap-6  px-16">
+          {/* LEFT: phone image */}
+          <div className="relative z-30 w-[279px] h-[282px]">
+            {parentImgUrl && (
+              <img
+                src={parentImgUrl}
+                alt={parentImgUrl?.AlternativeText || 'Mobile'}
+                width={360}
+                height={720}
+                className="absolute left-0 bottom-24.5 "
               />
             )}
+          </div>
+
+          {/* RIGHT: text + logos */}
+          <div className="flex h-full w-[75%] items-center justify-between">
+            <div className="w-full max-w-[620px] text-[#0A1B2E]">
+              <h2 className="text-[40px] font-[800] leading-[1.05] tracking-[-0.02em] text-[#00145A]">
+                {title}
+              </h2>
+
+              {subtitle && (
+                <div
+                  className="mt-3 text-[15px] leading-relaxed opacity-90"
+                  dangerouslySetInnerHTML={{ __html: subtitle }}
+                />
+              )}
             </div>
             {/* round store logos */}
-            
-            {orderedLogos.length > 0 && (
-              <div className="mt-6 flex items-center gap-4">
-                {orderedLogos.map((im, idx) => (
-                  <div
-                    key={idx}
-                    className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-black/90 ring-1 ring-black/10 flex items-center justify-center"
-                  >
-                    <Image
-                      src={imgUrl(im)}
-                      alt={im?.AlternativeText || im?.Title || 'store logo'}
-                      width={44}
-                      height={44}
-                      className="object-contain"
-                      priority
-                    />
-                  </div>
+
+            {items.length > 0 && (
+              <div className="relative my-16 flex items-center">
+                {items.slice(0, 3).map((item: any, i: number) => (
+                  <a key={i} href={item.href} rel="" className="flex flex-col items-center">
+                    {item.iconUrl && (
+                      
+                      <div className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] ${i === 0 ? 'absolute right-22.5 top-0 z-30' : `${i === 1 ? 'absolute right-11 top-0' : ''}`}`}>
+                        <img
+                          src={item.iconUrl}
+                          alt={item.title}
+                          className="h-7 w-7 object-contain"
+                        />
+                      </div>
+                    )}
+                  </a>
                 ))}
               </div>
             )}
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
