@@ -84,26 +84,13 @@ RUN if (Test-Path 'node_modules/@tailwindcss/oxide/package.json') { \
     }
 
 # ---- Ensure sharp native binary is present ---------------------------------
-# npm ci was run with --ignore-scripts; sharp v0.33 uses platform vendor packages (@img/sharp-*)
-# that may be missing due to cross-OS lockfiles. Ensure Windows vendors are installed.
+# Keep it simple to avoid PowerShell quoting pitfalls; rely on lockfile pinning.
 RUN if (Test-Path 'node_modules/sharp/package.json') { \
-      Write-Host 'Ensuring sharp Windows vendor packages are installed'; \
-      $json = Get-Content -Raw 'node_modules/sharp/package.json' | ConvertFrom-Json; \
-      $vendorVer = $json.optionalDependencies.'@img/sharp-win32-x64'; \
-      $libvipsVer = $json.optionalDependencies.'@img/sharp-libvips-win32-x64'; \
-      if ($vendorVer) { \
-        Write-Host "Installing @img/sharp-win32-x64@$vendorVer and @img/sharp-libvips-win32-x64@$libvipsVer"; \
-        $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
-        $pkgVendor = "@img/sharp-win32-x64@$vendorVer"; \
-        $pkgLibvips = "@img/sharp-libvips-win32-x64@$libvipsVer"; \
-        & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkgVendor $pkgLibvips; \
-      } else { \
-        Write-Host 'Could not detect vendor versions from sharp package.json; attempting npm rebuild sharp'; \
-        $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
-        & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' rebuild sharp --foreground-scripts --no-audit --no-fund; \
-      } \
+      Write-Host 'Rebuilding sharp (defensive) to ensure native binary is present'; \
+      $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+      & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' rebuild sharp --foreground-scripts --no-audit --no-fund; \
     } else { \
-      Write-Host 'sharp not present in node_modules - skipping vendor install' \
+      Write-Host 'sharp not present in node_modules - skipping rebuild' \
     }
 
 # ---- Wire lightningcss .node to wrapper path (defensive) -------------------
