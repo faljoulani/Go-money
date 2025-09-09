@@ -32,7 +32,7 @@ type Parent = {
   Cards?: { ItemIdsOrdered?: string[] };
 };
 
-export default async function AlternatingFeatures(props: WidgetContext<CardSectionEntity>) {
+export default async function AlternatingFeaturesCard(props: WidgetContext<CardSectionEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture, isEdit } = props.requestContext;

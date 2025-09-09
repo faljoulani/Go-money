@@ -19,9 +19,9 @@ export default function Subtitle<T extends React.ElementType = 'h3'>({
   children,
   className,
   align = 'center',
-  color = 'var(--Text-text-default, #424242)', // Figma default
-  fontSize = 18, // px
-  fontWeight = 600, // SemiBold
+  color = 'var(--Text-text-default, #424242)',
+  fontSize = 18,
+  fontWeight = 600,
   lineHeight = '100%',
   letterSpacing = '0%',
   maxWidth,
