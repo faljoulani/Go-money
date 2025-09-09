@@ -132,7 +132,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
-  // const isSimple = selectedView === 'Simple' || (!eyebrow && !ctaUrl && !heroImgUrl);
   const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
@@ -141,14 +140,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         {...attrs}
         className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col rounded-2xl"
         style={{
-          backgroundImage: `url('/assets/HeroBackground.jpg)`,
+          backgroundImage: `url('/assets/HeroBackground.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
         <div className=" max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
+              <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
             {/* <div className="mb-6">
               <BreadcrumbCustomView
                 requestContext={props.requestContext}
