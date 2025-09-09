@@ -84,13 +84,24 @@ RUN if (Test-Path 'node_modules/@tailwindcss/oxide/package.json') { \
     }
 
 # ---- Ensure sharp native binary is present ---------------------------------
-# We skipped scripts during npm ci, so run sharp's install scripts explicitly.
+# npm ci was run with --ignore-scripts; sharp v0.33 uses platform vendor packages (@img/sharp-*)
+# that may be missing due to cross-OS lockfiles. Ensure Windows vendors are installed.
 RUN if (Test-Path 'node_modules/sharp/package.json') { \
-      Write-Host 'Rebuilding sharp to fetch win32-x64 binary'; \
-      $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
-      & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' rebuild sharp --foreground-scripts --no-audit --no-fund; \
+      Write-Host 'Ensuring sharp Windows vendor packages are installed'; \
+      $json = Get-Content -Raw 'node_modules/sharp/package.json' | ConvertFrom-Json; \
+      $vendorVer = $json.optionalDependencies.'@img/sharp-win32-x64'; \
+      $libvipsVer = $json.optionalDependencies.'@img/sharp-libvips-win32-x64'; \
+      if ($vendorVer) { \
+        Write-Host ("Installing @img/sharp-win32-x64@{0} and @img/sharp-libvips-win32-x64@{1}" -f $vendorVer, $libvipsVer); \
+        $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+        & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save ("@img/sharp-win32-x64@{0}" -f $vendorVer) ("@img/sharp-libvips-win32-x64@{0}" -f $libvipsVer); \
+      } else { \
+        Write-Host 'Could not detect vendor versions from sharp package.json; attempting npm rebuild sharp'; \
+        $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+        & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' rebuild sharp --foreground-scripts --no-audit --no-fund; \
+      } \
     } else { \
-      Write-Host 'sharp not present in node_modules; skipping rebuild.' \
+      Write-Host 'sharp not present in node_modules - skipping vendor install' \
     }
 
 # ---- Wire lightningcss .node to wrapper path (defensive) -------------------
@@ -112,6 +123,7 @@ RUN if exist node_modules\\lightningcss\\package.json ( \
     ) else ( \
       echo Skipping lightningcss check; package not installed \
     )
+RUN C:\\node\\node.exe -e "try{const s=require('sharp');console.log('sharp OK:',typeof s,' libvips?',!!(s.versions&&s.versions.sharp));}catch(e){console.log('ERROR loading sharp:',e && (e.code||e.message)); process.exit(1)}"
 SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-Command"]
 
 # ---- Build (Next + Tailwind) -----------------------------------------------
