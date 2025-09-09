@@ -8,6 +8,7 @@ import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import ScrollableCards from './scrollableCards';
+import FeatureCards from './FeatureCards';
 
 type AnySel = any;
 
@@ -72,6 +73,10 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
 
   if (selectedView === 'ScrollableCards') {
     return <ScrollableCards {...props} />;
+  }
+
+  if (selectedView === 'FeatureCards') {
+    return <FeatureCards {...props} />;
   }
 
   const parentSelectionId = extractSelectionId(selection);
