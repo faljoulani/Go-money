@@ -98,7 +98,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
 
 const headers: Record<string, string> = {
   'x-sf-service-request': 'true',
-   Authorization: `Bearer ${process.env.SF_API_BEARER!.trim()}`,
+   Authorization: `Bearer ${process.env.SF_API_BEARER}`,
   'Accept': 'application/json;odata.metadata=minimal',
 };    console.log('BEARER:', process.env.SF_API_BEARER);
     if (process.env.SF_API_BEARER) headers.Authorization = `Bearer ${process.env.SF_API_BEARER}`;
