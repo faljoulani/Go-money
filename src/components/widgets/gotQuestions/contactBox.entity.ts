@@ -4,27 +4,24 @@ import { DisplayName } from '@progress/sitefinity-widget-designers-sdk/decorator
 import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/content';
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
-
-@WidgetEntity('ExpandBox', 'ExpandBox')
-export class ExpandBoxEntity {
+ 
+@WidgetEntity('ContactBox', 'ContactBox')
+export class ContactBoxEntity {
   @ContentSection('Content', 0)
-  @DisplayName('ExpandBox item')
+  @DisplayName('ContactBox item')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox',
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.ContactBox.ContactBox', 
     AllowMultipleItemsSelection: false,
   })
-  ExpandBox?: any;
-
+  ContactBox?: any;
+ 
   @WidgetLabel()
-  SfWidgetLabel = 'ExpandBox';
-
+  SfWidgetLabel = 'ContactBox';
+ 
   @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
     { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'WithHeading', Title: 'With heading', Value: 'WithHeading' },
-    { Name: 'ContentWithImage', Title: 'Content With Image', Value: 'ContentWithImage' },
   ])
   ViewName?: string;
 }
-

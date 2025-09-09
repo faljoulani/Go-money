@@ -5,26 +5,22 @@ import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/co
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
-@WidgetEntity('ExpandBox', 'ExpandBox')
-export class ExpandBoxEntity {
+@WidgetEntity('SupportInfoBox', 'Support Info Box')
+export class SupportInfoBoxEntity {
   @ContentSection('Content', 0)
-  @DisplayName('ExpandBox item')
+  @DisplayName('SupportInfoBox item')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox',
+    
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.SupportInfoBox.SupportInfoBox',
     AllowMultipleItemsSelection: false,
   })
-  ExpandBox?: any;
+  SupportInfoBox?: any;
 
   @WidgetLabel()
-  SfWidgetLabel = 'ExpandBox';
+  SfWidgetLabel = 'SupportInfoBox';
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-  @ViewSelector([
-    { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'WithHeading', Title: 'With heading', Value: 'WithHeading' },
-    { Name: 'ContentWithImage', Title: 'Content With Image', Value: 'ContentWithImage' },
-  ])
+  @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
   ViewName?: string;
 }
-
