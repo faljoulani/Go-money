@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { SmartFeaturesEntity } from './card.entity';
+import type { DownloadAppEntity } from './downloadApp.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { parseMaybeJson } from '../../../utils/utils';
-import MinimizedDownloadNow from './MinimizedDownloadNow';
+import MinimizedDownloadApp from './minimizedDownloadApp';
 
 type Card = {
   Id: string;
@@ -71,15 +71,29 @@ function getNonStoreCards(cards: Card[]): Card[] {
   });
 }
 
-// ---------- component ----------
-export default async function SmartFeatures(props: WidgetContext<SmartFeaturesEntity>) {
+export default async function HighlightBlock(props: WidgetContext<DownloadAppEntity>) {
   const attrs = htmlAttributes(props);
-    const selectedView =
+  const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
-  try { console.log('[Hero] Rendering view:', selectedView); } catch {}
+
+  return (
+    <section {...attrs} data-view={selectedView}>
+      <div data-react-root>
+        {selectedView === 'MinimizedDownloadApp' ? (
+          <MinimizedDownloadApp {...props} />
+        ) : (
+          <DownloadAppDefault {...props} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
+  const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
   const properties = (props.model?.Properties || {}) as any;
@@ -170,11 +184,6 @@ export default async function SmartFeatures(props: WidgetContext<SmartFeaturesEn
   const orderedBadges = [stores.apple, stores.google, stores.huawei].filter(Boolean) as any[];
 
   const infoCards = getNonStoreCards(cardsList).slice(0, 2);
-  if (selectedView === 'Minimal Download Now'){
-    return (
-      <MinimizedDownloadNow {...props}/>
-    )
-  }
 
   return (
     <section
