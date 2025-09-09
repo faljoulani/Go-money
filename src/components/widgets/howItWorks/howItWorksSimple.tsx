@@ -9,7 +9,6 @@ const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitwork
 export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   const attrs = htmlAttributes(props);
   
-  // Read designer selection
   let selection = props.model?.Properties?.HowItWork ?? (props.model?.Properties as any)?.HowItWork;
   if (typeof selection === 'string') {
     try {
@@ -19,7 +18,6 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
     }
   }
 
-  // Fetch selected section (only necessary fields)
   let item: any;
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
@@ -63,7 +61,6 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
     return null;
   }
 
-  // ---------- helpers ----------
   const first = (v: any) => (Array.isArray(v) ? v[0] : v) || null;
 
   const pickOneMedia = (val: any) => {
@@ -89,7 +86,6 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  // ---------- normalize for view ----------
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -121,9 +117,9 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
  
   // ---------- render ----------
   return (
-    <section {...attrs} className="relative">
+    <section {...attrs} className="relative py-10">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 py-10">
+      <div className="mx-auto max-w-3xl text-center px-6 ">
         {view.SubTitle && (
           <p className="text-[11px] md:text-xs uppercase font-semibold tracking-[0.25em] text-[#0B1C5A]/80">
             {view.SubTitle}
@@ -139,17 +135,12 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
         )}
       </div>
 
-      {/* Rings background + sticky phone */}
-      <div
-        className="relative h-[800px] flex flex-col justify-center items-center"
-
-      >
+     
       
 
-        {/* Navy pocket section */}
-        <section className="relative w-full">
+        <section className="relative w-[80%] mx-auto  mb-10">
           <div
-            className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
+            className="flex flex-col items-center relative rounded-3xl mt-10"
             style={{
               backgroundImage: `url(${NavyBackground.src})`,
               backgroundSize: 'cover',
@@ -159,9 +150,9 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
            
 
             {/* Content */}
-            <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
+            <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-14 pb-28 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px]">
+                <h2 className="text-center text-white font-light text-[28px] md:text-[40px]">
                   {view.IntroLead}
                 </h2>
               )}
@@ -232,7 +223,6 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
             </div>
           </div>
         </section>
-      </div>
     </section>
   );
 }
