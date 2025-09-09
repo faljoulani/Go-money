@@ -92,9 +92,11 @@ RUN if (Test-Path 'node_modules/sharp/package.json') { \
       $vendorVer = $json.optionalDependencies.'@img/sharp-win32-x64'; \
       $libvipsVer = $json.optionalDependencies.'@img/sharp-libvips-win32-x64'; \
       if ($vendorVer) { \
-        Write-Host ("Installing @img/sharp-win32-x64@{0} and @img/sharp-libvips-win32-x64@{1}" -f $vendorVer, $libvipsVer); \
+        Write-Host "Installing @img/sharp-win32-x64@$vendorVer and @img/sharp-libvips-win32-x64@$libvipsVer"; \
         $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
-        & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save ("@img/sharp-win32-x64@{0}" -f $vendorVer) ("@img/sharp-libvips-win32-x64@{0}" -f $libvipsVer); \
+        $pkgVendor = "@img/sharp-win32-x64@$vendorVer"; \
+        $pkgLibvips = "@img/sharp-libvips-win32-x64@$libvipsVer"; \
+        & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkgVendor $pkgLibvips; \
       } else { \
         Write-Host 'Could not detect vendor versions from sharp package.json; attempting npm rebuild sharp'; \
         $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
