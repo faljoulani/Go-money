@@ -55,13 +55,12 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
     CardSection: {
-      componentType: ScrollableCards,
+      componentType: GridOfCards,
       entity: CardSectionEntity,
       ssr: true,
       editorMetadata: { Title: 'Card Section' },
       views: {
-        Default: { Title: 'Grid', ViewFunction: ScrollableCards },
-        Scrollable: { Title: 'Scrollable', ViewFunction: GridOfCards },
+        Default: { Title: 'Grid', ViewFunction: GridOfCards },
       },
     },
     MainNavigation: {
@@ -98,7 +97,7 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'How It Works' },
       views: {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
-          Simple: { Title: 'Simple', ViewFunction: HowItWorks }
+        Simple: { Title: 'Simple', ViewFunction: HowItWorks },
       },
     },
     FAQ: {

@@ -179,8 +179,8 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
   const navy = '#0B2A8E';
 
   return (
-    <section {...attributes} className="w-full bg-gradient-to-b from-[#F6F7F9] to-[#EFF1F4] py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section {...attributes} className="w-full py-16 px-20">
+      <div className="">
         <div className="text-center">
           {eyebrow && <Eyebrow color={navy}>{eyebrow}</Eyebrow>}
           <Title variant="hero" color={navy}>
@@ -190,18 +190,20 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
         </div>
 
         <div className="mt-12">
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-8">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="group rounded-[20px] bg-white/95 border border-slate-200 shadow-sm p-6 md:p-8 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                className="group rounded-[20px] bg-white p-8 transition-all duration-1000 hover:-translate-y-4"
               >
                 {item.href ? (
                   <Card
                     icon={item.icon}
+                    className="w-18 h-18" 
                     title={item.title}
                     description={item.description}
                     href={item.href}
+                    
                   />
                 ) : (
                   <Card icon={item.icon} title={item.title} description={item.description} />
@@ -220,7 +222,7 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
               variant="outline"
               width={248}
               height={56}
-              arrow={true}
+              icon='arrow'
             >
               {ctaText}
             </CTA>
