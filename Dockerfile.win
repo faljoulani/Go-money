@@ -65,7 +65,7 @@ RUN if (Test-Path 'node_modules/@tailwindcss/oxide/package.json') { \
         $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
         & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg1 $pkg2; \
       } else { \
-        Write-Host "lightningcss not present; installing oxide prebuilt only (oxide=$oxVer)"; \
+        Write-Host "lightningcss not present - installing oxide prebuilt only (oxide=$oxVer)"; \
         $pkg1 = '@tailwindcss/oxide-win32-x64-msvc@' + $oxVer; \
         $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
         & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg1; \
@@ -74,12 +74,12 @@ RUN if (Test-Path 'node_modules/@tailwindcss/oxide/package.json') { \
       if (Test-Path 'node_modules/lightningcss/package.json') { \
         $lcJson = Get-Content -Raw "node_modules/lightningcss/package.json" | ConvertFrom-Json; \
         $lcVer = $lcJson.version; \
-        Write-Host "@tailwindcss/oxide not present (Tailwind v3 or optional dep omitted). Installing lightningcss@$lcVer prebuilt only"; \
+        Write-Host "@tailwindcss/oxide not present (Tailwind v3 or optional dep omitted) - installing lightningcss@$lcVer prebuilt only"; \
         $pkg2 = 'lightningcss-win32-x64-msvc@' + $lcVer; \
         $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
         & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg2; \
       } else { \
-        Write-Host "Neither @tailwindcss/oxide nor lightningcss present; skipping prebuilt installs."; \
+      Write-Host 'Neither @tailwindcss/oxide nor lightningcss present - skipping prebuilt installs'; \
       } \
     }
 
