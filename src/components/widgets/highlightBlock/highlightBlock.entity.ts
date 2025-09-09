@@ -5,35 +5,26 @@ import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/co
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
-@WidgetEntity('CardSection', 'Card Section')
-export class SmartFeaturesEntity {
+@WidgetEntity('ExpandBox', 'ExpandBox')
+export class HighlightBlockEntity {
   @ContentSection('Content', 0)
-  @DisplayName('Cards')
+  @DisplayName('ExpandBox item')
   @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
-    AllowMultipleItemsSelection: true,
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox',
+    AllowMultipleItemsSelection: false,
   })
-  Cards?: any;
+  ExpandBox?: any;
 
   @WidgetLabel()
-  SfWidgetLabel = 'Card Section';
+  SfWidgetLabel = 'ExpandBox';
 
   @ContentSection('Design', 1)
   @DisplayName('View')
   @ViewSelector([
     { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
-    { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
-    { Name: 'Minimal Download Now', Title: 'Minimal Download Now', Value: 'Minimal Download Now' },
+    { Name: 'ContentWithImage', Title: 'Content With Image', Value: 'ContentWithImage' },
+    { Name: 'ContentWithoutImage', Title: 'Content Without Image', Value: 'ContentWithoutImage' },
   ])
   ViewName?: string;
-
-  @ContentSection('Parent Card List Info', 2)
-  @DisplayName('Card List Info')
-  @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
-    AllowMultipleItemsSelection: false,
-  })
-  CardListData?: any;
 }
 
