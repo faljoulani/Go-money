@@ -51,16 +51,26 @@ RUN $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
 COPY . .
 
 # ---- Install Windows prebuilts for oxide + lightningcss --------------------
-# Ensure the platform-native .node files are present to avoid node-gyp builds
-RUN $oxJson = Get-Content -Raw "node_modules/@tailwindcss/oxide/package.json" | ConvertFrom-Json; \
-    $lcJson = Get-Content -Raw "node_modules/lightningcss/package.json" | ConvertFrom-Json; \
-    $oxVer = $oxJson.version; \
-    $lcVer = $lcJson.version; \
-    Write-Host "Selecting prebuilts: oxide=$oxVer lightningcss=$lcVer"; \
-    $pkg1 = '@tailwindcss/oxide-win32-x64-msvc@' + $oxVer; \
-    $pkg2 = 'lightningcss-win32-x64-msvc@' + $lcVer; \
-    $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
-    & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg1 $pkg2
+# Ensure the platform-native .node files are present to avoid node-gyp builds.
+# If Tailwind v3 is used (no @tailwindcss/oxide), only install lightningcss prebuilt.
+RUN if (Test-Path 'node_modules/@tailwindcss/oxide/package.json') { \
+      $oxJson = Get-Content -Raw "node_modules/@tailwindcss/oxide/package.json" | ConvertFrom-Json; \
+      $lcJson = Get-Content -Raw "node_modules/lightningcss/package.json" | ConvertFrom-Json; \
+      $oxVer = $oxJson.version; \
+      $lcVer = $lcJson.version; \
+      Write-Host "Selecting prebuilts: oxide=$oxVer lightningcss=$lcVer"; \
+      $pkg1 = '@tailwindcss/oxide-win32-x64-msvc@' + $oxVer; \
+      $pkg2 = 'lightningcss-win32-x64-msvc@' + $lcVer; \
+      $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+      & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg1 $pkg2; \
+    } else { \
+      $lcJson = Get-Content -Raw "node_modules/lightningcss/package.json" | ConvertFrom-Json; \
+      $lcVer = $lcJson.version; \
+      Write-Host "@tailwindcss/oxide not present (Tailwind v3 or optional dep omitted). Installing lightningcss@$lcVer prebuilt only."; \
+      $pkg2 = 'lightningcss-win32-x64-msvc@' + $lcVer; \
+      $env:Path = 'C:\\node;C:\\Windows\\System32;C:\\Windows;' + $env:Path; \
+      & 'C:\\node\\node.exe' 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js' i --no-audit --no-fund --no-save $pkg2; \
+    }
 
 # ---- Ensure sharp native binary is present ---------------------------------
 # We skipped scripts during npm ci, so run sharp's install scripts explicitly.
@@ -80,7 +90,8 @@ RUN $src = Join-Path $(Resolve-Path 'node_modules') 'lightningcss-win32-x64-msvc
 
 # ---- Assert natives load (via cmd to avoid PowerShell quoting) -------------
 SHELL ["cmd", "/S", "/C"]
-RUN C:\\node\\node.exe -p "Object.keys(require('@tailwindcss/oxide')).slice(0,5).join(',')"
+# oxide is optional in Tailwind v4 and absent in v3; warn if missing but do not fail
+RUN C:\\node\\node.exe -e "try{const ox=require('@tailwindcss/oxide');console.log('oxide OK:',Object.keys(ox).slice(0,5).join(','));}catch(e){console.log('WARN: @tailwindcss/oxide not found (ok if Tailwind v3 or optional deps omitted):',e.code);}"
 RUN C:\\node\\node.exe -p "typeof require('lightningcss').transform"
 SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","-NoProfile","-ExecutionPolicy","Bypass","-Command"]
 
