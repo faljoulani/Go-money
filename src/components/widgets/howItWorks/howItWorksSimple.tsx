@@ -1,23 +1,14 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import {HowItWorksSimple} from './howItWorksSimple';
-import HowItWorksRings from './HowItWorksRings.png';
+
 import NavyBackground from './NavyBackground.webp';
-import pocketImg from './pocketHQ.webp';
-import transparentNavy from './transparentNavy.png';
-import Mobile from './Mobile.png';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
-export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
+export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   const attrs = htmlAttributes(props);
-const selectedView =
-    (props.model as any)?.ViewName ||
-    (props.model?.Properties as any)?.ViewName ||
-    (props as any)?.viewName ||
-    'Default';
-  // Read designer selection
+  
   let selection = props.model?.Properties?.HowItWork ?? (props.model?.Properties as any)?.HowItWork;
   if (typeof selection === 'string') {
     try {
@@ -27,7 +18,6 @@ const selectedView =
     }
   }
 
-  // Fetch selected section (only necessary fields)
   let item: any;
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
@@ -71,7 +61,6 @@ const selectedView =
     return null;
   }
 
-  // ---------- helpers ----------
   const first = (v: any) => (Array.isArray(v) ? v[0] : v) || null;
 
   const pickOneMedia = (val: any) => {
@@ -97,7 +86,6 @@ const selectedView =
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  // ---------- normalize for view ----------
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -124,19 +112,14 @@ const selectedView =
     })),
   };
 
-  const phoneSrc = mediaSrc(view.PhoneMockup) ?? Mobile.src;
-  const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
+
+ 
   // ---------- render ----------
-   if(selectedView === "Simple"){
-    return (
-        <HowItWorksSimple {...props}/>
-    )
-  }
   return (
-    <section {...attrs} className="relative">
+    <section {...attrs} className="relative py-10">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 py-10">
+      <div className="mx-auto max-w-3xl text-center px-6 ">
         {view.SubTitle && (
           <p className="text-[11px] md:text-xs uppercase font-semibold tracking-[0.25em] text-[#0B1C5A]/80">
             {view.SubTitle}
@@ -152,50 +135,24 @@ const selectedView =
         )}
       </div>
 
-      {/* Rings background + sticky phone */}
-      <div
-        className="relative h-[1600px] flex flex-col justify-center items-center"
-        style={{
-          backgroundImage: `url(${HowItWorksRings.src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: '50% 10%',
-        }}
-      >
-        <div className="pointer-events-none h-[85%] absolute inset-0 z-40">
-          <div className="sticky top-[28vh] flex justify-center">
-            <img src={phoneSrc} alt={phoneAlt} />
-          </div>
-        </div>
-        <div className="h-[120vh]" />
+     
+      
 
-        {/* Navy pocket section */}
-        <section className="relative w-full">
+        <section className="relative w-[80%] mx-auto  mb-10">
           <div
-            className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
+            className="flex flex-col items-center relative rounded-3xl mt-10"
             style={{
               backgroundImage: `url(${NavyBackground.src})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
-            {/* semi-transparent curved overlay to keep top crop and blend */}
-            <img
-              src={transparentNavy.src}
-              alt=""
-              className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
-            />
-            {/* pocket lip */}
-            <img
-              src={pocketImg.src}
-              alt=""
-              aria-hidden
-              className="pointer-events-none select-none absolute w-full -top-8 left-0 z-50"
-            />
+           
 
             {/* Content */}
-            <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
+            <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-14 pb-28 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px]">
+                <h2 className="text-center text-white font-light text-[28px] md:text-[40px]">
                   {view.IntroLead}
                 </h2>
               )}
@@ -266,10 +223,9 @@ const selectedView =
             </div>
           </div>
         </section>
-      </div>
     </section>
   );
 }
 
-export default HowItWork;
+export default HowItWorksSimple;
 

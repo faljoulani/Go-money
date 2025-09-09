@@ -98,6 +98,7 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'How It Works' },
       views: {
         Default: { Title: 'Default', ViewFunction: HowItWorks },
+          Simple: { Title: 'Simple', ViewFunction: HowItWorks }
       },
     },
     FAQ: {
