@@ -39,8 +39,10 @@ import ContactBox from '../components/widgets/gotQuestions/contactBox';
 import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.entity';
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+
 import ExpandBox from '../components/widgets/expandBox/expandbox';
 import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
+
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {

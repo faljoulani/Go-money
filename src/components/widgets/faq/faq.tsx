@@ -11,16 +11,13 @@ import Description from '../../atoms/description/description';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import React, { useState } from 'react';
 
-// Types in your Module Builder
 const FAQ_ROOT_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FAQS';
 const FAQ_CATEGORY_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategory';
 
-// -------- SERVER COMPONENT --------
 export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   const attrs = htmlAttributes(props);
   const model = props.model?.Properties;
   const viewName = model?.ViewName || 'Default';
-  console.log('MODEL:', model);
 
   const parseContent = (c: any) => (typeof c === 'string' ? JSON.parse(c) : c);
   const faqRoot = parseContent(model?.FaqRoot);
@@ -28,9 +25,6 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   console.log('CATEGORIES:', selectedCategories);
   let rootData: any = undefined;
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
-  // let categories: { Id: string; Title: string; Order?: number }[] = [];
-
-  // -- fetch root + categories (as you already had) --
 
   try {
     if (faqRoot?.Content?.length) {
@@ -76,38 +70,75 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
     ItemDefaultUrl?: string;
   };
 
+  async function fetchToken(): Promise<string> {
+    const url = 'http://dev-sfall.ddns.net:9095/sitefinity/oauth/token';
+
+    const body = new URLSearchParams({
+      username: 'hamzeh.allyan@ejada.com',
+      password: 'hamzeh123456',
+      grant_type: 'password',
+      client_id: 'postman',
+      client_secret: 'secret',
+    }).toString();
+
+   
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-sf-service-request': 'true',
+      },
+      body,
+      cache: 'no-store',
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '');
+      throw new Error(`Token error ${resp.status} ${resp.statusText} — ${text}`);
+    }
+
+    const json = (await resp.json()) as {
+      access_token: string;
+      token_type?: string;
+      expires_in?: number;
+      scope?: string;
+    };
+
+    if (!json?.access_token) {
+      throw new Error('Token response did not include access_token.');
+    }
+
+    return json.access_token;
+  }
+
+  const SF_API_BEARER = await fetchToken();
   async function fetchQuestions(
     props: any,
   ): Promise<{ questions: Question[]; grouped: Record<string, Question[]> }> {
-    const sfBase =
-      (props.requestContext as any)?.siteData?.SiteUrl ||
-      (props.requestContext as any)?.siteUrl ||
-      process.env.SF_BASE_URL;
+    const origin = (process.env.SF_BASE_URL ?? '').replace(/\/$/, '');
+    if (!origin)
+      throw new Error('SF_BASE_URL env var is required (e.g., http://dev-sfall.ddns.net:9095)');
 
-    if (!sfBase) {
-      throw new Error(
-        'Missing Sitefinity base URL. Provide requestContext.siteData.SiteUrl or SF_BASE_URL env.',
-      );
-    }
-    const origin = sfBase.replace(/\/$/, '');
+    const select = '$select=Id,Title,Answer,Order,ParentId,ItemDefaultUrl';
+    const orderby = '$orderby=Order asc, Title asc';
+    const url = `${origin}/api/default/faqquestions`;
 
-    const select = `$select=${encodeURIComponent('Id,Title,Answer,Order,ParentId,ItemDefaultUrl')}`;
-    const orderby = `$orderby=${encodeURIComponent('Order asc, Title asc')}`;
-    const url = `${origin}/api/default/faqquestions?${select}&${orderby}`;
+    const token = (SF_API_BEARER || '').trim();
+    if (!token) throw new Error('SF_API_BEARER env var is missing');
+
+    const headers: Record<string, string> = {
+      Accept: 'application/json;odata.metadata=minimal',
+      Authorization: `Bearer ${token}`,
+      'x-sf-service-request': 'true',
+    };
+
     console.log('URL:', url);
-
-const headers: Record<string, string> = {
-  'x-sf-service-request': 'true',
-   Authorization: `Bearer ${process.env.SF_API_BEARER!.trim()}`,
-  'Accept': 'application/json;odata.metadata=minimal',
-};    console.log('BEARER:', process.env.SF_API_BEARER);
-    if (process.env.SF_API_BEARER) headers.Authorization = `Bearer ${process.env.SF_API_BEARER}`;
-
-    // 4) Fetch (server-side)
+    console.log('BEARER:', SF_API_BEARER);
     const resp = await fetch(url, {
       headers,
-      cache: 'no-store',
     });
+
+    console.log('WWW-Authenticate:', resp.headers.get('www-authenticate'));
 
     if (!resp.ok) {
       const text = await resp.text().catch(() => '');
@@ -122,16 +153,13 @@ const headers: Record<string, string> = {
       const key = (q.ParentId ?? '').toLowerCase();
       (grouped[key] ??= []).push(q);
     }
-    for (const key of Object.keys(grouped)) {
-      grouped[key].sort(
-        (a, b) => (a.Order ?? 0) - (b.Order ?? 0) || a.Title.localeCompare(b.Title),
-      );
+    for (const k of Object.keys(grouped)) {
+      grouped[k].sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0) || a.Title.localeCompare(b.Title));
     }
-
-    console.log('[FAQ] GET', url, '->', questions.length, 'items');
 
     return { questions, grouped };
   }
+
   let questions: Question[] = [];
   let grouped: Record<string, Question[]> = {};
 
