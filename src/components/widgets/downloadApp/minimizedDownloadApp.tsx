@@ -144,26 +144,25 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
   return (
     <section {...attributes}>
       <div
-        className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-25"
+        className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-[98px]"
         style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
       >
         <div className="relative flex h-full w-full gap-6  px-16">
           {/* LEFT: phone image */}
-          <div className="relative z-30 w-[279px] h-[282px]">
+          <div className="absolute z-10 w-[279px] h-[282px] bottom-0 ">
             {parentImgUrl && (
               <img
                 src={parentImgUrl}
                 alt={parentImgUrl?.AlternativeText || 'Mobile'}
                 width={360}
                 height={720}
-                className="absolute left-0 bottom-24.5 "
               />
             )}
           </div>
 
           {/* RIGHT: text + logos */}
-          <div className="flex h-full w-[75%] items-center justify-between">
-            <div className="w-full max-w-[620px] text-[#0A1B2E]">
+          <div className="flex h-full w-full items-center justify-between">
+            <div className="w-full max-w-[427px] text-[#0A1B2E] ml-[316px]">
               <h2 className="text-[40px] font-[800] leading-[1.05] tracking-[-0.02em] text-[#00145A]">
                 {title}
               </h2>
@@ -183,7 +182,9 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
                   <a key={i} href={item.href} rel="" className="flex flex-col items-center">
                     {item.iconUrl && (
                       <div
-                        className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] ${i === 0 ? 'absolute right-22.5 top-0 z-30' : `${i === 1 ? 'absolute right-11 top-0' : ''}`}`}
+                        className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] 
+                          ${i === 0 ? 'absolute mr-[134px] top-0 z-20' 
+                          : `${i === 1 ? 'absolute right-12 top-0' : ''}`}`}
                       >
                         <img
                           src={item.iconUrl}
