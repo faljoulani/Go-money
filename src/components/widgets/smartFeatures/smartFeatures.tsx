@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { CardSectionEntity } from './card.entity';
+import type { SmartFeaturesEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { parseMaybeJson } from '../../../utils/utils';
+import MinimizedDownloadNow from './MinimizedDownloadNow';
 
 type Card = {
   Id: string;
@@ -71,8 +72,14 @@ function getNonStoreCards(cards: Card[]): Card[] {
 }
 
 // ---------- component ----------
-export default async function SmartFeatures(props: WidgetContext<CardSectionEntity>) {
+export default async function SmartFeatures(props: WidgetContext<SmartFeaturesEntity>) {
   const attrs = htmlAttributes(props);
+    const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+  try { console.log('[Hero] Rendering view:', selectedView); } catch {}
   const { culture, isEdit } = props.requestContext;
 
   const properties = (props.model?.Properties || {}) as any;
@@ -163,6 +170,11 @@ export default async function SmartFeatures(props: WidgetContext<CardSectionEnti
   const orderedBadges = [stores.apple, stores.google, stores.huawei].filter(Boolean) as any[];
 
   const infoCards = getNonStoreCards(cardsList).slice(0, 2);
+  if (selectedView === 'Minimal Download Now'){
+    return (
+      <MinimizedDownloadNow {...props}/>
+    )
+  }
 
   return (
     <section

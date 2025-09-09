@@ -9,7 +9,11 @@ import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
 import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
+
+import SmartFeatures from '../components/widgets/smartFeatures/smartFeatures';
+import {SmartFeaturesEntity} from '../components/widgets/smartFeatures/card.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 import ScrollableCards from '../components/widgets/cards/scrollableCards';
@@ -117,6 +121,18 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'Board Report' },
       views: {
         Default: { Title: 'Default', ViewFunction: BoardReport },
+      },
+    },
+    SmartFeatures: {
+      componentType: SmartFeatures,
+      entity: SmartFeaturesEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Smart Features' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: SmartFeatures },
+        CardsRight: { Title: 'Cards Right', ViewFunction: SmartFeatures },
+        CardsWithIcon: { Title: 'Cards With Icon', ViewFunction: SmartFeatures },
+        'Minimal Download Now': { Title: 'Minimal Download Now', ViewFunction: SmartFeatures },
       },
     },
     CeoMessage: {

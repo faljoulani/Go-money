@@ -6,7 +6,7 @@ import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorator
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
 @WidgetEntity('CardSection', 'Card Section')
-export class CardSectionEntity {
+export class SmartFeaturesEntity {
   @ContentSection('Content', 0)
   @DisplayName('Cards')
   @Content({
@@ -24,6 +24,7 @@ export class CardSectionEntity {
     { Name: 'Default', Title: 'Default', Value: 'Default' },
     { Name: 'CardsRight', Title: 'Cards Right', Value: 'CardsRight' },
     { Name: 'CardsWithIcon', Title: 'Cards With Icon', Value: 'CardsWithIcon' },
+    { Name: 'Minimal Download Now', Title: 'Minimal Download Now', Value: 'Minimal Download Now' },
   ])
   ViewName?: string;
 
