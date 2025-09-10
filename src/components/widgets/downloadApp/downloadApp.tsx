@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { CardSectionEntity } from './card.entity';
+import type { DownloadAppEntity } from './downloadApp.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { parseMaybeJson } from '../../../utils/utils';
+import MinimizedDownloadApp from './minimizedDownloadApp';
 
 type Card = {
   Id: string;
@@ -70,8 +71,28 @@ function getNonStoreCards(cards: Card[]): Card[] {
   });
 }
 
-// ---------- component ----------
-export default async function SmartFeatures(props: WidgetContext<CardSectionEntity>) {
+export default async function HighlightBlock(props: WidgetContext<DownloadAppEntity>) {
+  const attrs = htmlAttributes(props);
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+
+  return (
+    <section {...attrs} data-view={selectedView}>
+      <div data-react-root>
+        {selectedView === 'MinimizedDownloadApp' ? (
+          <MinimizedDownloadApp {...props} />
+        ) : (
+          <DownloadAppDefault {...props} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 

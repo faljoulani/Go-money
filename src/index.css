@@ -8,6 +8,11 @@
   --Background-background-neutral-200: #eeeeee;
 }
 
+body {
+  background-color: var(--Background-background-neutral-200);
+}
+
+
 /* base helpers */
 @layer base {
   .font-lufga {
