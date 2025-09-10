@@ -26,11 +26,6 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-import CeoMessage from '../components/widgets/executiveManagment/ceoMessage';
-import { ExecutiveManagmentEntity } from './../components/widgets/executiveManagment/executiveManagment.entity';
-
-import Leadership from '../components/widgets/leadership/leadership';
-import { LeadershipEntity } from '../components/widgets/leadership/leadership.entity';
 
 import faq from '../components/widgets/faq/faq';
 import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
@@ -128,24 +123,6 @@ const customWidgetRegistry: WidgetRegistry = {
       entity: DownloadAppEntity,
       ssr: true,
       editorMetadata: { Title: 'DownloadApp' },
-    },
-    CeoMessage: {
-      componentType: CeoMessage,
-      entity: ExecutiveManagmentEntity,
-      ssr: true,
-      editorMetadata: { Title: 'CEO Message' },
-      views: {
-        Default: { Title: 'CEO Message', ViewFunction: CeoMessage },
-      },
-    },
-    Leadership: {
-      componentType: Leadership,
-      entity: LeadershipEntity,
-      ssr: true,
-      editorMetadata: { Title: 'Leadership' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: Leadership },
-      },
     },
     GotQuestions: {
       componentType: ContactBox,

@@ -25,6 +25,9 @@ export class CardSectionEntity {
     { Title: 'Scrollable', Value: 'ScrollableCards' },
     { Title: 'Features', Value: 'FeatureCards' },
     { Title: 'AlternatingFeatures', Value: 'AlternatingFeaturesCard' },
+    { Title: 'Leadership', Value: 'LeadershipCards' },
+    { Title: 'CEO Message', Value: 'CEOMessageCard' },
+    { Title: 'Chairman Message', Value: 'ChairmanMessageCard' },
   ])
   ViewName?: string;
 
