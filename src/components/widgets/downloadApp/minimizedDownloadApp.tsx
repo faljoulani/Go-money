@@ -1,12 +1,6 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { SmartFeaturesEntity } from './card.entity';
+import type { DownloadAppEntity } from './downloadApp.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-
-import Card from '../../atoms/card/card';
-import Eyebrow from '../../atoms/eyebrow/eyebrow';
-import Title from '../../atoms/title/title';
-import Description from '../../atoms/description/description';
-import CTA from '../../atoms/cta/cta';
 
 interface MinimizedDownloadNow {
   Id: string;
@@ -19,7 +13,7 @@ interface MinimizedDownloadNow {
   Image?: any | any[];
 }
 
-export default async function MinimizedDownloadNow(props: WidgetContext<SmartFeaturesEntity>) {
+export default async function MinimizedDownloadNow(props: WidgetContext<DownloadAppEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
@@ -188,8 +182,9 @@ export default async function MinimizedDownloadNow(props: WidgetContext<SmartFea
                 {items.slice(0, 3).map((item: any, i: number) => (
                   <a key={i} href={item.href} rel="" className="flex flex-col items-center">
                     {item.iconUrl && (
-                      
-                      <div className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] ${i === 0 ? 'absolute right-22.5 top-0 z-30' : `${i === 1 ? 'absolute right-11 top-0' : ''}`}`}>
+                      <div
+                        className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] ${i === 0 ? 'absolute right-22.5 top-0 z-30' : `${i === 1 ? 'absolute right-11 top-0' : ''}`}`}
+                      >
                         <img
                           src={item.iconUrl}
                           alt={item.title}
