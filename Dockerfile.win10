@@ -28,7 +28,20 @@ RUN [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls1
 
 # Install Node (ZIP) in small, separate steps for reliability
 RUN $ProgressPreference='SilentlyContinue'; $u = \"https://nodejs.org/dist/v$($env:NODE_VERSION)/node-v$($env:NODE_VERSION)-win-x64.zip\"; Invoke-WebRequest -Uri $u -OutFile C:\\node.zip
-RUN Expand-Archive -Path C:\\node.zip -DestinationPath C:\\ -Force
+RUN $ErrorActionPreference='Stop'; \
+    try { \
+      if (Get-Command tar -ErrorAction SilentlyContinue) { \
+        Write-Host 'Using tar to extract node.zip'; \
+        tar -xf C:\\node.zip -C C:\\; \
+      } else { \
+        Write-Host 'Using Expand-Archive to extract node.zip'; \
+        Expand-Archive -Path C:\\node.zip -DestinationPath C:\\ -Force; \
+      } \
+    } catch { \
+      Write-Host ('Archive extract failed: ' + $_.Exception.Message + ' -> falling back to .NET ZipFile'); \
+      Add-Type -AssemblyName System.IO.Compression.FileSystem; \
+      [System.IO.Compression.ZipFile]::ExtractToDirectory('C:\\node.zip','C:\\'); \
+    }
 RUN if (Test-Path 'C:\\node') { Remove-Item -Recurse -Force 'C:\\node' }
 RUN $dir = Get-ChildItem -Path C:\\ -Directory -Filter 'node-v*-win-x64' | Select-Object -First 1; \
     if (-not $dir) { throw 'Node folder not found after extract' }; \
@@ -156,7 +169,20 @@ RUN [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls1
 
 # Install Node runtime (ZIP) in separate steps
 RUN $ProgressPreference='SilentlyContinue'; $u = \"https://nodejs.org/dist/v$($env:NODE_VERSION)/node-v$($env:NODE_VERSION)-win-x64.zip\"; Invoke-WebRequest -Uri $u -OutFile C:\\node.zip
-RUN Expand-Archive -Path C:\\node.zip -DestinationPath C:\\ -Force
+RUN $ErrorActionPreference='Stop'; \
+    try { \
+      if (Get-Command tar -ErrorAction SilentlyContinue) { \
+        Write-Host 'Using tar to extract node.zip'; \
+        tar -xf C:\\node.zip -C C:\\; \
+      } else { \
+        Write-Host 'Using Expand-Archive to extract node.zip'; \
+        Expand-Archive -Path C:\\node.zip -DestinationPath C:\\ -Force; \
+      } \
+    } catch { \
+      Write-Host ('Archive extract failed: ' + $_.Exception.Message + ' -> falling back to .NET ZipFile'); \
+      Add-Type -AssemblyName System.IO.Compression.FileSystem; \
+      [System.IO.Compression.ZipFile]::ExtractToDirectory('C:\\node.zip','C:\\'); \
+    }
 RUN if (Test-Path 'C:\\node') { Remove-Item -Recurse -Force 'C:\\node' }
 RUN $dir = Get-ChildItem -Path C:\\ -Directory -Filter 'node-v*-win-x64' | Select-Object -First 1; \
     if (-not $dir) { throw 'Node folder not found after extract' }; \
@@ -181,4 +207,3 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
 
 # Start Next.js directly (avoid npm script env expansion issues)
 CMD ["C:\\Windows\\System32\\cmd.exe","/S","/C","node node_modules\\next\\dist\\bin\\next start -H 0.0.0.0 -p %PORT%"]
-
