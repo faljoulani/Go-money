@@ -38,7 +38,7 @@ export default function Description({
       )}
       style={combinedStyle}
     >
-      {children}
+      <div dangerouslySetInnerHTML={{__html:children}}/>
     </p>
   );
 }
