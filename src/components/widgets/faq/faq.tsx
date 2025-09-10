@@ -70,94 +70,72 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
     ItemDefaultUrl?: string;
   };
 
-  async function fetchToken(): Promise<string> {
+  async function fetchToken(): Promise<any> {
     const url = 'http://dev-sfall.ddns.net:9095/sitefinity/oauth/token';
 
-    const body = new URLSearchParams({
-      username: 'hamzeh.allyan@ejada.com',
-      password: 'hamzeh123456',
-      grant_type: 'password',
-      client_id: 'postman',
-      client_secret: 'secret',
-    }).toString();
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
 
-   
-    const resp = await fetch(url, {
+    const urlencoded = new URLSearchParams();
+    urlencoded.append('username', 'hamzeh.alyyan@ejada.com');
+    urlencoded.append('password', 'hamzeh123456');
+    urlencoded.append('grant_type', 'password');
+    urlencoded.append('client_id', 'postman');
+    urlencoded.append('client_secret', 'secret');
+
+
+
+    const requestOptions = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'x-sf-service-request': 'true',
-      },
-      body,
-      cache: 'no-store',
-    });
-
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => '');
-      throw new Error(`Token error ${resp.status} ${resp.statusText} — ${text}`);
-    }
-
-    const json = (await resp.json()) as {
-      access_token: string;
-      token_type?: string;
-      expires_in?: number;
-      scope?: string;
+      headers: myHeaders,
+      body: urlencoded,
+      redirect: 'follow' as RequestRedirect,
     };
 
-    if (!json?.access_token) {
-      throw new Error('Token response did not include access_token.');
-    }
-
-    return json.access_token;
+    const response = await fetch(url, requestOptions);
+    const result = await response.json();
+    return result.access_token;
   }
 
   const SF_API_BEARER = await fetchToken();
-  async function fetchQuestions(
-    props: any,
-  ): Promise<{ questions: Question[]; grouped: Record<string, Question[]> }> {
+
+  async function fetchQuestions(props: any) {
     const origin = (process.env.SF_BASE_URL ?? '').replace(/\/$/, '');
     if (!origin)
       throw new Error('SF_BASE_URL env var is required (e.g., http://dev-sfall.ddns.net:9095)');
 
-    const select = '$select=Id,Title,Answer,Order,ParentId,ItemDefaultUrl';
-    const orderby = '$orderby=Order asc, Title asc';
+    // const select = '$select=Id,Title,Answer,Order,ParentId,ItemDefaultUrl';
+    // const orderby = '$orderby=Order asc, Title asc';
     const url = `${origin}/api/default/faqquestions`;
 
-    const token = (SF_API_BEARER || '').trim();
+    const token = SF_API_BEARER;
     if (!token) throw new Error('SF_API_BEARER env var is missing');
+    console.log('xxxxxxxx', token);
 
-    const headers: Record<string, string> = {
-      Accept: 'application/json;odata.metadata=minimal',
-      Authorization: `Bearer ${token}`,
-      'x-sf-service-request': 'true',
-    };
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
+    myHeaders.append('Authorization', `Bearer ${token}`);
 
     console.log('URL:', url);
-    console.log('BEARER:', SF_API_BEARER);
-    const resp = await fetch(url, {
-      headers,
-    });
+    console.log('BEARER:', token);
+    const response = await fetch(url, { headers: myHeaders });
+    const result = await response.text();
+    console.log('iiiiiiiii', result);
+    return result;
 
-    console.log('WWW-Authenticate:', resp.headers.get('www-authenticate'));
+    // const data = (await resp.json()) as { value?: Question[] };
+    // const questions = data?.value ?? [];
 
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => '');
-      throw new Error(`FAQ GET ${resp.status} ${resp.statusText} — ${text}`);
-    }
+    // const grouped: Record<string, Question[]> = {};
+    // for (const q of questions) {
+    //   const key = (q.ParentId ?? '').toLowerCase();
+    //   (grouped[key] ??= []).push(q);
+    // }
+    // for (const k of Object.keys(grouped)) {
+    //   grouped[k].sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0) || a.Title.localeCompare(b.Title));
+    // }
 
-    const data = (await resp.json()) as { value?: Question[] };
-    const questions = data?.value ?? [];
-
-    const grouped: Record<string, Question[]> = {};
-    for (const q of questions) {
-      const key = (q.ParentId ?? '').toLowerCase();
-      (grouped[key] ??= []).push(q);
-    }
-    for (const k of Object.keys(grouped)) {
-      grouped[k].sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0) || a.Title.localeCompare(b.Title));
-    }
-
-    return { questions, grouped };
+    // return { questions, grouped };
   }
 
   let questions: Question[] = [];
