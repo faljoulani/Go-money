@@ -227,7 +227,7 @@ stages:
                           $pname = if ($proc) { $proc.ProcessName } else { "pid:$pid" }
                           Write-Host "Stopping process $pname (PID $pid) holding port $port"
                           Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
-                        } catch { Write-Host "Could not stop PID $pid: $($_.Exception.Message)" }
+                        } catch { Write-Host "Could not stop PID ${pid}: $($_.Exception.Message)" }
                       }
                       Start-Sleep -Seconds 2
                     } else {
