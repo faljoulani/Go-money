@@ -161,7 +161,7 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
       <img
         src={iconUrl}
         alt={a11y}
-        className="h-12 w-12 object-contain"
+        className="h-[72px] w-[72px] object-contain mb-8"
         loading="lazy"
         decoding="async"
       />
@@ -180,10 +180,10 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
 
   return (
     <section {...attributes} className="w-full py-16 px-20">
-      <div className="">
+      <div>
         <div className="text-center">
           {eyebrow && <Eyebrow color={navy}>{eyebrow}</Eyebrow>}
-          <Title variant="hero" color={navy}>
+          <Title variant="hero" color={navy} className="my-1 h-[63px]">
             {title}
           </Title>
           {subtitle && <Description>{subtitle}</Description>}
@@ -194,19 +194,20 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
             {items.map((item) => (
               <div
                 key={item.id}
-                className="group rounded-[20px] bg-white p-8 transition-all duration-1000 hover:-translate-y-4"
+                className="group rounded-[20px] bg-white p-8 transition-all hover:-translate-y-4"
               >
-                {item.href ? (
-                  <Card
-                    icon={item.icon}
-                    className="w-18 h-18" 
-                    title={item.title}
-                    description={item.description}
+                <div className="gap-4">
+                  <div className="icon-wrapper">{item.icon}</div>
+                </div>
+                <div className='mr-7'>
+                  <h3 className="text-[19px] font-bold text-[#010663]">{item.title}</h3>
+                  <p className="mt-2 text-gray-600 text-lg">{item.description}</p>
+                </div>
+                {item.href && (
+                  <a
                     href={item.href}
-                    
-                  />
-                ) : (
-                  <Card icon={item.icon} title={item.title} description={item.description} />
+                    className="mt-4 inline-block text-[#010663]"
+                  ></a>
                 )}
               </div>
             ))}
@@ -222,7 +223,7 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
               variant="outline"
               width={248}
               height={56}
-              icon='arrow'
+              icon="arrow"
             >
               {ctaText}
             </CTA>

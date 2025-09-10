@@ -1,18 +1,21 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import {HowItWorksSimple} from './howItWorksSimple';
+import { HowItWorksSimple } from './howItWorksSimple';
 import HowItWorksRings from './HowItWorksRings.png';
 import NavyBackground from './NavyBackground.webp';
 import pocketImg from './pocketHQ.webp';
 import transparentNavy from './transparentNavy.png';
 import Mobile from './Mobile.png';
+import Eyebrow from '../../atoms/eyebrow/eyebrow';
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
 export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const attrs = htmlAttributes(props);
-const selectedView =
+  const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
@@ -128,28 +131,16 @@ const selectedView =
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
   // ---------- render ----------
-   if(selectedView === "Simple"){
-    return (
-        <HowItWorksSimple {...props}/>
-    )
+  if (selectedView === 'Simple') {
+    return <HowItWorksSimple {...props} />;
   }
   return (
     <section {...attrs} className="relative">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 py-10">
-        {view.SubTitle && (
-          <p className="text-[11px] md:text-xs uppercase font-semibold tracking-[0.25em] text-[#0B1C5A]/80">
-            {view.SubTitle}
-          </p>
-        )}
-        {view.Title && (
-          <h1 className="mt-3 text-[28px] md:text-5xl font-extrabold leading-tight text-[#0B1C5A]">
-            {view.Title}
-          </h1>
-        )}
-        {view.HeaderText && (
-          <p className="mt-3 text-sm md:text-base text-slate-500">{view.HeaderText}</p>
-        )}
+      <div className="mx-auto max-w-3xl text-center px-6 mb-28">
+        {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
+        {view.Title && <Title className="h-[59px] mt-3 mb-1">{view.Title}</Title>}
+        {view.HeaderText && <Description>{view.HeaderText}</Description>}
       </div>
 
       {/* Rings background + sticky phone */}
@@ -189,7 +180,7 @@ const selectedView =
               src={pocketImg.src}
               alt=""
               aria-hidden
-              className="pointer-events-none select-none absolute w-full -top-8 left-0 z-50"
+              className="pointer-events-none select-none absolute w-[1400px] -top-8 left-0 z-50"
             />
 
             {/* Content */}

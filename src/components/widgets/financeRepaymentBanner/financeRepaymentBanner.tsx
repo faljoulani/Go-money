@@ -97,7 +97,7 @@ export default async function FinanceRepaymentBanner(
   return (
     <section
       {...attrs}
-      className="relative mx-auto flex h-[550px] w-[1240px] items-center overflow-hidden rounded-[32px]"
+      className="relative flex h-[550px] w-auto items-center overflow-hidden rounded-[32px] mx-20"
     >
       <div className="absolute inset-0 z-0">
         <div
@@ -122,27 +122,26 @@ export default async function FinanceRepaymentBanner(
 
       {/* content container (to align children vertically center) */}
       <div className="relative z-10 flex w-full items-center">
-        <div className="flex w-1/2 text-white">
-          <div className="pl-10 w-full max-w-[560px] space-y-6">
-            <div className="relative h-[97px] w-full overflow-hidden rounded-lg">
-              <Image
-                src={url(cards)}
-                alt={cards?.AlternativeText || 'Cards'}
-                fill
-                className="object-cover"
-                priority
-              />
+        <div className="flex text-white">
+          <div className="w-full max-w-[560px]">
+            <div className="relative h-[180px] w-[590px] rounded-lg ml-10">
+              <Image src={url(cards)} alt={cards?.AlternativeText || 'Cards'} fill priority />
             </div>
 
             {title && (
-              <Title color="white" align="left" variant="hero">
+              <Title
+                align="left"
+                color="white"
+                variant="hero"
+                className="ml-16 w-[380px] mb-6 leading-tight"
+              >
                 {title}
               </Title>
             )}
 
             <a
               href={ctaUrl}
-              className="inline-flex items-center gap-2 rounded-2xl border border-white bg-transparent px-5 py-3 text-white transition hover:bg-white hover:text-slate-900"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white bg-transparent px-5 py-3 text-white transition ml-16"
             >
               {ctaText}
               <svg
@@ -165,8 +164,8 @@ export default async function FinanceRepaymentBanner(
             <Image
               src={url(phone)}
               alt={phone?.AlternativeText || 'Phone'}
-              width={420}
-              height={840}
+              width={630}
+              height={900}
               priority
               className="pointer-events-none select-none"
               style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}

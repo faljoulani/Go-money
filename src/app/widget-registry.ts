@@ -85,9 +85,9 @@ const customWidgetRegistry: WidgetRegistry = {
       componentType: FinanceRepaymentBanner,
       entity: FinanceRepaymentBannerEntity,
       ssr: true,
-      editorMetadata: { Title: 'BannerTwo' },
+      editorMetadata: { Title: 'Finance banner' },
       views: {
-        Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
+        Default: { Title: 'Finance Banner', ViewFunction: FinanceRepaymentBanner },
       },
     },
     HowItWorks: {

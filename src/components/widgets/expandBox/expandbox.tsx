@@ -6,6 +6,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import ContentWithImage from './ContentWithImage';
+import CTA from '../../atoms/cta/cta';
 
 type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
 type CmsImage =
@@ -95,6 +96,7 @@ export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
 
 /* ---------- default view only (isolated side-effects/logs here) ---------- */
 async function ExpandBoxDefault(props: WidgetContext<ExpandBoxEntity>) {
+  const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection(
@@ -140,64 +142,59 @@ async function ExpandBoxDefault(props: WidgetContext<ExpandBoxEntity>) {
     'illustration';
 
   return (
-    <div className="relative overflow-hidden rounded-[28px] bg-[#CFE8F1] p-6 md:p-10 lg:p-14">
-      <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
-        {/* Left: copy */}
-        <div className="max-w-xl text-left">
-          <div>
-            {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-            {title && (
-              <Title align="left" variant="hero">
-                {title}
-              </Title>
-            )}
-            {description && <Description align="left">{description}</Description>}
+    <section {...attrs} className="mx-20 my-16">
+      <div className="relative overflow-hidden rounded-[28px] bg-[#CFE8F1] py-[94px] pl-16 pr-[87px]">
+        <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
+          {/* Left: copy */}
+          <div className="max-w-xl text-left">
+            <div>
+              {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
+              {title && (
+                <Title align="left" variant="hero" className="mb-3 mt-5 h-[59px]">
+                  {title}
+                </Title>
+              )}
+              {description && <Description align="left">{description}</Description>}
+            </div>
+
+            {ctaText ? (
+              <div className="mt-4">
+                <CTA
+                  href={(ctaHref || '').trim() || '#'}
+                  color="#010663"
+                  borderColor="var(--Button-button-border-primary, #001081)"
+                  variant="outline"
+                  width={248}
+                  height={56}
+                  icon="arrow"
+                >
+                  <div className="my-4 font-medium">{ctaText}</div>
+                </CTA>
+              </div>
+            ) : null}
           </div>
 
-          {ctaText ? (
-            <div className="mt-8">
-              <a
-                href={ctaHref}
-                className="group inline-flex items-center justify-center rounded-full border border-[#0B2A8E] px-5 py-3 text-[#0B2A8E] transition hover:bg-white/50"
-              >
-                <span className="mr-2 font-medium">{ctaText}</span>
-                <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
-                  →
-                </span>
-              </a>
-            </div>
-          ) : null}
-        </div>
+          {/* Right: artwork / image panel */}
+          <div className="relative h-[392px] w-[490px]">
+            <div className="relative mx-auto h-[392px] w-[490px] rounded-[20px] overflow-hidden">
+              {/* Gradient shadow outside (top + right) */}
 
-        {/* Right: artwork / image panel */}
-        <div className="relative mx-auto w-full">
-          <div className="relative mx-auto h-[346.89px] w-[346.89px] rounded-[20px] overflow-hidden">
-            {/* Gradient shadow outside (top + right) */}
-            <div
-              className="
-                pointer-events-none absolute -top-6 -right-6
-                h-[120%] w-[120%]
-                bg-[linear-gradient(210.86deg,#6BE5BF_0%,#6BE5BF_100%)]
-                rounded-[30px]
-                blur-2xl opacity-40
-                -z-10
-              "
-            />
-            {/* Actual content */}
-            {imgSrc ? (
-              <img
-                src={imgSrc}
-                alt={imgAlt}
-                className="h-full w-full object-contain rounded-[20px]"
-                draggable={false}
-              />
-            ) : (
-              <div className="h-full w-full rounded-[20px] bg-gradient-to-br from-white to-slate-100" />
-            )}
+              {/* Actual content */}
+              {imgSrc ? (
+                <img
+                  src={imgSrc}
+                  alt={imgAlt}
+                  className="h-[392px] w-[490px] object-contain rounded-[20px]"
+                  draggable={false}
+                />
+              ) : (
+                <div className="h-[392px] w-[490px] rounded-[20px] bg-gradient-to-br from-white to-slate-100" />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
