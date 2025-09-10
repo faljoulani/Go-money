@@ -1,0 +1,258 @@
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+
+variables:
+  artifactName: 'gomoney-fe'
+  feSiteName: 'fe1-dev-gomoney.ddns.net'
+  feSiteRoot: 'C:\\inetpub\\wwwroot\\fe1-dev-gomoney.ddns.net'
+
+  # Container bits (kept local on the VM)
+  feImageName: 'fe-gomoney'
+  feContainer: 'fe-gomoney'
+  fePort: 9097
+
+stages:
+  # -------------------- BUILD --------------------
+  - stage: Build
+    displayName: Build & Package Frontend
+    jobs:
+      - job: Build
+        pool:
+          vmImage: 'windows-latest'
+        workspace:
+          clean: all
+        steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 0
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              npm ci
+              npm run build
+            displayName: 'Build frontend'
+
+          # Keep Dockerfile context small & predictable
+          - script: |
+              mkdir "$(Build.ArtifactStagingDirectory)\drop"
+
+              xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                "$(Build.ArtifactStagingDirectory)\drop\src"
+              xcopy /E /I /Y "$(Build.SourcesDirectory)\public"             "$(Build.ArtifactStagingDirectory)\drop\public"
+
+              copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
+              copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
+              copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
+              rem Use the Windows 10 container Dockerfile
+              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile.win10"   "$(Build.ArtifactStagingDirectory)\drop\Dockerfile.win10"
+
+              rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
+              if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\next-env.d.ts"   copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"   "$(Build.ArtifactStagingDirectory)\drop\"
+
+              rem Optional but harmless: carry common configs used by build tools
+              if exist       "$(Build.SourcesDirectory)\eslint.config.js" copy /Y  "$(Build.SourcesDirectory)\eslint.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\.editorconfig"    copy /Y  "$(Build.SourcesDirectory)\.editorconfig"    "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\.npmrc"           copy /Y  "$(Build.SourcesDirectory)\.npmrc"           "$(Build.ArtifactStagingDirectory)\drop\"
+
+              if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
+
+              rem ---- Include Tailwind/PostCSS configs so Docker build can generate CSS ----
+              if exist       "$(Build.SourcesDirectory)\postcss.config.js" copy /Y  "$(Build.SourcesDirectory)\postcss.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\tailwind.config.ts" copy /Y "$(Build.SourcesDirectory)\tailwind.config.ts" "$(Build.ArtifactStagingDirectory)\drop\"
+              if exist       "$(Build.SourcesDirectory)\tailwind.config.js" copy /Y "$(Build.SourcesDirectory)\tailwind.config.js" "$(Build.ArtifactStagingDirectory)\drop\"
+            displayName: 'Prepare FE artifacts'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish FE artifact'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
+              ArtifactName: '$(artifactName)'
+              publishLocation: 'Container'
+
+  # -------------------- DEPLOY --------------------
+  - stage: Deploy_Dev
+    displayName: Deploy FE to Gomoney-FE-Dev
+    dependsOn: Build
+    jobs:
+      - job: WaitForApproval
+        displayName: 'Approval: Deploy FE to Gomoney-FE-Dev'
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            inputs:
+              instructions: |
+                Review the FE build. Approve to deploy to the DEV VM.
+                This will build the Docker image **on the VM** and (re)start the container.
+              onTimeout: 'reject'
+              timeout: '12:00:00'
+
+      - deployment: DeployToVM
+        displayName: 'Build & Run FE container on DEV VM'
+        dependsOn: WaitForApproval
+        environment:
+          name: 'Gomoney-FE-Dev'
+          resourceType: 'virtualMachine'
+          resourceName: 'USER'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - powershell: |
+                    $root = "$(Pipeline.Workspace)"
+                    Write-Host "Workspace root: $root"
+                    $toRemove = @(
+                      (Join-Path -Path $root -ChildPath "fe"),
+                      (Join-Path -Path $root -ChildPath "$(artifactName)")
+                    )
+                    foreach ($p in $toRemove) {
+                      if (Test-Path -LiteralPath $p) {
+                        Write-Host "Removing stale folder: $p"
+                        Remove-Item -LiteralPath $p -Recurse -Force -ErrorAction SilentlyContinue
+                      } else {
+                        Write-Host "Not present: $p"
+                      }
+                    }
+                  displayName: 'Pre-clean deploy workspace'
+
+                - task: DownloadPipelineArtifact@2
+                  displayName: 'Download FE artifact (this run)'
+                  inputs:
+                    buildType: current
+                    artifactName: '$(artifactName)'
+                    targetPath: '$(Pipeline.Workspace)\$(artifactName)'
+                    cleanDestinationFolder: true
+
+                - powershell: |
+                    $ctx = "$(Pipeline.Workspace)\$(artifactName)"
+                    Write-Host "Scanning $ctx for known-stale files..."
+                    $bad = Get-ChildItem -Path $ctx -Recurse -File -Filter 'card-section.entity.ts' -ErrorAction SilentlyContinue
+                    if ($bad) {
+                      $bad | ForEach-Object { Write-Host "FOUND STALE: $($_.FullName)" }
+                      throw "Found stale file(s) in downloaded artifact."
+                    } else {
+                      Write-Host "Artifact $(artifactName) is clean."
+                    }
+                  displayName: 'Guard: detect stale file'
+
+                - powershell: |
+                    $ctx    = "$(Pipeline.Workspace)\$(artifactName)"
+                    $tag    = "$(Build.BuildId)"
+                    $image  = "$(feImageName):$tag"
+                    $latest = "$(feImageName):latest"
+                    $cname  = "$(feContainer)"
+                    $port   = [int]"$(fePort)"
+
+                    Write-Host "Docker build context: $ctx"
+                    Push-Location $ctx
+
+                    # Always rewrite .env.production from pipeline variables
+                    $envPath  = Join-Path $ctx ".env.production"
+                    $sfCmsUrl = "$(SF_CMS_URL)"   # must include http:// or https://
+                    $lines = @()
+                    if (-not [string]::IsNullOrWhiteSpace($sfCmsUrl)) { $lines += "SF_CMS_URL=$sfCmsUrl" }
+                    $lines += "NODE_ENV=production"
+                    $content = ($lines -join "`r`n") + "`r`n"
+                    Set-Content -LiteralPath $envPath -Value $content -Encoding UTF8 -Force
+                    Write-Host "Wrote $envPath with:"
+                    Get-Content $envPath | ForEach-Object { '  ' + $_ }
+
+                    # If you keep a web.config in repo, copy it to IIS path now
+                    $wcFrom = Join-Path $ctx 'web.config'
+                    if (Test-Path $wcFrom) {
+                      if (-not (Test-Path "$(feSiteRoot)")) {
+                        New-Item -ItemType Directory -Path "$(feSiteRoot)" | Out-Null
+                      }
+                      Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
+                    }
+
+                    # Build Windows image locally on the VM using Dockerfile.win10
+                    docker build -f Dockerfile.win10 -t $image .
+
+                    if ($LASTEXITCODE -ne 0) {
+                      Write-Error "docker build failed with code $LASTEXITCODE"
+                      exit $LASTEXITCODE
+                    }
+
+                    docker tag $image $latest
+
+                    # Stop/remove previous container if exists
+                    $existing = (docker ps -aq -f "name=$cname")
+                    if ($existing) {
+                      docker stop $cname | Out-Null
+                      docker rm   $cname | Out-Null
+                    }
+
+                    # Ensure host port is free (remove any container publishing host port $port)
+                    try {
+                      $all = docker ps -aq
+                      foreach($id in $all){
+                        try {
+                          $ins = docker inspect $id | ConvertFrom-Json
+                          $ports = $ins[0].NetworkSettings.Ports
+                          if ($ports -ne $null) {
+                            foreach($prop in $ports.PSObject.Properties){
+                              $mappings = $prop.Value
+                              if ($mappings -ne $null) {
+                                foreach($m in $mappings){
+                                  if ($m.HostPort -eq $port.ToString()) {
+                                    Write-Host "Freeing host port $($port): removing container $id"
+                                    docker stop $id | Out-Null
+                                    docker rm   $id | Out-Null
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        } catch {}
+                      }
+                    } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
+
+                    # For Windows containers, map CMS host to a resolved IPv4 to avoid DNS issues inside container
+                    try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
+                    $extraHostArg = ""
+                    if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
+                      try {
+                        $cmsIp = ([System.Net.Dns]::GetHostAddresses($cmsHost) |
+                                  Where-Object { $_.AddressFamily -eq 'InterNetwork' } |
+                                  Select-Object -First 1).IPAddressToString
+                      } catch { $cmsIp = $null }
+                      if (-not [string]::IsNullOrWhiteSpace($cmsIp)) {
+                        $extraHostArg = "--add-host=$($cmsHost):$($cmsIp)"
+                        Write-Host "Will map $cmsHost -> $cmsIp"
+                      } else {
+                        Write-Host "DNS failed for $cmsHost on host; running without --add-host."
+                      }
+                    }
+
+                    # Run container; inject env directly
+                    docker run -d --name $cname `
+                      -p ${port}:9097 `
+                      -e SF_CMS_URL="$sfCmsUrl" `
+                      -e NODE_ENV=production `
+                      $extraHostArg `
+                      --restart unless-stopped `
+                      $latest
+
+                    if ($LASTEXITCODE -ne 0) {
+                      Write-Error "docker run failed with code $LASTEXITCODE"
+                      exit $LASTEXITCODE
+                    }
+
+                    Pop-Location
+                  displayName: 'docker build & run (local, no registry)'
+
+                - powershell: |
+                    Import-Module WebAdministration
+                    try {
+                      Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
+                    } catch {}
+                  displayName: 'Recycle IIS (optional)'
+
