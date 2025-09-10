@@ -1,5 +1,5 @@
 import { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
-import type { ExpandBoxEntity } from './expandbox.entity';
+import type { HighlightBlockEntity } from './highlightBlock.entity';
 import { fetchData } from '../../../utils/sitefinity';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
@@ -32,7 +32,7 @@ function linkToHref(link: CmsLink): string | undefined {
   return Array.isArray(any) ? (typeof any[0] === 'string' ? any[0] : any[0]?.Href) : any?.Href;
 }
 
-export default async function WithoutImage(props: WidgetContext<ExpandBoxEntity>) {
+export default async function WithoutImage(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection(

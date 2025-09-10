@@ -2,13 +2,15 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
+import ScrollableCards from './scrollableCards';
+import FeatureCards from './featuresCards';
+import AlternatingFeaturesCard from './alternatingFeaturesCards';
+
 import Card from '../../atoms/card/card';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
-import ScrollableCards from './scrollableCards';
-import FeatureCards from './FeatureCards';
 
 type AnySel = any;
 
@@ -34,12 +36,11 @@ interface ExpandBoxItem {
   Image?: CmsImage | CmsImage[] | null;
 }
 
-/* -------------------- small helpers -------------------- */
 function toAbsoluteUrl(url?: string): string {
   if (!url) return '';
   if (/^https?:\/\//i.test(url)) return url;
   const base = (process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL || '').replace(/\/+$/, '');
-  if (!base) return url; // best effort
+  if (!base) return url;
   return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
@@ -60,7 +61,32 @@ function extractHref(raw?: ExpandBoxItem['CtaUrl'] | AnySel): string {
   return raw?.Href || '';
 }
 
-export default async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
+export default async function Cards(props: WidgetContext<CardSectionEntity>) {
+  const attrs = htmlAttributes(props);
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+
+  return (
+    <section {...attrs} data-view={selectedView}>
+      <div data-react-root>
+        {selectedView === 'ScrollableCards' ? (
+          <ScrollableCards {...props} />
+        ) : selectedView === 'FeatureCards' ? (
+          <FeatureCards {...props} />
+        ) : selectedView === 'AlternatingFeaturesCard' ? (
+          <AlternatingFeaturesCard {...props} />
+        ) : (
+          <GridOfCards {...props} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as AnySel;
   const { culture } = props.requestContext;
@@ -176,14 +202,17 @@ export default async function GridOfCards(props: WidgetContext<CardSectionEntity
     };
   });
 
-  const navy = '#0B2A8E';
-
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
         <div className="text-center">
+<<<<<<< HEAD
           {eyebrow && <Eyebrow color={navy}>{eyebrow}</Eyebrow>}
           <Title variant="hero" color={navy} className="my-1 h-[63px]">
+=======
+          {eyebrow && <Eyebrow color="#0B2A8E">{eyebrow}</Eyebrow>}
+          <Title variant="hero" color="#0B2A8E">
+>>>>>>> feature/development
             {title}
           </Title>
           {subtitle && <Description>{subtitle}</Description>}

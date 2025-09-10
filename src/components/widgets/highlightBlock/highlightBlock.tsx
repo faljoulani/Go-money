@@ -1,12 +1,17 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import type { ExpandBoxEntity } from './expandbox.entity';
+import type { HighlightBlockEntity } from './highlightBlock.entity';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
+<<<<<<< HEAD:src/components/widgets/expandBox/expandbox.tsx
 import ContentWithImage from './ContentWithImage';
 import CTA from '../../atoms/cta/cta';
+=======
+import ContentWithImage from './contentWithImage';
+import ContentWithoutImage from './ContentWithoutImage';
+>>>>>>> feature/development:src/components/widgets/highlightBlock/highlightBlock.tsx
 
 type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
 type CmsImage =
@@ -22,7 +27,6 @@ type CmsImage =
   | null
   | undefined;
 
-/* ---------- helpers ---------- */
 function parseSelection(raw: unknown) {
   if (!raw) return undefined;
   if (typeof raw === 'string') {
@@ -67,36 +71,40 @@ function EmptySafe({ isEdit, label }: { isEdit: boolean; label: string }) {
       <div className="mt-1">Open the designer and select an item.</div>
     </div>
   ) : (
-    <div /> // keep a node; don't return null to avoid enhancer crashes
+    <div />
   );
 }
 
-/* ---------- main component ---------- */
-export default async function ExpandBox(props: WidgetContext<ExpandBoxEntity>) {
-  const attrs = htmlAttributes(props); // enhancer expects this element to exist
+export default async function HighlightBlock(props: WidgetContext<HighlightBlockEntity>) {
+  const attrs = htmlAttributes(props);
   const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
 
-  // Stable root for Sitefinity enhancer; React content lives inside inner wrapper
   return (
     <section {...attrs} data-view={selectedView}>
       <div data-react-root>
         {selectedView === 'ContentWithImage' ? (
           <ContentWithImage {...props} />
+        ) : selectedView === 'ContentWithoutImage' ? (
+          <ContentWithoutImage {...props} />
         ) : (
-          <ExpandBoxDefault {...props} />
+          <HighlightBlockDefault {...props} />
         )}
       </div>
     </section>
   );
 }
 
+<<<<<<< HEAD:src/components/widgets/expandBox/expandbox.tsx
 /* ---------- default view only (isolated side-effects/logs here) ---------- */
 async function ExpandBoxDefault(props: WidgetContext<ExpandBoxEntity>) {
   const attrs = htmlAttributes(props);
+=======
+async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>) {
+>>>>>>> feature/development:src/components/widgets/highlightBlock/highlightBlock.tsx
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection(
@@ -124,7 +132,6 @@ async function ExpandBoxDefault(props: WidgetContext<ExpandBoxEntity>) {
   if (!item) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
   if (process.env.NODE_ENV === 'development') {
-    // log only in dev and only for the default path
     console.log('[ExpandBoxDefault] itemId=%s', item.Id);
   }
 

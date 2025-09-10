@@ -2,11 +2,6 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HowItWorksSimple } from './howItWorksSimple';
-import HowItWorksRings from './HowItWorksRings.png';
-import NavyBackground from './NavyBackground.webp';
-import pocketImg from './pocketHQ.webp';
-import transparentNavy from './transparentNavy.png';
-import Mobile from './Mobile.png';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -127,7 +122,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     })),
   };
 
-  const phoneSrc = mediaSrc(view.PhoneMockup) ?? Mobile.src;
+  const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
   // ---------- render ----------
@@ -147,7 +142,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       <div
         className="relative h-[1600px] flex flex-col justify-center items-center"
         style={{
-          backgroundImage: `url(${HowItWorksRings.src})`,
+          backgroundImage: `url('/assets/HowItWorksRings.png')`,
           backgroundSize: 'cover',
           backgroundPosition: '50% 10%',
         }}
@@ -164,26 +159,25 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           <div
             className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
             style={{
-              backgroundImage: `url(${NavyBackground.src})`,
+              backgroundImage: `url('/assets/NavyBackground.webp')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
-              src={transparentNavy.src}
+              src="/assets/transparentNavy.png"
               alt=""
               className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
             />
             {/* pocket lip */}
             <img
-              src={pocketImg.src}
+              src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
               className="pointer-events-none select-none absolute w-[1400px] -top-8 left-0 z-50"
             />
 
-            {/* Content */}
             <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
               {view.IntroLead && (
                 <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px]">
@@ -191,7 +185,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                 </h2>
               )}
 
-              {/* Steps */}
               <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {view.Steps.map((s, i) => {
                   const logoSrc = mediaSrc(s.Logo);

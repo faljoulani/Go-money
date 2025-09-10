@@ -1,5 +1,5 @@
 import { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
-import type { ExpandBoxEntity } from './expandbox.entity';
+import type { HighlightBlockEntity } from './highlightBlock.entity';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -17,7 +17,6 @@ type ContentWithImageItem = {
   Image?: any;
 };
 
-type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
 type CmsImage =
   | {
       Id?: string;
@@ -57,15 +56,12 @@ function imageUrl(img: CmsImage): string | undefined {
   return img.MediaUrl || img.Url || img.ThumbnailUrl || img.EmbedUrl;
 }
 
-export default async function ContentWithImage(props: WidgetContext<ExpandBoxEntity>) {
+export default async function ContentWithImage(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection((props.model?.Properties as any)?.ExpandBox);
 
-  console.log('SELECTION FROM CONTENT WITH IMAGE ======= >>>>>>>> ' + JSON.stringify(selection));
-
   const id = firstIdFromSelection(selection);
-  console.log('Server ID ======= >>>>>>> ', id);
 
   if (!id) {
     return isEdit ? (
@@ -78,7 +74,6 @@ export default async function ContentWithImage(props: WidgetContext<ExpandBoxEnt
     );
   }
 
-  console.log('TITLE ====== >>>>' + JSON.stringify(selection.Content?.[0]?.Type));
   const fields = [
     'Id',
     'Eyebrow',
@@ -96,7 +91,6 @@ export default async function ContentWithImage(props: WidgetContext<ExpandBoxEnt
 
   const item = (Array.isArray(raw) ? raw[0] : raw) as ContentWithImageItem | null;
 
-  console.log('ITEM (ExpandBox) ======= >>>>>>>> ' + JSON.stringify(item));
   if (!item)
     return isEdit ? (
       <section className="p-6 border border-dashed rounded-2xl text-center text-slate-500">

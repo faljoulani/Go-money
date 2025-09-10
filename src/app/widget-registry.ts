@@ -9,10 +9,13 @@ import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
 import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
+import DownloadApp from '../components/widgets/downloadApp/downloadApp';
+import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
+
 import GridOfCards from '../components/widgets/cards/gridOfCards';
-import ScrollableCards from '../components/widgets/cards/scrollableCards';
 
 import Footer from '../components/widgets/footer/Footer-template';
 import { FooterEntity } from '../components/widgets/footer/Footer.entity';
@@ -39,8 +42,13 @@ import ContactBox from '../components/widgets/gotQuestions/contactBox';
 import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.entity';
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+
 import ExpandBox from '../components/widgets/expandBox/expandbox';
 import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
+
+import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
+import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
+
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -54,14 +62,11 @@ const customWidgetRegistry: WidgetRegistry = {
         Simple: { Title: 'Simple', ViewFunction: Hero },
       },
     },
-    CardSection: {
+    Cards: {
       componentType: GridOfCards,
       entity: CardSectionEntity,
       ssr: true,
-      editorMetadata: { Title: 'Card Section' },
-      views: {
-        Default: { Title: 'Grid', ViewFunction: GridOfCards },
-      },
+      editorMetadata: { Title: 'Cards' },
     },
     MainNavigation: {
       componentType: MainNavigation,
@@ -118,6 +123,12 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: BoardReport },
       },
     },
+    DownloadApp: {
+      componentType: DownloadApp,
+      entity: DownloadAppEntity,
+      ssr: true,
+      editorMetadata: { Title: 'DownloadApp' },
+    },
     CeoMessage: {
       componentType: CeoMessage,
       entity: ExecutiveManagmentEntity,
@@ -146,13 +157,13 @@ const customWidgetRegistry: WidgetRegistry = {
         EmailAndPhone: { Title: 'Email And Phone', ViewFunction: ContactBox },
       },
     },
-    ExpandBox: {
-      componentType: ExpandBox,
-      entity: ExpandBoxEntity,
+    HighlightBlock: {
+      componentType: HighlightBlockDefault,
+      entity: HighlightBlockEntity,
       ssr: true,
-      editorMetadata: { Title: 'ExpandBox' },
+      editorMetadata: { Title: 'HighlightBlock' },
       views: {
-        Default: { Title: 'Default', ViewFunction: ExpandBox },
+        Default: { Title: 'Default', ViewFunction: HighlightBlockDefault },
       },
     },
   },
