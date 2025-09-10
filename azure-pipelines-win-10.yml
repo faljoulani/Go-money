@@ -215,6 +215,25 @@ stages:
                       }
                     } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
 
+                    # Additionally, ensure no HOST process is listening on $port
+                    try {
+                      $listeners = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop
+                    } catch { $listeners = @() }
+                    if ($listeners) {
+                      Write-Host "Host port $port is in use by the following PIDs: " ($listeners | Select-Object -Expand OwningProcess -Unique -Join ', ')
+                      foreach($pid in ($listeners | Select-Object -Expand OwningProcess -Unique)){
+                        try {
+                          $proc = Get-Process -Id $pid -ErrorAction SilentlyContinue
+                          $pname = if ($proc) { $proc.ProcessName } else { "pid:$pid" }
+                          Write-Host "Stopping process $pname (PID $pid) holding port $port"
+                          Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+                        } catch { Write-Host "Could not stop PID $pid: $($_.Exception.Message)" }
+                      }
+                      Start-Sleep -Seconds 2
+                    } else {
+                      Write-Host "Host port $port is free (no listening processes)."
+                    }
+
                     # For Windows containers, map CMS host to a resolved IPv4 to avoid DNS issues inside container
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
@@ -232,7 +251,7 @@ stages:
                       }
                     }
 
-                    # Run container; inject env directly
+                    # Run container; inject env directly (attempt 1)
                     docker run -d --name $cname `
                       -p ${port}:9097 `
                       -e SF_CMS_URL="$sfCmsUrl" `
@@ -242,8 +261,27 @@ stages:
                       $latest
 
                     if ($LASTEXITCODE -ne 0) {
-                      Write-Error "docker run failed with code $LASTEXITCODE"
-                      exit $LASTEXITCODE
+                      Write-Host "docker run failed with code $LASTEXITCODE. Attempting HNS/Docker service restart and retry..."
+                      try { Stop-Service -Name docker -Force -ErrorAction SilentlyContinue } catch {}
+                      try { Stop-Service -Name hns -Force -ErrorAction SilentlyContinue } catch {}
+                      Start-Sleep -Seconds 3
+                      try { Start-Service -Name hns -ErrorAction SilentlyContinue } catch {}
+                      try { Start-Service -Name docker -ErrorAction SilentlyContinue } catch {}
+                      Start-Sleep -Seconds 5
+
+                      # Retry run once
+                      docker run -d --name $cname `
+                        -p ${port}:9097 `
+                        -e SF_CMS_URL="$sfCmsUrl" `
+                        -e NODE_ENV=production `
+                        $extraHostArg `
+                        --restart unless-stopped `
+                        $latest
+
+                      if ($LASTEXITCODE -ne 0) {
+                        Write-Error "docker run retry failed with code $LASTEXITCODE"
+                        exit $LASTEXITCODE
+                      }
                     }
 
                     Pop-Location
@@ -255,4 +293,3 @@ stages:
                       Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
                     } catch {}
                   displayName: 'Recycle IIS (optional)'
-
