@@ -17,12 +17,11 @@ const FAQ_CATEGORY_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategor
 export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   const attrs = htmlAttributes(props);
   const model = props.model?.Properties;
-  const viewName = model?.ViewName || 'Default';
 
   const parseContent = (c: any) => (typeof c === 'string' ? JSON.parse(c) : c);
   const faqRoot = parseContent(model?.FaqRoot);
   const selectedCategories = parseContent(model?.FaqCategories);
-  console.log('CATEGORIES:', selectedCategories);
+
   let rootData: any = undefined;
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
 
@@ -53,7 +52,6 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
         .sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0));
     }
   } catch (e) {
-    console.error('Error loading FAQ THIS data:', e);
     return <section {...attrs}>Error loading data</section>;
   }
 
@@ -99,72 +97,71 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
 
   const SF_API_BEARER = await fetchToken();
 
-  async function fetchQuestions(props: any) {
+  async function fetchQuestions(): Promise<{ questions: Question[]; grouped: Record<string, Question[]> }>{
     const origin = (process.env.SF_BASE_URL ?? '').replace(/\/$/, '');
     if (!origin)
       throw new Error('SF_BASE_URL env var is required (e.g., http://dev-sfall.ddns.net:9095)');
 
-    // const select = '$select=Id,Title,Answer,Order,ParentId,ItemDefaultUrl';
-    // const orderby = '$orderby=Order asc, Title asc';
-    const url = `${origin}/api/default/faqquestions`;
+    const select = '$select=Id,Title,Answer,Order,ParentId,ItemDefaultUrl';
+    const orderby = '$orderby=Order asc, Title asc';
+    const url = `${origin}/api/default/faqquestions?${select}&${orderby}`;
 
     const token = SF_API_BEARER;
+
     if (!token) throw new Error('SF_API_BEARER env var is missing');
-    console.log('xxxxxxxx', token);
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
     myHeaders.append('Authorization', `Bearer ${token}`);
 
-    console.log('URL:', url);
-    console.log('BEARER:', token);
+  
     const response = await fetch(url, { headers: myHeaders });
-    const result = await response.text();
-    console.log('iiiiiiiii', result);
-    return result;
+    // const result = await response.text();
 
-    // const data = (await resp.json()) as { value?: Question[] };
-    // const questions = data?.value ?? [];
+    const data = (await response.json()) as {value?:Question[]};
+    const questions = data?.value ?? [];
 
-    // const grouped: Record<string, Question[]> = {};
-    // for (const q of questions) {
-    //   const key = (q.ParentId ?? '').toLowerCase();
-    //   (grouped[key] ??= []).push(q);
-    // }
-    // for (const k of Object.keys(grouped)) {
-    //   grouped[k].sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0) || a.Title.localeCompare(b.Title));
-    // }
+    const grouped: Record<string,Question[]>={};
 
-    // return { questions, grouped };
+    for (const question of questions){
+      const key = (question.ParentId || '').toLowerCase();
+      (grouped[key] ??=[]).push(question);
+    }
+    for (const k of Object.keys(grouped)){
+      grouped[k].sort(
+        (a,b)=>(a.Order ?? 0 )- (b.Order ?? 0) || a.Title.localeCompare(b.Title)
+      );
+    }
+    return {questions, grouped};
+
+
+ 
   }
 
-  let questions: Question[] = [];
+  // let questions: Question[] = [];
   let grouped: Record<string, Question[]> = {};
 
   try {
-    const res = await fetchQuestions(props);
-    questions = res.questions;
+    const res = await fetchQuestions();
     grouped = res.grouped;
   } catch (e) {
     console.error('[FAQ] questions fetch failed:', e);
   }
-
+ const groupedLower = Object.fromEntries(
+    Object.entries(grouped).map(([k, v]) => [k.toLowerCase(), v]),
+  );
   return (
-    <section {...attrs} className={`FaqSection FaqSection-${viewName}`}>
+    <section {...attrs}>
       <div className="mx-auto w-full  flex flex-col justify-center items-center gap-2 px-6 pt-12 pb-4">
         {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && <Title>{rootData.Title}</Title>}
         {rootData?.Description && <Description>{rootData.Description}</Description>}
       </div>
 
-      {/* categories + questions (client island handles selection) */}
       {categories.length > 0 && (
         <QuestionsClient
           categories={categories}
-          // grouped={
-          //   // normalize keys to lower for match with ParentId
-          //   Object.fromEntries(Object.entries(grouped).map(([k, v]) => [k.toLowerCase(), v]))
-          // }
+          grouped = {groupedLower}
         />
       )}
     </section>
