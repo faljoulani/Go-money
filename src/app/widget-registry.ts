@@ -50,6 +50,9 @@ import TwoColumnLayout from '../components/widgets/layouts/TwoColumnLayout';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
 
+import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
+import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -181,6 +184,15 @@ const customWidgetRegistry: WidgetRegistry = {
       },
       views: {
         Default: { Title: 'Default', ViewFunction: StackLayout },
+      },
+    },
+    ContactSubscription: {
+      componentType: ContactSubscription,
+      entity: ContactSubscriptionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Contact Subscription' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ContactSubscription },
       },
     },
     ContactForm: {
