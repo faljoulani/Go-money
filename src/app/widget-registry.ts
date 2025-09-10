@@ -26,7 +26,6 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-
 import faq from '../components/widgets/faq/faq';
 import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
 
@@ -38,12 +37,18 @@ import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
-import ExpandBox from '../components/widgets/expandBox/expandbox';
-import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
-
 import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
+import SupportInfoBox from '../components/widgets/supportInfoBox/supportInfoBox';
+import { SupportInfoBoxEntity } from '../components/widgets/supportInfoBox/supportInfoBox.entity';
+
+import ContactForm from '../components/widgets/contactForm/contactForm';
+
+import { TwoColumnLayoutEntity } from '../components/widgets/layouts/twoColumnLayout.entity';
+import TwoColumnLayout from '../components/widgets/layouts/TwoColumnLayout';
+
+import StackLayout from '../components/widgets/layouts/stackLayout';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -141,6 +146,49 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'HighlightBlock' },
       views: {
         Default: { Title: 'Default', ViewFunction: HighlightBlockDefault },
+      },
+    },
+    SupportInfoBox: {
+      componentType: SupportInfoBox,
+      entity: SupportInfoBoxEntity,
+      ssr: true,
+      editorMetadata: { Title: 'SupportInfoBox' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: SupportInfoBox },
+      },
+    },
+    TwoColumnLayout: {
+      componentType: TwoColumnLayout,
+      entity: TwoColumnLayoutEntity,
+      ssr: true,
+      editorMetadata: {
+        Title: 'Two Column Layout',
+        Category: 'Layout',
+        Section: 'Custom',
+        IconName: 'section',
+        Order: 50,
+      },
+    },
+    StackLayout: {
+      componentType: StackLayout,
+      ssr: true,
+      editorMetadata: {
+        Title: 'Stack Layout',
+        Category: 'Layout',
+        Section: 'Custom',
+        IconName: 'section',
+        Order: 50,
+      },
+      views: {
+        Default: { Title: 'Default', ViewFunction: StackLayout },
+      },
+    },
+    ContactForm: {
+      componentType: ContactForm,
+      ssr: true,
+      editorMetadata: { Title: 'ContactForm' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ContactForm },
       },
     },
   },
