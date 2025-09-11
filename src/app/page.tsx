@@ -11,5 +11,7 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ [key: string]: string }>;
 }) {
+  // return RenderPage({ params, searchParams, templates: templateRegistry });
+
   return Page({ params: Promise.resolve({ slug: [] }), searchParams });
 }
