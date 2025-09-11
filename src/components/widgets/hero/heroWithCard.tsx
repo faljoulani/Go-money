@@ -46,7 +46,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         ],
       });
     } catch {
-      /* ignore */
     }
   }
 
@@ -61,7 +60,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return null;
   }
 
-  // Helpers
   const firstOrSelf = (field: any) => (Array.isArray(field) ? field[0] : field);
   const parseLink = (linkField: any): string | undefined => {
     if (!linkField) return;
@@ -157,18 +155,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         {title && (
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">{title}</h1>
         )}
-        {description && <p className="mt-6 text-lg sm:text-xl text-white/85">{description}</p>}
-        <div className="relative -mt-16 md:-mt-20">
-          <div
-            className="mx-auto max-w-7xl rounded-2xl bg-white shadow-xl ring-1 ring-black/5
-                     px-6 md:px-10 py-8 md:py-10"
-          >
-            <div className="grid gap-8 md:gap-10 md:grid-cols-2 items-start">
-              <CEOMessageCard {...props} />
-            </div>
+          
+         <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-1/2">
+    <CEOMessageCard {...props} />
+  </div>
           </div>
-        </div>
-      </div>
     </section>
   );
 }
