@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ClientNavbar from './MainNavigationClient';
 import { toAbsolute } from '../../../utils/utils';
 import type { ApiNavItem as ClientNavItem } from '../../../types/type';
+import LanguageSwitcher from '../languageSwitcher/languageSwitcher';
 
 export default function MainNavigationClientShell({
   attrs,
@@ -35,7 +36,7 @@ export default function MainNavigationClientShell({
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0);
-    onScroll(); // set initial state if page loads mid-scroll
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -72,8 +73,10 @@ export default function MainNavigationClientShell({
           {/* Center: Nav */}
           <ClientNavbar items={navItems} currentPath={currentPath} scrolled={scrolled} />
 
-          {/* Right: Store badges */}
-          <div className="flex items-center gap-2">
+          {/* Right: Language switcher + Store badges */}
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+
             {storeLinks.map((link, idx) => {
               const key = `${link.storeType || 'store'}:${link.title || idx}:${link.url ?? 'no-url'}`;
               const rawIcon = link.icon?.url || link.icon?.thumbnailUrl || '';
