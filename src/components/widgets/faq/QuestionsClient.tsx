@@ -15,10 +15,7 @@ export default function QuestionsClient({
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
 
-  const questions = useMemo(
-    () => grouped[(active || '').toLowerCase()] ?? [],
-    [active, grouped],
-  );
+  const questions = useMemo(() => grouped[(active || '').toLowerCase()] ?? [], [active, grouped]);
 
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -48,7 +45,13 @@ export default function QuestionsClient({
                   }`}
                   aria-hidden
                 >
-                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="w-4 h-4"
+                  >
                     <path d="M7 4l6 6-6 6" />
                   </svg>
                 </span>
@@ -72,20 +75,28 @@ export default function QuestionsClient({
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer"
                   onClick={(e) => {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
                   <span className="text-slate-900">{q.Title}</span>
-                  <span className="ml-6 grid size-8 place-items-center rounded-lg bg-[#0B1C5A] text-white">
+                  <span className="ml-6 grid size-9 place-items-center rounded-lg bg-[#0B1C5A] text-white">
                     <svg
-                      viewBox="0 0 20 20"
-                      fill="none"
+                      viewBox="0 0 14 14"
+                      className="w-[15px] h-[15px]"
                       stroke="currentColor"
                       strokeWidth="2"
-                      className={`w-4 h-4 transition ${isOpen ? 'rotate-45' : ''}`}
                     >
-                      <path d="M10 4v12M4 10h12" />
+                      {isOpen ? (
+                        // Horizontal line (-)
+                        <line x1="0" y1="7" x2="15" y2="7" />
+                      ) : (
+                        // Plus (+)
+                        <>
+                          <line x1="7" y1="0" x2="7" y2="15" /> 
+                          <line x1="0" y1="7" x2="15" y2="7" /> 
+                        </>
+                      )}
                     </svg>
                   </span>
                 </summary>
@@ -98,3 +109,4 @@ export default function QuestionsClient({
     </div>
   );
 }
+
