@@ -11,7 +11,6 @@ export default function QuestionsClient({ categories }: { categories: Category[]
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
 
-  // Fetch ALL questions once; SWR caches/dedupes for you
   const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
     'api/default/faqquestions',
     {
@@ -21,7 +20,6 @@ export default function QuestionsClient({ categories }: { categories: Category[]
     { revalidateOnFocus: true }
   );
 
-  // Filter & sort questions for the active category
   const questions = useMemo(() => {
     const all = data?.value ?? [];
     const a = active.toLowerCase();
@@ -30,10 +28,9 @@ export default function QuestionsClient({ categories }: { categories: Category[]
     return filtered;
   }, [data, active]);
 
-  // One-open-at-a-time accordion
   const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null); // first question opens on category change / first load
+    setOpenId(questions[0]?.Id ?? null); 
   }, [active, questions]);
 
   return (

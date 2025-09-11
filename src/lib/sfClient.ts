@@ -44,7 +44,7 @@ export async function getSfToken(): Promise<string> {
   if (cachedToken && cachedToken.exp - 30 > now) return cachedToken.token;
 
   const { access_token, expires_in } = await fetchToken();
-  cachedToken = { token: access_token, exp: now + (expires_in || 3600) };
+  cachedToken = { token: access_token, exp: now + (expires_in || 86400) };
   return cachedToken.token;
 }
 
@@ -91,7 +91,7 @@ export async function sfFetch<T>(
     const text = await res.text();
     console.log("TEXT:", text)
     console.log("Parsed Text:", JSON.parse(text));
-    
+
     if (!res.ok) {
       throw new Error(`sfFetch ${res.status} ${res.statusText} ${u}\n${text.slice(0, 500)}`);
     }
