@@ -71,6 +71,11 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Cards' },
     },
+    Layout: {
+      componentType: StackLayout,
+      ssr: true,
+      editorMetadata: { Title: 'Stack Layout' },
+    },
     MainNavigation: {
       componentType: MainNavigation,
       entity: MainNavigationEntity,
@@ -93,9 +98,9 @@ const customWidgetRegistry: WidgetRegistry = {
       componentType: FinanceRepaymentBanner,
       entity: FinanceRepaymentBannerEntity,
       ssr: true,
-      editorMetadata: { Title: 'BannerTwo' },
+      editorMetadata: { Title: 'Finance banner' },
       views: {
-        Default: { Title: 'Default', ViewFunction: FinanceRepaymentBanner },
+        Default: { Title: 'Finance Banner', ViewFunction: FinanceRepaymentBanner },
       },
     },
     HowItWorks: {

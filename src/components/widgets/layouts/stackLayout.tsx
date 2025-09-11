@@ -7,8 +7,8 @@ export default function StackLayout(props: WidgetContext<StackLayoutEntity>) {
   return (
     <section {...attrs} className="w-full max-auto">
       <div className="rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-        <div className="p-6 md:p-10">
-          <div className="flex flex-col gap-12" data-sfcontainer="true" data-sfname="Main" />
+        <div className="py-16 md:p-10">
+          <div className="flex flex-col gap-16" data-sfcontainer="true" data-sfname="Main" />
         </div>
       </div>
     </section>

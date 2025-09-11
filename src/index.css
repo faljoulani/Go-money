@@ -11,8 +11,9 @@
 body {
   background-color: var(--Background-background-neutral-200);
 }
-
-
+.defaultBgColor {
+  background-color: var(--Background-background-neutral-200);
+}
 /* base helpers */
 @layer base {
   .font-lufga {
@@ -24,10 +25,10 @@ body {
 @layer utilities {
   @keyframes float {
     0% {
-      transform: translateY(-25px);
+      transform: translateY(-15px);
     }
     100% {
-      transform: translateY(25px);
+      transform: translateY(-15px);
     }
   }
   .animate-float {

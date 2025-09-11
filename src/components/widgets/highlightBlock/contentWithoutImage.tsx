@@ -96,7 +96,7 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
           <div className="pt-2">
             <CTA
               href={ctaHref}
-              arrow={false}
+              icon='arrow'
               className="bg-[hsla(237,98%,20%,1)] text-white font-poppins font-extralight"
             >
               {ctaText}

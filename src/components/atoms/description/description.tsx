@@ -74,9 +74,8 @@ export default function Description({
         className,
       )}
       style={combinedStyle}
-    >
-      {children}
-    </Align>
+      dangerouslySetInnerHTML={{ __html: String(children) }}
+    />
   );
 }
 
