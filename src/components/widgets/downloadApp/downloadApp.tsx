@@ -188,10 +188,10 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
   return (
     <section
       {...attrs}
-      className="relative mx-auto h-[486px] w-[1240px] overflow-hidden rounded-3xl"
+      className="relative h-auto w-auto rounded-3xl mx-20 my-16"
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex h-full w-full items-center justify-between gap-[64px] p-10">
+      <div className="relative z-10 flex h-full w-full items-center justify-between gap-[30px]">
         {!hasContent ? (
           isEdit ? (
             <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
@@ -204,22 +204,22 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
         ) : (
           <>
             {/* CHILD 1: ONLY IMAGE (phone) */}
-            <div className="relative flex h-full w-1/2 items-center justify-center">
+            <div className="flex h-full w-1/2 items-center justify-center overflow-hidden">
               {mobileUrl && (
                 <Image
                   src={mobileUrl}
                   alt={mobileImg?.AlternativeText || 'Mobile'}
-                  width={430}
-                  height={860}
+                  width={289}
+                  height={525}
                   priority
-                  className="pointer-events-none select-none object-contain"
+                  className="pointer-events-none select-none object-contain animate-float absolute top-0 -translate-y-1/2 ml-[126px]"
                   style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
                 />
               )}
             </div>
 
             {/* CHILD 2: Title + Description + Info row + Store badges row */}
-            <div className="flex h-full w-1/2 items-center pr-2">
+            <div className="flex h-full w-1/2 items-center mr-16 my-16">
               <div className="w-full max-w-[560px] text-[#010663]">
                 <h2 className="text-[48px] font-[700] leading-[1] tracking-[-0.02em]">{heading}</h2>
 
@@ -265,15 +265,14 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
 
                 {/* Store badges (images only) — Apple → Google → Huawei */}
                 {orderedBadges.length > 0 && (
-                  <div className="mt-6 flex items-center gap-3">
+                  <div className="mt-6 flex items-center gap-3 mr-16">
                     {orderedBadges.map((im, idx) => (
                       <Image
                         key={idx}
                         src={imgUrl(im)}
                         alt={im?.AlternativeText || im?.Title || 'store badge'}
-                        width={180}
-                        height={56}
-                        className="h-14 w-auto select-none"
+                        width={173}
+                        height={52}
                         priority
                       />
                     ))}

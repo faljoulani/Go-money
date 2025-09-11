@@ -12,10 +12,6 @@ body {
   background-color: var(--Background-background-neutral-200);
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> feature/development
 /* base helpers */
 @layer base {
   .font-lufga {

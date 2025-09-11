@@ -201,18 +201,13 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
       icon: iconEl,
     };
   });
-
+  const navy = '#010663';
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
         <div className="text-center">
-<<<<<<< HEAD
           {eyebrow && <Eyebrow color={navy}>{eyebrow}</Eyebrow>}
           <Title variant="hero" color={navy} className="my-1 h-[63px]">
-=======
-          {eyebrow && <Eyebrow color="#0B2A8E">{eyebrow}</Eyebrow>}
-          <Title variant="hero" color="#0B2A8E">
->>>>>>> feature/development
             {title}
           </Title>
           {subtitle && <Description>{subtitle}</Description>}

@@ -5,13 +5,9 @@ import type { HighlightBlockEntity } from './highlightBlock.entity';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
-<<<<<<< HEAD:src/components/widgets/expandBox/expandbox.tsx
-import ContentWithImage from './ContentWithImage';
-import CTA from '../../atoms/cta/cta';
-=======
 import ContentWithImage from './contentWithImage';
 import ContentWithoutImage from './ContentWithoutImage';
->>>>>>> feature/development:src/components/widgets/highlightBlock/highlightBlock.tsx
+import CTA from '../../atoms/cta/cta';
 
 type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
 type CmsImage =
@@ -98,13 +94,7 @@ export default async function HighlightBlock(props: WidgetContext<HighlightBlock
   );
 }
 
-<<<<<<< HEAD:src/components/widgets/expandBox/expandbox.tsx
-/* ---------- default view only (isolated side-effects/logs here) ---------- */
-async function ExpandBoxDefault(props: WidgetContext<ExpandBoxEntity>) {
-  const attrs = htmlAttributes(props);
-=======
 async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>) {
->>>>>>> feature/development:src/components/widgets/highlightBlock/highlightBlock.tsx
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection(
@@ -149,7 +139,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section {...attrs} className="mx-20 my-16">
+    <section className="mx-20 my-16">
       <div className="relative overflow-hidden rounded-[28px] bg-[#CFE8F1] py-[94px] pl-16 pr-[87px]">
         <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
           {/* Left: copy */}

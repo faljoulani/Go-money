@@ -114,7 +114,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
   // ---------- render ----------
   return (
-    <section {...attrs} className="relative py-10">
+    <section {...attrs} className="relative ">
       {/* Top headline block */}
       <div className="mx-auto max-w-3xl text-center px-6 ">
         {view.SubTitle && (

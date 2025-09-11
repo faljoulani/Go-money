@@ -42,13 +42,13 @@ import ContactBox from '../components/widgets/gotQuestions/contactBox';
 import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.entity';
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
-
-import ExpandBox from '../components/widgets/expandBox/expandbox';
-import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
+import StackLayout from '../components/widgets/layouts/stackLayout';
 
 import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
+import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
+import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -67,6 +67,11 @@ const customWidgetRegistry: WidgetRegistry = {
       entity: CardSectionEntity,
       ssr: true,
       editorMetadata: { Title: 'Cards' },
+    },
+    Layout: {
+      componentType: StackLayout,
+      ssr: true,
+      editorMetadata: { Title: 'Stack Layout' },
     },
     MainNavigation: {
       componentType: MainNavigation,
@@ -164,6 +169,15 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'HighlightBlock' },
       views: {
         Default: { Title: 'Default', ViewFunction: HighlightBlockDefault },
+      },
+    },
+    ContactSubscription: {
+      componentType: ContactSubscription,
+      entity: ContactSubscriptionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Contact Subscription' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ContactSubscription },
       },
     },
   },
