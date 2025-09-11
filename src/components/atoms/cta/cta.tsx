@@ -10,7 +10,7 @@ type BaseProps = {
   borderColor?: string;
   variant?: 'outline' | 'solid';
   disabled?: boolean;
-  arrow?: boolean;
+  icon?: 'arrow' | 'slot' | null;
   width?: number;
   height?: number;
   target?: '_self' | '_blank';
@@ -30,7 +30,7 @@ export default function CTA({
   borderColor = 'var(--background, #F7FAFC)',
   variant = 'outline',
   disabled = false,
-  arrow = true,
+  icon = null,
   width = 250,
   height = 56,
   target = '_self',
@@ -90,9 +90,9 @@ export default function CTA({
     >
       <span className="whitespace-nowrap">{children}</span>
 
-      {arrow && (
-        <img src="/icons/chevron-right.svg" alt="chevron-right" />
-      )}
+      {icon === 'arrow' && <img src="/icons/chevron-right.svg" alt="chevron-right" />}
+
+      {icon === 'slot' && <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="" />}
     </button>
   );
 }

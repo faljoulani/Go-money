@@ -121,12 +121,12 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   });
 
   return (
-    <section {...attributes} className="w-full bg-white">
+    <section {...attributes} className="w-full bg-white my-16">
       <div className="mx-auto max-w-7xl px-8">
         {/* Heading */}
         <div className="text-center">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-          <Title variant="hero">{title}</Title>
+          <Title variant="hero" className='mb-1 mt-3 h-[59px]'>{title}</Title>
           {subtitle && <Description>{subtitle}</Description>}
         </div>
 
@@ -164,7 +164,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                       >
                         {/* Blue block */}
                         <div
-                          className={`relative w-18 h-18 ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
+                          className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
                         >
                           {/* White square cutout */}
                           <div
@@ -178,7 +178,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                   {/* Text side */}
                   <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
                     <div className="max-w-[38rem]">
-                      <h3 className="text-[1.8rem] leading-tight font-extrabold text-[color:var(--navy,#0B2A8E)]">
+                      <h3 className="text-[1.8rem] leading-tight font-medium text-[color:var(--navy,#0B2A8E)]">
                         {card.title}
                       </h3>
                       {card.description && (

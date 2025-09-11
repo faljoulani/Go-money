@@ -63,9 +63,8 @@ export default function Description({
         className,
       )}
       style={combinedStyle}
-    >
-      <div dangerouslySetInnerHTML={{__html:children}}/>
-    </p>
+      dangerouslySetInnerHTML={{ __html: String(children) }}
+    />
   );
 }
 

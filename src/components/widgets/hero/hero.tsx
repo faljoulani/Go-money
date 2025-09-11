@@ -2,7 +2,11 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
-// import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
+
+import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
+import CTA from '../../atoms/cta/cta';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -162,7 +166,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               {title}
             </h1>
           )}
-          {description && <p className="mt-6 text-lg sm:text-xl text-white/85">{description}</p>}
+          {description && <Description>{description}</Description>}
         </div>
       </section>
     );
@@ -172,7 +176,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative overflow-hidden text-white rounded-2xl"
+      className="relative overflow-hidden text-white rounded-[32px] h-[700px]"
       style={{
         backgroundImage: `url('/assets/HeroBackground.jpg')`,
         backgroundSize: 'cover',
@@ -189,34 +193,61 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-16">
-        <div>
+      <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
+        <div className='mb-24'>
           {eyebrow && (
             <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
               {eyebrow}
             </p>
           )}
           {title && (
-            <h1 className="mt-3 max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+            <Title
+              align="left"
+              style={{
+                maxWidth: '400px',
+                fontSize: '48px',
+                fontWeight: 700,
+                lineHeight: '1.25',
+              }}
+              className="mt-1 mx-0 sm:text-5xl lg:text-6xl"
+            >
               {title}
-            </h1>
+            </Title>
           )}
-          {description && <p className="mt-6 max-w-lg text-white/85">{description}</p>}
+          {description && (
+            <Description
+              align="left"
+              style={{
+                fontWeight: 300,
+                fontSize: '16px',
+                lineHeight: '100%',
+                color: 'white',
+              }}
+              className="my-4"
+            >
+              {description}
+            </Description>
+          )}
 
-          {ctaUrl && (
-            <div className="mt-10">
-              <a
-                href={ctaUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-slate-900 shadow-lg ring-1 ring-white/20 transition hover:translate-y-[-1px] hover:shadow-xl"
+          {ctaText && (
+            <div className="mt-4 text-center flex felx-col">
+              <CTA
+                href={(ctaUrl || '').trim() || '#'}
+                color="white"
+                borderColor="white"
+                variant="outline"
+                width={248}
+                height={56}
+                icon="slot"
+                className="rounded-[20px] px-6 py-[18px] border opacity-100"
               >
                 {ctaText}
-                <span aria-hidden>→</span>
-              </a>
+              </CTA>
             </div>
           )}
         </div>
 
-        <div className="relative h-[720px] w-[160%] animate-float">
+        <div className="relative h-[660px] w-[690px] bottom-5">
           {heroImgUrl ? (
             <Image
               src={heroImgUrl}
