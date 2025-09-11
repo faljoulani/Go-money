@@ -19,8 +19,6 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "@img/sharp-libvips-win32-x64": "1.0.4",
-    "@img/sharp-win32-x64": "0.33.5",
     "@svgr/webpack": "^8.1.0",
     "@types/bootstrap": "5.2.10",
     "@types/node": "20.14.8",
