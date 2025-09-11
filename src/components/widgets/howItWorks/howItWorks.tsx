@@ -206,12 +206,12 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"
                     >
-                      <div className="mx-auto mb-6 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 ring-1 ring-white/15">
+                      <div className="mx-auto mb-6 grid h-12 w-12 place-items-center border-none bg-white/12 ring-1 ring-white/15">
                         {logoSrc ? (
                           <img src={logoSrc} alt={logoAlt} className="h-12 w-12" />
                         ) : (
                           <span className="text-2xl" aria-hidden>
-                            🖼️
+                            
                           </span>
                         )}
                       </div>

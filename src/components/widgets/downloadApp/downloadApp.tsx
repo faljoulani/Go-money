@@ -212,7 +212,7 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
                   width={289}
                   height={525}
                   priority
-                  className="pointer-events-none select-none object-contain animate-float absolute top-0 -translate-y-1/2 ml-[126px]"
+                  className="pointer-events-none select-none object-contain animate-float absolute -top-2"
                   style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
                 />
               )}
@@ -283,6 +283,7 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
           </>
         )}
       </div>
+      <div className="absolute -bottom-8 h-8 w-full defaultBgColor"></div>
     </section>
   );
 }
