@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { ExecutiveManagmentEntity } from './executiveManagment.entity';
+import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
 import Card from '../../atoms/card/card';
@@ -19,7 +19,7 @@ interface CeoMessage {
   Image?: any | any[];
 }
 
-export default async function CeoMessage(props: WidgetContext<ExecutiveManagmentEntity>) {
+export default async function ChairmanMessage(props: WidgetContext<CardSectionEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
@@ -137,11 +137,8 @@ export default async function CeoMessage(props: WidgetContext<ExecutiveManagment
     };
   });
   return (
-    <section {...attributes} className="bg-[#EEEEEE] w-full px-20 pb-10">
-      <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8">
-        <div className="absolute top-0 right-12 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-white"></div>
-        </div>
+    <section {...attributes} className="w-full px-20 pb-10">
+      <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 rounded-3xl space-x-8">
         <div className="absolute top-[204px] right-2">
           <img src="/icons/Floating-button.svg" alt="Floating-button" />
         </div>

@@ -1,26 +1,39 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSf } from '../../../utils/hooks/useSf';
 
 type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
+type SfList<T> = { value: T[] };
 
-export default function QuestionsClient({
-  categories,
-  grouped,
-}: {
-  categories: Category[];
-  grouped: Record<string, Question[]>;
-}) {
+export default function QuestionsClient({ categories }: { categories: Category[] }) {
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
 
-  const questions = useMemo(() => grouped[(active || '').toLowerCase()] ?? [], [active, grouped]);
+  // Fetch ALL questions once; SWR caches/dedupes for you
+  const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
+    'api/default/faqquestions',
+    {
+      $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
+      $orderby: 'Order asc, Title asc',
+    },
+    { revalidateOnFocus: true },
+  );
 
+  // Filter & sort questions for the active category
+  const questions = useMemo(() => {
+    const all = data?.value ?? [];
+    const a = active.toLowerCase();
+    const filtered = all.filter((q) => (q.ParentId || '').toLowerCase() === a);
+    filtered.sort((x, y) => (x.Order ?? 0) - (y.Order ?? 0) || x.Title.localeCompare(y.Title));
+    return filtered;
+  }, [data, active]);
+
+  // One-open-at-a-time accordion
   const [openId, setOpenId] = useState<string | null>(null);
-
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null);
+    setOpenId(questions[0]?.Id ?? null); // first question opens on category change / first load
   }, [active, questions]);
 
   return (
@@ -64,7 +77,9 @@ export default function QuestionsClient({
       {/* Questions */}
       <div className="w-[75%]">
         <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white/70">
-          {questions.length === 0 && (
+          {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
+          {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
+          {!isLoading && !error && questions.length === 0 && (
             <div className="p-6 text-slate-500">No questions in this category yet.</div>
           )}
 
@@ -93,8 +108,8 @@ export default function QuestionsClient({
                       ) : (
                         // Plus (+)
                         <>
-                          <line x1="7" y1="0" x2="7" y2="15" /> 
-                          <line x1="0" y1="7" x2="15" y2="7" /> 
+                          <line x1="7" y1="0" x2="7" y2="15" />
+                          <line x1="0" y1="7" x2="15" y2="7" />
                         </>
                       )}
                     </svg>

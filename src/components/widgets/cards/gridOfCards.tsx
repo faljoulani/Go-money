@@ -5,6 +5,9 @@ import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import ScrollableCards from './scrollableCards';
 import FeatureCards from './featuresCards';
 import AlternatingFeaturesCard from './alternatingFeaturesCards';
+import LeadershipCards from './leadershipCards';
+import CEOMessageCard from './ceoMessageCard';
+import ChairmanMessageCard from './chairmanMessageCard'
 
 import Card from '../../atoms/card/card';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
@@ -72,7 +75,13 @@ export default async function Cards(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attrs} data-view={selectedView}>
       <div data-react-root>
-        {selectedView === 'ScrollableCards' ? (
+        {selectedView === 'LeadershipCards' ? (
+          <LeadershipCards {...props} />
+        ) :selectedView === 'CEOMessageCard' ? (
+          <CEOMessageCard {...props} />
+        ) :selectedView === 'ChairmanMessageCard' ? (
+          <ChairmanMessageCard {...props} />
+        ) :selectedView === 'ScrollableCards' ? (
           <ScrollableCards {...props} />
         ) : selectedView === 'FeatureCards' ? (
           <FeatureCards {...props} />
