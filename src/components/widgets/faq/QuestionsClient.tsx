@@ -1,33 +1,44 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSf } from '../../../utils/hooks/useSf';
 
 type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
+type SfList<T> = { value: T[] };
 
-export default function QuestionsClient({
-  categories,
-  grouped,
-}: {
-  categories: Category[];
-  grouped: Record<string, Question[]>;
-}) {
+export default function QuestionsClient({ categories }: { categories: Category[] }) {
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
 
-  const questions = useMemo(
-    () => grouped[(active || '').toLowerCase()] ?? [],
-    [active, grouped],
+  // Fetch ALL questions once; SWR caches/dedupes for you
+  const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
+    'api/default/faqquestions',
+    {
+      $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
+      $orderby: 'Order asc, Title asc',
+    },
+    { revalidateOnFocus: true }
   );
 
-  const [openId, setOpenId] = useState<string | null>(null);
+  // Filter & sort questions for the active category
+  const questions = useMemo(() => {
+    const all = data?.value ?? [];
+    const a = active.toLowerCase();
+    const filtered = all.filter((q) => (q.ParentId || '').toLowerCase() === a);
+    filtered.sort((x, y) => (x.Order ?? 0) - (y.Order ?? 0) || x.Title.localeCompare(y.Title));
+    return filtered;
+  }, [data, active]);
 
+  // One-open-at-a-time accordion
+  const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null);
+    setOpenId(questions[0]?.Id ?? null); // first question opens on category change / first load
   }, [active, questions]);
 
   return (
     <div className="flex gap-8 p-12">
+      {/* Categories */}
       <aside className="w-[25%]">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
@@ -42,12 +53,7 @@ export default function QuestionsClient({
                 }`}
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
-                <span
-                  className={`grid place-items-center w-8 h-8 rounded-lg ${
-                    isActive ? 'text-white' : 'text-[#0b1C5A]'
-                  }`}
-                  aria-hidden
-                >
+                <span className={`grid place-items-center w-8 h-8 rounded-lg ${isActive ? 'text-white' : 'text-[#0b1C5A]'}`} aria-hidden>
                   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
                     <path d="M7 4l6 6-6 6" />
                   </svg>
@@ -61,7 +67,9 @@ export default function QuestionsClient({
       {/* Questions */}
       <div className="w-[75%]">
         <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white/70">
-          {questions.length === 0 && (
+          {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
+          {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
+          {!isLoading && !error && questions.length === 0 && (
             <div className="p-6 text-slate-500">No questions in this category yet.</div>
           )}
 
@@ -72,7 +80,7 @@ export default function QuestionsClient({
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer"
                   onClick={(e) => {
-                    e.preventDefault(); 
+                    e.preventDefault(); // control it manually
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
