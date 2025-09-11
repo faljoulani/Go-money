@@ -220,7 +220,8 @@ stages:
                       $listeners = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop
                     } catch { $listeners = @() }
                     if ($listeners) {
-                      Write-Host "Host port $port is in use by the following PIDs: " ($listeners | Select-Object -Expand OwningProcess -Unique -Join ', ')
+                      $pids = $listeners | Select-Object -ExpandProperty OwningProcess | Sort-Object -Unique
+                      Write-Host ("Host port {0} is in use by the following PIDs: {1}" -f $port, ($pids -join ', '))
                       foreach($pid in ($listeners | Select-Object -Expand OwningProcess -Unique)){
                         try {
                           $proc = Get-Process -Id $pid -ErrorAction SilentlyContinue
