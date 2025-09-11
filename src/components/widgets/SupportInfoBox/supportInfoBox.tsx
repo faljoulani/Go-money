@@ -1,9 +1,11 @@
-// components/widgets/supportInfoBox/supportInfoBox.tsx
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import type { SupportInfoBoxEntity } from './supportInfoBox.entity';
+import { fetchData } from '../../../utils/sitefinity';
+import Description from '../../atoms/description/description';
+import Title from '../../atoms/title/title';
 
-const TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.SupportInfoBox.SupportInfoBox';
+import Link from 'next/link';
+import Image from 'next/image';
 
 type CmsImage = {
   Url?: string;
@@ -17,7 +19,13 @@ const imgUrl = (i?: CmsImage) => i?.MediaUrl || i?.Url || i?.ThumbnailUrl || und
 
 function parseSelection(raw: unknown) {
   if (!raw) return undefined;
-  if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return undefined; } }
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return undefined;
+    }
+  }
   return raw as any;
 }
 
@@ -31,128 +39,153 @@ function firstIdFromSelection(sel: any) {
   return Array.isArray(ids) ? ids[0] : ids;
 }
 
-export default async function SupportInfoBox(props: WidgetContext<SupportInfoBoxEntity>) {
-  console.log('================= [SupportInfoBox] FULL PROPS =================');
-  console.log(JSON.stringify(props, null, 2));
-  console.log('===============================================================');
+const normalizePhone = (s: string) => (s || '').replace(/[^\d+]/g, '');
+const infoHref = (s: any) => {
+  if (s?.StoreType === 'Email' && s?.Url) return `mailto:${s.Url}`;
+  if (s?.StoreType === 'Phone' && s?.Url) return `tel:${normalizePhone(s.Url)}`;
+  return s?.Url || '#';
+};
 
+const firstMedia = (m: any): CmsImage => (Array.isArray(m) ? m[0] : m) ?? null;
+
+const imgPath = (m?: CmsImage | null) => m?.MediaUrl || m?.Url || m?.ThumbnailUrl || null;
+
+export default async function SupportInfoBox(props: WidgetContext<SupportInfoBoxEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
   const selection = parseSelection(
-    props.model?.Properties?.SupportInfoBox ?? (props.model?.Properties as any)?.SupportInfoBox
+    props.model?.Properties?.SupportInfoBox ?? (props.model?.Properties as any)?.SupportInfoBox,
   );
-  console.log('[SupportInfoBox] selection =>', JSON.stringify(selection, null, 2));
-
   const id = firstIdFromSelection(selection);
-  console.log('[SupportInfoBox] selected item id =>', id);
 
   if (!id) {
     return isEdit ? (
-      <section {...attrs} className="p-6 border border-dashed rounded-2xl text-center text-slate-500">
+      <section
+        {...attrs}
+        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+      >
         <strong>SupportInfoBox</strong>
         <div className="mt-1">Open the designer and select a SupportInfoBox item.</div>
       </section>
     ) : null;
   }
 
-  // Request both Logo and Icon for InfoLinks to cover both schemas
-  const item = await RestClient.getItem({
-    type: TYPE,
-    id,
+  const item = (await fetchData(
+    [id],
+    null,
     culture,
-    fields: [
+    [
       'Id',
       'Title',
       'Description',
       'HasLabel',
-      // NOTE: ask for Title, Order, Logo + Icon; Url/StoreType are optional if present
-      'InfoLinks($select=Id,Title,Order,Url,StoreType,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title),Icon($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
-      'SocialLinks($select=Id,Title,Description,Order,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
+      'InfoLinks($select=Id,Title,Description,Url,StoreType,Order,IsVisible,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title),Icon($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
+      'SocialLinks($select=Id,Title,Description,Url,Order,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
     ],
-  });
+    { itemType: selection?.Content?.[0]?.Type, single: true },
+  )) as any | null;
 
-  console.log('================= [SupportInfoBox] FETCHED ITEM =================');
-  console.log(JSON.stringify(item, null, 2));
-  console.log('=================================================================');
+  console.log('SupportInfoBox item:', JSON.stringify(item));
 
   if (!item) return null;
 
   const infos = (item.InfoLinks || [])
-    .filter((x: any) => x?.IsVisible !== false) // harmless if IsVisible is absent
+    .filter((x: any) => x?.IsVisible !== false)
     .sort((a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  const socials = (item.SocialLinks || [])
-    .sort((a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0));
-
-  // href helper (tolerant if fields are missing)
-  const normalizePhone = (s: string) => (s || '').replace(/[^\d+]/g, '');
-  const infoHref = (s: any) => {
-    if (s?.StoreType === 'Email' && s?.Url) return `mailto:${s.Url}`;
-    if (s?.StoreType === 'Phone' && s?.Url) return `tel:${normalizePhone(s.Url)}`;
-    return s?.Url || '#';
-  };
-
-  // Debug: print what media we actually got for InfoLinks
-  console.log(
-    '[SupportInfoBox] InfoLinks media check:',
-    infos.map((x: any) => ({
-      id: x.Id,
-      title: x.Title,
-      hasLogo: !!(Array.isArray(x.Logo) ? x.Logo[0] : x.Logo),
-      hasIcon: !!(Array.isArray(x.Icon) ? x.Icon[0] : x.Icon),
-    }))
+  const socials = (item.SocialLinks || []).sort(
+    (a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0),
   );
 
   return (
-    <section {...attrs} className="relative overflow-hidden rounded-[28px] bg-white p-8 md:p-12 shadow-sm">
-      {item.Title && <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B2A8E]">{item.Title}</h2>}
-      {item.Description && <p className="text-xl text-gray-400 mt-4">{item.Description}</p>}
+    <section {...attrs} className="relative overflow-hidden rounded-[28px] bg-white p-12 shadow-sm">
+      <div className="space-y-4">
+        <Title
+          align="left"
+          color="var(--Text-text-primary, #010663)"
+          variant="section"
+          fontSize="28px"
+          fontWeight={700}
+          lineHeight="100%"
+          letterSpacing="-0.02em"
+        >
+          {item.Title}
+        </Title>
+        <Description
+          align="left"
+          color="var(--Text-text-neutral, #9E9E9E)"
+          className="text-[18px] font-semibold leading-[100%] tracking-[0]"
+          html={item.Description}
+        />
+      </div>
 
       {/* Info links */}
-      <div className="mt-10 space-y-8">
-        {infos.map((s: any) => {
-          const media = Array.isArray(s.Logo) ? s.Logo[0]
-                       : s.Logo ?? (Array.isArray(s.Icon) ? s.Icon[0] : s.Icon);
+      <div className="mt-10 space-y-2">
+        {infos.map((social: any) => {
+          const media =
+            (Array.isArray(social.Logo) ? social.Logo[0] : social.Logo) ??
+            (Array.isArray(social.Icon) ? social.Icon[0] : social.Icon);
           return (
-            <div key={s.Id} className="flex items-center gap-4">
-              {imgUrl(media) ? (
+            <div key={social.Id} className="flex items-center gap-4">
+              {imgUrl(media) && (
                 <img
                   src={imgUrl(media)}
-                  alt={media?.AlternativeText || media?.Title || s.Title}
+                  alt={media?.AlternativeText || media?.Title || social.Title}
                   className="h-10 w-10 object-contain"
                   draggable={false}
                 />
-              ) : (
-                <span className="h-10 w-10 rounded-xl border flex items-center justify-center">•</span>
               )}
-              <a href={infoHref(s)} className="text-lg md:text-xl font-semibold text-gray-700 hover:underline">
-                {s.Url || s.Title}
-              </a>
+              <Description
+                align="left"
+                color="var(--Text-text-default, #424242)"
+                className="text-[16px] font-semibold leading-[100%] tracking-[0]"
+                html={social.Description}
+              />
             </div>
           );
         })}
       </div>
 
-      {/* Social links */}
-      {socials.length ? (
+      {socials?.length > 0 && (
         <div className="mt-10 flex items-center gap-4">
-          {socials.map((s: any) => {
-            const logo = Array.isArray(s.Logo) ? s.Logo[0] : s.Logo;
+          {socials.map((social: any, i: number) => {
+            const sImg = firstMedia(social.Logo);
+            const sSrc = imgPath(sImg);
+
             return (
-              <span key={s.Id} className="h-14 w-14 rounded-2xl border-2 border-[#0B2A8E] flex items-center justify-center" title={s.Title}>
-                {imgUrl(logo) ? (
-                  <img src={imgUrl(logo)} alt={logo?.AlternativeText || s.Title} className="h-7 w-7 object-contain" />
-                ) : (
-                  <span className="text-[#0B2A8E] font-bold">{s.Title?.[0] ?? '•'}</span>
+              <Link
+                key={social.Id ?? `social-${i}-${social.Title ?? 'x'}`}
+                href={social.Url || '#'}
+                aria-label={social.Title || 'social link'}
+                target={social.Url ? '_blank' : undefined}
+                rel={social.Url ? 'noopener noreferrer' : undefined}
+                className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[#0B2A8E] transition-colors hover:border-[#0B2A8E]/80 overflow-hidden"
+                title={social.Title}
+              >
+                {sSrc && (
+                  <Image
+                    src={sSrc}
+                    alt={sImg?.AlternativeText || social.Title || 'social'}
+                    width={28}
+                    height={28}
+                    sizes="28px"
+                    className="h-7 w-7 object-contain"
+                    unoptimized
+                  />
                 )}
-              </span>
+              </Link>
             );
           })}
         </div>
-      ) : null}
+      )}
 
-      {item.HasLabel && <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#0B2A8E] rounded-tl-[40px]" />}
+      {item.HasLabel && (
+        <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#0023F5] rounded-tl-[60px]">
+          <div className="absolute bottom-0 right-0 w-16 h-16 bg-white"></div>
+        </div>
+      )}
     </section>
   );
 }
+

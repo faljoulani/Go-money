@@ -26,12 +26,6 @@ import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepay
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
 
-import CeoMessage from '../components/widgets/executiveManagment/ceoMessage';
-import { ExecutiveManagmentEntity } from './../components/widgets/executiveManagment/executiveManagment.entity';
-
-import Leadership from '../components/widgets/leadership/leadership';
-import { LeadershipEntity } from '../components/widgets/leadership/leadership.entity';
-
 import faq from '../components/widgets/faq/faq';
 import { FaqSectionEntity } from '../components/widgets/faq/faq.entity';
 
@@ -43,12 +37,21 @@ import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.
 
 import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
 
-import ExpandBox from '../components/widgets/expandBox/expandbox';
-import { ExpandBoxEntity } from '../components/widgets/expandBox/expandbox.entity';
-
 import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
+import SupportInfoBox from '../components/widgets/supportInfoBox/supportInfoBox';
+import { SupportInfoBoxEntity } from '../components/widgets/supportInfoBox/supportInfoBox.entity';
+
+import ContactForm from '../components/widgets/contactForm/contactForm';
+
+import { TwoColumnLayoutEntity } from '../components/widgets/layouts/twoColumnLayout.entity';
+import TwoColumnLayout from '../components/widgets/layouts/TwoColumnLayout';
+
+import StackLayout from '../components/widgets/layouts/stackLayout';
+
+import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
+import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -129,24 +132,6 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'DownloadApp' },
     },
-    CeoMessage: {
-      componentType: CeoMessage,
-      entity: ExecutiveManagmentEntity,
-      ssr: true,
-      editorMetadata: { Title: 'CEO Message' },
-      views: {
-        Default: { Title: 'CEO Message', ViewFunction: CeoMessage },
-      },
-    },
-    Leadership: {
-      componentType: Leadership,
-      entity: LeadershipEntity,
-      ssr: true,
-      editorMetadata: { Title: 'Leadership' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: Leadership },
-      },
-    },
     GotQuestions: {
       componentType: ContactBox,
       entity: ContactBoxEntity,
@@ -164,6 +149,58 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'HighlightBlock' },
       views: {
         Default: { Title: 'Default', ViewFunction: HighlightBlockDefault },
+      },
+    },
+    SupportInfoBox: {
+      componentType: SupportInfoBox,
+      entity: SupportInfoBoxEntity,
+      ssr: true,
+      editorMetadata: { Title: 'SupportInfoBox' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: SupportInfoBox },
+      },
+    },
+    TwoColumnLayout: {
+      componentType: TwoColumnLayout,
+      entity: TwoColumnLayoutEntity,
+      ssr: true,
+      editorMetadata: {
+        Title: 'Two Column Layout',
+        Category: 'Layout',
+        Section: 'Custom',
+        IconName: 'section',
+        Order: 50,
+      },
+    },
+    StackLayout: {
+      componentType: StackLayout,
+      ssr: true,
+      editorMetadata: {
+        Title: 'Stack Layout',
+        Category: 'Layout',
+        Section: 'Custom',
+        IconName: 'section',
+        Order: 50,
+      },
+      views: {
+        Default: { Title: 'Default', ViewFunction: StackLayout },
+      },
+    },
+    ContactSubscription: {
+      componentType: ContactSubscription,
+      entity: ContactSubscriptionEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Contact Subscription' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ContactSubscription },
+      },
+    },
+    ContactForm: {
+      componentType: ContactForm,
+      ssr: true,
+      editorMetadata: { Title: 'ContactForm' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: ContactForm },
       },
     },
   },
