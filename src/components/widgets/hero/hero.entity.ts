@@ -6,12 +6,12 @@ import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorator
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
 @WidgetEntity('Hero', 'Hero')
+
 export class HeroEntity {
   @ContentSection('Design', 0)
   @DisplayName('View')
   @ViewSelector([
     { Name: 'Default', Title: 'Default', Value: 'Default' },
-    { Name: 'Background', Title: 'Background', Value: 'Background' },
   ])
   ViewName?: string;
 
@@ -25,4 +25,6 @@ export class HeroEntity {
 
   @WidgetLabel()
   SfWidgetLabel = 'Hero';
+
+
 }

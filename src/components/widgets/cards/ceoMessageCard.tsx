@@ -34,7 +34,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     return isEdit ? (
       <section
         {...attributes}
-        className="p-6 border border-dashed rounded-lg text-center text-slate-500"
+        className="p-6 border border-dashed rounded-lg text-center text-slate-500 mt-[-200px]"
       >
         <strong>Cards</strong>
         <div className="mt-1">Open the designer and select a Card List.</div>
@@ -137,7 +137,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     };
   });
   return (
-    <section {...attributes} className="bg-[#EEEEEE] w-full px-20 pb-10">
+    <section {...attributes} className="bg-[#EEEEEE] w-full px-20 pb-10 ">
       <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8">
         <div className="absolute top-0 right-20 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
           <div className="absolute top-0 right-0 w-16 h-16 bg-white"></div>

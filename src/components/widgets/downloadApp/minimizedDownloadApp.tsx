@@ -144,7 +144,7 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
   return (
     <section {...attributes}>
       <div
-        className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-25"
+        className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-25 mx-auto"
         style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
       >
         <div className="relative flex h-full w-full gap-6  px-16">

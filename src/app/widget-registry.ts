@@ -63,6 +63,7 @@ const customWidgetRegistry: WidgetRegistry = {
       views: {
         Default: { Title: 'Default', ViewFunction: Hero },
         Simple: { Title: 'Simple', ViewFunction: Hero },
+        HeroWithCard: { Title: 'Hero With Card', ViewFunction: Hero },
       },
     },
     Cards: {
