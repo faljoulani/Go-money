@@ -3,7 +3,7 @@ import { MainNavigationEntity } from './mainNavigation.entity';
 
 import { toAbsolute } from '../../../utils/utils';
 import { parseSelection, extractSelectionId, fetchData } from '../../../utils/sitefinity';
-import { ApiNavItem as ClientNavItem, ApiNavLink as ClientNavLink } from '../../../types/type';
+import { ApiNavItem as ClientNavItem, ApiNavLink as ClientNavLink } from '../../../types/Type';
 import MainNavigationClientShell from './MainNavigationClientShell';
 
 type SfImage = { Url?: string; ThumbnailUrl?: string; Title?: string; AlternativeText?: string };

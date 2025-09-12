@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import ClientNavbar from './mainNavigationClient';
 import { toAbsolute } from '../../../utils/utils';
-import type { ApiNavItem as ClientNavItem } from '../../../types/type';
+import type { ApiNavItem as ClientNavItem } from '../../../types/Type';
 import LanguageSwitcher from '../../custom/languageSwitcher/languageSwitcher';
 import ModeSwitcher from '../../custom/modeSwitcher/modeSwitcher';
 

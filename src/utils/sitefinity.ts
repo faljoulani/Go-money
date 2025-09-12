@@ -1,5 +1,5 @@
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import { CmsImage } from '../types/type';
+import { CmsImage } from '../types/Type';
 
 type Culture = string | undefined;
 

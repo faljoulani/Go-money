@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cleanHref, normalizePath, displayTitle } from '../../../utils/utils';
-import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/type';
+import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/Type';
 
 type NormalizedLink = ApiNavLink & { href: string };
 type NormalizedDropdown = NormalizedLink & { children: NormalizedLink[] };
