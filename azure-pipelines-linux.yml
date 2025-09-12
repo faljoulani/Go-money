@@ -41,48 +41,56 @@ stages:
 
           - script: |
               set -euo pipefail
-              echo "Creating Linux-only case aliases (no repo changes)"
+              echo "Normalizing filenames for Linux build (no repo changes)"
 
-              # MainNavigation.entity (import expects Uppercase, file is lowercase)
-              if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ] && [ ! -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ]; then
-                printf "export * from './mainNavigation.entity';\nexport { default } from './mainNavigation.entity';\n" > src/components/widgets/mainNavigation/MainNavigation.entity.ts
+              # MainNavigation.entity -> Uppercase file used by imports
+              if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ]; then
+                [ -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ] && rm -f src/components/widgets/mainNavigation/MainNavigation.entity.ts || true
+                mv src/components/widgets/mainNavigation/mainNavigation.entity.ts src/components/widgets/mainNavigation/MainNavigation.entity.ts
               fi
 
-              # MainNavigationClient (import expects Uppercase, file is lowercase)
-              if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ] && [ ! -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ]; then
-                printf "export { default } from './mainNavigationClient';\n" > src/components/widgets/mainNavigation/MainNavigationClient.tsx
+              # MainNavigationClient -> Uppercase file used by imports
+              if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ]; then
+                [ -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ] && rm -f src/components/widgets/mainNavigation/MainNavigationClient.tsx || true
+                mv src/components/widgets/mainNavigation/mainNavigationClient.tsx src/components/widgets/mainNavigation/MainNavigationClient.tsx
               fi
 
-              # breadcrumbCustom (import expects lowercase, file is Uppercase)
-              if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ] && [ ! -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ]; then
-                printf "export { default } from './BreadcrumbCustom';\n" > src/components/widgets/breadcrumb/breadcrumbCustom.tsx
+              # breadcrumbCustom -> lowercase file used by imports
+              if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ]; then
+                [ -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ] && rm -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx || true
+                mv src/components/widgets/breadcrumb/BreadcrumbCustom.tsx src/components/widgets/breadcrumb/breadcrumbCustom.tsx
               fi
 
-              # supportInfoBox directory (import expects lowercase dir)
-              if [ -d src/components/widgets/SupportInfoBox ] && [ ! -e src/components/widgets/supportInfoBox ]; then
-                (cd src/components/widgets && ln -s SupportInfoBox supportInfoBox)
+              # supportInfoBox directory -> lowercase dir used by imports
+              if [ -d src/components/widgets/SupportInfoBox ]; then
+                [ -e src/components/widgets/supportInfoBox ] && rm -rf src/components/widgets/supportInfoBox || true
+                mv src/components/widgets/SupportInfoBox src/components/widgets/supportInfoBox
               fi
 
-              # TwoColumnLayout (import expects Uppercase file, file is lowercase)
-              if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ] && [ ! -f src/components/widgets/layouts/TwoColumnLayout.tsx ]; then
-                printf "export { default } from './twoColumnLayout';\nexport * from './twoColumnLayout';\n" > src/components/widgets/layouts/TwoColumnLayout.tsx
+              # TwoColumnLayout -> Uppercase file used by imports
+              if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ]; then
+                [ -f src/components/widgets/layouts/TwoColumnLayout.tsx ] && rm -f src/components/widgets/layouts/TwoColumnLayout.tsx || true
+                mv src/components/widgets/layouts/twoColumnLayout.tsx src/components/widgets/layouts/TwoColumnLayout.tsx
               fi
 
-              # ContactSubscription.entity (import expects Uppercase, file is lowercase)
-              if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ] && [ ! -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then
-                printf "export * from './contactSubscription.entity';\n" > src/components/widgets/contactSubscription/ContactSubscription.entity.ts
+              # ContactSubscription.entity -> Uppercase file used by imports
+              if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ]; then
+                [ -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ] && rm -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts || true
+                mv src/components/widgets/contactSubscription/contactSubscription.entity.ts src/components/widgets/contactSubscription/ContactSubscription.entity.ts
               fi
 
-              # FullPageLoader (import expects Uppercase file, file is lowercase)
-              if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ] && [ ! -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then
-                printf "export { default } from './fullPageLoader';\n" > src/components/atoms/fullPageLoader/FullPageLoader.tsx
+              # FullPageLoader -> Uppercase file used by imports
+              if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ]; then
+                [ -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ] && rm -f src/components/atoms/fullPageLoader/FullPageLoader.tsx || true
+                mv src/components/atoms/fullPageLoader/fullPageLoader.tsx src/components/atoms/fullPageLoader/FullPageLoader.tsx
               fi
 
-              # ContentWithoutImage (import expects Uppercase file, file is lowercase)
-              if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ] && [ ! -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ]; then
-                printf "export { default } from './contentWithoutImage';\n" > src/components/widgets/highlightBlock/ContentWithoutImage.tsx
+              # ContentWithoutImage -> Uppercase file used by imports
+              if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ]; then
+                [ -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ] && rm -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx || true
+                mv src/components/widgets/highlightBlock/contentWithoutImage.tsx src/components/widgets/highlightBlock/ContentWithoutImage.tsx
               fi
-            displayName: 'Create case-insensitive aliases for Linux build'
+            displayName: 'Normalize filenames for Linux build'
 
           - script: |
               set -e

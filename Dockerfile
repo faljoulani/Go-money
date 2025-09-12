@@ -27,31 +27,71 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
 # ---- App code --------------------------------------------------------------
 COPY . .
 
-# ---- Create Linux-only case-insensitive aliases (no repo changes) ----------
+# ---- Normalize filenames for Linux (rename only, no repo changes) ----------
 RUN set -eux; \
-  # mainNavigation entity alias (Uppercase M expected by imports)
-  if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ] && [ ! -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ]; then \
-    printf "export * from './mainNavigation.entity';\nexport { default } from './mainNavigation.entity';\n" > src/components/widgets/mainNavigation/MainNavigation.entity.ts; \
+  # mainNavigation entity -> Uppercase file used by imports
+  if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ]; then \
+    if [ -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ]; then \
+      rm -f src/components/widgets/mainNavigation/MainNavigation.entity.ts; \
+    fi; \
+    mv src/components/widgets/mainNavigation/mainNavigation.entity.ts \
+       src/components/widgets/mainNavigation/MainNavigation.entity.ts; \
   fi; \
-  # MainNavigationClient alias (Uppercase import, lowercase file)
-  if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ] && [ ! -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ]; then \
-    printf "export { default } from './mainNavigationClient';\n" > src/components/widgets/mainNavigation/MainNavigationClient.tsx; \
+  # MainNavigationClient -> Uppercase file used by imports
+  if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ]; then \
+    if [ -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ]; then \
+      rm -f src/components/widgets/mainNavigation/MainNavigationClient.tsx; \
+    fi; \
+    mv src/components/widgets/mainNavigation/mainNavigationClient.tsx \
+       src/components/widgets/mainNavigation/MainNavigationClient.tsx; \
   fi; \
-  # Breadcrumb alias (lowercase import, uppercase file)
-  if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ] && [ ! -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ]; then \
-    printf "export { default } from './BreadcrumbCustom';\n" > src/components/widgets/breadcrumb/breadcrumbCustom.tsx; \
+  # Breadcrumb -> lowercase file used by imports
+  if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ]; then \
+    if [ -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ]; then \
+      rm -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx; \
+    fi; \
+    mv src/components/widgets/breadcrumb/BreadcrumbCustom.tsx \
+       src/components/widgets/breadcrumb/breadcrumbCustom.tsx; \
   fi; \
-  # SupportInfoBox directory alias (import expects lowercase dir)
-  if [ -d src/components/widgets/SupportInfoBox ] && [ ! -e src/components/widgets/supportInfoBox ]; then \
-    (cd src/components/widgets && ln -s SupportInfoBox supportInfoBox); \
+  # SupportInfoBox directory -> lowercase dir used by imports
+  if [ -d src/components/widgets/SupportInfoBox ]; then \
+    if [ -e src/components/widgets/supportInfoBox ]; then \
+      rm -rf src/components/widgets/supportInfoBox; \
+    fi; \
+    mv src/components/widgets/SupportInfoBox \
+       src/components/widgets/supportInfoBox; \
   fi; \
-  # TwoColumnLayout alias (Uppercase import, lowercase file)
-  if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ] && [ ! -f src/components/widgets/layouts/TwoColumnLayout.tsx ]; then \
-    printf "export { default } from './twoColumnLayout';\nexport * from './twoColumnLayout';\n" > src/components/widgets/layouts/TwoColumnLayout.tsx; \
+  # TwoColumnLayout -> Uppercase file used by imports
+  if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ]; then \
+    if [ -f src/components/widgets/layouts/TwoColumnLayout.tsx ]; then \
+      rm -f src/components/widgets/layouts/TwoColumnLayout.tsx; \
+    fi; \
+    mv src/components/widgets/layouts/twoColumnLayout.tsx \
+       src/components/widgets/layouts/TwoColumnLayout.tsx; \
   fi; \
-  # ContactSubscription.entity alias (Uppercase import, lowercase file)
-  if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ] && [ ! -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then \
-    printf "export * from './contactSubscription.entity';\n" > src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
+  # ContactSubscription.entity -> Uppercase file used by imports
+  if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ]; then \
+    if [ -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then \
+      rm -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
+    fi; \
+    mv src/components/widgets/contactSubscription/contactSubscription.entity.ts \
+       src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
+  fi; \
+  # FullPageLoader -> Uppercase file used by imports
+  if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ]; then \
+    if [ -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then \
+      rm -f src/components/atoms/fullPageLoader/FullPageLoader.tsx; \
+    fi; \
+    mv src/components/atoms/fullPageLoader/fullPageLoader.tsx \
+       src/components/atoms/fullPageLoader/FullPageLoader.tsx; \
+  fi; \
+  # ContentWithoutImage -> Uppercase file used by imports
+  if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ]; then \
+    if [ -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ]; then \
+      rm -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx; \
+    fi; \
+    mv src/components/widgets/highlightBlock/contentWithoutImage.tsx \
+       src/components/widgets/highlightBlock/ContentWithoutImage.tsx; \
   fi
   # FullPageLoader alias (import expects Uppercase file, file is lowercase)
   if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ] && [ ! -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then \
