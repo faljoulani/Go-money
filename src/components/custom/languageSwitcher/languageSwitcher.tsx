@@ -35,6 +35,7 @@ export default function LanguageSwitcher() {
     const normalizedPath = '/' + segments.join('/');
     const queryString = searchParams.toString();
     const newUrl = `/${lang}${normalizedPath}${queryString ? `?${queryString}` : ''}`;
+    console.log('Redirecting to:', newUrl);
     window.location.href = newUrl;
   };
 
@@ -55,7 +56,7 @@ export default function LanguageSwitcher() {
   const getCustomLabel = (lang: string): string => {
     switch (lang.toLowerCase()) {
       case 'en':
-        return 'English';
+        return 'En';
       case 'ar':
         return 'العربية';
       default:
@@ -67,9 +68,21 @@ export default function LanguageSwitcher() {
     return <FullPageLoader />;
   }
   return (
-    <div className="min-w-[140px]">
+    <div>
       <div className=" cursor-pointer uppercase" onClick={showLangSubMenu}>
-        {getCustomLabel(currentLang)}
+        <div className="flex items-center gap-2 p-2 transition">
+          {getCustomLabel(currentLang)}
+          <svg
+            className={`h-4 w-4 transition-transform `}
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            aria-hidden
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+          </svg>
+        </div>
       </div>
       {langSubMenuShown && (
         <div className="absolute mt-2 text-black bg-white border border-gray-300 rounded shadow-lg">

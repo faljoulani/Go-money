@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import ClientNavbar from './MainNavigationClient';
 import { toAbsolute } from '../../../utils/utils';
 import type { ApiNavItem as ClientNavItem } from '../../../types/type';
-import LanguageSwitcher from '../languageSwitcher/languageSwitcher';
+import LanguageSwitcher from '../../custom/languageSwitcher/languageSwitcher';
+import ModeSwitcher from '../../custom/modeSwitcher/modeSwitcher';
 
 export default function MainNavigationClientShell({
   attrs,
@@ -74,38 +75,43 @@ export default function MainNavigationClientShell({
           <ClientNavbar items={navItems} currentPath={currentPath} scrolled={scrolled} />
 
           {/* Right: Language switcher + Store badges */}
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 font-lufga text-[14px] font-medium leading-[100%] tracking-[0]">
+              <ModeSwitcher />
+              <LanguageSwitcher />
+            </div>
+            <div className="h-6 w-px bg-white" />
+            <div className="flex items-center gap-3">
+              {storeLinks.map((link, idx) => {
+                const key = `${link.storeType || 'store'}:${link.title || idx}:${link.url ?? 'no-url'}`;
+                const rawIcon = link.icon?.url || link.icon?.thumbnailUrl || '';
+                const iconSrc = rawIcon ? toAbsolute(rawIcon, requestContext) : '';
 
-            {storeLinks.map((link, idx) => {
-              const key = `${link.storeType || 'store'}:${link.title || idx}:${link.url ?? 'no-url'}`;
-              const rawIcon = link.icon?.url || link.icon?.thumbnailUrl || '';
-              const iconSrc = rawIcon ? toAbsolute(rawIcon, requestContext) : '';
-
-              return (
-                <a
-                  key={key}
-                  href={link.url ?? '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-10 h-10 rounded-2xl bg-white/70 ring-1 ring-black/5 grid place-items-center hover:bg-white transition"
-                  aria-label={link.title || ''}
-                  title={link.title || ''}
-                >
-                  {iconSrc ? (
-                    <Image
-                      src={iconSrc}
-                      alt={link.icon?.alt || link.icon?.title || link.title || ''}
-                      width={20}
-                      height={20}
-                      unoptimized
-                    />
-                  ) : (
-                    <span className="text-[10px]">{link.title}</span>
-                  )}
-                </a>
-              );
-            })}
+                return (
+                  <a
+                    key={key}
+                    href={link.url ?? '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-10 h-10 rounded-2xl bg-white/70 ring-1 ring-black/5 grid place-items-center hover:bg-white transition"
+                    aria-label={link.title || ''}
+                    title={link.title || ''}
+                  >
+                    {iconSrc ? (
+                      <Image
+                        src={iconSrc}
+                        alt={link.icon?.alt || link.icon?.title || link.title || ''}
+                        width={20}
+                        height={20}
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="text-[10px]">{link.title}</span>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
