@@ -111,8 +111,16 @@ stages:
 
                 - powershell: |
                     Write-Host "Agent machine: $env:COMPUTERNAME"
+                    Write-Host "Docker version"
+                    try { docker version | Out-String | Write-Host } catch {}
                     Write-Host "Docker info (mode)"
-                    docker info --format '{{json .ServerInfo}}' | Out-String | Write-Host
+                    try {
+                      $info = docker info 2>$null
+                      $info | Out-String | Write-Host
+                      if ($info -match 'OSType:\s*(\w+)') { Write-Host ("Detected OSType={0}" -f $Matches[1]) }
+                    } catch {
+                      Write-Host "Unable to get docker info."
+                    }
                   displayName: 'Log Docker mode/info'
 
                 - powershell: |
@@ -243,4 +251,3 @@ stages:
                       Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
                     } catch {}
                   displayName: 'Recycle IIS (optional)'
-
