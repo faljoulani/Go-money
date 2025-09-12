@@ -187,7 +187,7 @@ stages:
                     try {
                       $existing = docker ps -aq -f "name=$cname"
                       if ($existing) {
-                        Write-Host "Removing existing container(s) with name $cname: $existing"
+                        Write-Host "Removing existing container(s) with name ${cname}: $existing"
                         docker rm -f $existing | Out-Null
                       }
                     } catch { Write-Host "Container cleanup skipped: $($_.Exception.Message)" }
