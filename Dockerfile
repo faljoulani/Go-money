@@ -27,6 +27,33 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
 # ---- App code --------------------------------------------------------------
 COPY . .
 
+# ---- Create Linux-only case-insensitive aliases (no repo changes) ----------
+RUN set -eux; \
+  # mainNavigation entity alias (Uppercase M expected by imports)
+  if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ] && [ ! -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ]; then \
+    printf "export * from './mainNavigation.entity';\nexport { default } from './mainNavigation.entity';\n" > src/components/widgets/mainNavigation/MainNavigation.entity.ts; \
+  fi; \
+  # MainNavigationClient alias (Uppercase import, lowercase file)
+  if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ] && [ ! -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ]; then \
+    printf "export { default } from './mainNavigationClient';\n" > src/components/widgets/mainNavigation/MainNavigationClient.tsx; \
+  fi; \
+  # Breadcrumb alias (lowercase import, uppercase file)
+  if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ] && [ ! -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ]; then \
+    printf "export { default } from './BreadcrumbCustom';\n" > src/components/widgets/breadcrumb/breadcrumbCustom.tsx; \
+  fi; \
+  # SupportInfoBox directory alias (import expects lowercase dir)
+  if [ -d src/components/widgets/SupportInfoBox ] && [ ! -e src/components/widgets/supportInfoBox ]; then \
+    (cd src/components/widgets && ln -s SupportInfoBox supportInfoBox); \
+  fi; \
+  # TwoColumnLayout alias (Uppercase import, lowercase file)
+  if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ] && [ ! -f src/components/widgets/layouts/TwoColumnLayout.tsx ]; then \
+    printf "export { default } from './twoColumnLayout';\nexport * from './twoColumnLayout';\n" > src/components/widgets/layouts/TwoColumnLayout.tsx; \
+  fi; \
+  # ContactSubscription.entity alias (Uppercase import, lowercase file)
+  if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ] && [ ! -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then \
+    printf "export * from './contactSubscription.entity';\n" > src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
+  fi
+
 # ---- Show Prettier EOL & format to repo rules ------------------------------
 # This makes lint happy regardless of host OS line endings.
 RUN node -e "try{const p=require('prettier'); const c=p.resolveConfig.sync(process.cwd()); console.log('Prettier endOfLine:', (c&&c.endOfLine)||'(default) lf'); }catch(e){console.log('Prettier not found (will still try npx).')}"
