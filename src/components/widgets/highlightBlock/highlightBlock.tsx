@@ -139,7 +139,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section className="mx-20 my-16">
+    <section className="mx-20 my-16 bg-white">
       <div className="relative overflow-hidden rounded-[28px] bg-[#CFE8F1] py-[94px] pl-16 pr-[87px]">
         <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
           {/* Left: copy */}

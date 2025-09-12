@@ -54,18 +54,21 @@ export default function QuestionsClient({ categories }: { categories: Category[]
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
                 <span
                   className={`grid place-items-center w-8 h-8 rounded-lg ${
-                    isActive ? 'text-white' : 'text-[#0b1C5A]'
+                    isActive ? 'text-white' : 'text-black'
                   }`}
                   aria-hidden
                 >
                   <svg
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
-                    className="w-4 h-4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-[24px] h-[24px]"
                   >
-                    <path d="M7 4l6 6-6 6" />
+                    <line x1="0" y1="12" x2="15" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </span>
               </li>

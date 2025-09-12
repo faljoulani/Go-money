@@ -2,11 +2,11 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HowItWorksSimple } from './howItWorksSimple';
-import HowItWorksRings from './HowItWorksRings.png';
-import NavyBackground from './NavyBackground.webp';
-import pocketImg from './pocketHQ.webp';
-import transparentNavy from './transparentNavy.png';
-import Mobile from './Mobile.png';
+// import HowItWorksRings from './HowItWorksRings.png';
+// import NavyBackground from './NavyBackground.webp';
+// import pocketImg from './pocketHQ.webp';
+// import transparentNavy from './transparentNavy.png';
+// import Mobile from './Mobile.png';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -135,9 +135,9 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return <HowItWorksSimple {...props} />;
   }
   return (
-    <section {...attrs} className="relative">
+    <section {...attrs} className="relative mx-20 bg-white">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 mb-28">
+      <div className="mx-auto max-w-3xl text-center px-6 mb-2">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
         {view.Title && <Title className="h-[59px] mt-3 mb-1">{view.Title}</Title>}
         {view.HeaderText && <Description>{view.HeaderText}</Description>}
@@ -145,15 +145,16 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative h-[1600px] flex flex-col justify-center items-center"
+        className="relative h-[1390px] flex flex-col justify-center items-center"
         style={{
-          backgroundImage: `url('/assets/HowItWorksRings.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: '50% 10%',
+          backgroundImage: `url('/assets/Shape.png')`,
+          backgroundSize: '1380px',
+          backgroundPosition: '50% 70%',
+          backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none h-[85%] absolute inset-0 z-40">
-          <div className="sticky top-[28vh] flex justify-center">
+        <div className="pointer-events-none h-[70%] absolute inset-0 z-40 mt-36 left-[170px]">
+          <div className="sticky top-[12vh] flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} />
           </div>
         </div>
@@ -161,26 +162,24 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div
-            className="flex flex-col items-center relative rounded-t-[28px] overflow-hidden"
-            style={{
-              backgroundImage: `url('/assets/NavyBackground.webp')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-hidden bg-black h-[725px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
-              src="/assets/transparentNavy.png"
+              src="/assets/transparentN.png"
               alt=""
-              className="absolute inset-0 w-full h-[746px] -top-8 left-0 z-40 object-cover object-top"
+              className="absolute inset-0 w-full h-[725px] left-0 z-40 object-cover object-top"
             />
             {/* pocket lip */}
             <img
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none select-none absolute w-[1400px] -top-8 left-0 z-50"
+              className="pointer-events-none select-none absolute w-[1400px] left-0 z-50"
+            />
+            <img
+              src="/assets/Vector.png"
+              alt=""
+              className="absolute object-cover z-[60] bottom-0 left-0"
             />
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
@@ -206,13 +205,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"
                     >
-                      <div className="mx-auto mb-6 grid h-12 w-12 place-items-center border-none bg-white/12 ring-1 ring-white/15">
+                      <div className="mx-auto mb-6 grid h-12 w-12 place-items-center">
                         {logoSrc ? (
-                          <img src={logoSrc} alt={logoAlt} className="h-12 w-12" />
+                          <img src={logoSrc} alt={logoAlt} className="h-12 w-12" loading="lazy" />
                         ) : (
-                          <span className="text-2xl" aria-hidden>
-                            
-                          </span>
+                          <span className="text-2xl" aria-hidden></span>
                         )}
                       </div>
 
