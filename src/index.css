@@ -36,3 +36,29 @@ body {
   }
 }
 
+/* --- RTL/LTR helpers ---
+   These react to html.ltr / html.rtl classes set by RtlDirection.
+   Prefer logical properties (margin-inline, padding-inline, text-align) so
+   most components remain neutral. Only add overrides where necessary. */
+
+html.ltr {
+  direction: ltr;
+}
+html.rtl {
+  direction: rtl;
+}
+
+/* Example helpers you can apply selectively in components */
+.text-start-logical {
+  text-align: start;
+}
+.text-end-logical {
+  text-align: end;
+}
+.ms-4-logical {
+  margin-inline-start: 1rem;
+}
+.me-4-logical {
+  margin-inline-end: 1rem;
+}
+
