@@ -72,6 +72,16 @@ stages:
               if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ] && [ ! -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then
                 printf "export * from './contactSubscription.entity';\n" > src/components/widgets/contactSubscription/ContactSubscription.entity.ts
               fi
+
+              # FullPageLoader (import expects Uppercase file, file is lowercase)
+              if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ] && [ ! -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then
+                printf "export { default } from './fullPageLoader';\n" > src/components/atoms/fullPageLoader/FullPageLoader.tsx
+              fi
+
+              # ContentWithoutImage (import expects Uppercase file, file is lowercase)
+              if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ] && [ ! -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ]; then
+                printf "export { default } from './contentWithoutImage';\n" > src/components/widgets/highlightBlock/ContentWithoutImage.tsx
+              fi
             displayName: 'Create case-insensitive aliases for Linux build'
 
           - script: |

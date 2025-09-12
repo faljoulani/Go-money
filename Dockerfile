@@ -53,6 +53,14 @@ RUN set -eux; \
   if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ] && [ ! -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then \
     printf "export * from './contactSubscription.entity';\n" > src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
   fi
+  # FullPageLoader alias (import expects Uppercase file, file is lowercase)
+  if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ] && [ ! -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then \
+    printf "export { default } from './fullPageLoader';\n" > src/components/atoms/fullPageLoader/FullPageLoader.tsx; \
+  fi; \
+  # ContentWithoutImage alias (import expects Uppercase file, file is lowercase)
+  if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ] && [ ! -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ]; then \
+    printf "export { default } from './contentWithoutImage';\n" > src/components/widgets/highlightBlock/ContentWithoutImage.tsx; \
+  fi
 
 # ---- Show Prettier EOL & format to repo rules ------------------------------
 # This makes lint happy regardless of host OS line endings.
