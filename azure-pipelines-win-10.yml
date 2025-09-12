@@ -183,12 +183,14 @@ stages:
 
                     docker tag $image $latest
 
-                    # Stop/remove previous container if exists
-                    $existing = (docker ps -aq -f "name=$cname")
-                    if ($existing) {
-                      docker stop $cname | Out-Null
-                      docker rm   $cname | Out-Null
-                    }
+                    # Stop/remove previous container(s) if exists (by ID, force)
+                    try {
+                      $existing = docker ps -aq -f "name=$cname"
+                      if ($existing) {
+                        Write-Host "Removing existing container(s) with name $cname: $existing"
+                        docker rm -f $existing | Out-Null
+                      }
+                    } catch { Write-Host "Container cleanup skipped: $($_.Exception.Message)" }
 
                     # Ensure host port is free (remove any container publishing host port $port)
                     try {
@@ -274,6 +276,15 @@ stages:
                       try { Start-Service -Name hns -ErrorAction SilentlyContinue } catch {}
                       try { Start-Service -Name docker -ErrorAction SilentlyContinue } catch {}
                       Start-Sleep -Seconds 5
+
+                      # Ensure no conflicting container name before retry
+                      try {
+                        $existing = docker ps -aq -f "name=$cname"
+                        if ($existing) {
+                          Write-Host "Removing conflicting container(s) before retry: $existing"
+                          docker rm -f $existing | Out-Null
+                        }
+                      } catch {}
 
                       # Retry run once
                       docker run -d --name $cname `
