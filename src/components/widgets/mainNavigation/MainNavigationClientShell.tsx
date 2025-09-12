@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import ClientNavbar from './MainNavigationClient';
+import ClientNavbar from './mainNavigationClient';
 import { toAbsolute } from '../../../utils/utils';
 import type { ApiNavItem as ClientNavItem } from '../../../types/type';
 import LanguageSwitcher from '../../custom/languageSwitcher/languageSwitcher';

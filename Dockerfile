@@ -12,95 +12,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_DISABLE_ESLINT=1
 ENV NODE_ENV=development
 # keep optional deps on (silences the warn and ensures optional deps flow)
 ENV npm_config_optional=true
-# We'll install prebuilts explicitly; avoid running install scripts up front
-ENV npm_config_ignore_scripts=true
+# oxide/lightningcss helpers can run; we also add prebuilts explicitly
+ENV npm_config_ignore_scripts=false
 
 # ---- NPM install (base deps) ----------------------------------------------
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm ci --no-audit --no-fund --ignore-scripts
+    npm install --ignore-scripts
 
 # ---- App code --------------------------------------------------------------
 COPY . .
 
-# ---- Normalize filenames for Linux (rename only, no repo changes) ----------
-RUN set -eux; \
-  # mainNavigation entity -> Uppercase file used by imports
-  if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ]; then \
-    if [ -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ]; then \
-      rm -f src/components/widgets/mainNavigation/MainNavigation.entity.ts; \
-    fi; \
-    mv src/components/widgets/mainNavigation/mainNavigation.entity.ts \
-       src/components/widgets/mainNavigation/MainNavigation.entity.ts; \
-  fi; \
-  # MainNavigationClient -> Uppercase file used by imports
-  if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ]; then \
-    if [ -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ]; then \
-      rm -f src/components/widgets/mainNavigation/MainNavigationClient.tsx; \
-    fi; \
-    mv src/components/widgets/mainNavigation/mainNavigationClient.tsx \
-       src/components/widgets/mainNavigation/MainNavigationClient.tsx; \
-  fi; \
-  # Breadcrumb -> lowercase file used by imports
-  if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ]; then \
-    if [ -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ]; then \
-      rm -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx; \
-    fi; \
-    mv src/components/widgets/breadcrumb/BreadcrumbCustom.tsx \
-       src/components/widgets/breadcrumb/breadcrumbCustom.tsx; \
-  fi; \
-  # SupportInfoBox directory -> lowercase dir used by imports
-  if [ -d src/components/widgets/SupportInfoBox ]; then \
-    if [ -e src/components/widgets/supportInfoBox ]; then \
-      rm -rf src/components/widgets/supportInfoBox; \
-    fi; \
-    mv src/components/widgets/SupportInfoBox \
-       src/components/widgets/supportInfoBox; \
-  fi; \
-  # TwoColumnLayout -> Uppercase file used by imports
-  if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ]; then \
-    if [ -f src/components/widgets/layouts/TwoColumnLayout.tsx ]; then \
-      rm -f src/components/widgets/layouts/TwoColumnLayout.tsx; \
-    fi; \
-    mv src/components/widgets/layouts/twoColumnLayout.tsx \
-       src/components/widgets/layouts/TwoColumnLayout.tsx; \
-  fi; \
-  # ContactSubscription.entity -> Uppercase file used by imports
-  if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ]; then \
-    if [ -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then \
-      rm -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
-    fi; \
-    mv src/components/widgets/contactSubscription/contactSubscription.entity.ts \
-       src/components/widgets/contactSubscription/ContactSubscription.entity.ts; \
-  fi; \
-  # FullPageLoader -> Uppercase file used by imports
-  if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ]; then \
-    if [ -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then \
-      rm -f src/components/atoms/fullPageLoader/FullPageLoader.tsx; \
-    fi; \
-    mv src/components/atoms/fullPageLoader/fullPageLoader.tsx \
-       src/components/atoms/fullPageLoader/FullPageLoader.tsx; \
-  fi; \
-  # ContentWithoutImage -> Uppercase file used by imports
-  if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ]; then \
-    if [ -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ]; then \
-      rm -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx; \
-    fi; \
-    mv src/components/widgets/highlightBlock/contentWithoutImage.tsx \
-       src/components/widgets/highlightBlock/ContentWithoutImage.tsx; \
-  fi
-  # FullPageLoader alias (import expects Uppercase file, file is lowercase)
-  if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ] && [ ! -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ]; then \
-    printf "export { default } from './fullPageLoader';\n" > src/components/atoms/fullPageLoader/FullPageLoader.tsx; \
-  fi; \
-  # ContentWithoutImage alias (import expects Uppercase file, file is lowercase)
-  if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ] && [ ! -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ]; then \
-    printf "export { default } from './contentWithoutImage';\n" > src/components/widgets/highlightBlock/ContentWithoutImage.tsx; \
-  fi
+# (no Linux filename normalization; code imports fixed to correct casing)
 
 # ---- Show Prettier EOL & format to repo rules ------------------------------
 # This makes lint happy regardless of host OS line endings.
@@ -158,13 +84,7 @@ RUN set -eux; \
   echo '--- Native .node files (oxide/lightningcss)'; \
   /bin/sh -lc "find node_modules -maxdepth 4 -type f -name '*.node' -print -ls | grep -E 'oxide|lightningcss' || true"
 
-# ---- Rebuild sharp (optional) ---------------------------------------------
-RUN set -eux; \
-  if [ -f node_modules/sharp/package.json ]; then \
-    npm_config_ignore_scripts= npm rebuild sharp --foreground-scripts --no-audit --no-fund; \
-  else \
-    echo 'sharp wrapper not present; skipping rebuild'; \
-  fi
+# (no sharp rebuild step)
 
 # ---- Build (Tailwind runs here) -------------------------------------------
 RUN npm run build
@@ -196,5 +116,4 @@ EXPOSE 9097
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD curl -fsS http://127.0.0.1:${PORT}/api/health || exit 1
 
-# Start Next.js directly to ensure host/port are honored
-CMD ["sh", "-lc", "node node_modules/next/dist/bin/next start -H 0.0.0.0 -p ${PORT:-9097}"]
+CMD ["npm", "run", "start", "--", "-p", "9097"]

@@ -3,7 +3,7 @@ import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
 
-import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
+import BreadCrumbCustomView from '../breadcrumb/BreadcrumbCustom';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';

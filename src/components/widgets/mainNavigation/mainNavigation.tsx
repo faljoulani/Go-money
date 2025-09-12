@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { MainNavigationEntity } from './MainNavigation.entity';
+import { MainNavigationEntity } from './mainNavigation.entity';
 
 import { toAbsolute } from '../../../utils/utils';
 import { parseSelection, extractSelectionId, fetchData } from '../../../utils/sitefinity';

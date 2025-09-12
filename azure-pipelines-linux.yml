@@ -17,7 +17,7 @@ variables:
 stages:
   # -------------------- BUILD --------------------
   - stage: Build
-    displayName: Build & Package Frontend (Linux container)
+    displayName: Build & Package Frontend (Linux)
     jobs:
       - job: Build
         pool:
@@ -37,67 +37,9 @@ stages:
           - script: |
               set -e
               npm ci --no-audit --no-fund
-            displayName: 'Install dependencies'
-
-          - script: |
-              set -euo pipefail
-              echo "Normalizing filenames for Linux build (no repo changes)"
-
-              # MainNavigation.entity -> Uppercase file used by imports
-              if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ]; then
-                [ -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ] && rm -f src/components/widgets/mainNavigation/MainNavigation.entity.ts || true
-                mv src/components/widgets/mainNavigation/mainNavigation.entity.ts src/components/widgets/mainNavigation/MainNavigation.entity.ts
-              fi
-
-              # MainNavigationClient -> Uppercase file used by imports
-              if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ]; then
-                [ -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ] && rm -f src/components/widgets/mainNavigation/MainNavigationClient.tsx || true
-                mv src/components/widgets/mainNavigation/mainNavigationClient.tsx src/components/widgets/mainNavigation/MainNavigationClient.tsx
-              fi
-
-              # breadcrumbCustom -> lowercase file used by imports
-              if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ]; then
-                [ -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ] && rm -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx || true
-                mv src/components/widgets/breadcrumb/BreadcrumbCustom.tsx src/components/widgets/breadcrumb/breadcrumbCustom.tsx
-              fi
-
-              # supportInfoBox directory -> lowercase dir used by imports
-              if [ -d src/components/widgets/SupportInfoBox ]; then
-                [ -e src/components/widgets/supportInfoBox ] && rm -rf src/components/widgets/supportInfoBox || true
-                mv src/components/widgets/SupportInfoBox src/components/widgets/supportInfoBox
-              fi
-
-              # TwoColumnLayout -> Uppercase file used by imports
-              if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ]; then
-                [ -f src/components/widgets/layouts/TwoColumnLayout.tsx ] && rm -f src/components/widgets/layouts/TwoColumnLayout.tsx || true
-                mv src/components/widgets/layouts/twoColumnLayout.tsx src/components/widgets/layouts/TwoColumnLayout.tsx
-              fi
-
-              # ContactSubscription.entity -> Uppercase file used by imports
-              if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ]; then
-                [ -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ] && rm -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts || true
-                mv src/components/widgets/contactSubscription/contactSubscription.entity.ts src/components/widgets/contactSubscription/ContactSubscription.entity.ts
-              fi
-
-              # FullPageLoader -> Uppercase file used by imports
-              if [ -f src/components/atoms/fullPageLoader/fullPageLoader.tsx ]; then
-                [ -f src/components/atoms/fullPageLoader/FullPageLoader.tsx ] && rm -f src/components/atoms/fullPageLoader/FullPageLoader.tsx || true
-                mv src/components/atoms/fullPageLoader/fullPageLoader.tsx src/components/atoms/fullPageLoader/FullPageLoader.tsx
-              fi
-
-              # ContentWithoutImage -> Uppercase file used by imports
-              if [ -f src/components/widgets/highlightBlock/contentWithoutImage.tsx ]; then
-                [ -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx ] && rm -f src/components/widgets/highlightBlock/ContentWithoutImage.tsx || true
-                mv src/components/widgets/highlightBlock/contentWithoutImage.tsx src/components/widgets/highlightBlock/ContentWithoutImage.tsx
-              fi
-            displayName: 'Normalize filenames for Linux build'
-
-          - script: |
-              set -e
               npm run build
             displayName: 'Build frontend'
 
-          # Keep Docker build context small & predictable
           - script: |
               set -e
               DEST="$(Build.ArtifactStagingDirectory)/drop"
@@ -109,26 +51,25 @@ stages:
               cp    "$(Build.SourcesDirectory)/package.json"      "$DEST/"
               cp    "$(Build.SourcesDirectory)/package-lock.json" "$DEST/"
               cp    "$(Build.SourcesDirectory)/next.config.js"    "$DEST/"
-              # Use the Linux container Dockerfile
+              # Use Linux container Dockerfile
               cp    "$(Build.SourcesDirectory)/Dockerfile"        "$DEST/Dockerfile"
 
-              # **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
-              [ -f "$(Build.SourcesDirectory)/tsconfig.json" ]  && cp "$(Build.SourcesDirectory)/tsconfig.json"  "$DEST/" || true
-              [ -f "$(Build.SourcesDirectory)/next-env.d.ts" ]  && cp "$(Build.SourcesDirectory)/next-env.d.ts"  "$DEST/" || true
+              # Include TS and tool configs when present
+              [ -f "$(Build.SourcesDirectory)/tsconfig.json" ]   && cp "$(Build.SourcesDirectory)/tsconfig.json"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/next-env.d.ts" ]   && cp "$(Build.SourcesDirectory)/next-env.d.ts"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/eslint.config.js" ]&& cp "$(Build.SourcesDirectory)/eslint.config.js" "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/.editorconfig" ]   && cp "$(Build.SourcesDirectory)/.editorconfig"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/.npmrc" ]          && cp "$(Build.SourcesDirectory)/.npmrc"          "$DEST/" || true
 
-              # Optional but harmless: carry common configs used by build tools
-              [ -f "$(Build.SourcesDirectory)/eslint.config.js" ] && cp "$(Build.SourcesDirectory)/eslint.config.js" "$DEST/" || true
-              [ -f "$(Build.SourcesDirectory)/.editorconfig" ]    && cp "$(Build.SourcesDirectory)/.editorconfig"    "$DEST/" || true
-              [ -f "$(Build.SourcesDirectory)/.npmrc" ]           && cp "$(Build.SourcesDirectory)/.npmrc"           "$DEST/" || true
-
-              [ -f "$(Build.SourcesDirectory)/.dockerignore" ]    && cp "$(Build.SourcesDirectory)/.dockerignore"    "$DEST/" || true
-              [ -f "$(Build.SourcesDirectory)/.env.production" ]  && cp "$(Build.SourcesDirectory)/.env.production"  "$DEST/" || true
-              [ -f "$(Build.SourcesDirectory)/web.config" ]       && cp "$(Build.SourcesDirectory)/web.config"       "$DEST/" || true
-
-              # Include Tailwind/PostCSS configs so Docker build can generate CSS
+              # Tailwind / PostCSS configs if present
               [ -f "$(Build.SourcesDirectory)/postcss.config.js" ]  && cp "$(Build.SourcesDirectory)/postcss.config.js"  "$DEST/" || true
               [ -f "$(Build.SourcesDirectory)/tailwind.config.ts" ] && cp "$(Build.SourcesDirectory)/tailwind.config.ts" "$DEST/" || true
               [ -f "$(Build.SourcesDirectory)/tailwind.config.js" ] && cp "$(Build.SourcesDirectory)/tailwind.config.js" "$DEST/" || true
+
+              # .dockerignore and optional env/web.config
+              [ -f "$(Build.SourcesDirectory)/.dockerignore" ]     && cp "$(Build.SourcesDirectory)/.dockerignore"     "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/.env.production" ]   && cp "$(Build.SourcesDirectory)/.env.production"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/web.config" ]        && cp "$(Build.SourcesDirectory)/web.config"        "$DEST/" || true
             displayName: 'Prepare FE artifacts'
 
           - task: PublishBuildArtifacts@1
@@ -190,18 +131,6 @@ stages:
                     cleanDestinationFolder: true
 
                 - powershell: |
-                    $ctx = "$(Pipeline.Workspace)\$(artifactName)"
-                    Write-Host "Scanning $ctx for known-stale files..."
-                    $bad = Get-ChildItem -Path $ctx -Recurse -File -Filter 'card-section.entity.ts' -ErrorAction SilentlyContinue
-                    if ($bad) {
-                      $bad | ForEach-Object { Write-Host "FOUND STALE: $($_.FullName)" }
-                      throw "Found stale file(s) in downloaded artifact."
-                    } else {
-                      Write-Host "Artifact $(artifactName) is clean."
-                    }
-                  displayName: 'Guard: detect stale file'
-
-                - powershell: |
                     $ctx    = "$(Pipeline.Workspace)\$(artifactName)"
                     $tag    = "$(Build.BuildId)"
                     $image  = "$(feImageName):$tag"
@@ -223,7 +152,7 @@ stages:
                     Write-Host "Wrote $envPath with:"
                     Get-Content $envPath | ForEach-Object { '  ' + $_ }
 
-                    # If you keep a web.config in repo, copy it to IIS path now
+                    # If you keep a web.config in repo, copy it to IIS path now (optional)
                     $wcFrom = Join-Path $ctx 'web.config'
                     if (Test-Path $wcFrom) {
                       if (-not (Test-Path "$(feSiteRoot)")) {
@@ -274,7 +203,7 @@ stages:
                       }
                     } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
 
-                    # Map CMS host to a resolved IPv4 (helps DNS inside container)
+                    # Map CMS host to IPv4 to help container DNS resolution (optional)
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
                     if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
@@ -314,3 +243,4 @@ stages:
                       Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
                     } catch {}
                   displayName: 'Recycle IIS (optional)'
+
