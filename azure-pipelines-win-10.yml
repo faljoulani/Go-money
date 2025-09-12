@@ -12,7 +12,7 @@ variables:
   # Container bits (kept local on the VM)
   feImageName: 'fe-gomoney'
   feContainer: 'fe-gomoney'
-  fePort: 9097
+  fePort: 6565
 
 stages:
   # -------------------- BUILD --------------------
@@ -153,6 +153,12 @@ stages:
                     Write-Host "Docker build context: $ctx"
                     Push-Location $ctx
 
+                    Write-Host "--- Diagnostics: BEFORE cleanup ---"
+                    try { Get-NetTCPConnection -LocalPort $port -ErrorAction Stop | Format-Table -AutoSize -Property LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess } catch { Write-Host "Get-NetTCPConnection failed or no entries." }
+                    try { cmd /c "netstat -ano | findstr :$port" } catch {}
+                    try { docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}" } catch {}
+                    try { docker network ls } catch {}
+
                     # Always rewrite .env.production from pipeline variables
                     $envPath  = Join-Path $ctx ".env.production"
                     $sfCmsUrl = "$(SF_CMS_URL)"   # must include http:// or https://
@@ -241,6 +247,11 @@ stages:
                     } else {
                       Write-Host "Host port $port is free (no listening processes)."
                     }
+
+                    Write-Host "--- Diagnostics: AFTER cleanup (processes/ACL/proxy) ---"
+                    try { Get-NetTCPConnection -LocalPort $port -ErrorAction Stop | Format-Table -AutoSize -Property LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess } catch { Write-Host "Get-NetTCPConnection failed or no entries." }
+                    try { cmd /c "netstat -ano | findstr :$port" } catch {}
+                    try { docker network ls } catch {}
 
                     # Extra diagnostics and cleanup for HTTP.sys URLACL and portproxy on this port
                     try {
@@ -333,6 +344,36 @@ stages:
                       try { Start-Service -Name hns -ErrorAction SilentlyContinue } catch {}
                       try { Start-Service -Name docker -ErrorAction SilentlyContinue } catch {}
                       Start-Sleep -Seconds 5
+
+                      Write-Host "--- Diagnostics: AFTER HNS/Docker restart ---"
+                      try { Get-Service hns, docker | Format-Table -AutoSize Name,Status } catch {}
+                      try { Get-NetTCPConnection -LocalPort $port -ErrorAction Stop | Format-Table -AutoSize -Property LocalAddress,LocalPort,RemoteAddress,RemotePort,State,OwningProcess } catch { Write-Host "Get-NetTCPConnection failed or no entries." }
+                      try { cmd /c "netstat -ano | findstr :$port" } catch {}
+
+                      # Attempt to remove any stale HNS endpoints bound to this port (Windows 10 HNS quirk)
+                      try {
+                        if (-not (Get-Command Get-HnsEndpoint -ErrorAction SilentlyContinue)) { Import-Module hns -ErrorAction SilentlyContinue }
+                        if (Get-Command Get-HnsEndpoint -ErrorAction SilentlyContinue) {
+                          $eps = Get-HnsEndpoint
+                          foreach($ep in $eps){
+                            try {
+                              $j = $ep | ConvertTo-Json -Depth 10 -Compress
+                              if ($j -match ('"ExternalPort":' + $port)) {
+                                Write-Host ("Removing stale HNS endpoint {0} bound to port {1}" -f $ep.Id, $port)
+                                Remove-HnsEndpoint -Id $ep.Id -ErrorAction SilentlyContinue | Out-Null
+                              }
+                            } catch {}
+                          }
+                        } else {
+                          Write-Host 'HNS PowerShell cmdlets not available; skipping endpoint cleanup.'
+                        }
+                      } catch { Write-Host ("HNS endpoint cleanup failed: {0}" -f $_.Exception.Message) }
+
+                      # Ensure custom network exists post-restart
+                      try {
+                        $nets = docker network ls --format "{{.Name}}"
+                        if (-not ($nets -contains 'gomoney-nat')) { docker network create -d nat gomoney-nat | Out-Null }
+                      } catch {}
 
                       # Ensure no conflicting container name before retry
                       try {
