@@ -35,7 +35,47 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              npm ci
+              set -e
+              npm ci --no-audit --no-fund
+            displayName: 'Install dependencies'
+
+          - script: |
+              set -euo pipefail
+              echo "Creating Linux-only case aliases (no repo changes)"
+
+              # MainNavigation.entity (import expects Uppercase, file is lowercase)
+              if [ -f src/components/widgets/mainNavigation/mainNavigation.entity.ts ] && [ ! -f src/components/widgets/mainNavigation/MainNavigation.entity.ts ]; then
+                printf "export * from './mainNavigation.entity';\nexport { default } from './mainNavigation.entity';\n" > src/components/widgets/mainNavigation/MainNavigation.entity.ts
+              fi
+
+              # MainNavigationClient (import expects Uppercase, file is lowercase)
+              if [ -f src/components/widgets/mainNavigation/mainNavigationClient.tsx ] && [ ! -f src/components/widgets/mainNavigation/MainNavigationClient.tsx ]; then
+                printf "export { default } from './mainNavigationClient';\n" > src/components/widgets/mainNavigation/MainNavigationClient.tsx
+              fi
+
+              # breadcrumbCustom (import expects lowercase, file is Uppercase)
+              if [ -f src/components/widgets/breadcrumb/BreadcrumbCustom.tsx ] && [ ! -f src/components/widgets/breadcrumb/breadcrumbCustom.tsx ]; then
+                printf "export { default } from './BreadcrumbCustom';\n" > src/components/widgets/breadcrumb/breadcrumbCustom.tsx
+              fi
+
+              # supportInfoBox directory (import expects lowercase dir)
+              if [ -d src/components/widgets/SupportInfoBox ] && [ ! -e src/components/widgets/supportInfoBox ]; then
+                (cd src/components/widgets && ln -s SupportInfoBox supportInfoBox)
+              fi
+
+              # TwoColumnLayout (import expects Uppercase file, file is lowercase)
+              if [ -f src/components/widgets/layouts/twoColumnLayout.tsx ] && [ ! -f src/components/widgets/layouts/TwoColumnLayout.tsx ]; then
+                printf "export { default } from './twoColumnLayout';\nexport * from './twoColumnLayout';\n" > src/components/widgets/layouts/TwoColumnLayout.tsx
+              fi
+
+              # ContactSubscription.entity (import expects Uppercase, file is lowercase)
+              if [ -f src/components/widgets/contactSubscription/contactSubscription.entity.ts ] && [ ! -f src/components/widgets/contactSubscription/ContactSubscription.entity.ts ]; then
+                printf "export * from './contactSubscription.entity';\n" > src/components/widgets/contactSubscription/ContactSubscription.entity.ts
+              fi
+            displayName: 'Create case-insensitive aliases for Linux build'
+
+          - script: |
+              set -e
               npm run build
             displayName: 'Build frontend'
 
