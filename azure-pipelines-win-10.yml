@@ -222,13 +222,18 @@ stages:
                     if ($listeners) {
                       $pids = $listeners | Select-Object -ExpandProperty OwningProcess | Sort-Object -Unique
                       Write-Host ("Host port {0} is in use by the following PIDs: {1}" -f $port, ($pids -join ', '))
-                      foreach($pid in ($listeners | Select-Object -Expand OwningProcess -Unique)){
+                      foreach($procId in ($pids)){
                         try {
-                          $proc = Get-Process -Id $pid -ErrorAction SilentlyContinue
-                          $pname = if ($proc) { $proc.ProcessName } else { "pid:$pid" }
-                          Write-Host "Stopping process $pname (PID $pid) holding port $port"
-                          Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
-                        } catch { Write-Host "Could not stop PID ${pid}: $($_.Exception.Message)" }
+                          # Skip reserved/system PIDs we cannot terminate
+                          if (($procId -eq 0) -or ($procId -eq 4)) { 
+                            Write-Host "Skipping non-terminable PID ${procId} holding port ${port} (system)." 
+                            continue 
+                          }
+                          $proc = Get-Process -Id $procId -ErrorAction SilentlyContinue
+                          $pname = if ($proc) { $proc.ProcessName } else { "pid:${procId}" }
+                          Write-Host "Stopping process $pname (PID ${procId}) holding port ${port}"
+                          Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
+                        } catch { Write-Host "Could not stop PID ${procId}: $($_.Exception.Message)" }
                       }
                       Start-Sleep -Seconds 2
                     } else {
