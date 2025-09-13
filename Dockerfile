@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 # keep optional deps on (silences the warn and ensures optional deps flow)
 ENV npm_config_optional=true
 # oxide/lightningcss helpers can run; we also add prebuilts explicitly
@@ -87,7 +87,7 @@ RUN set -eux; \
 # (no sharp rebuild step)
 
 # ---- Build (Tailwind runs here) -------------------------------------------
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
 # ---- Slim prod deps --------------------------------------------------------
 RUN npm prune --omit=dev
