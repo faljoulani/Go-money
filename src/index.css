@@ -11,8 +11,9 @@
 body {
   background-color: var(--Background-background-neutral-200);
 }
-
-
+.defaultBgColor {
+  background-color: var(--Background-background-neutral-200);
+}
 /* base helpers */
 @layer base {
   .font-lufga {
@@ -24,14 +25,40 @@ body {
 @layer utilities {
   @keyframes float {
     0% {
-      transform: translateY(-25px);
+      transform: translateY(-15px);
     }
     100% {
-      transform: translateY(25px);
+      transform: translateY(-15px);
     }
   }
   .animate-float {
     animation: float 1.5s ease-in-out infinite alternate;
   }
+}
+
+/* --- RTL/LTR helpers ---
+   These react to html.ltr / html.rtl classes set by RtlDirection.
+   Prefer logical properties (margin-inline, padding-inline, text-align) so
+   most components remain neutral. Only add overrides where necessary. */
+
+html.ltr {
+  direction: ltr;
+}
+html.rtl {
+  direction: rtl;
+}
+
+/* Example helpers you can apply selectively in components */
+.text-start-logical {
+  text-align: start;
+}
+.text-end-logical {
+  text-align: end;
+}
+.ms-4-logical {
+  margin-inline-start: 1rem;
+}
+.me-4-logical {
+  margin-inline-end: 1rem;
 }
 

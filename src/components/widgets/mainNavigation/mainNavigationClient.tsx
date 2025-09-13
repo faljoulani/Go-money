@@ -22,13 +22,13 @@ export default function ClientNavbar({
   currentPath,
   className,
   stripQuery = true,
-  scrolled = false, // ✅ declare prop with default
+  scrolled = false,
 }: {
   items: ApiNavItem[];
   currentPath?: string;
   className?: string;
   stripQuery?: boolean;
-  scrolled?: boolean; // ✅ add to props type
+  scrolled?: boolean;
 }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
@@ -79,7 +79,7 @@ export default function ClientNavbar({
                 aria-haspopup="menu"
                 aria-expanded={openIdx === i}
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
+                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
               >
                 {displayTitle(item.title)}
                 <svg
@@ -105,7 +105,7 @@ export default function ClientNavbar({
             {isNormalizedDropdown(item) && openIdx === i && (
               <div
                 role="menu"
-                className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-white/80 backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
+                className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-white backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
               >
                 {item.children.map((child) => {
                   const cMatch = normalizePath(child.href);
@@ -117,11 +117,7 @@ export default function ClientNavbar({
                       href={child.href}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${
-                        cActive
-                          ? 'text-[var(--Text-text-primary,hsla(237,98%,20%,1))]'
-                          : 'text-[var(--Text-text-default,#424242)] hover:bg-white'
-                      }`}
+                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${'text-[var(--Text-text-default,#424242)] hover:bg-[#E6E8FF]'}`}
                     >
                       {displayTitle(child.title)}
                     </Link>

@@ -1,33 +1,43 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSf } from '../../../utils/hooks/useSf';
 
 type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
+type SfList<T> = { value: T[] };
 
-export default function QuestionsClient({
-  categories,
-  grouped,
-}: {
-  categories: Category[];
-  grouped: Record<string, Question[]>;
-}) {
+export default function QuestionsClient({ categories }: { categories: Category[] }) {
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
 
-  const questions = useMemo(
-    () => grouped[(active || '').toLowerCase()] ?? [],
-    [active, grouped],
+  // Fetch ALL questions once; SWR caches/dedupes for you
+  const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
+    'api/default/faqquestions',
+    {
+      $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
+      $orderby: 'Order asc, Title asc',
+    },
+    { revalidateOnFocus: true },
   );
 
-  const [openId, setOpenId] = useState<string | null>(null);
+  // Filter & sort questions for the active category
+  const questions = useMemo(() => {
+    const all = data?.value ?? [];
+    const a = active.toLowerCase();
+    const filtered = all.filter((q) => (q.ParentId || '').toLowerCase() === a);
+    filtered.sort((x, y) => (x.Order ?? 0) - (y.Order ?? 0) || x.Title.localeCompare(y.Title));
+    return filtered;
+  }, [data, active]);
 
+  // One-open-at-a-time accordion
+  const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null);
+    setOpenId(questions[0]?.Id ?? null); // first question opens on category change / first load
   }, [active, questions]);
 
   return (
-    <div className="flex gap-8 p-12">
+    <div className="flex gap-8 px-20 pt-[58px] pb-16">
       <aside className="w-[25%]">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
@@ -48,7 +58,13 @@ export default function QuestionsClient({
                   }`}
                   aria-hidden
                 >
-                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="w-4 h-4"
+                  >
                     <path d="M7 4l6 6-6 6" />
                   </svg>
                 </span>
@@ -61,7 +77,9 @@ export default function QuestionsClient({
       {/* Questions */}
       <div className="w-[75%]">
         <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white/70">
-          {questions.length === 0 && (
+          {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
+          {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
+          {!isLoading && !error && questions.length === 0 && (
             <div className="p-6 text-slate-500">No questions in this category yet.</div>
           )}
 
@@ -72,20 +90,28 @@ export default function QuestionsClient({
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer"
                   onClick={(e) => {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
                   <span className="text-slate-900">{q.Title}</span>
-                  <span className="ml-6 grid size-8 place-items-center rounded-lg bg-[#0B1C5A] text-white">
+                  <span className="ml-6 grid size-9 place-items-center rounded-lg bg-[#0B1C5A] text-white">
                     <svg
-                      viewBox="0 0 20 20"
-                      fill="none"
+                      viewBox="0 0 14 14"
+                      className="w-[15px] h-[15px]"
                       stroke="currentColor"
                       strokeWidth="2"
-                      className={`w-4 h-4 transition ${isOpen ? 'rotate-45' : ''}`}
                     >
-                      <path d="M10 4v12M4 10h12" />
+                      {isOpen ? (
+                        // Horizontal line (-)
+                        <line x1="0" y1="7" x2="15" y2="7" />
+                      ) : (
+                        // Plus (+)
+                        <>
+                          <line x1="7" y1="0" x2="7" y2="15" />
+                          <line x1="0" y1="7" x2="15" y2="7" />
+                        </>
+                      )}
                     </svg>
                   </span>
                 </summary>
@@ -98,3 +124,4 @@ export default function QuestionsClient({
     </div>
   );
 }
+

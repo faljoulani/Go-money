@@ -10,17 +10,30 @@ type ContactBoxItem = {
   Id: string;
   Title?: string;
   SubTitle?: string;
+
+  // Labels
   EmailLabel?: string;
   CallUsLabel?: string;
+
+  // Values to show inside the cards
+  EmailText?: string;
+  CallUsText?: string;
+
+  // (kept for compatibility, but not used in this visual)
   FaqsLabel?: string;
   ButtonLabel?: string;
   CTAURL?: any;
   FaqsURL?: any;
+
   hasLabelCorner?: boolean;
 };
 
 const linkHref = (lnk: any): string =>
   typeof lnk === 'string' ? lnk : lnk?.Href || lnk?.Url || lnk?.url || lnk?.Attributes?.href || '';
+
+const asTel = (raw?: string) => (raw ? `tel:${raw.replace(/[^\d+]/g, '')}` : undefined);
+
+const asMailto = (raw?: string) => (raw ? `mailto:${raw.trim()}` : undefined);
 
 export default async function ContactBox(props: WidgetContext<ContactBoxEntity>) {
   const attrs = htmlAttributes(props);
@@ -29,6 +42,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
+
   const { culture, isEdit } = props.requestContext;
 
   // Read selection from designer
@@ -50,7 +64,6 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     ) : null;
   }
 
-  // Fetch the selected Contact Box
   const item = (await fetchData(
     [selectedId],
     null,
@@ -61,6 +74,8 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       'SubTitle',
       'EmailLabel',
       'CallUsLabel',
+      'EmailText',
+      'CallUsText',
       'FaqsLabel',
       'ButtonLabel',
       'CTAURL',
@@ -68,31 +83,43 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       'hasLabelCorner',
     ],
     {
-      // trust the selection’s type so we don’t hardcode the dynamic module path
       itemType:
         sel?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.ContactBox.ContactBox',
       single: true,
     },
   )) as ContactBoxItem | null;
 
-  const title = item?.Title || 'Got Questions?';
-  const subtitle = item?.SubTitle || 'Our dedicated Support team is here to help';
+  const title = item?.Title || 'Still have questions?';
+  const subtitle = item?.SubTitle || 'our dedicated Support team is Here to Help';
 
-  const primaryLabel = item?.EmailLabel || item?.CallUsLabel || item?.ButtonLabel || 'Contact Us';
-  const primaryHref = linkHref(item?.CTAURL) || '#';
+  const callLabel = item?.CallUsLabel || 'Call Us';
+  const emailLabel = item?.EmailLabel || 'Email';
 
-  // Secondary CTA: FAQs
-  const secondaryLabel = item?.FaqsLabel || 'FAQs';
-  const secondaryHref = linkHref(item?.FaqsURL) || '#';
+  const phoneText = item?.CallUsText || '';
+  const emailText = item?.EmailText || '';
+
+  const phoneHref = asTel(phoneText);
+  const emailHref = asMailto(emailText);
 
   const showCorner =
     typeof item?.hasLabelCorner === 'boolean'
       ? item!.hasLabelCorner
       : String(item?.hasLabelCorner || '').toLowerCase() === 'true';
-  console.log('SELECTED VIEWWWWW', selectedView);
-  if (selectedView === 'EmailAndPhone') {
-    return <ContactBoxInfo {...props} />;
-  }
+
+  const CardWrap: React.FC<React.PropsWithChildren<{ href?: string }>> = ({ href, children }) =>
+    href ? (
+      <a
+        href={href}
+        className="block rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition hover:shadow-md"
+      >
+        {children}
+      </a>
+    ) : (
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        {children}
+      </div>
+    );
+
   return (
     <section
       {...attrs}
@@ -101,51 +128,69 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       {showCorner && (
         <div className="absolute right-0 top-0">
           <div className="h-24 w-24 rounded-bl-[40px] bg-[#0A43FF]" />
-
           <div className="absolute right-0 top-0 h-12 w-12 bg-white" />
         </div>
       )}
 
-      <div className="mx-auto max-w-2xl">
-        <h2 className="text-[40px] font-extrabold leading-tight tracking-[-0.02em] text-[#01115A]">
+      <div className="mx-auto max-w-3xl">
+        <h2 className="text-[48px] font-extrabold leading-tight tracking-[-0.02em] text-[#01115A]">
           {title}
         </h2>
+        {subtitle && <p className="mt-4 text-lg leading-relaxed text-[#0a1b2e]/60">{subtitle}</p>}
+      </div>
 
-        {subtitle && <p className="mt-3 text-base leading-relaxed text-[#0a1b2e]/70">{subtitle}</p>}
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href={primaryHref}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#01115A] px-6 py-3 text-[#01115A] transition hover:bg-[#01115A] hover:text-white"
-          >
-            <span>{primaryLabel}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
+        <CardWrap href={phoneHref}>
+          <div className="flex items-center justify-center gap-2 text-[#01115A]">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              className="shrink-0"
+            >
               <path
-                d="M9 18l6-6-6-6"
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.33 1.7.63 2.5a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.58-1.2a2 2 0 0 1 2.11-.45c.8.3 1.64.51 2.5.63A2 2 0 0 1 22 16.92Z"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="1.6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+            <span className="text-base font-semibold">{callLabel}</span>
+          </div>
 
-          <a
-            href={secondaryHref}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#01115A] px-6 py-3 font-light transition hover:bg-[#01115A] hover:text-white"
-          >
-            <span>{secondaryLabel}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <div className="mx-auto my-5 h-px w-3/4 bg-slate-200" />
+
+          <div className="text-lg text-[#0a1b2e]/90">{phoneText || '-'}</div>
+        </CardWrap>
+
+        <CardWrap href={emailHref}>
+          <div className="flex items-center justify-center gap-2 text-[#01115A] font-light">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              className="shrink-0"
+            >
               <path
-                d="M9 18l6-6-6-6"
+                d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 0l8 7 8-7"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="1.6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
-        </div>
+            <span className="text-base font-semibold">{emailLabel}</span>
+          </div>
+
+          <div className="mx-auto my-5 h-px w-3/4 bg-slate-200" />
+
+          <div className="text-lg text-[#0a1b2e]/90 break-all font-light">{emailText || '-'}</div>
+        </CardWrap>
       </div>
     </section>
   );
