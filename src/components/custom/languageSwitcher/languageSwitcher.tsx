@@ -34,7 +34,7 @@ export default function LanguageSwitcher() {
       segments.shift();
     }
     const normalizedPath = '/' + segments.join('/');
-    const queryString = searchParams.toString();
+    const queryString = searchParams ? searchParams.toString() : '';
     const newUrl = `/${lang}${normalizedPath}${queryString ? `?${queryString}` : ''}`;
     console.log('Redirecting to:', newUrl);
     window.location.href = newUrl;
