@@ -45,8 +45,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
         ],
       });
-    } catch {
-    }
+    } catch {}
   }
 
   if (!item) {
@@ -106,6 +105,8 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           'Title',
           'AlternativeText',
           'Urls',
+          'RelatedCards($select=Id,Title,Description,CtaText,CtaUrl,Order;' +
+            '$expand=RelatedImages($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls))',
         ],
       });
       bgMedia = { ...full, ...bgMedia };
@@ -155,11 +156,8 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         {title && (
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">{title}</h1>
         )}
-          
-         <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-1/2">
-    <CEOMessageCard {...props} />
-  </div>
-          </div>
+        <div className="absolute left-1/2 bottom-0 translate-x-[-50%] translate-y-1/2"></div>
+      </div>
     </section>
   );
 }
