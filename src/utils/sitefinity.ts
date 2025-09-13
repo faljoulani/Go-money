@@ -26,14 +26,16 @@ export async function fetchData(
     : ((parent?.Cards?.ItemIdsOrdered as string[] | undefined) ?? []);
 
   if (single && ids.length === 1) {
+    if (!itemType) return null;
     try {
-      return await RestClient.getItem({ type: itemType, id: ids[0], culture, fields });
+      return await RestClient.getItem({ type: itemType, id: ids[0]!, culture, fields });
     } catch {
       return null;
     }
   }
 
   if (ids.length) {
+    if (!itemType) return [];
     const filter = {
       Logic: 'or',
       ChildFilters: ids.map((id) => ({
@@ -43,16 +45,13 @@ export async function fetchData(
       })),
     } as const;
 
-    const { Items = [] } = await RestClient.getItems({
-      type: itemType,
-      culture,
-      fields,
-    });
+    const { Items = [] } = await RestClient.getItems({ type: itemType, culture, fields });
 
     const map = new Map(Items.map((i: any) => [i.Id, i]));
     return ids.map((id) => map.get(id)).filter(Boolean);
   }
 
+  if (!itemType) return [];
   const { Items = [] } = await RestClient.getItems({ type: itemType, culture, take, fields });
   return Items;
 }

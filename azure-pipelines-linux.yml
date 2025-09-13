@@ -37,6 +37,26 @@ stages:
           - script: |
               set -e
               npm ci --no-audit --no-fund
+            displayName: 'Install dependencies'
+
+          - script: |
+              set -euo pipefail
+              echo "TypeScript version:" && npx tsc -v || true
+              # Capture full typecheck report without stopping the job
+              # (tsc prints ALL errors; Next typically stops at first)
+              npx tsc -p tsconfig.json --noEmit --pretty false | tee "$(Build.ArtifactStagingDirectory)/tsc-report.txt" || true
+            displayName: 'TypeScript: typecheck (report all errors)'
+
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            displayName: 'Publish typecheck report'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/tsc-report.txt'
+              ArtifactName: 'tsc-report'
+              publishLocation: 'Container'
+
+          - script: |
+              set -e
               npm run build
             displayName: 'Build frontend'
 
