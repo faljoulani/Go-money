@@ -47,7 +47,7 @@ function toAbsoluteUrl(url?: string): string {
   return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
-function takeIds(sel?: { ItemIdsOrdered?: string[] | null }): string[] {
+function takeIds(sel?: { ItemIdsOrdered?: string[] | null } | null): string[] {
   if (!sel) return [];
   return Array.isArray(sel.ItemIdsOrdered) ? sel.ItemIdsOrdered : [];
 }
