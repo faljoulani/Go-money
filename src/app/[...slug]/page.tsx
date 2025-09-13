@@ -12,6 +12,10 @@ export async function generateMetadata({
   return await pageMetadata({ params, searchParams });
 }
 
+// Ensure this catch-all route never attempts static rendering at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Page({
   params,
   searchParams,

@@ -6,6 +6,10 @@ export async function generateMetadata({ searchParams }: any): Promise<Metadata>
   return await pageMetadata({ params: { slug: [] }, searchParams });
 }
 
+// Avoid static pre-render of home route during build
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HomePage({
   searchParams,
 }: {
