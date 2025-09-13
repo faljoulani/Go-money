@@ -140,6 +140,17 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
     { itemType: rawSel?.Content?.[0]?.Type, single: true },
   )) as ContactSubscriptionParent | null;
 
+  if (!parent) {
+    return isEdit ? (
+      <section {...attrs} className="ContactSubscription">
+        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-slate-600">
+          <strong>Contact Subscription</strong>
+          <div className="mt-1">Could not load the selected Contact Subscription.</div>
+        </div>
+      </section>
+    ) : null;
+  }
+
   const rawBoxes = Array.isArray(parent.Box) ? parent.Box : parent.Box ? [parent.Box] : [];
   const boxes = normalizeBoxes(rawBoxes);
 
