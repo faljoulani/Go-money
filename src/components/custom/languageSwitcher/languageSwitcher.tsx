@@ -24,11 +24,12 @@ export default function LanguageSwitcher() {
     setCurrentLang(storedLang || urlLang);
   }, [pathname]);
 
-  const handleRedirect = (lang) => {
+  const handleRedirect = (lang: string) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('language', lang);
     }
-    const segments = pathname.split('/').filter(Boolean);
+    const path = pathname ?? '';
+    const segments = path.split('/').filter(Boolean);
     if (supportedLanguages.includes(segments[0])) {
       segments.shift();
     }
@@ -39,7 +40,7 @@ export default function LanguageSwitcher() {
     window.location.href = newUrl;
   };
 
-  const onChange = (language) => {
+  const onChange = (language: string) => {
     setIsPageLoading(true);
     setTimeout(() => {
       setLangSubMenuShown(false);
