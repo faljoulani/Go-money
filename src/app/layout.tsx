@@ -10,6 +10,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   //     bootstrapScript = '/assets/bootstrap.bundle.min.js';
   // }
 
+  // Server render log to help diagnose build-time rendering
+  try { console.log('[BUILD-LOG] Rendering RootLayout'); } catch {}
   return (
     <html lang="en">
       <body className="container-fluid">

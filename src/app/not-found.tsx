@@ -1,4 +1,5 @@
 export default function NotFound() {
+  try { console.log('[BUILD-LOG] Rendering not-found.tsx'); } catch {}
   return (
     <section className="mx-auto max-w-3xl py-16 text-center">
       <h1 className="text-3xl font-semibold">Page not found</h1>
@@ -6,4 +7,3 @@ export default function NotFound() {
     </section>
   );
 }
-

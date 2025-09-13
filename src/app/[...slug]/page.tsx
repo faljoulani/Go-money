@@ -9,6 +9,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string }>;
 }): Promise<Metadata> {
+  try { console.log('[BUILD-LOG] generateMetadata for catch-all route'); } catch {}
   return await pageMetadata({ params, searchParams });
 }
 
@@ -23,5 +24,6 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string }>;
 }) {
+  try { console.log('[BUILD-LOG] Rendering catch-all Page'); } catch {}
   return RenderPage({ params, searchParams, templates: templateRegistry });
 }

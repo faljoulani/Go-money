@@ -15,5 +15,6 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ [key: string]: string }>;
 }) {
+  try { console.log('[BUILD-LOG] Rendering HomePage (/)'); } catch {}
   return Page({ params: Promise.resolve({ slug: [] }), searchParams });
 }
