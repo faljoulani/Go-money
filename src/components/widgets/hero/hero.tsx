@@ -1,4 +1,8 @@
-import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
+import {
+  WidgetContext,
+  htmlAttributes,
+  RenderWidgetService,
+} from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
@@ -129,6 +133,13 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
+  const bc = (props.model.Children)
+    .filter((c) => c.PlaceHolder === 'Breadcrumb')
+    .map((m) => ({
+      model: m,
+      requestContext: props.requestContext,
+    }));
+    
   const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
@@ -144,7 +155,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       >
         <div className=" max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
+            <div className="mb-6" data-sfcontainer="Breadcrumb">
+              {bc.map((y, i) =>
+                RenderWidgetService.createComponent(y.model, props.requestContext),
+              )}{' '}
+            </div>
             {/* <div className="mb-6">
               <BreadcrumbCustomView
                 requestContext={props.requestContext}

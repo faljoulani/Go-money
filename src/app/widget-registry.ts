@@ -6,6 +6,7 @@ import {
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/widgets/hero/hero';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
+import { SectionTest } from '../components/widgets/layouts/twoColContainer/sectionTest';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
 import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
@@ -208,8 +209,17 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: ContactForm },
       },
     },
+      SectionTest: {
+      componentType: SectionTest,
+      ssr: true,
+      editorMetadata: { Title: 'Section Test' },
+      views: {
+        Default: { Title: 'Default', ViewFunction: SectionTest },
+      },
+    },
   },
 };
+// (customWidgetRegistry.widgets as any).StackLayout.isLayout = true;
 
 addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
   Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
