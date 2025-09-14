@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { ContactSubscriptionEntity } from './ContactSubscription.entity';
+import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 

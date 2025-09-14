@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { FooterEntity } from './Footer.entity';
-import FooterLinks, { FooterLinksGroup } from './FooterLinks';
+import { FooterEntity } from './footer.entity';
+import FooterLinks, { FooterLinksGroup } from './footerLinks';
 import { resolveAbsoluteUrl, sortByOrder, resolveSitefinitySelection } from '../../../utils/utils';
 import {
   selectPrimaryImage,

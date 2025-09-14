@@ -17,8 +17,8 @@ import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 
-import Footer from '../components/widgets/footer/Footer-template';
-import { FooterEntity } from '../components/widgets/footer/Footer.entity';
+import Footer from '../components/widgets/footer/footer-template';
+import { FooterEntity } from '../components/widgets/footer/footer.entity';
 
 import FinanceRepaymentBanner from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner';
 import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner.entity';
@@ -46,12 +46,12 @@ import { SupportInfoBoxEntity } from '../components/widgets/supportInfoBox/suppo
 import ContactForm from '../components/widgets/contactForm/contactForm';
 
 import { TwoColumnLayoutEntity } from '../components/widgets/layouts/twoColumnLayout.entity';
-import TwoColumnLayout from '../components/widgets/layouts/TwoColumnLayout';
+import TwoColumnLayout from '../components/widgets/layouts/twoColumnLayout';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
 
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
-import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
+import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/contactSubscription.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
