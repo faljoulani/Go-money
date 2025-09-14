@@ -237,13 +237,13 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
                       const icon = Array.isArray(card.Image) ? card.Image[0] : card.Image;
                       return (
                         <div key={card.Id} className="flex items-center gap-4">
-                          <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                          <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
                             {icon && (
                               <Image
                                 src={imgUrl(icon)}
                                 alt={icon?.AlternativeText || card.Title || 'icon'}
-                                width={32}
-                                height={32}
+                                width={48}
+                                height={48}
                                 className="object-contain"
                               />
                             )}

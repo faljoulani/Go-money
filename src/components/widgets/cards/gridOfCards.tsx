@@ -7,13 +7,14 @@ import FeatureCards from './featuresCards';
 import AlternatingFeaturesCard from './alternatingFeaturesCards';
 import LeadershipCards from './leadershipCards';
 import CEOMessageCard from './ceoMessageCard';
-import ChairmanMessageCard from './chairmanMessageCard'
+import ChairmanMessageCard from './chairmanMessageCard';
 
 import Card from '../../atoms/card/card';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
+import FadeUp from './fadeUp';
 
 type AnySel = any;
 
@@ -77,11 +78,11 @@ export default async function Cards(props: WidgetContext<CardSectionEntity>) {
       <div data-react-root>
         {selectedView === 'LeadershipCards' ? (
           <LeadershipCards {...props} />
-        ) :selectedView === 'CEOMessageCard' ? (
+        ) : selectedView === 'CEOMessageCard' ? (
           <CEOMessageCard {...props} />
-        ) :selectedView === 'ChairmanMessageCard' ? (
+        ) : selectedView === 'ChairmanMessageCard' ? (
           <ChairmanMessageCard {...props} />
-        ) :selectedView === 'ScrollableCards' ? (
+        ) : selectedView === 'ScrollableCards' ? (
           <ScrollableCards {...props} />
         ) : selectedView === 'FeatureCards' ? (
           <FeatureCards {...props} />
@@ -214,54 +215,78 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
-        <div className="text-center">
-          {eyebrow && <Eyebrow color={navy}>{eyebrow}</Eyebrow>}
-          <Title variant="hero" color={navy} className="my-1 h-[63px]">
-            {title}
-          </Title>
-          {subtitle && <Description>{subtitle}</Description>}
-        </div>
-
-        <div className="mt-12">
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-8">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="group rounded-[20px] bg-white p-8 transition-all hover:-translate-y-4"
+      
+          <div className="text-center animate-ping-once fadeup">
+            {eyebrow && <Eyebrow color={navy}>{eyebrow}</Eyebrow>}
+            <Title variant="hero" color={navy} className="my-1 h-[63px]">
+              {title}
+            </Title>
+            {subtitle && <Description>{subtitle}</Description>}
+          </div>
+       
+        
+          <div className="mt-12 mb-8 fadeup">
+            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-8">
+              {items.slice(0, 3).map((item) => (
+                <div
+                  key={item.id}
+                  className="group rounded-[20px] bg-white p-8 transition-transform duration-300 ease-out hover:scale-105"
+                >
+                  <div className="gap-4">
+                    <div className="icon-wrapper">{item.icon}</div>
+                  </div>
+                  <div className="mr-7">
+                    <h3 className="text-[19px] font-bold text-[#010663]">{item.title}</h3>
+                    <p className="mt-2 text-gray-600 text-lg">{item.description}</p>
+                  </div>
+                  {item.href && (
+                    <a href={item.href} className="mt-4 inline-block text-[#010663]"></a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        
+        
+          <div className="fadeup">
+            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-8">
+              {items.slice(3, 6).map((item) => (
+                <div
+                  key={item.id}
+                  className="group rounded-[20px] bg-white p-8 transition-transform duration-300 ease-out hover:scale-105"
+                >
+                  <div className="gap-4">
+                    <div className="icon-wrapper">{item.icon}</div>
+                  </div>
+                  <div className="mr-7">
+                    <h3 className="text-[19px] font-bold text-[#010663]">{item.title}</h3>
+                    <p className="mt-2 text-gray-600 text-lg">{item.description}</p>
+                  </div>
+                  {item.href && (
+                    <a href={item.href} className="mt-4 inline-block text-[#010663]"></a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        
+        
+          {ctaText && (
+            <div className="mt-12 text-center fadeup">
+              <CTA
+                href={(ctaHref || '').trim() || '#'}
+                color="#0B2A8E"
+                borderColor="var(--Button-button-border-primary, #010663)"
+                variant="outline"
+                width={248}
+                height={56}
+                icon="arrow"
               >
-                <div className="gap-4">
-                  <div className="icon-wrapper">{item.icon}</div>
-                </div>
-                <div className='mr-7'>
-                  <h3 className="text-[19px] font-bold text-[#010663]">{item.title}</h3>
-                  <p className="mt-2 text-gray-600 text-lg">{item.description}</p>
-                </div>
-                {item.href && (
-                  <a
-                    href={item.href}
-                    className="mt-4 inline-block text-[#010663]"
-                  ></a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {ctaText && (
-          <div className="mt-12 text-center">
-            <CTA
-              href={(ctaHref || '').trim() || '#'}
-              color="#0B2A8E"
-              borderColor="var(--Button-button-border-primary, #010663)"
-              variant="outline"
-              width={248}
-              height={56}
-              icon="arrow"
-            >
-              {ctaText}
-            </CTA>
-          </div>
-        )}
+                {ctaText}
+              </CTA>
+            </div>
+          )}
+        
       </div>
     </section>
   );

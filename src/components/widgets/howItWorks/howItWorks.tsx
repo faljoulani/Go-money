@@ -137,7 +137,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative mx-20 bg-white">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 mb-2">
+      <div className="mx-auto max-w-3xl text-center px-6 mb-2 fadeup">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
         {view.Title && <Title className="h-[59px] mt-3 mb-1">{view.Title}</Title>}
         {view.HeaderText && <Description>{view.HeaderText}</Description>}
