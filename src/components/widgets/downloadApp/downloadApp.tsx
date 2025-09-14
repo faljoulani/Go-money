@@ -212,8 +212,8 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
                   width={289}
                   height={525}
                   priority
-                  className="pointer-events-none select-none object-contain animate-float absolute -top-2"
-                  style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
+                  className="pointer-events-none select-none object-contain animate-float absolute -top-2 h-[528px] w-[507px]"
+                  
                 />
               )}
             </div>
@@ -237,13 +237,13 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
                       const icon = Array.isArray(card.Image) ? card.Image[0] : card.Image;
                       return (
                         <div key={card.Id} className="flex items-center gap-4">
-                          <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                          <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
                             {icon && (
                               <Image
                                 src={imgUrl(icon)}
                                 alt={icon?.AlternativeText || card.Title || 'icon'}
-                                width={32}
-                                height={32}
+                                width={48}
+                                height={48}
                                 className="object-contain"
                               />
                             )}
@@ -283,7 +283,7 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
           </>
         )}
       </div>
-      <div className="absolute -bottom-8 h-8 w-full defaultBgColor"></div>
+      <div className="absolute -bottom-8 h-8 w-full defaultBgColor z-30"></div>
     </section>
   );
 }
