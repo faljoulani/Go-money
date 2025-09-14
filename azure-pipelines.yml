@@ -7,7 +7,7 @@ trigger:
 variables:
   artifactName: 'gomoney-fe'
   feSiteName: 'fe1-dev-gomoney.ddns.net'
-  feSiteRoot: 'C:\inetpub\wwwroot\fe1-dev-gomoney.ddns.net'
+  feSiteRoot: 'C:\\inetpub\\wwwroot\\fe1-dev-gomoney.ddns.net'
 
   # Container bits (kept local on the VM)
   feImageName: 'fe-gomoney'
@@ -28,61 +28,7 @@ stages:
           - checkout: self
             clean: true
             fetchDepth: 0
-          - task: NodeTool@0
-            inputs:
-              versionSpec: '20.x'
-            displayName: 'Install Node.js'
 
-          - script: |
-              npm ci
-              npm run build
-            displayName: 'Build frontend'
-
-          # Keep Dockerfile context small & predictable
-          - script: |
-              mkdir "$(Build.ArtifactStagingDirectory)\drop"
-
-              xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                "$(Build.ArtifactStagingDirectory)\drop\src"
-              xcopy /E /I /Y "$(Build.SourcesDirectory)\public"             "$(Build.ArtifactStagingDirectory)\drop\public"
-
-              copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
-              copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
-              copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
-              rem Use the Windows container Dockerfile
-              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile.win"     "$(Build.ArtifactStagingDirectory)\drop\Dockerfile.win"
-
-              rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
-              if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\next-env.d.ts"   copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"   "$(Build.ArtifactStagingDirectory)\drop\"
-
-              rem Optional but harmless: carry common configs used by build tools
-              if exist       "$(Build.SourcesDirectory)\eslint.config.js" copy /Y  "$(Build.SourcesDirectory)\eslint.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\.editorconfig"    copy /Y  "$(Build.SourcesDirectory)\.editorconfig"    "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\.npmrc"           copy /Y  "$(Build.SourcesDirectory)\.npmrc"           "$(Build.ArtifactStagingDirectory)\drop\"
-
-              if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
-
-variables:
-  artifactName: 'gomoney-fe'
-  feSiteName: 'fe1-dev-gomoney.ddns.net'
-  feSiteRoot: 'C:\inetpub\wwwroot\fe1-dev-gomoney.ddns.net'
-
-  # Container bits (kept local on the VM)
-  feImageName: 'fe-gomoney'
-  feContainer: 'fe-gomoney'
-  fePort: 3000
-
-stages:
-  # -------------------- BUILD --------------------
-  - stage: Build
-    displayName: Build & Package Frontend
-    jobs:
-      - job: Build
-        pool:
-          vmImage: 'windows-latest'
-        steps:
           - task: NodeTool@0
             inputs:
               versionSpec: '20.x'
@@ -223,7 +169,7 @@ stages:
 
                     # Run container; inject env directly
                     docker run -d --name $cname `
-                      -p ${port}:3000 `
+                      -p ${port}:9097 `
                       -e SF_CMS_URL="$sfCmsUrl" `
                       -e NODE_ENV=production `
                       $extraHostArg `
@@ -244,3 +190,4 @@ stages:
                       Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
                     } catch {}
                   displayName: 'Recycle IIS (optional)'
+
