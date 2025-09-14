@@ -2,8 +2,9 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { ContactBoxEntity } from './contactBox.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { parseMaybeJson } from '../../../utils/utils';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 import React from 'react';
+import ContactBoxInfo from './contactBoxInfo';
 
 type ContactBoxItem = {
   Id: string;
@@ -23,11 +24,15 @@ const linkHref = (lnk: any): string =>
 
 export default async function ContactBox(props: WidgetContext<ContactBoxEntity>) {
   const attrs = htmlAttributes(props);
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
   const { culture, isEdit } = props.requestContext;
 
-  // Read selection from designer
   const properties = (props.model?.Properties || {}) as any;
-  const sel = parseMaybeJson(properties?.ContactBox) ?? properties?.ContactBox;
+  const sel = resolveSitefinitySelection(properties?.ContactBox) ?? properties?.ContactBox;
   const selectedId = extractSelectionId(sel);
 
   if (!selectedId) {
@@ -72,7 +77,6 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   const title = item?.Title || 'Got Questions?';
   const subtitle = item?.SubTitle || 'Our dedicated Support team is here to help';
 
-  // Primary CTA: contact (use EmailLabel > CallUsLabel > ButtonLabel)
   const primaryLabel = item?.EmailLabel || item?.CallUsLabel || item?.ButtonLabel || 'Contact Us';
   const primaryHref = linkHref(item?.CTAURL) || '#';
 
@@ -84,18 +88,21 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     typeof item?.hasLabelCorner === 'boolean'
       ? item!.hasLabelCorner
       : String(item?.hasLabelCorner || '').toLowerCase() === 'true';
-
+  console.log('SELECTED VIEWWWWW', selectedView);
+  if (selectedView === 'EmailAndPhone') {
+    return <ContactBoxInfo {...props} />;
+  }
   return (
     <section
       {...attrs}
-      className="relative mx-auto w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-black/5"
+      className="relative mx-auto w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-black/5 mb-10"
     >
-      {/* Top-right blue corner accent */}
       {showCorner && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-bl-[40px] bg-[#0A43FF]"
-        />
+        <div className="absolute right-0 top-0">
+          <div className="h-24 w-24 rounded-bl-[40px] bg-[#0A43FF]" />
+
+          <div className="absolute right-0 top-0 h-12 w-12 bg-white" />
+        </div>
       )}
 
       <div className="mx-auto max-w-2xl">
@@ -124,7 +131,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
           <a
             href={secondaryHref}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#01115A] px-6 py-3 text-[#01115A] transition hover:bg-[#01115A] hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full border-2 border-[#01115A] px-6 py-3 font-light transition hover:bg-[#01115A] hover:text-white"
           >
             <span>{secondaryLabel}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">

@@ -26,6 +26,8 @@ RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
 # ---- App code --------------------------------------------------------------
 COPY . .
 
+# (no Linux filename normalization; code imports fixed to correct casing)
+
 # ---- Show Prettier EOL & format to repo rules ------------------------------
 # This makes lint happy regardless of host OS line endings.
 RUN node -e "try{const p=require('prettier'); const c=p.resolveConfig.sync(process.cwd()); console.log('Prettier endOfLine:', (c&&c.endOfLine)||'(default) lf'); }catch(e){console.log('Prettier not found (will still try npx).')}"
@@ -38,44 +40,54 @@ RUN test -f src/index.css     || (echo "ERROR: src/index.css missing" && exit 1)
 # ---- Print platform + Node/NAPI/glibc -------------------------------------
 RUN node -e "const r=(process.report&&process.report.getReport&&process.report.getReport())||{}; console.log(['node '+process.version,'platform='+process.platform,'arch='+process.arch,'napi='+(process.versions.napi||'none'),'glibc='+(r.header?.glibcVersionRuntime||'n/a')].join(' | '))"
 
-# ---- Install BOTH prebuilts in one shot -----------------------------------
-# (Doing them together avoids the second install pruning the first as extraneous.)
+# ---- Install oxide/lightningcss prebuilts if present ----------------------
+# Tailwind v4 uses @tailwindcss/oxide (optional), lightningcss is used by many setups.
+# We detect which wrappers exist in node_modules and install matching prebuilts.
 RUN set -eux; \
-  oxVer=$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version"); \
-  lcVer=$(node -p "require('./node_modules/lightningcss/package.json').version"); \
-  echo "Selecting prebuilts: oxide=${oxVer}, lightningcss=${lcVer}"; \
-  npm i --no-save \
-    "@tailwindcss/oxide-linux-x64-gnu@${oxVer}" \
-    "lightningcss-linux-x64-gnu@${lcVer}"
+  oxPkg=""; lcPkg=""; \
+  if [ -f node_modules/@tailwindcss/oxide/package.json ]; then \
+    oxVer=$(node -p "require('./node_modules/@tailwindcss/oxide/package.json').version"); \
+    oxPkg="@tailwindcss/oxide-linux-x64-gnu@${oxVer}"; \
+  fi; \
+  if [ -f node_modules/lightningcss/package.json ]; then \
+    lcVer=$(node -p "require('./node_modules/lightningcss/package.json').version"); \
+    lcPkg="lightningcss-linux-x64-gnu@${lcVer}"; \
+  fi; \
+  echo "Selected prebuilts: ${oxPkg:-none} ${lcPkg:-none}"; \
+  if [ -n "$oxPkg$lcPkg" ]; then \
+    npm i --no-audit --no-fund --no-save $oxPkg $lcPkg; \
+  else \
+    echo "No oxide/lightningcss wrappers found; skipping prebuilt install"; \
+  fi
 
-# ---- Wire lightningcss’ .node to where its wrapper expects it --------------
+# ---- Wire lightningcss .node to wrapper path (if installed) ---------------
 RUN set -eux; \
-  src="node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node"; \
-  dst="node_modules/lightningcss/lightningcss.linux-x64-gnu.node"; \
-  test -f "$src" || (echo "FATAL: missing $src after prebuilt install" && exit 37); \
-  cp -f "$src" "$dst"; \
-  ls -lh "$dst"
+  if [ -f node_modules/lightningcss/package.json ]; then \
+    src="node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node"; \
+    dst="node_modules/lightningcss/lightningcss.linux-x64-gnu.node"; \
+    if [ -f "$src" ]; then \
+      cp -f "$src" "$dst"; \
+      ls -lh "$dst"; \
+    else \
+      echo "WARN: missing $src after prebuilt install; continuing"; \
+    fi; \
+  else \
+    echo "lightningcss wrapper not present; skipping .node wiring"; \
+  fi
 
-# ---- Assert that both natives really load (CJS requires) -------------------
+# ---- Assert natives load (when present) -----------------------------------
 RUN set -eux; \
-  echo '--- ASSERT: require("@tailwindcss/oxide")'; \
-  node -e "const ox=require('@tailwindcss/oxide'); console.log('OK oxide exports:', Object.keys(ox).slice(0,5))"; \
-  echo '--- ASSERT: require("lightningcss")'; \
-  node -e "const lc=require('lightningcss'); console.log('OK lightningcss transform:', typeof lc.transform)"; \
-  echo '--- Paths'; \
-  node -e "console.log('oxide pkg:', require.resolve('@tailwindcss/oxide/package.json'))"; \
-  node -e "console.log('oxide prebuilt pkg:', require.resolve('@tailwindcss/oxide-linux-x64-gnu/package.json'))"; \
-  node -e "console.log('lightningcss entry:', require.resolve('lightningcss'))"; \
-  node -e "const p=require('path'),fs=require('fs');const base=p.dirname(require.resolve('lightningcss'));console.log('lightningcss .node exists:',fs.existsSync(p.join(base,'lightningcss.linux-x64-gnu.node')))"; \
-  echo '--- Native .node files'; \
+  echo '--- ASSERT: require("@tailwindcss/oxide") (warn if missing)'; \
+  node -e "try{const ox=require('@tailwindcss/oxide');console.log('oxide OK:',Object.keys(ox).slice(0,5));}catch(e){console.log('WARN: @tailwindcss/oxide not installed (ok if Tailwind v3 or optional dep omitted):',e.code||e.message)}"; \
+  echo '--- ASSERT: require("lightningcss") (warn if missing)'; \
+  node -e "try{const lc=require('lightningcss');console.log('lightningcss transform:',typeof lc.transform);}catch(e){console.log('WARN: lightningcss not installed:',e.code||e.message)}"; \
+  echo '--- Native .node files (oxide/lightningcss)'; \
   /bin/sh -lc "find node_modules -maxdepth 4 -type f -name '*.node' -print -ls | grep -E 'oxide|lightningcss' || true"
 
-# ---- Guard: if oxide prebuilt vanished, fail early with message ------------
-RUN test -f node_modules/@tailwindcss/oxide-linux-x64-gnu/tailwindcss-oxide.linux-x64-gnu.node || \
-    (echo 'FATAL: @tailwindcss/oxide prebuilt missing before build. This usually happens if an npm install removed an extraneous package. Ensure prebuilts are installed together or add them to optionalDependencies.' && exit 39)
+# (no sharp rebuild step)
 
 # ---- Build (Tailwind runs here) -------------------------------------------
-RUN npm run build
+RUN NODE_ENV=production npm run build
 
 # ---- Slim prod deps --------------------------------------------------------
 RUN npm prune --omit=dev

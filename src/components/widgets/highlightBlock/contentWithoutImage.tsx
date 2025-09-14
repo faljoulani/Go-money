@@ -1,41 +1,14 @@
 import { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
 import type { HighlightBlockEntity } from './highlightBlock.entity';
 import { fetchData } from '../../../utils/sitefinity';
+import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
-
-type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
-
-function parseSelection(raw: unknown) {
-  if (!raw) return undefined;
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return undefined;
-    }
-  }
-  return raw as any;
-}
-function firstIdFromSelection(sel: any) {
-  if (!sel) return undefined;
-  if (sel.Id) return sel.Id;
-  const ids = sel?.CardListData?.ItemIdsOrdered ?? sel?.ItemIdsOrdered;
-  if (Array.isArray(ids) && ids.length) return ids[0];
-  const maybeContentId = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value?.split(',')?.[0];
-  return maybeContentId || undefined;
-}
-function linkToHref(link: CmsLink): string | undefined {
-  if (!link) return undefined;
-  if (typeof link === 'string') return link;
-  const any = link as any;
-  return Array.isArray(any) ? (typeof any[0] === 'string' ? any[0] : any[0]?.Href) : any?.Href;
-}
 
 export default async function WithoutImage(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
 
-  const selection = parseSelection(
+  const selection = resolveSitefinitySelection(
     props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox,
   );
   const id = firstIdFromSelection(selection);
@@ -51,22 +24,24 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
     );
   }
 
-  const itemType = 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox';
   const fields = ['Id', 'Eyebrow', 'Title', 'Description', 'CtaText', 'CtaUrl'];
-  const raw = await fetchData([id], null, culture, fields, { itemType, single: true });
-  const item = (Array.isArray(raw) ? raw[0] : raw) as any;
-  if (!item)
+  const paylaod = await fetchData([id], null, culture, fields, {
+    itemType: selection.Content?.[0]?.Type,
+    single: true,
+  });
+
+  const data = (Array.isArray(paylaod) ? paylaod[0] : paylaod) as any;
+  if (!data)
     return isEdit ? (
       <div className="p-6 border border-dashed rounded-2xl text-center">Item not found.</div>
     ) : (
       <div />
     );
 
-  const eyebrow: string | undefined = item.Eyebrow;
-  const title: string | undefined = item.Title;
-  const description: string | undefined = item.Description;
-  const ctaText: string | undefined = item.CtaText || '';
-  const ctaHref: string | undefined = linkToHref(item.CtaUrl);
+  const title: string | undefined = data.Title;
+  const description: string | undefined = data.Description;
+  const ctaText: string | undefined = data.CtaText || '';
+  const ctaHref: string | undefined = linkToHref(data.CtaUrl);
 
   return (
     <div className="mx-auto w-full bg-[#EEEEEE]">
@@ -96,7 +71,7 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
           <div className="pt-2">
             <CTA
               href={ctaHref}
-              arrow={false}
+              icon="arrow"
               className="bg-[hsla(237,98%,20%,1)] text-white font-poppins font-extralight"
             >
               {ctaText}

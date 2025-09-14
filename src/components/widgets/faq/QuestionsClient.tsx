@@ -17,7 +17,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
     },
-    { revalidateOnFocus: true }
+    { revalidateOnFocus: true },
   );
 
   const questions = useMemo(() => {
@@ -34,9 +34,8 @@ export default function QuestionsClient({ categories }: { categories: Category[]
   }, [active, questions]);
 
   return (
-    <div className="flex gap-8 p-12">
-      {/* Categories */}
-      <aside className="w-[25%]">
+    <div className="flex gap-8 px-20 pt-[58px] pb-16">
+      <aside className="w-[25%] fadeLeft">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
             const isActive = active === cat.Id;
@@ -50,9 +49,23 @@ export default function QuestionsClient({ categories }: { categories: Category[]
                 }`}
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
-                <span className={`grid place-items-center w-8 h-8 rounded-lg ${isActive ? 'text-white' : 'text-[#0b1C5A]'}`} aria-hidden>
-                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                    <path d="M7 4l6 6-6 6" />
+                <span
+                  className={`grid place-items-center w-8 h-8 rounded-lg ${
+                    isActive ? 'text-white' : 'text-black'
+                  }`}
+                  aria-hidden
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-[24px] h-[24px]"
+                  >
+                    <line x1="0" y1="12" x2="15" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </span>
               </li>
@@ -62,8 +75,8 @@ export default function QuestionsClient({ categories }: { categories: Category[]
       </aside>
 
       {/* Questions */}
-      <div className="w-[75%]">
-        <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white/70">
+      <div className="w-[75%] fadeRight">
+        <div className="divide-y rounded-xl">
           {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
           {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
           {!isLoading && !error && questions.length === 0 && (
@@ -73,24 +86,32 @@ export default function QuestionsClient({ categories }: { categories: Category[]
           {questions.map((q) => {
             const isOpen = openId === q.Id;
             return (
-              <details key={q.Id} className="group p-6" open={isOpen}>
+              <details key={q.Id} className="group p-6 border fadeRight rounded-md mb-4 bg-white border-[#E0E0E0]" open={isOpen}>
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer"
                   onClick={(e) => {
-                    e.preventDefault(); // control it manually
+                    e.preventDefault();
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
                   <span className="text-slate-900">{q.Title}</span>
-                  <span className="ml-6 grid size-8 place-items-center rounded-lg bg-[#0B1C5A] text-white">
+                  <span className="ml-6 grid size-9 place-items-center rounded-lg bg-[#0B1C5A] text-white">
                     <svg
-                      viewBox="0 0 20 20"
-                      fill="none"
+                      viewBox="0 0 14 14"
+                      className="w-[15px] h-[15px]"
                       stroke="currentColor"
                       strokeWidth="2"
-                      className={`w-4 h-4 transition ${isOpen ? 'rotate-45' : ''}`}
                     >
-                      <path d="M10 4v12M4 10h12" />
+                      {isOpen ? (
+                        // Horizontal line (-)
+                        <line x1="0" y1="7" x2="15" y2="7" />
+                      ) : (
+                        // Plus (+)
+                        <>
+                          <line x1="7" y1="0" x2="7" y2="15" />
+                          <line x1="0" y1="7" x2="15" y2="7" />
+                        </>
+                      )}
                     </svg>
                   </span>
                 </summary>
@@ -103,3 +124,4 @@ export default function QuestionsClient({ categories }: { categories: Category[]
     </div>
   );
 }
+

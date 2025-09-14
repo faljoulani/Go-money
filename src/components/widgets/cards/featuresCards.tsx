@@ -1,20 +1,10 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData } from '../../../utils/sitefinity';
-
+import { CmsImage } from '../../../types/type';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
-
-type CmsImage = {
-  Id?: string;
-  Url?: string;
-  MediaUrl?: string;
-  ThumbnailUrl?: string;
-  EmbedUrl?: string;
-  Urls?: string[];
-  Title?: string;
-  AlternativeText?: string;
-};
+import { resolveAbsoluteUrl } from '../../../utils/utils';
 
 type ServerSelection = {
   CardListData?: {
@@ -29,22 +19,9 @@ type ServerSelection = {
   SfWidgetLabel?: string;
 } & Record<string, any>;
 
-function pickFirst<T>(x?: T | T[] | null): T | undefined {
-  if (!x) return undefined;
-  return Array.isArray(x) ? x[0] : x;
-}
-
 function pickImageUrl(img?: CmsImage): string | undefined {
   if (!img) return undefined;
   return img.Url || img.MediaUrl || img.ThumbnailUrl || img.Urls?.[0] || img.EmbedUrl || undefined;
-}
-
-function toAbsoluteUrl(url?: string): string {
-  if (!url) return '';
-  if (/^https?:\/\//i.test(url)) return url;
-  const base = (process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL || '').replace(/\/+$/, '');
-  if (!base) return url;
-  return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
 function takeIds(sel?: { ItemIdsOrdered?: string[] | null }): string[] {
@@ -124,7 +101,7 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
       (Array.isArray(c?.Icon) ? c.Icon[0] : c?.Icon) ||
       (Array.isArray(c?.Logo) ? c.Logo[0] : c?.Logo);
 
-    const iconUrl = toAbsoluteUrl(pickImageUrl(img));
+    const iconUrl = resolveAbsoluteUrl(pickImageUrl(img), props.requestContext);
     const iconAlt = img?.AlternativeText || img?.Title || c?.Title || 'Icon';
 
     return {

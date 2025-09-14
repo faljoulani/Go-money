@@ -1,50 +1,13 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { SupportInfoBoxEntity } from './supportInfoBox.entity';
 import { fetchData } from '../../../utils/sitefinity';
+import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
 import Description from '../../atoms/description/description';
 import Title from '../../atoms/title/title';
+import { CmsImage, ImgUrl as imgUrl } from '../../../types/type';
 
 import Link from 'next/link';
 import Image from 'next/image';
-
-type CmsImage = {
-  Url?: string;
-  MediaUrl?: string;
-  ThumbnailUrl?: string;
-  AlternativeText?: string;
-  Title?: string;
-} | null;
-
-const imgUrl = (i?: CmsImage) => i?.MediaUrl || i?.Url || i?.ThumbnailUrl || undefined;
-
-function parseSelection(raw: unknown) {
-  if (!raw) return undefined;
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return undefined;
-    }
-  }
-  return raw as any;
-}
-
-function firstIdFromSelection(sel: any) {
-  if (!sel) return undefined;
-  if (sel.Id) return sel.Id;
-  const ids =
-    sel?.ItemIdsOrdered ??
-    sel?.CardListData?.ItemIdsOrdered ??
-    sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value?.split(',');
-  return Array.isArray(ids) ? ids[0] : ids;
-}
-
-const normalizePhone = (s: string) => (s || '').replace(/[^\d+]/g, '');
-const infoHref = (s: any) => {
-  if (s?.StoreType === 'Email' && s?.Url) return `mailto:${s.Url}`;
-  if (s?.StoreType === 'Phone' && s?.Url) return `tel:${normalizePhone(s.Url)}`;
-  return s?.Url || '#';
-};
 
 const firstMedia = (m: any): CmsImage => (Array.isArray(m) ? m[0] : m) ?? null;
 
@@ -54,7 +17,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  const selection = parseSelection(
+  const selection = resolveSitefinitySelection(
     props.model?.Properties?.SupportInfoBox ?? (props.model?.Properties as any)?.SupportInfoBox,
   );
   const id = firstIdFromSelection(selection);

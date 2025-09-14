@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { ContactSubscriptionEntity } from './ContactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { parseMaybeJson } from '../../../utils/utils';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 
 import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
@@ -111,7 +111,8 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const { culture, isEdit } = props.requestContext;
 
   const properties = (props.model?.Properties || {}) as any;
-  const rawSel = parseMaybeJson(properties?.ContactSubscription) ?? properties?.ContactSubscription;
+  const rawSel =
+    resolveSitefinitySelection(properties?.ContactSubscription) ?? properties?.ContactSubscription;
 
   const parentId = extractSelectionId(rawSel);
   if (!parentId) {
@@ -146,9 +147,9 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   return (
     <section
       {...attrs}
-      className="ContactSubscription bg-[var(--Background-background-neutral-200,_#EEEEEE)] py-10 md:py-14"
+      className="ContactSubscription bg-[var(--Background-background-neutral-200,_#EEEEEE)] py-10 px-20 md:py-14"
     >
-      <div className="mx-auto max-w-[1240px] px-5">
+      <div className="mx-auto max-w-[1240px] ">
         {parent.Title && (
           <Title
             as="h2"
@@ -163,23 +164,19 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
             {parent.Title}
           </Title>
         )}
-
         {/* Stretch items so all cards have equal height */}
-        <div className="grid items-stretch gap-6 md:grid-cols-2">
-          {boxes.map((box) => (
+        <div className="grid items-stretch gap-8 md:grid-cols-2 h-[373px]">
+          {boxes.map((box, index) => (
             <div
               key={box.Id ?? box.Title}
-              className="relative flex h-full flex-col overflow-visible rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8"
+              className="gap-3 relative flex h-full flex-col overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8"
             >
               {/* Corner ribbon (from public/icons) */}
               {box.HasLabelCorner && (
-                <div className="absolute w-18 h-18 bg-[#1919E5] rounded-bl-3xl top-0 right-0">
-                  <div
-                    className='absolute w-10 h-10 bg-white right-0 top-0'
-                  ></div>
+                <div className="absolute w-[110px] h-[110px] bg-[#1919E5] rounded-bl-[60px] top-0 right-0 ">
+                  <div className="absolute w-[52px] h-[52px] bg-white right-0 top-0"></div>
                 </div>
               )}
-
               {/* Title / Subtitle */}
               {box.Title && (
                 <Title
@@ -197,13 +194,12 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                   {box.Title}
                 </Title>
               )}
-
               {box.SubTitle && (
                 <Description
                   align="left"
                   color="var(--Text-text-default, #424242)"
                   maxWidth="none"
-                  className="mb-6 mt-0 text-[18px] leading-[100%] tracking-[0]"
+                  className={`mt-0 text-[19px] leading-normal tracking-[0] ${index === 1 ? 'w-[300px] leading-normal' : ''}`}
                 >
                   {box.SubTitle}
                 </Description>
@@ -214,7 +210,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                 <div className="flex h-full flex-col">
                   <div className="flex-1">
                     <label className="sr-only">{box.EmailLabel || 'Email'}</label>
-                    <div className="mb-4 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
+                    <div className="mb-4 mt-12 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
                       <input
                         type="email"
                         inputMode="email"
@@ -224,13 +220,13 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                       />
                     </div>
                   </div>
-
                   <CTA
                     color="#010663"
                     borderColor="#010663"
                     variant="outline"
                     width={525.2}
                     height={56.56}
+                    icon="arrow"
                     className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
                   >
                     {box.ButtonLabel || 'Subscribe Now'}
@@ -238,9 +234,9 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                 </div>
               ) : (
                 <div className="flex h-full flex-col items-center text-center">
-                  <div className="mb-5 grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-[500px]">
+                  <div className="mb-8 mt-6 grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-[500px] h-[97px]">
                     {/* Call block */}
-                    <div className="rounded-xl border border-[#E7E9EF] px-4 py-3">
+                    <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
                       <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
                         <svg
                           aria-hidden
@@ -265,9 +261,8 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                         {box.CallUsText || '+966 11 123 4567'}
                       </div>
                     </div>
-
                     {/* Email block */}
-                    <div className="rounded-xl border border-[#E7E9EF] px-4 py-3">
+                    <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
                       <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
                         <svg
                           aria-hidden
@@ -302,6 +297,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                     variant="outline"
                     width={525.2}
                     height={56.56}
+                    icon="arrow"
                     className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
                   >
                     {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
