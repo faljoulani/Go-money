@@ -12,16 +12,16 @@ variables:
   # Container bits (kept local on the VM)
   feImageName: 'fe-gomoney'
   feContainer: 'fe-gomoney'
-  fePort: 6565
+  fePort: 9097
 
 stages:
   # -------------------- BUILD --------------------
   - stage: Build
-    displayName: Build & Package Frontend (Win10 containers)
+    displayName: Build & Package Frontend (Linux)
     jobs:
       - job: Build
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'ubuntu-latest'
         workspace:
           clean: all
         steps:
@@ -35,47 +35,73 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              npm ci
+              set -e
+              npm ci --no-audit --no-fund
+            displayName: 'Install dependencies'
+
+          - script: |
+              set -euo pipefail
+              echo "TypeScript version:" && npx tsc -v || true
+              # Capture full typecheck report without stopping the job
+              # (tsc prints ALL errors; Next typically stops at first)
+              npx tsc -p tsconfig.json --noEmit --pretty false | tee "$(Build.ArtifactStagingDirectory)/tsc-report.txt" || true
+            displayName: 'TypeScript: typecheck (report all errors)'
+
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            displayName: 'Publish typecheck report'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/tsc-report.txt'
+              ArtifactName: 'tsc-report'
+              publishLocation: 'Container'
+
+          - script: |
+              set -e
               npm run build
             displayName: 'Build frontend'
 
-          # Keep Dockerfile context small & predictable
           - script: |
-              mkdir "$(Build.ArtifactStagingDirectory)\drop"
+              set -e
+              DEST="$(Build.ArtifactStagingDirectory)/drop"
+              mkdir -p "$DEST"
 
-              xcopy /E /I /Y "$(Build.SourcesDirectory)\src"                "$(Build.ArtifactStagingDirectory)\drop\src"
-              xcopy /E /I /Y "$(Build.SourcesDirectory)\public"             "$(Build.ArtifactStagingDirectory)\drop\public"
+              cp -R "$(Build.SourcesDirectory)/src"    "$DEST/"
+              cp -R "$(Build.SourcesDirectory)/public" "$DEST/"
 
-              copy  /Y       "$(Build.SourcesDirectory)\package.json"       "$(Build.ArtifactStagingDirectory)\drop\"
-              copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
-              copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
-              rem Use the Windows 10 container Dockerfile
-              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"   "$(Build.ArtifactStagingDirectory)\drop\Dockerfile"
+              cp    "$(Build.SourcesDirectory)/package.json"      "$DEST/"
+              cp    "$(Build.SourcesDirectory)/package-lock.json" "$DEST/"
+              cp    "$(Build.SourcesDirectory)/next.config.js"    "$DEST/"
+              # Use Linux container Dockerfile
+              cp    "$(Build.SourcesDirectory)/Dockerfile"        "$DEST/Dockerfile"
 
-              rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
-              if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\next-env.d.ts"   copy /Y  "$(Build.SourcesDirectory)\next-env.d.ts"   "$(Build.ArtifactStagingDirectory)\drop\"
+              # Include TS and tool configs when present
+              [ -f "$(Build.SourcesDirectory)/tsconfig.json" ]   && cp "$(Build.SourcesDirectory)/tsconfig.json"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/next-env.d.ts" ]   && cp "$(Build.SourcesDirectory)/next-env.d.ts"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/eslint.config.js" ]&& cp "$(Build.SourcesDirectory)/eslint.config.js" "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/.editorconfig" ]   && cp "$(Build.SourcesDirectory)/.editorconfig"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/.npmrc" ]          && cp "$(Build.SourcesDirectory)/.npmrc"          "$DEST/" || true
 
-              rem Optional but harmless: carry common configs used by build tools
-              if exist       "$(Build.SourcesDirectory)\eslint.config.js" copy /Y  "$(Build.SourcesDirectory)\eslint.config.js"  "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\.editorconfig"    copy /Y  "$(Build.SourcesDirectory)\.editorconfig"    "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\.npmrc"           copy /Y  "$(Build.SourcesDirectory)\.npmrc"           "$(Build.ArtifactStagingDirectory)\drop\"
+              # Tailwind / PostCSS configs if present
+              [ -f "$(Build.SourcesDirectory)/postcss.config.js" ]  && cp "$(Build.SourcesDirectory)/postcss.config.js"  "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/tailwind.config.ts" ] && cp "$(Build.SourcesDirectory)/tailwind.config.ts" "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/tailwind.config.js" ] && cp "$(Build.SourcesDirectory)/tailwind.config.js" "$DEST/" || true
 
-              if exist       "$(Build.SourcesDirectory)\.dockerignore" copy /Y  "$(Build.SourcesDirectory)\.dockerignore"  "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\.env.production" copy /Y "$(Build.SourcesDirectory)\.env.production" "$(Build.ArtifactStagingDirectory)\drop\"
-              if exist       "$(Build.SourcesDirectory)\web.config" copy /Y "$(Build.SourcesDirectory)\web.config" "$(Build.ArtifactStagingDirectory)\drop\"
+              # .dockerignore and optional env/web.config
+              [ -f "$(Build.SourcesDirectory)/.dockerignore" ]     && cp "$(Build.SourcesDirectory)/.dockerignore"     "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/.env.production" ]   && cp "$(Build.SourcesDirectory)/.env.production"   "$DEST/" || true
+              [ -f "$(Build.SourcesDirectory)/web.config" ]        && cp "$(Build.SourcesDirectory)/web.config"        "$DEST/" || true
             displayName: 'Prepare FE artifacts'
 
           - task: PublishBuildArtifacts@1
             displayName: 'Publish FE artifact'
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/drop'
               ArtifactName: '$(artifactName)'
               publishLocation: 'Container'
 
   # -------------------- DEPLOY --------------------
   - stage: Deploy_Dev
-    displayName: Deploy FE to Gomoney-FE-Dev (Win10 containers)
+    displayName: Deploy FE to Gomoney-FE-Dev (Linux container)
     dependsOn: Build
     jobs:
       - job: WaitForApproval
@@ -86,12 +112,12 @@ stages:
             inputs:
               instructions: |
                 Review the FE build. Approve to deploy to the DEV VM.
-                This will build the Docker image **on the VM** and (re)start the container.
+                This will build the Docker image on the VM and (re)start the container.
               onTimeout: 'reject'
               timeout: '12:00:00'
 
       - deployment: DeployToVM
-        displayName: 'Build & Run FE container on DEV VM (Win10)'
+        displayName: 'Build & Run FE container on DEV VM (Linux)'
         dependsOn: WaitForApproval
         environment:
           name: 'Gomoney-FE-Dev'
@@ -103,15 +129,37 @@ stages:
               steps:
                 - checkout: none
 
+                - powershell: |
+                    Write-Host "Agent machine: $env:COMPUTERNAME"
+                    Write-Host "Docker version"
+                    try { docker version | Out-String | Write-Host } catch {}
+                    Write-Host "Docker info (mode)"
+                    try {
+                      $info = docker info 2>$null
+                      $info | Out-String | Write-Host
+                      if ($info -match 'OSType:\s*(\w+)') { Write-Host ("Detected OSType={0}" -f $Matches[1]) }
+                    } catch {
+                      Write-Host "Unable to get docker info."
+                    }
+                  displayName: 'Log Docker mode/info'
+
+                - powershell: |
+                    # Clean deploy workspace
+                    $path = "$(Pipeline.Workspace)\$(artifactName)"
+                    if (Test-Path $path) { Remove-Item -Recurse -Force $path }
+                    New-Item -ItemType Directory -Path $path | Out-Null
+                  displayName: 'Pre-clean deploy workspace'
+
                 - task: DownloadPipelineArtifact@2
-                  displayName: 'Download FE artifact'
+                  displayName: 'Download FE artifact (this run)'
                   inputs:
                     buildType: current
                     artifactName: '$(artifactName)'
-                    targetPath: '$(Pipeline.Workspace)\fe'
+                    targetPath: '$(Pipeline.Workspace)\$(artifactName)'
+                    cleanDestinationFolder: true
 
                 - powershell: |
-                    $ctx    = "$(Pipeline.Workspace)\fe"
+                    $ctx    = "$(Pipeline.Workspace)\$(artifactName)"
                     $tag    = "$(Build.BuildId)"
                     $image  = "$(feImageName):$tag"
                     $latest = "$(feImageName):latest"
@@ -120,11 +168,6 @@ stages:
 
                     Write-Host "Docker build context: $ctx"
                     Push-Location $ctx
-
-                    # Diagnostics: Docker / HNS / Host info
-                    try { Write-Host "Docker version"; docker version | Out-String | Write-Host } catch {}
-                    try { Write-Host "Docker info"; docker info | Out-String | Write-Host } catch {}
-                    try { Write-Host "HNS/Docker services"; Get-Service hns, docker | Format-Table -AutoSize Name,Status | Out-String | Write-Host } catch {}
 
                     # Always rewrite .env.production from pipeline variables
                     $envPath  = Join-Path $ctx ".env.production"
@@ -146,7 +189,7 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build linux  image locally on the VM using Dockerfile
+                    # Build Linux image locally on the VM using Dockerfile
                     docker build -f Dockerfile -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
@@ -163,7 +206,32 @@ stages:
                       docker rm   $cname | Out-Null
                     }
 
-                    # Resolve CMS host to IPv4 for Windows containers
+                    # Ensure host port is free (remove any container publishing host port $port)
+                    try {
+                      $all = docker ps -aq
+                      foreach($id in $all){
+                        try {
+                          $ins = docker inspect $id | ConvertFrom-Json
+                          $ports = $ins[0].NetworkSettings.Ports
+                          if ($ports -ne $null) {
+                            foreach($prop in $ports.PSObject.Properties){
+                              $mappings = $prop.Value
+                              if ($mappings -ne $null) {
+                                foreach($m in $mappings){
+                                  if ($m.HostPort -eq $port.ToString()) {
+                                    Write-Host "Freeing host port $($port): removing container $id"
+                                    docker stop $id | Out-Null
+                                    docker rm   $id | Out-Null
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        } catch {}
+                      }
+                    } catch { Write-Host "Port cleanup skipped: $($_.Exception.Message)" }
+
+                    # Map CMS host to IPv4 to help container DNS resolution (optional)
                     try { $cmsHost = ([Uri]$sfCmsUrl).Host } catch { $cmsHost = $null }
                     $extraHostArg = ""
                     if (-not [string]::IsNullOrWhiteSpace($cmsHost)) {
@@ -180,79 +248,59 @@ stages:
                       }
                     }
 
-                    # Ensure custom NAT network exists (Win10 HNS stability)
-                    try {
-                      $nets = docker network ls --format "{{.Name}}"
-                      if (-not ($nets -contains 'gomoney-nat')) { docker network create -d nat gomoney-nat | Out-Null }
-                    } catch {}
-
-                    # Diagnostics: OS-level port usage before docker run
+                    # OS-level port usage diagnostics (before docker run)
                     Write-Host "Checking host port $port usage at OS level..."
-                    try { $listeners = Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue } catch { $listeners = $null }
+                    try {
+                      $listeners = Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue
+                    } catch { $listeners = $null }
+
                     if ($listeners) {
                       Write-Warning "Port $port has OS listeners. Listing owning processes:"
                       $pids = $listeners | Select-Object -Expand OwningProcess -Unique
                       foreach($pid in $pids){
-                        try { $proc = Get-Process -Id $pid -ErrorAction Stop; Write-Host ("  PID={0} Name={1} Path={2}" -f $proc.Id,$proc.ProcessName,($proc.Path -join '')) } catch { Write-Host ("  PID={0} (details unavailable)" -f $pid) }
+                        try {
+                          $proc = Get-Process -Id $pid -ErrorAction Stop
+                          Write-Host ("  PID={0} Name={1} Path={2}" -f $proc.Id,$proc.ProcessName,($proc.Path -join ''))
+                        } catch {
+                          Write-Host ("  PID={0} (details unavailable)" -f $pid)
+                        }
                       }
                     } else {
-                      try { Write-Host "netstat -abno (filtered):"; (netstat -abno -p tcp | Select-String ":$port") | ForEach-Object { '  ' + $_ } } catch {}
-                      try { Write-Host "HTTP.SYS servicestate (filtered):"; (netsh http show servicestate | Select-String ":$port") | ForEach-Object { '  ' + $_ } } catch {}
-                      try { Write-Host "HTTP.SYS URLACL (filtered):"; (netsh http show urlacl | Select-String ":$port") | ForEach-Object { '  ' + $_ } } catch {}
-                      try { Write-Host "Portproxy v4tov4 (filtered):"; (netsh interface portproxy show v4tov4 | Select-String ":$port") | ForEach-Object { '  ' + $_ } } catch {}
-                      try { Write-Host "Excluded TCP ranges:"; netsh interface ipv4 show excludedportrange protocol=tcp | ForEach-Object { '  ' + $_ } } catch {}
+                      Write-Host "No Get-NetTCPConnection listener found on port $port. Checking netstat/HTTP.SYS/portproxy..."
+                      try {
+                        Write-Host "netstat -abno (filtered):"
+                        (netstat -abno -p tcp | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "HTTP.SYS servicestate (filtered):"
+                        (netsh http show servicestate | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "HTTP.SYS URLACL (filtered):"
+                        (netsh http show urlacl | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "Portproxy v4tov4 (filtered):"
+                        (netsh interface portproxy show v4tov4 | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "Excluded TCP ranges (contains $port ?):"
+                        netsh interface ipv4 show excludedportrange protocol=tcp | ForEach-Object { '  ' + $_ }
+                      } catch {}
                     }
 
-                    # Run container; inject env directly (with Hyper-V isolation)
+                    # Run container; inject env directly
                     docker run -d --name $cname `
                       -p ${port}:9097 `
                       -e SF_CMS_URL="$sfCmsUrl" `
                       -e NODE_ENV=production `
-                      --isolation=hyperv `
-                      --network gomoney-nat `
                       $extraHostArg `
                       --restart unless-stopped `
                       $latest
 
                     if ($LASTEXITCODE -ne 0) {
-                      Write-Host "docker run failed with code $LASTEXITCODE. Attempting HNS/Docker service restart and retry..."
-                      try { Stop-Service -Name docker -Force -ErrorAction SilentlyContinue } catch {}
-                      try { Stop-Service -Name hns -Force -ErrorAction SilentlyContinue } catch {}
-                      Start-Sleep -Seconds 3
-                      try { Start-Service -Name hns -ErrorAction SilentlyContinue } catch {}
-                      try { Start-Service -Name docker -ErrorAction SilentlyContinue } catch {}
-                      Start-Sleep -Seconds 5
-
-                      # Ensure NAT network exists after restart
-                      try {
-                        $nets = docker network ls --format "{{.Name}}"
-                        if (-not ($nets -contains 'gomoney-nat')) { docker network create -d nat gomoney-nat | Out-Null }
-                      } catch {}
-
-                      # Remove conflicting container name if any
-                      try {
-                        $existing = docker ps -aq -f "name=$cname"
-                        if ($existing) {
-                          Write-Host "Removing conflicting container(s) before retry: $existing"
-                          docker rm -f $existing | Out-Null
-                        }
-                      } catch {}
-
-                      # Retry run once
-                      docker run -d --name $cname `
-                        -p ${port}:9097 `
-                        -e SF_CMS_URL="$sfCmsUrl" `
-                        -e NODE_ENV=production `
-                        --isolation=hyperv `
-                        --network gomoney-nat `
-                        $extraHostArg `
-                        --restart unless-stopped `
-                        $latest
-
-                      if ($LASTEXITCODE -ne 0) {
-                        Write-Error "docker run retry failed with code $LASTEXITCODE"
-                        exit $LASTEXITCODE
-                      }
+                      Write-Error "docker run failed with code $LASTEXITCODE"
+                      exit $LASTEXITCODE
                     }
 
                     Pop-Location
@@ -264,4 +312,3 @@ stages:
                       Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
                     } catch {}
                   displayName: 'Recycle IIS (optional)'
-
