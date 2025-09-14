@@ -1,6 +1,6 @@
 // import 'bootstrap/dist/css/bootstrap.css';
 import './../index.css';
-import RtlDirection from '../components/RtlDirection';
+import RtlDirection from '../components/customComponents/rtlDirection/rtlDirection';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // let bootstrapScript = '';
@@ -19,3 +19,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

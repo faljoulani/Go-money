@@ -1,18 +1,26 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { DownloadAppEntity } from './downloadApp.entity';
-import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { parseMaybeJson } from '../../../utils/utils';
+import {
+  fetchData,
+  extractSelectionId,
+  extractItemIdsFromSelection,
+} from '../../../utils/sitefinity';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 import MinimizedDownloadApp from './minimizedDownloadApp';
+import { ImgUrl as imgUrl, CmsImage } from '../../../types/type';
 
-type Card = {
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
+
+type ChildCard = {
   Id: string;
   Title?: string;
   Description?: string;
   Image?: any | any[];
 };
 
-type ParentMeta = {
+type ParentCard = {
   Id: string;
   Title?: string;
   Description?: string;
@@ -22,52 +30,40 @@ type ParentMeta = {
   Content?: any;
 };
 
-function idsFrom(selection?: any): string[] {
-  if (!selection) return [];
-  const sel = parseMaybeJson(selection) ?? selection;
-
-  if (Array.isArray(sel?.ItemIdsOrdered) && sel.ItemIdsOrdered.length) {
-    return sel.ItemIdsOrdered.filter(Boolean);
-  }
-  const filterVal = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value as string | undefined;
-  if (typeof filterVal === 'string' && filterVal.trim()) {
-    return filterVal
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }
-  return [];
+export function findImageByTitle(
+  imageList: Array<CmsImage | null | undefined> | undefined,
+  titleQuery: string,
+): CmsImage | undefined {
+  if (!imageList || !titleQuery?.trim()) return undefined;
+  const query = titleQuery.trim().toLowerCase();
+  return imageList.find((img) => (img?.Title ?? '').toLowerCase().includes(query));
 }
 
-const imgUrl = (im: any) => im?.MediaUrl || im?.Url || im?.ThumbnailUrl || '';
+const isApple = (store: string) => /apple store|app store|apple|ios/i.test(store);
+const isGoogle = (store: string) => /play store|google play|google/i.test(store);
+const isHuawei = (store: string) => /huawei|appgallery|app gallery/i.test(store);
 
-function findImageByTitle(images: any[] | undefined, needle: string) {
-  if (!images) return undefined;
-  const n = needle.toLowerCase();
-  return images.find((im) => (im?.Title || '').toLowerCase().includes(n));
-}
+function pickStoreBadges(storeCards: ChildCard[]) {
+  const badges: { apple?: any; google?: any; huawei?: any } = {};
 
-const isApple = (t: string) => /apple store|app store|apple|ios/i.test(t);
-const isGoogle = (t: string) => /play store|google play|google/i.test(t);
-const isHuawei = (t: string) => /huawei|appgallery|app gallery/i.test(t);
+  for (const card of storeCards) {
+    const title = (card.Title || '').toLowerCase();
+    const primaryImage = Array.isArray(card.Image) ? card.Image[0] : card.Image;
+    if (!primaryImage) continue;
 
-function pickStoreBadges(cards: Card[]) {
-  const out: { apple?: any; google?: any; huawei?: any } = {};
-  for (const c of cards) {
-    const t = (c.Title || '').toLowerCase();
-    const firstImg = Array.isArray(c.Image) ? c.Image[0] : c.Image;
-    if (!firstImg) continue;
-    if (!out.apple && isApple(t)) out.apple = firstImg;
-    else if (!out.google && isGoogle(t)) out.google = firstImg;
-    else if (!out.huawei && isHuawei(t)) out.huawei = firstImg;
+    if (!badges.apple && isApple(title)) badges.apple = primaryImage;
+    else if (!badges.google && isGoogle(title)) badges.google = primaryImage;
+    else if (!badges.huawei && isHuawei(title)) badges.huawei = primaryImage;
   }
-  return out;
+
+  return badges;
 }
 
-function getNonStoreCards(cards: Card[]): Card[] {
-  return cards.filter((c) => {
-    const t = (c.Title || '').toLowerCase();
-    return !(isApple(t) || isGoogle(t) || isHuawei(t));
+function getNonStoreCards(allChildCards: ChildCard[]): ChildCard[] {
+  return allChildCards.filter((card) => {
+    const titleLower = (card.Title ?? '').toLowerCase();
+    const isStoreBadge = isApple(titleLower) || isGoogle(titleLower) || isHuawei(titleLower);
+    return !isStoreBadge;
   });
 }
 
@@ -96,30 +92,27 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  const properties = (props.model?.Properties || {}) as any;
-  const cardsSel = parseMaybeJson(properties?.Cards) ?? properties?.Cards;
-  const listSel = parseMaybeJson(properties?.CardListData) ?? properties?.CardListData;
+  const selection = (props.model?.Properties || {}) as any;
+  const cardsSelection = resolveSitefinitySelection(selection?.Cards) ?? selection?.Cards;
+  const listSelection =
+    resolveSitefinitySelection(selection?.CardListData) ?? selection?.CardListData;
 
-  const parentId = extractSelectionId(listSel);
-  if (!parentId) {
+  const parentCardId = extractSelectionId(listSelection);
+
+  if (!parentCardId) {
     return isEdit ? (
       <section
         {...attrs}
-        className="relative mx-auto h-[486px] w-[1240px] overflow-hidden rounded-3xl"
-        style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
+        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
       >
-        <div className="relative z-10 flex h-full w-full items-center justify-center p-10">
-          <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
-            <strong>Smart Features</strong>
-            <div className="mt-1">Open the designer and select a Card List.</div>
-          </div>
-        </div>
+        <strong>Download App Design</strong>
+        <div className="mt-1">Open the designer and select the desired design.</div>
       </section>
     ) : null;
   }
 
-  const parentFetched = await fetchData(
-    [parentId],
+  const parentCardPayload = await fetchData(
+    [parentCardId],
     null,
     culture,
     [
@@ -132,20 +125,21 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
       'Content',
     ],
     {
-      itemType: listSel?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
+      itemType:
+        listSelection?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Cards',
       single: true,
     },
   );
-  const parent = parentFetched as ParentMeta | null;
+  const parentCard = parentCardPayload as ParentCard | null;
 
   const cardIds: string[] =
-    Array.isArray(parent?.ItemIdsOrdered) && parent!.ItemIdsOrdered.length
-      ? parent!.ItemIdsOrdered
-      : idsFrom(cardsSel);
+    Array.isArray(parentCard?.ItemIdsOrdered) && parentCard!.ItemIdsOrdered.length
+      ? parentCard!.ItemIdsOrdered
+      : extractItemIdsFromSelection(cardsSelection);
 
-  let cardsList: Card[] = [];
+  let cardsList: ChildCard[] = [];
   if (cardIds.length) {
-    const cards = (await fetchData(
+    const childCardsPayload = (await fetchData(
       cardIds,
       null,
       culture,
@@ -157,25 +151,27 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
       ],
       {
         itemType:
-          cardsSel?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
+          cardsSelection?.Content?.[0]?.Type || 'Telerik.Sitefinity.DynamicTypes.Model.Cards.Card',
         single: false,
       },
-    )) as Card[] | Card | null;
+    )) as ChildCard[] | ChildCard | null;
 
-    cardsList = Array.isArray(cards) ? cards : cards ? [cards] : [];
+    cardsList = Array.isArray(childCardsPayload)
+      ? childCardsPayload
+      : childCardsPayload
+        ? [childCardsPayload]
+        : [];
     const order = new Map(cardIds.map((id, i) => [id, i]));
     cardsList.sort((a, b) => (order.get(a.Id) ?? 0) - (order.get(b.Id) ?? 0));
   }
 
-  const hasContent = !!parent;
+  const title = parentCard?.Title || 'Download Go Money App Today';
+  const description = parentCard?.Description || parentCard?.SubTitle || '';
 
-  const heading = parent?.Title || 'Download Go Money App Today';
-  const description = parent?.Description || parent?.SubTitle || '';
-
-  const parentImages = Array.isArray(parent?.Image)
-    ? parent!.Image
-    : parent?.Image
-      ? [parent.Image]
+  const parentImages = Array.isArray(parentCard?.Image)
+    ? parentCard!.Image
+    : parentCard?.Image
+      ? [parentCard.Image]
       : [];
   const mobileImg = findImageByTitle(parentImages, 'mobile') || parentImages[0];
   const mobileUrl = mobileImg ? imgUrl(mobileImg) : '';
@@ -192,96 +188,91 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
       <div className="relative z-10 flex h-full w-full items-center justify-between gap-[30px]">
-        {!hasContent ? (
-          isEdit ? (
-            <div className="w-full p-6 border border-dashed rounded-2xl text-center text-slate-600">
-              <strong>Smart Features</strong>
-              <div className="mt-1">Open the designer and select a Card List.</div>
-            </div>
-          ) : (
-            <div className="sr-only" aria-hidden />
-          )
-        ) : (
-          <>
-            {/* CHILD 1: ONLY IMAGE (phone) */}
-            <div className="flex h-full w-1/2 items-center justify-center overflow-hidden">
-              {mobileUrl && (
-                <Image
-                  src={mobileUrl}
-                  alt={mobileImg?.AlternativeText || 'Mobile'}
-                  width={289}
-                  height={525}
-                  priority
-                  className="pointer-events-none select-none object-contain animate-float absolute -top-2 h-[528px] w-[507px]"
-                  
-                />
-              )}
-            </div>
+        {/* CHILD 1: ONLY IMAGE (phone) */}
+        <div className="flex h-full w-1/2 items-center justify-center overflow-hidden">
+          {mobileUrl && (
+            <Image
+              src={mobileUrl}
+              alt={mobileImg?.AlternativeText || 'Mobile'}
+              width={289}
+              height={525}
+              priority
+              className="pointer-events-none select-none object-contain animate-float absolute -top-2"
+              style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
+            />
+          )}
+        </div>
 
-            {/* CHILD 2: Title + Description + Info row + Store badges row */}
-            <div className="flex h-full w-1/2 items-center mr-16 my-16">
-              <div className="w-full max-w-[560px] text-[#010663]">
-                <h2 className="text-[48px] font-[700] leading-[1] tracking-[-0.02em]">{heading}</h2>
-
-                {description && (
-                  <div
-                    className="mt-4 text-base leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: description }}
-                  />
-                )}
-
-                {/* One-line info cards (non-store) */}
-                {infoCards.length > 0 && (
-                  <div className="mt-6 grid grid-cols-2 gap-8">
-                    {infoCards.map((card) => {
-                      const icon = Array.isArray(card.Image) ? card.Image[0] : card.Image;
-                      return (
-                        <div key={card.Id} className="flex items-center gap-4">
-                          <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
-                            {icon && (
-                              <Image
-                                src={imgUrl(icon)}
-                                alt={icon?.AlternativeText || card.Title || 'icon'}
-                                width={48}
-                                height={48}
-                                className="object-contain"
-                              />
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-lg font-semibold">{card.Title}</div>
-                            {card.Description && (
-                              <div
-                                className="text-sm text-[#0a1b2e]/80"
-                                dangerouslySetInnerHTML={{ __html: card.Description }}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Store badges (images only) — Apple → Google → Huawei */}
-                {orderedBadges.length > 0 && (
-                  <div className="mt-6 flex items-center gap-3 mr-16">
-                    {orderedBadges.map((im, idx) => (
-                      <Image
-                        key={idx}
-                        src={imgUrl(im)}
-                        alt={im?.AlternativeText || im?.Title || 'store badge'}
-                        width={173}
-                        height={52}
-                        priority
-                      />
-                    ))}
-                  </div>
-                )}
+        {/* CHILD 2: Title + Description + Info row + Store badges row */}
+        <div className="flex h-full w-1/2 items-center mr-16 my-16">
+          <div className="w-full max-w-[560px] text-[#010663]">
+            <Title
+              as="h2"
+              align="left"
+              variant="hero"
+              fontSize="48px"
+              fontWeight={700}
+              lineHeight="100%"
+              letterSpacing="-0.02em"
+            >
+              {title}
+            </Title>
+            {description && (
+              <Description
+                align="left"
+                html={description} // raw HTML from Sitefinity
+                className="mt-4 text-base leading-relaxed"
+              />
+            )}
+            {/* One-line info cards (non-store) */}
+            {infoCards.length > 0 && (
+              <div className="mt-6 grid grid-cols-2 gap-8">
+                {infoCards.map((card) => {
+                  const icon = Array.isArray(card.Image) ? card.Image[0] : card.Image;
+                  return (
+                    <div key={card.Id} className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                        {icon && (
+                          <Image
+                            src={imgUrl(icon)}
+                            alt={icon?.AlternativeText || card.Title || 'icon'}
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                          />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-lg font-semibold">{card.Title}</div>
+                        {card.Description && (
+                          <div
+                            className="text-sm text-[#0a1b2e]/80"
+                            dangerouslySetInnerHTML={{ __html: card.Description }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
-          </>
-        )}
+            )}
+            {/* Store badges (images only) — Apple → Google → Huawei */}
+            {orderedBadges.length > 0 && (
+              <div className="mt-6 flex items-center gap-3 mr-16">
+                {orderedBadges.map((im, idx) => (
+                  <Image
+                    key={idx}
+                    src={imgUrl(im)}
+                    alt={im?.AlternativeText || im?.Title || 'store badge'}
+                    width={173}
+                    height={52}
+                    priority
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="absolute -bottom-8 h-8 w-full defaultBgColor z-30"></div>
     </section>

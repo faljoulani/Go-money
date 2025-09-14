@@ -2,8 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
-
-import BreadCrumbCustomView from '../breadcrumb/breadcrumbCustom';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
@@ -19,14 +18,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     console.log('[Hero] Rendering view:', selectedView);
   } catch {}
 
-  let selection = props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero;
-  if (typeof selection === 'string') {
-    try {
-      selection = JSON.parse(selection);
-    } catch {
-      selection = undefined;
-    }
-  }
+  let selection = resolveSitefinitySelection(
+    props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero,
+  );
 
   let item: any;
   if (selection?.Content?.length) {
@@ -65,7 +59,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return null;
   }
 
-  // Helpers
   const firstOrSelf = (field: any) => (Array.isArray(field) ? field[0] : field);
   const parseLink = (linkField: any): string | undefined => {
     if (!linkField) return;
@@ -151,7 +144,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       >
         <div className=" max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
-              <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
+            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
             {/* <div className="mb-6">
               <BreadcrumbCustomView
                 requestContext={props.requestContext}
@@ -194,7 +187,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       />
 
       <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
-        <div className='mb-24'>
+        <div className="mb-24">
           {eyebrow && (
             <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
               {eyebrow}
