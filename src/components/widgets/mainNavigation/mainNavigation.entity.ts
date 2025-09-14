@@ -30,3 +30,4 @@ export class MainNavigationEntity {
   ])
   ViewName?: string;
 }
+

@@ -1,6 +1,6 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { MainNavigationEntity } from './MainNavigation.entity';
-import MainNavigationClientShell from './MainNavigationClientShell';
+import type { MainNavigationEntity } from './mainNavigation.entity';
+import MainNavigationClientShell from './mainNavigationClientShell';
 
 import { resolveSitefinitySelection, resolveAbsoluteUrl, sortByOrder } from '../../../utils/utils';
 import {

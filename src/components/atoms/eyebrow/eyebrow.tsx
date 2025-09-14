@@ -16,7 +16,7 @@ export default function Eyebrow({
   className,
   align = 'center',
   color = 'var(--Text-text-primary, #010663)',
-  fontSize = '18px',
+  fontSize = 'text-lg',
   fontWeight = 400,
   lineHeight = '100%',
 }: Props) {
