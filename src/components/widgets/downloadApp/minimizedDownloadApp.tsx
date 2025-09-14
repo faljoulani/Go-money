@@ -20,9 +20,6 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
 
   const isEdit = props.requestContext.isEdit;
   const id = extractSelectionId(selection);
-  console.log('ID OF PARENT ========== >>>>>>>>>>>>> ' + JSON.stringify(id));
-
-  console.log('selection ========== >>>>>>>>>>>>> ' + JSON.stringify(selection));
 
   if (!id) {
     return isEdit ? (
@@ -36,7 +33,7 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
     ) : null;
   }
 
-  const parentFetched = await fetchData(
+  const parentPayload = await fetchData(
     [id],
     null,
     culture,
@@ -55,21 +52,11 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
       single: true,
     },
   );
-  const parent = parentFetched as MinimizedDownloadNow;
+  const parentData = parentPayload as MinimizedDownloadNow;
 
-  const eyebrow = parent?.Eyebrow ?? '';
-  const title = parent?.Title ?? 'Cards';
-  const subtitle = parent?.Description ?? parent?.SubTitle ?? '';
-  const ctaText = parent?.CtaText ?? '';
-  const ctaUrlRaw = parent?.CtaUrl;
-  const ctaHref =
-    typeof ctaUrlRaw === 'string'
-      ? ctaUrlRaw
-      : Array.isArray(ctaUrlRaw)
-        ? (ctaUrlRaw.find((x) => x?.Href)?.Href ?? '')
-        : (ctaUrlRaw?.Href ?? '');
-
-  const parentImage = Array.isArray(parent?.Image) ? parent.Image[0] : parent?.Image;
+  const title = parentData?.Title ?? 'Cards';
+  const subtitle = parentData?.Description ?? parentData?.SubTitle ?? '';
+  const parentImage = Array.isArray(parentData?.Image) ? parentData.Image[0] : parentData?.Image;
 
   const parentImgUrl =
     parentImage?.Url ||
@@ -87,11 +74,9 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
     return [];
   })();
 
-  console.log('DATA OF PARENT =========== >>>>>>>>>>>> ' + JSON.stringify(parent));
-
   let cardItems: any[] = [];
   if (selectedIds.length > 0) {
-    const fetched = await fetchData(
+    const childPayload = await fetchData(
       selectedIds,
       null,
       culture,
@@ -109,10 +94,10 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
         single: false,
       },
     );
-    cardItems = Array.isArray(fetched) ? fetched : fetched ? [fetched] : [];
+    cardItems = Array.isArray(childPayload) ? childPayload : childPayload ? [childPayload] : [];
   }
 
-  const items = cardItems.map((c: any) => {
+  const childCardsData = cardItems.map((c: any) => {
     const itemHrefRaw = c?.CtaUrl;
     const itemHref =
       typeof itemHrefRaw === 'string'
@@ -121,14 +106,14 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
           ? (itemHrefRaw.find((x) => x?.Href)?.Href ?? '')
           : (itemHrefRaw?.Href ?? c?.LinkUrl ?? undefined);
 
-    const img = Array.isArray(c?.Image) ? c.Image[0] : c?.Image;
+    const image = Array.isArray(c?.Image) ? c.Image[0] : c?.Image;
     const icon = Array.isArray(c?.Icon) ? c.Icon[0] : c?.Icon;
     const iconUrl =
-      img?.Url ||
-      img?.MediaUrl ||
-      img?.ThumbnailUrl ||
-      img?.Urls?.[0] ||
-      img?.EmbedUrl ||
+      image?.Url ||
+      image?.MediaUrl ||
+      image?.ThumbnailUrl ||
+      image?.Urls?.[0] ||
+      image?.EmbedUrl ||
       icon?.Url ||
       icon?.MediaUrl ||
       undefined;
@@ -177,13 +162,13 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
             </div>
             {/* round store logos */}
 
-            {items.length > 0 && (
+            {childCardsData.length > 0 && (
               <div className="relative my-16 flex items-center">
-                {items.slice(0, 3).map((item: any, i: number) => (
-                  <a key={i} href={item.href} rel="" className="flex flex-col items-center">
+                {childCardsData.slice(0, 3).map((item: any, index: number) => (
+                  <a key={index} href={item.href} rel="" className="flex flex-col items-center">
                     {item.iconUrl && (
                       <div
-                        className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] ${i === 0 ? 'absolute right-22.5 top-0 z-30' : `${i === 1 ? 'absolute right-11 top-0' : ''}`}`}
+                        className={`flex items-center justify-center h-14 w-14 rounded-full bg-black border-2 border-[#6BE5BF] ${index === 0 ? 'absolute right-22.5 top-0 z-30' : `${index === 1 ? 'absolute right-11 top-0' : ''}`}`}
                       >
                         <img
                           src={item.iconUrl}

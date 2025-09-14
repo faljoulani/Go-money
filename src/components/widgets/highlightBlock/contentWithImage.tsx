@@ -6,6 +6,8 @@ import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
 import { fetchData } from '../../../utils/sitefinity';
+import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
+import { CmsImage } from '../../../types/type';
 
 type ContentWithImageItem = {
   Id: string;
@@ -17,40 +19,6 @@ type ContentWithImageItem = {
   Image?: any;
 };
 
-type CmsImage =
-  | {
-      Id?: string;
-      Url?: string;
-      MediaUrl?: string;
-      ThumbnailUrl?: string;
-      EmbedUrl?: string;
-      Title?: string;
-      AlternativeText?: string;
-    }
-  | null
-  | undefined;
-
-function parseSelection(raw: unknown) {
-  if (!raw) return undefined;
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return undefined;
-    }
-  }
-  return raw as any;
-}
-
-function firstIdFromSelection(sel: any) {
-  if (!sel) return undefined;
-  if (sel.Id) return sel.Id;
-  const ids = sel?.CardListData?.ItemIdsOrdered ?? sel?.ItemIdsOrdered;
-  if (Array.isArray(ids) && ids.length) return ids[0];
-  const maybeContentId = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value?.split(',')?.[0];
-  return maybeContentId || undefined;
-}
-
 function imageUrl(img: CmsImage): string | undefined {
   if (!img) return undefined;
   return img.MediaUrl || img.Url || img.ThumbnailUrl || img.EmbedUrl;
@@ -59,7 +27,7 @@ function imageUrl(img: CmsImage): string | undefined {
 export default async function ContentWithImage(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
 
-  const selection = parseSelection((props.model?.Properties as any)?.ExpandBox);
+  const selection = resolveSitefinitySelection((props.model?.Properties as any)?.ExpandBox);
 
   const id = firstIdFromSelection(selection);
 
@@ -84,14 +52,14 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
     'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText)',
   ];
 
-  const raw = await fetchData([id], null, culture, fields, {
+  const payload = await fetchData([id], null, culture, fields, {
     itemType: selection.Content?.[0]?.Type,
     single: true,
   });
 
-  const item = (Array.isArray(raw) ? raw[0] : raw) as ContentWithImageItem | null;
+  const data = (Array.isArray(payload) ? payload[0] : payload) as ContentWithImageItem | null;
 
-  if (!item)
+  if (!data)
     return isEdit ? (
       <section className="p-6 border border-dashed rounded-2xl text-center text-slate-500">
         No item found.
@@ -100,11 +68,11 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
       <div />
     );
 
-  const eyebrow: string | undefined = item.Eyebrow;
-  const title: string | undefined = item.Title;
-  const description: string | undefined = item.Description;
+  const eyebrow: string | undefined = data.Eyebrow;
+  const title: string | undefined = data.Title;
+  const description: string | undefined = data.Description;
 
-  const img = Array.isArray(item.Image) ? item.Image[0] : item.Image;
+  const img = Array.isArray(data.Image) ? data.Image[0] : data.Image;
   const imgSrc: string | undefined = imageUrl(img);
   const imgAlt: string = img?.AlternativeText || title || 'illustration';
 

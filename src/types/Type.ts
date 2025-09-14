@@ -10,6 +10,20 @@ export type CmsImage = {
   Provider?: string;
 };
 
+export const ImgUrl = (image?: CmsImage) =>
+  image?.MediaUrl || image?.Url || image?.ThumbnailUrl || undefined;
+
+export type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
+
+export type CmsPage = {
+  Id: string;
+  Title: string;
+  UrlName?: string;
+  ViewUrl?: string;
+  RelativeUrlPath?: string;
+  HasChildren?: boolean;
+};
+
 export interface ApiNavLink {
   title: string;
   url: string;

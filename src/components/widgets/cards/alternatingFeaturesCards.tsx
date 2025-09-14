@@ -1,6 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import { ImgUrl } from '../../../types/type';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -89,21 +90,8 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
     items = (Array.isArray(fetched) ? fetched : fetched ? [fetched] : []) as CardItem[];
   }
 
-  const getImgUrl = (card: CardItem) => {
-    const img = (Array.isArray(card?.Image) && card.Image[0]) || card?.Image;
-
-    return (
-      img?.Url ||
-      img?.MediaUrl ||
-      img?.ThumbnailUrl ||
-      (Array.isArray(img?.Urls) && img.Urls[0]) ||
-      ''
-    );
-  };
-
   return (
     <section {...attributes} className="w-full bg-white">
-      {/* overall container: max-width 1240px */}
       <div className="mx-auto max-w-[1240px] px-6">
         {/* rows */}
         <div className="space-y-10">
@@ -113,7 +101,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
               ? 'grid-cols-[minmax(0,1fr)_460px]'
               : 'grid-cols-[460px_minmax(0,1fr)]';
 
-            const imgUrl = getImgUrl(card);
+            const imgUrl = ImgUrl(card);
             const href = (card?.LinkUrl || '').trim();
 
             return (

@@ -2,11 +2,8 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
-import Card from '../../atoms/card/card';
-import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
-import CTA from '../../atoms/cta/cta';
 
 interface Leadership {
   Id: string;
@@ -26,9 +23,6 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
 
   const isEdit = props.requestContext.isEdit;
   const id = extractSelectionId(selection);
-  console.log('ID OF PARENT ========== >>>>>>>>>>>>> ' + JSON.stringify(id));
-
-  console.log('selection ========== >>>>>>>>>>>>> ' + JSON.stringify(selection));
 
   if (!id) {
     return isEdit ? (
@@ -82,8 +76,6 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
     if (Array.isArray((raw as any)?.ItemIdsOrdered)) return (raw as any).ItemIdsOrdered as string[];
     return [];
   })();
-
-  console.log('DATA OF PARENT =========== >>>>>>>>>>>> ' + JSON.stringify(parent));
 
   let cardItems: any[] = [];
   if (selectedIds.length > 0) {
@@ -189,8 +181,6 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
           </div>
         </div>
       </div>
-
-      
     </section>
   );
 }

@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { ContactBoxEntity } from './contactBox.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { parseMaybeJson } from '../../../utils/utils';
+import { parseSelection } from '../../../utils/utils';
 import React from 'react';
 import ContactBoxInfo from './contactBoxInfo';
 
@@ -47,7 +47,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
   // Read selection from designer
   const properties = (props.model?.Properties || {}) as any;
-  const sel = parseMaybeJson(properties?.ContactBox) ?? properties?.ContactBox;
+  const sel = parseSelection(properties?.ContactBox) ?? properties?.ContactBox;
   const selectedId = extractSelectionId(sel);
 
   if (!selectedId) {

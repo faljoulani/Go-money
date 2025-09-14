@@ -1,6 +1,8 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import type { HighlightBlockEntity } from './highlightBlock.entity';
+import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
+import { fetchData } from '../../../utils/sitefinity';
+import { CmsImage } from '../../../types/type';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -8,52 +10,6 @@ import Description from '../../atoms/description/description';
 import ContentWithImage from './contentWithImage';
 import ContentWithoutImage from './ContentWithoutImage';
 import CTA from '../../atoms/cta/cta';
-
-type CmsLink = { Href?: string; OpenInNewTab?: boolean } | string | null | undefined;
-type CmsImage =
-  | {
-      Id?: string;
-      Url?: string;
-      MediaUrl?: string;
-      ThumbnailUrl?: string;
-      EmbedUrl?: string;
-      Title?: string;
-      AlternativeText?: string;
-    }
-  | null
-  | undefined;
-
-function parseSelection(raw: unknown) {
-  if (!raw) return undefined;
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return undefined;
-    }
-  }
-  return raw as any;
-}
-
-function firstIdFromSelection(sel: any) {
-  if (!sel) return undefined;
-  if (sel.Id) return sel.Id;
-  const ids = sel?.CardListData?.ItemIdsOrdered ?? sel?.ItemIdsOrdered;
-  if (Array.isArray(ids) && ids.length) return ids[0];
-  const maybeContentId = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value?.split(',')?.[0];
-  return maybeContentId || undefined;
-}
-
-function linkToHref(link: CmsLink): string | undefined {
-  if (!link) return undefined;
-  if (typeof link === 'string') return link;
-  const anyLink = link as any;
-  if (Array.isArray(anyLink)) {
-    const first = anyLink[0];
-    return typeof first === 'string' ? first : first?.Href;
-  }
-  return anyLink.Href;
-}
 
 function imageUrl(img: CmsImage): string | undefined {
   if (!img) return undefined;
@@ -97,44 +53,46 @@ export default async function HighlightBlock(props: WidgetContext<HighlightBlock
 async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
 
-  const selection = parseSelection(
+  const selection = resolveSitefinitySelection(
     props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox,
   );
   const id = firstIdFromSelection(selection);
 
   if (!id) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
-  const item = await RestClient.getItem({
-    type: 'Telerik.Sitefinity.DynamicTypes.Model.ExpandBox.ExpandBox',
-    id,
-    culture,
-    fields: [
-      'Id',
-      'Title',
-      'Eyebrow',
-      'Description',
-      'CtaText',
-      'CtaUrl',
-      'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText)',
-    ],
+  const fields = [
+    'Id',
+    'Title',
+    'Eyebrow',
+    'Description',
+    'CtaText',
+    'CtaUrl',
+    'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText)',
+  ];
+
+  const payload = await fetchData(id ? [id] : [], props.model?.Properties, culture, fields, {
+    itemType: selection.Content?.[0]?.Type,
+    single: true,
   });
 
-  if (!item) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
+  const data = Array.isArray(payload) ? payload?.[0] : payload;
+
+  if (!data) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('[ExpandBoxDefault] itemId=%s', item.Id);
+    console.log('[ExpandBoxDefault] itemId=%s', data.Id);
   }
 
-  const eyebrow: string | undefined = item.Eyebrow;
-  const title: string | undefined = item.Title;
-  const description: string | undefined = item.Description;
-  const ctaText: string | undefined = item.CtaText || 'More details';
-  const ctaHref: string | undefined = linkToHref(item.CtaUrl);
+  const eyebrow: string | undefined = data.Eyebrow;
+  const title: string | undefined = data.Title;
+  const description: string | undefined = data.Description;
+  const ctaText: string | undefined = data.CtaText || 'More details';
+  const ctaHref: string | undefined = linkToHref(data.CtaUrl);
   const imgSrc: string | undefined = imageUrl(
-    Array.isArray(item.Image) ? item.Image[0] : item.Image,
+    Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );
   const imgAlt: string =
-    (Array.isArray(item.Image) ? item.Image?.[0]?.AlternativeText : item.Image?.AlternativeText) ||
+    (Array.isArray(data.Image) ? data.Image?.[0]?.AlternativeText : data.Image?.AlternativeText) ||
     title ||
     'illustration';
 
