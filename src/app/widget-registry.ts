@@ -8,7 +8,7 @@ import Hero from '../components/widgets/hero/hero';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
-import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
+import { MainNavigationEntity } from '../components/widgets/mainNavigation/mainNavigation.entity';
 
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
@@ -40,7 +40,7 @@ import BreadcrumbCustomView from '../components/widgets/breadcrumb/BreadcrumbCus
 import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
-import SupportInfoBox from '../components/widgets/supportInfoBox/supportInfoBox';
+import SupportInfoBox from '../components/widgets/SupportInfoBox/supportInfoBox';
 import { SupportInfoBoxEntity } from '../components/widgets/supportInfoBox/supportInfoBox.entity';
 
 import ContactForm from '../components/widgets/contactForm/contactForm';
