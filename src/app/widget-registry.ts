@@ -35,13 +35,13 @@ import { BoardReportEntity } from '../components/widgets/boardReport/boardReport
 import ContactBox from '../components/widgets/gotQuestions/contactBox';
 import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.entity';
 
-import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustom';
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/BreadcrumbCustom';
 
 import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
-import SupportInfoBox from '../components/widgets/supportInfoBox/supportInfoBox';
-import { SupportInfoBoxEntity } from '../components/widgets/supportInfoBox/supportInfoBox.entity';
+import SupportInfoBox from '../components/widgets/SupportInfoBox/supportInfoBox';
+import { SupportInfoBoxEntity } from '../components/widgets/SupportInfoBox/supportInfoBox.entity';
 
 import ContactForm from '../components/widgets/contactForm/contactForm';
 
