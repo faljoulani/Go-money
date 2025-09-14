@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 # keep optional deps on (silences the warn and ensures optional deps flow)
 ENV npm_config_optional=true
 # oxide/lightningcss helpers can run; we also add prebuilts explicitly
