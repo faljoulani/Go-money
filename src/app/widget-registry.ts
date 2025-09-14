@@ -17,8 +17,8 @@ import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 
-import Footer from '../components/widgets/footer/footerTemplate';
-import { FooterEntity } from '../components/widgets/footer/footer.entity';
+import Footer from '../components/widgets/footer/FooterTemplate';
+import { FooterEntity } from '../components/widgets/footer/Footer.entity';
 
 import FinanceRepaymentBanner from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner';
 import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner.entity';
