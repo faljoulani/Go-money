@@ -248,6 +248,47 @@ stages:
                       }
                     }
 
+                    # OS-level port usage diagnostics (before docker run)
+                    Write-Host "Checking host port $port usage at OS level..."
+                    try {
+                      $listeners = Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue
+                    } catch { $listeners = $null }
+
+                    if ($listeners) {
+                      Write-Warning "Port $port has OS listeners. Listing owning processes:"
+                      $pids = $listeners | Select-Object -Expand OwningProcess -Unique
+                      foreach($pid in $pids){
+                        try {
+                          $proc = Get-Process -Id $pid -ErrorAction Stop
+                          Write-Host ("  PID={0} Name={1} Path={2}" -f $proc.Id,$proc.ProcessName,($proc.Path -join ''))
+                        } catch {
+                          Write-Host ("  PID={0} (details unavailable)" -f $pid)
+                        }
+                      }
+                    } else {
+                      Write-Host "No Get-NetTCPConnection listener found on port $port. Checking netstat/HTTP.SYS/portproxy..."
+                      try {
+                        Write-Host "netstat -abno (filtered):"
+                        (netstat -abno -p tcp | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "HTTP.SYS servicestate (filtered):"
+                        (netsh http show servicestate | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "HTTP.SYS URLACL (filtered):"
+                        (netsh http show urlacl | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "Portproxy v4tov4 (filtered):"
+                        (netsh interface portproxy show v4tov4 | Select-String ":$port") | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                      try {
+                        Write-Host "Excluded TCP ranges (contains $port ?):"
+                        netsh interface ipv4 show excludedportrange protocol=tcp | ForEach-Object { '  ' + $_ }
+                      } catch {}
+                    }
+
                     # Run container; inject env directly
                     docker run -d --name $cname `
                       -p ${port}:9097 `
