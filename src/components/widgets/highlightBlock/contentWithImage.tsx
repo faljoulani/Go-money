@@ -7,7 +7,7 @@ import Description from '../../atoms/description/description';
 
 import { fetchData } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
-import { CmsImage } from '../../../types/type';
+import { CmsImage } from '../../../types/Type';
 
 type ContentWithImageItem = {
   Id: string;

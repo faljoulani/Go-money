@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import ClientNavbar from './mainNavigationClient';
 import { resolveAbsoluteUrl } from '../../../utils/utils';
 import { pickOneMedia } from '../../../utils/sitefinity';
-import type { ApiNavItem as ClientNavItem } from '../../../types/type';
+import type { ApiNavItem as ClientNavItem } from '../../../types/Type';
 import LanguageSwitcher from '../../customComponents/languageSwitcher/languageSwitcher';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 

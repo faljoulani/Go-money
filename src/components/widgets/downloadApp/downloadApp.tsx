@@ -8,7 +8,7 @@ import {
 } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 import MinimizedDownloadApp from './minimizedDownloadApp';
-import { ImgUrl as imgUrl, CmsImage } from '../../../types/type';
+import { ImgUrl as imgUrl, CmsImage } from '../../../types/Type';
 
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';

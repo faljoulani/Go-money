@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData } from '../../../utils/sitefinity';
-import { CmsImage } from '../../../types/type';
+import { CmsImage } from '../../../types/Type';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import { resolveAbsoluteUrl } from '../../../utils/utils';

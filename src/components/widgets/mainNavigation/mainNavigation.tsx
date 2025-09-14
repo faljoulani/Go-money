@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { MainNavigationEntity } from './mainNavigation.entity';
+import type { MainNavigationEntity } from './MainNavigation.entity';
 import MainNavigationClientShell from './mainNavigationClientShell';
 
 import { resolveSitefinitySelection, resolveAbsoluteUrl, sortByOrder } from '../../../utils/utils';
@@ -14,7 +14,7 @@ import type {
   ApiNavItem as ClientNavItem,
   ApiNavLink as ClientNavLink,
   CmsLink,
-} from '../../../types/type';
+} from '../../../types/Type';
 
 type NavSubLink = {
   Id?: string;

@@ -4,7 +4,7 @@ import { fetchData } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
 import Description from '../../atoms/description/description';
 import Title from '../../atoms/title/title';
-import { CmsImage, ImgUrl as imgUrl } from '../../../types/type';
+import { CmsImage, ImgUrl as imgUrl } from '../../../types/Type';
 
 import Link from 'next/link';
 import Image from 'next/image';
