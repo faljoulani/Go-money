@@ -15,6 +15,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
+import FadeUp from './fadeUp';
 
 interface ExpandBoxItem {
   Id: string;

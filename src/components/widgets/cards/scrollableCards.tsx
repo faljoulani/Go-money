@@ -127,7 +127,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
     <section {...attributes} className="w-full bg-white my-16">
       <div className="mx-auto max-w-7xl px-8">
         {/* Heading */}
-        <div className="text-center">
+        <div className="text-center fadeup">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title variant="hero" className="mb-1 mt-3 h-[59px]">
             {title}
@@ -145,7 +145,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                 : '[grid-template-columns:330px_minmax(0,1fr)]';
 
               return (
-                <div key={card.id ?? i} className={`grid items-center ${rowTemplate}`}>
+                <div key={card.id ?? i} className={`grid items-center ${rowTemplate} fadeupSlow`}>
                   {/* Image side */}
                   <div
                     className={isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'}

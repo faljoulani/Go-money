@@ -274,7 +274,7 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
           </div>
         </div>
       </div>
-      <div className="absolute -bottom-8 h-8 w-full defaultBgColor"></div>
+      <div className="absolute -bottom-8 h-8 w-full defaultBgColor z-30"></div>
     </section>
   );
 }

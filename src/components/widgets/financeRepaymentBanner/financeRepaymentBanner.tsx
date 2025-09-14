@@ -167,7 +167,7 @@ export default async function FinanceRepaymentBanner(
               width={630}
               height={900}
               priority
-              className="pointer-events-none select-none"
+              className="pointer-events-none select-none animate-float"
               style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
             />
           </div>

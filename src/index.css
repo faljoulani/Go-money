@@ -28,37 +28,112 @@ body {
       transform: translateY(-15px);
     }
     100% {
-      transform: translateY(-15px);
+      transform: translateY(15px);
     }
   }
   .animate-float {
-    animation: float 1.5s ease-in-out infinite alternate;
+    animation: float 2s ease-in-out infinite alternate;
   }
 }
 
-/* --- RTL/LTR helpers ---
-   These react to html.ltr / html.rtl classes set by RtlDirection.
-   Prefer logical properties (margin-inline, padding-inline, text-align) so
-   most components remain neutral. Only add overrides where necessary. */
+@keyframes fadeup {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-html.ltr {
-  direction: ltr;
-}
-html.rtl {
-  direction: rtl;
+.fadeup {
+  animation: fadeup 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
 }
 
-/* Example helpers you can apply selectively in components */
-.text-start-logical {
-  text-align: start;
+@keyframes fadeRight {
+  from {
+    
+    transform: translate(200px);
+  }
+  to {
+    transform: translate(0);
+  }
 }
-.text-end-logical {
-  text-align: end;
+
+.fadeRight {
+  animation: fadeRight 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
 }
-.ms-4-logical {
-  margin-inline-start: 1rem;
+
+@keyframes fadeLeft {
+  from {
+    opacity: 0;
+    transform: translate(-200px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
 }
-.me-4-logical {
-  margin-inline-end: 1rem;
+
+.fadeLeft {
+  animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
+}
+
+@keyframes scaleC {
+  from {
+    opacity: 0;
+    scale: 0.1;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.scaleC {
+  animation: scaleC 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 10% cover 100vh;
+}
+
+@keyframes fadeupSlow {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupSlow {
+  animation: fadeupSlow 2s cubic-bezier(0.1, 0.1, 0.1, 0.1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100%;
+}
+
+@keyframes fadeupCustom {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupCustom {
+  animation: fadeupCustom 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 10vh;
 }
 
