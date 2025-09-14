@@ -50,7 +50,7 @@ stages:
               copy  /Y       "$(Build.SourcesDirectory)\package-lock.json"  "$(Build.ArtifactStagingDirectory)\drop\"
               copy  /Y       "$(Build.SourcesDirectory)\next.config.js"     "$(Build.ArtifactStagingDirectory)\drop\"
               rem Use the Windows 10 container Dockerfile
-              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile.win10"   "$(Build.ArtifactStagingDirectory)\drop\Dockerfile.win10"
+              copy  /Y       "$(Build.SourcesDirectory)\Dockerfile"   "$(Build.ArtifactStagingDirectory)\drop\Dockerfile"
 
               rem **** IMPORTANT: include TS config so Docker build targets ES2018+ ****
               if exist       "$(Build.SourcesDirectory)\tsconfig.json" copy /Y  "$(Build.SourcesDirectory)\tsconfig.json"  "$(Build.ArtifactStagingDirectory)\drop\"
@@ -146,8 +146,8 @@ stages:
                       Copy-Item -Path $wcFrom -Destination "$(feSiteRoot)\web.config" -Force
                     }
 
-                    # Build Windows 10 image locally on the VM using Dockerfile.win10
-                    docker build -f Dockerfile.win10 -t $image .
+                    # Build linux  image locally on the VM using Dockerfile
+                    docker build -f Dockerfile -t $image .
 
                     if ($LASTEXITCODE -ne 0) {
                       Write-Error "docker build failed with code $LASTEXITCODE"
