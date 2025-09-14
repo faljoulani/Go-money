@@ -1,5 +1,7 @@
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import { CmsImage } from '../types/type';
+import { CmsImage } from '../types/Type';
+import { CmsPage } from '../types/Type';
+import { resolveSitefinitySelection } from './utils';
 
 type Culture = string | undefined;
 
@@ -57,29 +59,8 @@ export async function fetchData(
   return Items;
 }
 
-export type CmsPage = {
-  Id: string;
-  Title: string;
-  UrlName?: string;
-  ViewUrl?: string;
-  RelativeUrlPath?: string;
-  HasChildren?: boolean;
-};
-
 export function pageHref(p: CmsPage) {
   return p.RelativeUrlPath || p.ViewUrl || `/${p.UrlName ?? ''}`;
-}
-
-export function parseSelection(raw: unknown): any | undefined {
-  if (!raw) return undefined;
-  if (typeof raw === 'string') {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return undefined;
-    }
-  }
-  return raw as any;
 }
 
 export function extractIdAndProvider(selection: any): { id: string | null; provider?: string } {
@@ -88,8 +69,28 @@ export function extractIdAndProvider(selection: any): { id: string | null; provi
   return { id, provider };
 }
 
-export const firstMedia = (val: CmsImage | CmsImage[] | null | undefined): CmsImage | null =>
-  Array.isArray(val) ? (val[0] ?? null) : (val ?? null);
+export function extractItemIdsFromSelection(selection?: any): string[] {
+  if (!selection) return [];
+  const sel = resolveSitefinitySelection(selection) ?? selection;
+
+  if (Array.isArray(sel?.ItemIdsOrdered) && sel.ItemIdsOrdered.length) {
+    return sel.ItemIdsOrdered.filter(Boolean);
+  }
+  const filterVal = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value as string | undefined;
+  if (typeof filterVal === 'string' && filterVal.trim()) {
+    return filterVal
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+export function selectPrimaryImage(
+  imageField: CmsImage | CmsImage[] | null | undefined,
+): CmsImage | null {
+  return Array.isArray(imageField) ? (imageField[0] ?? null) : (imageField ?? null);
+}
 
 export const pickOneMedia = (arr: CmsImage | CmsImage[] | null | undefined): CmsImage | null => {
   const media = Array.isArray(arr) ? arr[0] : arr;
@@ -114,3 +115,4 @@ export const getImageSrc = (img?: CmsImage | null): string | null => {
   if (src.startsWith('http')) return src;
   return src.startsWith('/') ? src : `/${src}`;
 };
+

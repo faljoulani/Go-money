@@ -1,196 +1,202 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { MainNavigationEntity } from './MainNavigation.entity';
-
-import { toAbsolute } from '../../../utils/utils';
-import { parseSelection, extractSelectionId, fetchData } from '../../../utils/sitefinity';
-import { ApiNavItem as ClientNavItem, ApiNavLink as ClientNavLink } from '../../../types/type';
+import type { MainNavigationEntity } from './mainNavigation.entity';
 import MainNavigationClientShell from './MainNavigationClientShell';
 
-type SfImage = { Url?: string; ThumbnailUrl?: string; Title?: string; AlternativeText?: string };
-type SfLink = { Href?: string; OpenInNewTab?: boolean };
-type SfSubNav = { Title?: string; UrlName?: string; ViewUrl?: string; RelativeUrlPath?: string };
-type SfNavPage = {
+import { resolveSitefinitySelection, resolveAbsoluteUrl, sortByOrder } from '../../../utils/utils';
+import {
+  fetchData,
+  extractSelectionId,
+  selectPrimaryImage,
+  getImageSrc,
+} from '../../../utils/sitefinity';
+
+import type {
+  ApiNavItem as ClientNavItem,
+  ApiNavLink as ClientNavLink,
+  CmsLink,
+} from '../../../types/Type';
+
+type NavSubLink = {
+  Id?: string;
+  Title?: string;
+  UrlName?: string;
+  ViewUrl?: string;
+  RelativeUrlPath?: string;
+};
+
+type NavLink = {
+  Id?: string;
   Title?: string;
   Order?: number;
   UrlName?: string;
-  Link?: SfLink | SfLink[] | null;
-  SubNavigation?: SfSubNav[];
+  ViewUrl?: string;
+  RelativeUrlPath?: string;
+  Link?: CmsLink | CmsLink[] | null;
+  SubNavigation?: NavSubLink[];
 };
-type SfStoreLink = {
+
+type StoreLink = {
+  Id?: string;
   Title?: string;
   Url?: string | null;
   StoreType?: string;
   IsVisible?: boolean;
   Order?: number;
-  Icon?: SfImage[] | SfImage | null;
+  Icon?: any | any[] | null;
 };
 
-type MainNavItem = {
+type MainNavigationItem = {
   Id: string;
-  UrlName?: string;
   Title?: string;
-  Logo?: SfImage[] | SfImage | null;
-  NavPages?: SfNavPage[];
-  StoreLinks?: SfStoreLink[];
+  UrlName?: string;
+  Logo?: any | any[] | null;
+  NavPages?: NavLink[];
+  StoreLinks?: StoreLink[];
 };
 
-type NormalizedImage = { title?: string; alt?: string; url?: string; thumbnailUrl?: string };
-type NormalizedSubNav = {
-  title: string;
+type PageUrlFields = {
   urlName?: string;
   viewUrl?: string;
   relativeUrlPath?: string;
 };
-type NormalizedNavPage = {
-  title: string;
-  order?: number;
-  urlName?: string;
-  link?: any[] | { Href?: string; OpenInNewTab?: boolean } | null;
-  subNavigation?: NormalizedSubNav[];
-};
-type NormalizedStoreLink = {
-  title: string;
-  order?: number;
-  isVisible?: boolean;
-  storeType?: string;
-  url?: string | null;
-  icon?: NormalizedImage | null;
-};
-type NormalizedMainNav = {
-  id: string;
-  urlName?: string;
-  title?: string;
-  logo?: NormalizedImage | null;
-  navPages: NormalizedNavPage[];
-  storeLinks: NormalizedStoreLink[];
+
+type NavigationUrlFields = PageUrlFields & {
+  link?: CmsLink | CmsLink[] | null;
 };
 
-function urlFromNormalized(x: {
-  urlName?: string;
-  viewUrl?: string;
-  relativeUrlPath?: string;
-  link?: any;
-}): string {
-  const linkObj = Array.isArray(x?.link) ? undefined : x?.link;
-  return linkObj?.Href || x?.viewUrl || x?.relativeUrlPath || (x?.urlName ? `/${x.urlName}` : '#');
+function resolvePageUrlFromFields({
+  urlName,
+  viewUrl,
+  relativeUrlPath,
+}: PageUrlFields): string | undefined {
+  return viewUrl || relativeUrlPath || (urlName ? `/${urlName}` : undefined);
 }
-function toClientItem(node: NormalizedNavPage): ClientNavItem | null {
-  const title = node.title || node.urlName || '';
+
+function resolveNavigationHref({
+  link,
+  urlName,
+  viewUrl,
+  relativeUrlPath,
+}: NavigationUrlFields): string {
+  const primaryLink = Array.isArray(link) ? link?.[0] : link;
+
+  let href: string | undefined;
+  if (typeof primaryLink === 'string') {
+    href = primaryLink;
+  } else if (primaryLink && typeof primaryLink === 'object') {
+    href = primaryLink.Href;
+  }
+
+  return href ?? resolvePageUrlFromFields({ urlName, viewUrl, relativeUrlPath }) ?? '#';
+}
+
+function mapSubNavLink(subLink: NavSubLink): ClientNavLink | null {
+  const title = subLink?.Title || subLink?.UrlName || '';
   if (!title) return null;
-  const url = urlFromNormalized(node);
-  const children: ClientNavLink[] =
-    node.subNavigation
-      ?.map((c) => {
-        const ct = c.title || c.urlName || '';
-        if (!ct) return null;
-        return { title: ct, url: urlFromNormalized(c) };
-      })
-      .filter(Boolean as any) ?? [];
-  return children.length > 0 ? { title, url, children } : { title, url };
+
+  return {
+    title,
+    url:
+      resolvePageUrlFromFields({
+        urlName: subLink?.UrlName,
+        viewUrl: subLink?.ViewUrl,
+        relativeUrlPath: subLink?.RelativeUrlPath,
+      }) || '#',
+  };
 }
-function normalizeFromRaw(raw: any): NormalizedMainNav {
-  const firstLogo = Array.isArray(raw?.Logo) ? raw.Logo[0] : undefined;
-  const logo: NormalizedImage | null = firstLogo
-    ? {
-        title: firstLogo.Title,
-        alt: firstLogo.AlternativeText,
-        url: firstLogo.Url,
-        thumbnailUrl: firstLogo.ThumbnailUrl,
-      }
-    : null;
 
-  const navPages: NormalizedNavPage[] = (raw?.NavPages ?? []).map((p: any) => ({
-    title: p.Title,
-    order: p.Order,
-    urlName: p.UrlName,
-    link: p.Link ?? [],
-    subNavigation: (p.SubNavigation ?? []).map((s: any) => ({
-      title: s.Title,
-      urlName: s.UrlName,
-      viewUrl: s.ViewUrl,
-      relativeUrlPath: s.RelativeUrlPath,
-    })),
-  }));
+function mapNavLink(navLink: NavLink): ClientNavItem | null {
+  const title = navLink?.Title || navLink?.UrlName || '';
+  if (!title) return null;
 
-  const storeLinks: NormalizedStoreLink[] = (raw?.StoreLinks ?? []).map((s: any) => ({
-    title: s.Title,
-    order: s.Order,
-    isVisible: s.IsVisible,
-    storeType: s.StoreType,
-    url: s.Url,
-    icon:
-      Array.isArray(s.Icon) && s.Icon[0]
-        ? {
-            title: s.Icon[0].Title,
-            alt: s.Icon[0].AlternativeText,
-            url: s.Icon[0].Url,
-            thumbnailUrl: s.Icon[0].ThumbnailUrl,
-          }
-        : null,
-  }));
+  const children = (navLink?.SubNavigation || [])
+    .map(mapSubNavLink)
+    .filter(Boolean) as ClientNavLink[];
 
-  return { id: raw?.Id, urlName: raw?.UrlName, title: raw?.Title, logo, navPages, storeLinks };
+  const url = resolveNavigationHref({
+    link: navLink?.Link,
+    urlName: navLink?.UrlName,
+    viewUrl: navLink?.ViewUrl,
+    relativeUrlPath: navLink?.RelativeUrlPath,
+  });
+
+  return children.length ? { title, url, children } : { title, url };
 }
 
 export default async function MainNavigation(props: WidgetContext<MainNavigationEntity>) {
   const attrs = htmlAttributes(props);
-  const selection = parseSelection((props.model?.Properties as any)?.MainNavigation);
+  const { requestContext } = props;
+  const { culture, isEdit } = requestContext;
 
-  if (!selection?.Content?.length) {
-    return props.requestContext.isEdit ? (
-      <section {...attrs} className="p-4 border rounded text-sm text-gray-600">
-        Select a MainNavigation item in the designer.
+  const selection = resolveSitefinitySelection((props.model?.Properties as any)?.MainNavigation);
+  const id = extractSelectionId(selection);
+
+  if (!id) {
+    return isEdit ? (
+      <section
+        {...attrs}
+        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+      >
+        <strong>MainNavigation</strong>
+        <div className="mt-1">Select a MainNavigation item.</div>
       </section>
     ) : null;
   }
 
-  const id = extractSelectionId(selection);
   const FIELDS = [
     'Id',
     'Title',
     'UrlName',
-    'Logo($select=Url,ThumbnailUrl,Title,AlternativeText)',
-    'NavPages($select=Title,Order,UrlName,Link,SubNavigation($select=Title,UrlName,ViewUrl,RelativeUrlPath))',
-    'StoreLinks($select=Title,Url,StoreType,IsVisible,Order,Icon($select=Url,ThumbnailUrl,Title,AlternativeText))',
+    'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
+    'NavPages($select=Id,Title,Order,UrlName,ViewUrl,RelativeUrlPath,Link,SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath))',
+    'StoreLinks($select=Id,Title,Url,StoreType,IsVisible,Order,Icon($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
   ];
 
-  const raw = await fetchData([id], null, props.requestContext.culture, FIELDS, {
-    itemType:
-      selection?.Content?.[0]?.Type ??
-      'Telerik.Sitefinity.DynamicTypes.Model.MainNavigation.Mainnavigation',
+  const mainNavigationPayload = await fetchData([id], null, culture, FIELDS, {
+    itemType: selection?.Content?.[0]?.Type,
     single: true,
   });
 
-  const data: NormalizedMainNav | null = raw
-    ? normalizeFromRaw((Array.isArray(raw) ? raw[0] : raw) as unknown as MainNavItem)
+  const mainNavigationData: MainNavigationItem | null = mainNavigationPayload
+    ? ((Array.isArray(mainNavigationPayload) ? mainNavigationPayload[0] : mainNavigationPayload) ??
+      null)
     : null;
 
-  if (!data) {
-    return props.requestContext.isEdit ? (
-      <section {...attrs} className="p-4 border rounded text-sm text-red-600">
-        Couldn’t load MainNavigation item. Check console.
+  if (!mainNavigationData) {
+    return isEdit ? (
+      <section {...attrs} className="p-4 text-sm text-gray-600">
+        Couldn’t load the selected MainNavigation item.
       </section>
     ) : null;
   }
 
-  const logoUrl = toAbsolute(
-    data.logo?.url || data.logo?.thumbnailUrl || '/assets/logo.png',
-    props.requestContext,
-  );
-  const logoAlt = data.logo?.alt || data.logo?.title || data.title || 'Logo';
+  const logoImg = selectPrimaryImage(mainNavigationData.Logo);
+  const logoRaw = getImageSrc(logoImg);
+  const logoUrl = logoRaw ? resolveAbsoluteUrl(logoRaw, requestContext) : '/assets/logo.png';
+  const logoAlt = logoImg?.AlternativeText || logoImg?.Title || mainNavigationData.Title || 'Logo';
 
-  const navItems: ClientNavItem[] = (data.navPages ?? [])
-    .slice()
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    .map(toClientItem)
-    .filter(Boolean as any);
+  const navItems: ClientNavItem[] = sortByOrder(mainNavigationData.NavPages || [])
+    .map(mapNavLink)
+    .filter(Boolean) as ClientNavItem[];
 
-  const storeLinks = (data.storeLinks ?? [])
-    .filter((s) => s.isVisible !== false)
-    .slice()
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const storeLinks = sortByOrder(mainNavigationData.StoreLinks || [])
+    .filter((store) => store?.IsVisible !== false)
+    .map((store) => {
+      const icon = selectPrimaryImage(store?.Icon);
+      const raw = getImageSrc(icon);
+      const iconUrl = raw ? resolveAbsoluteUrl(raw, requestContext) : undefined;
 
-  const currentPath = (props.requestContext as any)?.url ?? '';
+      return {
+        title: store?.Title || '',
+        url: store?.Url || undefined,
+        order: store?.Order,
+        storeType: store?.StoreType,
+        iconUrl,
+        iconAlt: icon?.AlternativeText || icon?.Title,
+      };
+    });
+
+  const currentPath = (requestContext as any)?.url ?? '';
 
   return (
     <MainNavigationClientShell
@@ -200,7 +206,7 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
       navItems={navItems}
       storeLinks={storeLinks}
       currentPath={currentPath}
-      requestContext={props.requestContext}
+      requestContext={requestContext}
     />
   );
 }

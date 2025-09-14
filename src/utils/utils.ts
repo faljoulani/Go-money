@@ -1,7 +1,37 @@
 import type { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
 
+import { CmsLink } from '../types/Type';
+
 export function mergeClasses(...xs: Array<string | undefined | false | null>) {
   return xs.filter(Boolean).join(' ');
+}
+
+export function resolveSitefinitySelection(raw: unknown) {
+  if (!raw) return undefined;
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return undefined;
+    }
+  }
+  return raw as any;
+}
+
+export function firstIdFromSelection(sel: any) {
+  if (!sel) return undefined;
+  if (sel.Id) return sel.Id;
+  const ids = sel?.CardListData?.ItemIdsOrdered ?? sel?.ItemIdsOrdered;
+  if (Array.isArray(ids) && ids.length) return ids[0];
+  const maybeContentId = sel?.Content?.[0]?.Variations?.[0]?.Filter?.Value?.split(',')?.[0];
+  return maybeContentId || undefined;
+}
+
+export function linkToHref(link: CmsLink): string | undefined {
+  if (!link) return undefined;
+  if (typeof link === 'string') return link;
+  const any = link as any;
+  return Array.isArray(any) ? (typeof any[0] === 'string' ? any[0] : any[0]?.Href) : any?.Href;
 }
 
 export function computeBaseUrl(ctx: WidgetContext<any>['requestContext']): string {
@@ -17,36 +47,44 @@ export function computeBaseUrl(ctx: WidgetContext<any>['requestContext']): strin
   return (origin || '').toString().replace(/\/+$/, '');
 }
 
-export function toAbsolute(
-  u: string | undefined | null,
-  ctx: WidgetContext<any>['requestContext'],
-) {
-  if (!u) return '';
-  if (/^(data:|blob:)/i.test(u)) return u;
-  if (/^https?:\/\//i.test(u)) return u;
-  const base = computeBaseUrl(ctx);
-  return base ? `${base}${u.startsWith('/') ? u : `/${u}`}` : u;
+export function resolveAbsoluteUrl(
+  url: string | null | undefined,
+  requestContext: WidgetContext<any>['requestContext'],
+): string {
+  if (!url) return '';
+  if (/^(data:|blob:)/i.test(url)) return url;
+  if (/^https?:\/\//i.test(url)) return url;
+
+  const siteBaseUrl = computeBaseUrl(requestContext);
+  return siteBaseUrl ? `${siteBaseUrl}${url.startsWith('/') ? url : `/${url}`}` : url;
 }
 
 export const cleanHref = (href: string) => href.split('#')[0].split('?')[0];
 
-export function normalizePath(input: string): string {
-  if (!input) return '/';
-  let s = input.trim();
+export function routeMatchKey(urlOrPath?: string): string {
+  if (!urlOrPath) return '/';
 
-  if (/^https?:\/\//i.test(s)) {
+  let path = urlOrPath.trim();
+
+  if (/^https?:\/\//i.test(path)) {
     try {
-      const u = new URL(s);
-      s = (u.pathname || '/') + (u.search ?? '') + (u.hash ?? '');
+      path = new URL(path).pathname || '/';
     } catch {}
   }
-  s = s.split('#')[0].split('?')[0];
-  s = s.replace(/^\/[a-z]{2}(?:-[A-Z]{2})?(?=\/|$)/, '');
-  s = s.replace(/\/{2,}/g, '/');
-  if (s.length > 1 && s.endsWith('/')) s = s.slice(0, -1);
-  if (!s.startsWith('/')) s = '/' + s;
-  if (s === '/home') return '/';
-  return s;
+
+  const hashIdx = path.indexOf('#');
+  if (hashIdx !== -1) path = path.slice(0, hashIdx);
+  const queryIdx = path.indexOf('?');
+  if (queryIdx !== -1) path = path.slice(0, queryIdx);
+
+  path = path.replace(/^\/[a-z]{2}(?:-[A-Z]{2})?(?=\/|$)/, '');
+
+  path = path.replace(/\/{2,}/g, '/');
+
+  if (!path.startsWith('/')) path = '/' + path;
+  if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+
+  return path === '/home' ? '/' : path || '/';
 }
 
 export function hasChildren<T extends { children?: unknown }>(
@@ -66,15 +104,4 @@ export function displayTitle(raw: string): string {
 
 export const sortByOrder = <T extends { Order?: number }>(arr: T[] = []) =>
   arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
-
-export function parseMaybeJson<T = any>(value: unknown): T | undefined {
-  if (value == null || value === '') return undefined;
-  if (typeof value === 'object') return value as T;
-  if (typeof value === 'string') {
-    try {
-      return JSON.parse(value) as T;
-    } catch {}
-  }
-  return undefined;
-}
 

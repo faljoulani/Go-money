@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-import { mergeClasses, normalizePath, cleanHref } from '../../../utils/utils';
+import { mergeClasses, routeMatchKey, cleanHref } from '../../../utils/utils';
 
 export type FooterLink = { id: string; title: string; href: string };
 export type FooterLinksGroup = { id: string; title: string; links: FooterLink[] };
@@ -17,7 +17,7 @@ type Props = {
 
 export default function FooterLinks({ groups, className = '', dir = 'ltr' }: Props) {
   const pathname = usePathname();
-  const current = normalizePath(cleanHref(pathname || '/'));
+  const current = routeMatchKey(cleanHref(pathname || '/'));
 
   return (
     <div className={mergeClasses('grid grid-cols-3 gap-8', className)} dir={dir}>
@@ -26,7 +26,7 @@ export default function FooterLinks({ groups, className = '', dir = 'ltr' }: Pro
           <h3 className="text-white text-lg font-semibold font-lufga">{g.title}</h3>
           <ul className="mt-4 space-y-3">
             {g.links.map((l) => {
-              const hrefNorm = normalizePath(cleanHref(l.href));
+              const hrefNorm = routeMatchKey(cleanHref(l.href));
               const active =
                 current === hrefNorm || (hrefNorm !== '/' && current.startsWith(hrefNorm));
               return (

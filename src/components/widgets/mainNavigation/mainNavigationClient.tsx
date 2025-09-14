@@ -1,20 +1,17 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cleanHref, normalizePath, displayTitle } from '../../../utils/utils';
-import { ApiNavItem, ApiNavLink, ApiNavDropdown } from '../../../types/type';
+import { cleanHref, routeMatchKey, displayTitle } from '../../../utils/utils';
+import { ApiNavItem, ApiNavDropdown } from '../../../types/Type';
 
-type NormalizedLink = ApiNavLink & { href: string };
-type NormalizedDropdown = NormalizedLink & { children: NormalizedLink[] };
-type NormalizedItem = NormalizedLink | NormalizedDropdown;
-
-function isApiDropdown(item: ApiNavItem): item is ApiNavDropdown {
+function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
   return Array.isArray((item as any)?.children);
 }
-function isNormalizedDropdown(item: NormalizedItem): item is NormalizedDropdown {
-  return Array.isArray((item as any)?.children);
+
+function toHref(url: string, stripQuery: boolean) {
+  return stripQuery ? cleanHref(url) : url;
 }
 
 export default function ClientNavbar({
@@ -22,39 +19,53 @@ export default function ClientNavbar({
   currentPath,
   className,
   stripQuery = true,
-  scrolled = false, // ✅ declare prop with default
+  scrolled = false,
 }: {
   items: ApiNavItem[];
   currentPath?: string;
   className?: string;
   stripQuery?: boolean;
-  scrolled?: boolean; // ✅ add to props type
+  scrolled?: boolean;
 }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
+  const navRef = useRef<HTMLDivElement>(null);
 
-  const normalized: NormalizedItem[] = useMemo(() => {
-    const norm = (it: ApiNavLink): NormalizedLink => ({
-      ...it,
-      href: stripQuery ? cleanHref(it.url) : it.url,
-    });
-    return items.map((item) =>
-      isApiDropdown(item)
-        ? ({ ...norm(item), children: item.children.map(norm) } as NormalizedDropdown)
-        : norm(item),
-    );
-  }, [items, stripQuery]);
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      const root = navRef.current;
+      if (!root) return;
+      if (!root.contains(e.target as Node)) setOpenIdx(null);
+    };
+    document.addEventListener('pointerdown', onPointerDown, { passive: true });
+    return () => document.removeEventListener('pointerdown', onPointerDown as any);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenIdx(null);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    setOpenIdx(null);
+  }, [pathname]);
 
   const rawPath = currentPath ?? pathname ?? '';
-  const pathForMatch = normalizePath(stripQuery ? cleanHref(rawPath) : rawPath);
+  const pathForMatch = routeMatchKey(stripQuery ? cleanHref(rawPath) : rawPath);
 
   return (
-    <nav className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
-      {normalized.map((item, i) => {
-        const itemMatch = normalizePath(item.href);
-        const childActive = isNormalizedDropdown(item)
+    <nav ref={navRef} className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
+      {items.map((item, i) => {
+        const itemHref = toHref(item.url, stripQuery);
+        const itemMatch = routeMatchKey(itemHref);
+
+        const childActive = isDropdown(item)
           ? item.children.some((c) => {
-              const cMatch = normalizePath(c.href);
+              const cHref = toHref(c.url, stripQuery);
+              const cMatch = routeMatchKey(cHref);
               return pathForMatch === cMatch || (cMatch !== '/' && pathForMatch.startsWith(cMatch));
             })
           : false;
@@ -72,14 +83,14 @@ export default function ClientNavbar({
             : 'text-white';
 
         return (
-          <div key={`${item.href}-${i}`} className="relative">
-            {isNormalizedDropdown(item) ? (
+          <div key={`${itemHref}-${i}`} className="relative">
+            {isDropdown(item) ? (
               <button
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={openIdx === i}
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
+                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
               >
                 {displayTitle(item.title)}
                 <svg
@@ -95,33 +106,27 @@ export default function ClientNavbar({
               </button>
             ) : (
               <Link
-                href={item.href}
+                href={itemHref}
                 className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
               >
                 {displayTitle(item.title)}
               </Link>
             )}
 
-            {isNormalizedDropdown(item) && openIdx === i && (
+            {isDropdown(item) && openIdx === i && (
               <div
                 role="menu"
-                className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-white/80 backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
+                className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-white backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
               >
                 {item.children.map((child) => {
-                  const cMatch = normalizePath(child.href);
-                  const cActive =
-                    pathForMatch === cMatch || (cMatch !== '/' && pathForMatch.startsWith(cMatch));
+                  const childHref = toHref(child.url, stripQuery);
                   return (
                     <Link
-                      key={child.href}
-                      href={child.href}
+                      key={childHref}
+                      href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${
-                        cActive
-                          ? 'text-[var(--Text-text-primary,hsla(237,98%,20%,1))]'
-                          : 'text-[var(--Text-text-default,#424242)] hover:bg-white'
-                      }`}
+                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${'text-[var(--Text-text-default,#424242)] hover:bg-[#E6E8FF]'}`}
                     >
                       {displayTitle(child.title)}
                     </Link>

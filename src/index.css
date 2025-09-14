@@ -3,9 +3,15 @@
 @tailwind utilities;
 @import url('https://fonts.cdnfonts.com/css/lufga');
 
-/* tokens */
 :root {
   --Background-background-neutral-200: #eeeeee;
+  --bg-white-opacity-75: hsla(0, 0%, 100%, 0.75);
+  --color-primary: #010663;
+  --color-secondary: #0b2a8e;
+
+  --text-primary: #010663;
+  --text-default: #424242;
+  --line-default: #e0e0e0;
 }
 
 body {
@@ -28,11 +34,111 @@ body {
       transform: translateY(-15px);
     }
     100% {
-      transform: translateY(-15px);
+      transform: translateY(15px);
     }
   }
   .animate-float {
-    animation: float 1.5s ease-in-out infinite alternate;
+    animation: float 2s ease-in-out infinite alternate;
   }
+}
+
+@keyframes fadeup {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeup {
+  animation: fadeup 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
+}
+
+@keyframes fadeRight {
+  from {
+    transform: translate(200px);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+
+.fadeRight {
+  animation: fadeRight 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
+}
+
+@keyframes fadeLeft {
+  from {
+    opacity: 0;
+    transform: translate(-200px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeLeft {
+  animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
+}
+
+@keyframes scaleC {
+  from {
+    opacity: 0;
+    scale: 0.1;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.scaleC {
+  animation: scaleC 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 10% cover 100vh;
+}
+
+@keyframes fadeupSlow {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupSlow {
+  animation: fadeupSlow 2s cubic-bezier(0.1, 0.1, 0.1, 0.1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100%;
+}
+
+@keyframes fadeupCustom {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupCustom {
+  animation: fadeupCustom 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 10vh;
 }
 

@@ -38,7 +38,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
 
   return (
     <div className="flex gap-8 px-20 pt-[58px] pb-16">
-      <aside className="w-[25%]">
+      <aside className="w-[25%] fadeLeft">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
             const isActive = active === cat.Id;
@@ -54,18 +54,21 @@ export default function QuestionsClient({ categories }: { categories: Category[]
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
                 <span
                   className={`grid place-items-center w-8 h-8 rounded-lg ${
-                    isActive ? 'text-white' : 'text-[#0b1C5A]'
+                    isActive ? 'text-white' : 'text-black'
                   }`}
                   aria-hidden
                 >
                   <svg
-                    viewBox="0 0 20 20"
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
-                    className="w-4 h-4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-[24px] h-[24px]"
                   >
-                    <path d="M7 4l6 6-6 6" />
+                    <line x1="0" y1="12" x2="15" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
                   </svg>
                 </span>
               </li>
@@ -75,8 +78,8 @@ export default function QuestionsClient({ categories }: { categories: Category[]
       </aside>
 
       {/* Questions */}
-      <div className="w-[75%]">
-        <div className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white/70">
+      <div className="w-[75%] fadeRight">
+        <div className="divide-y rounded-xl">
           {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
           {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
           {!isLoading && !error && questions.length === 0 && (
@@ -86,7 +89,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
           {questions.map((q) => {
             const isOpen = openId === q.Id;
             return (
-              <details key={q.Id} className="group p-6" open={isOpen}>
+              <details key={q.Id} className="group p-6 border fadeRight rounded-md mb-4 bg-white border-[#E0E0E0]" open={isOpen}>
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer"
                   onClick={(e) => {

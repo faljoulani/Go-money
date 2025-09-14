@@ -1,8 +1,7 @@
-import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { ContactSubscriptionEntity } from './ContactSubscription.entity';
+import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { parseMaybeJson } from '../../../utils/utils';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 
 import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
@@ -111,7 +110,8 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const { culture, isEdit } = props.requestContext;
 
   const properties = (props.model?.Properties || {}) as any;
-  const rawSel = parseMaybeJson(properties?.ContactSubscription) ?? properties?.ContactSubscription;
+  const rawSel =
+    resolveSitefinitySelection(properties?.ContactSubscription) ?? properties?.ContactSubscription;
 
   const parentId = extractSelectionId(rawSel);
   if (!parentId) {
@@ -165,7 +165,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
         )}
         {/* Stretch items so all cards have equal height */}
         <div className="grid items-stretch gap-8 md:grid-cols-2 h-[373px]">
-          {boxes.map((box,index) => (
+          {boxes.map((box, index) => (
             <div
               key={box.Id ?? box.Title}
               className="gap-3 relative flex h-full flex-col overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8"
@@ -225,7 +225,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                     variant="outline"
                     width={525.2}
                     height={56.56}
-                    icon='arrow'
+                    icon="arrow"
                     className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
                   >
                     {box.ButtonLabel || 'Subscribe Now'}
@@ -296,7 +296,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
                     variant="outline"
                     width={525.2}
                     height={56.56}
-                    icon='arrow'
+                    icon="arrow"
                     className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
                   >
                     {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
@@ -310,3 +310,4 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
     </section>
   );
 }
+
