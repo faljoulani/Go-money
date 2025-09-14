@@ -41,17 +41,17 @@ import HighlightBlockDefault from '../components/widgets/highlightBlock/highligh
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
 import SupportInfoBox from '../components/widgets/SupportInfoBox/supportInfoBox';
-import { SupportInfoBoxEntity } from '../components/widgets/supportInfoBox/supportInfoBox.entity';
+import { SupportInfoBoxEntity } from '../components/widgets/SupportInfoBox/supportInfoBox.entity';
 
 import ContactForm from '../components/widgets/contactForm/contactForm';
 
 import { TwoColumnLayoutEntity } from '../components/widgets/layouts/twoColumnLayout.entity';
-import TwoColumnLayout from '../components/widgets/layouts/TwoColumnLayout';
+import TwoColumnLayout from '../components/widgets/layouts/twoColumnLayout';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
 
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
-import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
+import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/contactSubscription.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {

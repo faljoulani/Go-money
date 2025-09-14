@@ -8,7 +8,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import ContentWithImage from './contentWithImage';
-import ContentWithoutImage from './ContentWithoutImage';
+import ContentWithoutImage from './contentWithoutImage';
 import CTA from '../../atoms/cta/cta';
 
 function imageUrl(img: CmsImage): string | undefined {
