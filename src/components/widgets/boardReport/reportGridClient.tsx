@@ -1,8 +1,20 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useSf } from '../../../utils/hooks/useSf';
+
+type ReportedFile = {
+  Id: string;
+  Title: string;
+  UrlName?: string;
+};
+
+type ODataList<T> = {
+  value: T[];
+  '@odata.count'?: number;
+};
 
 export default function ReportGridClient({
-  files,
+  files, 
   pageSize,
   initialOffset,
   allowPagination,
@@ -10,7 +22,7 @@ export default function ReportGridClient({
   years,
   description,
 }: {
-  files: Array<{ Id: string; Title: string; UrlName?: string }>;
+  files: Array<{ Id: string; Title: string; UrlName?: string }>; 
   pageSize: number;
   initialOffset: number;
   allowPagination: boolean;
@@ -18,24 +30,40 @@ export default function ReportGridClient({
   years?: string[];
   description?: string;
 }) {
-  // --- pagination state (unchanged)
-  const [offset, setOffset] = useState<number>(
-    Math.max(0, Math.min(initialOffset || 0, Math.max(0, files.length - 1)))
-  );
-  const safePageSize = pageSize > 0 ? pageSize : files.length || 1;
-  const totalPages = Math.max(1, Math.ceil(files.length / safePageSize));
-  const currentPage = Math.floor(offset / safePageSize);
-  const start = currentPage * safePageSize;
-  const end = start + safePageSize;
-  const pageItems = files.slice(start, end);
-  const canPrev = currentPage > 0;
-  const canNext = currentPage < totalPages - 1;
-  const prev = () => { if (canPrev) setOffset((currentPage - 1) * safePageSize); };
-  const next = () => { if (canNext) setOffset((currentPage + 1) * safePageSize); };
-
   const [activeYear, setActiveYear] = useState<string | undefined>(
-    years && years.length ? years[0] : undefined
+    years && years.length ? years[0] : undefined,
   );
+
+  const [offset, setOffset] = useState<number>(Math.max(0, initialOffset || 0));
+  const size = Math.max(0, pageSize || 0);
+
+  const params = useMemo(() => {
+    if (!activeYear) return null;
+    return {
+      $filter: `Year eq ${activeYear}`,
+      $orderby: 'Title asc',
+      $count: 'true',
+
+    };
+  }, [activeYear]);
+
+  const { data, error, isLoading } = useSf<ODataList<ReportedFile>>(
+    params ? 'api/default/reportedfiles' : null,
+    params || undefined,
+    {
+      revalidateOnFocus: false,
+      keepPreviousData: true, 
+    },
+  );
+
+  const items = data?.value ?? [];
+
+  const total = items.length;
+  const hasPaging = allowPagination && size > 0;
+  const pageItems = hasPaging ? items.slice(offset, offset + size) : items;
+
+  const canPrev = hasPaging && offset > 0;
+  const canNext = hasPaging && offset + size < total;
 
   return (
     <div className="w-full">
@@ -54,12 +82,15 @@ export default function ReportGridClient({
               <button
                 key={year}
                 type="button"
-                onClick={() => setActiveYear(year)}
+                onClick={() => {
+                  setActiveYear(year);
+                  setOffset(0);
+                }}
                 className={[
-                  'px-4 py-2 rounded-full text-base md:text-lg transition',
+                  'px-5 py-2 rounded-full text-base md:text-lg transition',
                   isActive
                     ? 'bg-[#0B1C5A] text-white'
-                    : 'bg-transparent text-slate-500 hover:text-slate-800 cursor-pointer'
+                    : 'bg-transparent text-slate-500 hover:text-slate-800 cursor-pointer',
                 ].join(' ')}
                 aria-pressed={isActive}
               >
@@ -69,44 +100,56 @@ export default function ReportGridClient({
           })}
         </div>
       )}
-
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {pageItems.map((f) => (
-          <article
-            key={f.Id}
-            className="rounded-2xl border border-slate-200 bg-white shadow-sm px-6 py-8 flex flex-col items-center justify-center"
-          >
-            <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-slate-100">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0B1C5A" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <path d="M14 2v6h6" />
-              </svg>
+      
+      {/* add atom later for loading */}
+      {isLoading && (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-slate-200 bg-white px-6 py-8 animate-pulse"
+            >
+              <div className="mx-auto mb-5 h-16 w-16 rounded-2xl bg-slate-100" />
+              <div className="mx-auto h-4 w-3/4 rounded bg-slate-100" />
             </div>
-            <h3 className="text-center text-[17px] font-semibold text-slate-900">{f.Title}</h3>
-          </article>
-        ))}
-      </div>
-
-      {/* pagination UI (kept commented if you don't need it now)
-      {allowPagination && totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-between">
-          <div />
-          <div className="flex items-center gap-2">
-            <button onClick={prev} disabled={!canPrev}
-              className={['inline-flex w-10 h-10 items-center justify-center rounded-full border transition',
-               canPrev ? 'bg-white border-slate-300 hover:bg-slate-50' : 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-60'].join(' ')}>
-              ←
-            </button>
-            <span className="text-sm tabular-nums text-slate-600">{currentPage + 1} / {totalPages}</span>
-            <button onClick={next} disabled={!canNext}
-              className={['inline-flex w-10 h-10 items-center justify-center rounded-full border transition',
-               canNext ? 'bg-white border-slate-300 hover:bg-slate-50' : 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-60'].join(' ')}>
-              →
-            </button>
-          </div>
-          <div />
+          ))}
         </div>
-      )} */}
+      )}
+
+      {error && (
+        <div className="rounded-md bg-red-50 p-4 text-red-700">
+          Failed to load reports for {activeYear}.
+        </div>
+      )}
+
+      {!isLoading && !error && (
+        <>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {pageItems.map((f) => (
+              <article
+                key={f.Id}
+                className="rounded-2xl border border-slate-200 bg-white shadow-sm px-6 py-8 flex flex-col items-center justify-center"
+              >
+                <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-slate-100">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="#0B1C5A"
+                    strokeWidth="2"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6" />
+                  </svg>
+                </div>
+                <h3 className="text-center text-[17px] font-semibold text-slate-900">{f.Title}</h3>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
+
