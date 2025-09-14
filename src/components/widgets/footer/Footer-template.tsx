@@ -136,21 +136,21 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
   // ---------- view ----------
   return (
-    <footer {...attrs} className="relative text-gray-300">
+    <footer {...attrs} className="relative text-gray-300 h-[769px] px-20 py-16">
       {/* Background gradient */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15]" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
 
-      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
+      <div className="sm:px-8">
         {(item.Title || item.SubTitle) && (
-          <h2 className="text-white/95 text-4xl sm:text-5xl font-semibold leading-tight max-w-3xl">
+          <p className="text-white text-4xl sm:text-5xl tracking-[-0.02em] max-w-[500px] leading-loose h-[104px]">
             {item.Title || item.SubTitle}
-          </h2>
+          </p>
         )}
 
-        <hr className="my-8 border-white/10" />
+        <hr className="my-8 border-[#FFFFFF40]" />
 
         {/* container */}
-        <div className="mx-auto w-full max-w-[1240px] px-5 py-8">
+        <div className="mx-auto w-full max-w-[1240px]">
           <div className="flex gap-8">
             <div className="col-span-1">
               <div className="w-[400px] max-w-[400px] h-[423px] border-r border-white/15 flex flex-col gap-8">
@@ -172,7 +172,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                 </div>
 
                 {item.Description && (
-                  <p className="max-w-[260px] font-lufga font-normal text-[14px] leading-[18px] text-gray-300/90">
+                  <p className="max-w-[260px] font-lufga font-normal text-[14px] leading-[18px] text-[#E0E0E0]">
                     {String(item.Description).replace(/\s+/g, ' ').trim()}
                   </p>
                 )}
