@@ -1,14 +1,13 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import CardImage from '../../atoms/cardImage/cardImage';
 
-interface ExpandBoxItem {
+interface Cardtem {
   Id: string;
   Title?: string;
   SubTitle?: string;
@@ -39,7 +38,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
     ) : null;
   }
 
-  const parentFetched = await fetchData(
+  const parentCardPayload = await fetchData(
     [id],
     null,
     culture,
@@ -49,13 +48,13 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
       single: true,
     },
   );
-  const parent = parentFetched as ExpandBoxItem;
+  const parentCardData = parentCardPayload as Cardtem;
 
-  const eyebrow = parent?.Eyebrow ?? '';
-  const title = parent?.Title ?? 'Cards';
-  const subtitle = parent?.Description ?? parent?.SubTitle ?? '';
-  const ctaText = parent?.CtaText ?? '';
-  const ctaUrlRaw = parent?.CtaUrl;
+  const eyebrow = parentCardData?.Eyebrow ?? '';
+  const title = parentCardData?.Title ?? 'Cards';
+  const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
+  const ctaText = parentCardData?.CtaText ?? '';
+  const ctaUrlRaw = parentCardData?.CtaUrl;
   const ctaHref =
     typeof ctaUrlRaw === 'string'
       ? ctaUrlRaw
@@ -65,12 +64,12 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
 
   const selectedIds: string[] =
     (selection?.Cards?.ItemIdsOrdered as string[]) ??
-    (parent?.Cards?.ItemIdsOrdered as string[]) ??
+    (parentCardData?.Cards?.ItemIdsOrdered as string[]) ??
     [];
 
   let cardItems: any[] = [];
   if (selectedIds.length > 0) {
-    const fetched = await fetchData(
+    const childCardPayload = await fetchData(
       selectedIds,
       null,
       culture,
@@ -91,10 +90,14 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         single: false,
       },
     );
-    cardItems = Array.isArray(fetched) ? fetched : fetched ? [fetched] : [];
+    cardItems = Array.isArray(childCardPayload)
+      ? childCardPayload
+      : childCardPayload
+        ? [childCardPayload]
+        : [];
   }
 
-  const items = cardItems.map((c: any) => {
+  const childCardData = cardItems.map((c: any) => {
     const rawHref = c?.LinkUrl ?? '';
     const href = rawHref?.trim() || '#';
 
@@ -126,14 +129,16 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         {/* Heading */}
         <div className="text-center fadeup">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-          <Title variant="hero" className='mb-1 mt-3 h-[59px]'>{title}</Title>
+          <Title variant="hero" className="mb-1 mt-3 h-[59px]">
+            {title}
+          </Title>
           {subtitle && <Description>{subtitle}</Description>}
         </div>
 
         {/* Alternating frame */}
         <div className="mt-10 px-[205px]">
           <div className="space-y-16">
-            {items.map((card, i) => {
+            {childCardData.map((card, i) => {
               const isRight = i % 2 === 1;
               const rowTemplate = isRight
                 ? '[grid-template-columns:minmax(0,1fr)_330px]'
@@ -200,7 +205,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             <CTA
               href={(ctaHref || '').trim() || '#'}
               color="#010663"
-              borderColor='#001081'
+              borderColor="#001081"
               variant="outline"
               width={248}
               height={56}

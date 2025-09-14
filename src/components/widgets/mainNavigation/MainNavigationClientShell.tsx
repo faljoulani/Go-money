@@ -4,10 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import ClientNavbar from './MainNavigationClient';
-import { toAbsolute } from '../../../utils/utils';
+import { resolveAbsoluteUrl } from '../../../utils/utils';
+import { pickOneMedia } from '../../../utils/sitefinity';
 import type { ApiNavItem as ClientNavItem } from '../../../types/type';
-import LanguageSwitcher from '../../custom/languageSwitcher/languageSwitcher';
-import ModeSwitcher from '../../custom/modeSwitcher/modeSwitcher';
+import LanguageSwitcher from '../../customComponents/languageSwitcher/languageSwitcher';
+import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 
 export default function MainNavigationClientShell({
   attrs,
@@ -46,7 +47,7 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed top-0 left-0 right-0 z-[200] rounded-3xl transition-[background-color,backdrop-filter,color] duration-300 ` +
+        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl transition-[background-color,backdrop-filter,color] duration-300 ` +
         (scrolled
           ? `bg-[var(--Background-background-white-opacity-75,hsla(0,0%,100%,0.75))]
              text-[var(--Text-text-default,#000)]
@@ -84,8 +85,31 @@ export default function MainNavigationClientShell({
             <div className="flex items-center gap-3">
               {storeLinks.map((link, idx) => {
                 const key = `${link.storeType || 'store'}:${link.title || idx}:${link.url ?? 'no-url'}`;
-                const rawIcon = link.icon?.url || link.icon?.thumbnailUrl || '';
-                const iconSrc = rawIcon ? toAbsolute(rawIcon, requestContext) : '';
+
+                const media =
+                  pickOneMedia(link.icon as any) ||
+                  pickOneMedia((link as any).Logo) ||
+                  pickOneMedia((link as any).Image) ||
+                  pickOneMedia((link as any).Badge) ||
+                  null;
+
+                const rawIconUrl =
+                  media?.Url ||
+                  media?.MediaUrl ||
+                  media?.ThumbnailUrl ||
+                  media?.EmbedUrl ||
+                  (link as any)?.iconUrl ||
+                  '';
+
+                const alt =
+                  media?.AlternativeText ||
+                  media?.Title ||
+                  (link as any)?.iconAlt ||
+                  link.title ||
+                  '';
+                const iconSrc = rawIconUrl
+                  ? resolveAbsoluteUrl(String(rawIconUrl).replace(/^~\//, '/'), requestContext)
+                  : '';
 
                 return (
                   <a
@@ -100,10 +124,15 @@ export default function MainNavigationClientShell({
                     {iconSrc ? (
                       <Image
                         src={iconSrc}
-                        alt={link.icon?.alt || link.icon?.title || link.title || ''}
+                        alt={alt}
                         width={20}
                         height={20}
                         unoptimized
+                        onError={(e) => {
+                          const img = e.currentTarget as HTMLImageElement & { src?: string };
+                          const encoded = resolveAbsoluteUrl(encodeURI(rawIconUrl), requestContext);
+                          if (img && img.src !== encoded) img.src = encoded;
+                        }}
                       />
                     ) : (
                       <span className="text-[10px]">{link.title}</span>

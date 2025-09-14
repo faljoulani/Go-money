@@ -5,7 +5,7 @@ import type { FinanceRepaymentBannerEntity } from './financeRepaymentBanner.enti
 
 import Title from '../../atoms/title/title';
 
-interface ExpandBoxItem {
+interface FinanceRepaymentBannerItem {
   Id: string;
   Title?: string;
   Eyebrow?: string;
@@ -38,8 +38,8 @@ export default async function FinanceRepaymentBanner(
         {...attrs}
         className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
       >
-        <strong>ExpandBox</strong>
-        <div className="mt-1">Open the designer and select an ExpandBox item.</div>
+        <strong>FinanceRepaymentBanner</strong>
+        <div className="mt-1">Open the designer and select the desired item.</div>
       </section>
     ) : null;
   }
@@ -63,7 +63,7 @@ export default async function FinanceRepaymentBanner(
     },
   );
 
-  const typedItem = item as ExpandBoxItem;
+  const typedItem = item as FinanceRepaymentBannerItem;
 
   if (!item) {
     return isEdit ? (

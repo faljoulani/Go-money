@@ -3,15 +3,15 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { FooterEntity } from './Footer.entity';
 import FooterLinks, { FooterLinksGroup } from './FooterLinks';
-import { toAbsolute, sortByOrder } from '../../../utils/utils';
+import { resolveAbsoluteUrl, sortByOrder, resolveSitefinitySelection } from '../../../utils/utils';
 import {
-  firstMedia,
+  selectPrimaryImage,
   getImageSrc,
   pageHref,
-  parseSelection,
   fetchData,
   extractSelectionId,
 } from '../../../utils/sitefinity';
+import Title from '../../atoms/title/title';
 
 type FooterGroup = {
   Id: string;
@@ -60,10 +60,11 @@ type FooterItem = {
 
 export default async function Footer(props: WidgetContext<FooterEntity>) {
   const attrs = htmlAttributes(props);
-  const selection = parseSelection((props.model?.Properties as any)?.Footer);
+  const selection = resolveSitefinitySelection((props.model?.Properties as any)?.Footer);
   const { culture, isEdit } = props.requestContext;
 
   const id = extractSelectionId(selection);
+
   if (!id) {
     return isEdit ? (
       <footer {...attrs} className="p-4 text-sm text-gray-500">
@@ -86,19 +87,20 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
     'SocialLinks($select=Id,Title,Url,Order,Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
   ];
 
-  // fetch and NARROW (fetchData may return array or single)
-  const raw = await fetchData([id], null, culture, FIELDS, {
+  const footerPayload = await fetchData([id], null, culture, FIELDS, {
     itemType: selection?.Content?.[0]?.Type,
     single: true,
   });
 
-  const item: FooterItem | null = raw
-    ? Array.isArray(raw)
-      ? ((raw[0] as FooterItem | undefined) ?? null)
-      : (raw as FooterItem)
+  console.log('Footer data', { footerPayload });
+
+  const footerData: FooterItem | null = footerPayload
+    ? Array.isArray(footerPayload)
+      ? ((footerPayload[0] as FooterItem | undefined) ?? null)
+      : (footerPayload as FooterItem)
     : null;
 
-  if (!item) {
+  if (!footerData) {
     return isEdit ? (
       <footer {...attrs} className="p-4 text-sm text-gray-500">
         Couldn’t load the selected Footer item.
@@ -106,45 +108,48 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
     ) : null;
   }
 
-  // helpers for image src
-  const imgPath = (img: any | null | undefined) =>
-    getImageSrc(img) || img?.MediaUrl || (Array.isArray(img?.Urls) ? img.Urls[0] : null) || null;
+  /* maps on item data */
 
-  // ---------- map data ----------
-  const logoImg = firstMedia(item.Logo);
+  const logoImg = selectPrimaryImage(footerData.Logo);
   const logoSrc = (() => {
-    const p = imgPath(logoImg);
-    return p ? toAbsolute(p, props.requestContext) : null;
+    const p = getImageSrc(logoImg);
+    return p ? resolveAbsoluteUrl(p, props.requestContext) : null;
   })();
 
-  const groups: FooterGroup[] = sortByOrder(item.FooterNavigation || []);
-  const certifications: Certification[] = sortByOrder(item.CertificationLinks || []);
-  const socials: Social[] = sortByOrder(item.SocialLinks || []);
+  const FooterNav: FooterGroup[] = sortByOrder(footerData.FooterNavigation || []);
 
-  const year = new Date().getFullYear();
-  const copyright = item.CopyrightText || `© ${year} ${item.Title ?? ''}. All rights reserved.`;
+  const certifications: Certification[] = sortByOrder(footerData.CertificationLinks || []);
+  const socials: Social[] = sortByOrder(footerData.SocialLinks || []);
 
-  const linkGroups: FooterLinksGroup[] = groups.map((g, gi) => ({
-    id: g.Id ?? `grp-${gi}-${g.SectionTitle ?? 'untitled'}`,
-    title: g.SectionTitle,
-    links: (g.Pages || []).map((p, pi) => ({
-      id: p.Id ?? `link-${gi}-${pi}-${p.Title ?? p.UrlName ?? p.RelativeUrlPath ?? 'untitled'}`,
+  const linkGroups: FooterLinksGroup[] = FooterNav.map((nav, index) => ({
+    id: nav.Id ?? `grp-${index}-${nav.SectionTitle ?? 'untitled'}`,
+    title: nav.SectionTitle,
+    links: (nav.Pages || []).map((p, pi) => ({
+      id: p.Id ?? `link-${index}-${pi}-${p.Title ?? p.UrlName ?? p.RelativeUrlPath ?? 'untitled'}`,
       title: p.Title,
       href: pageHref(p),
     })),
   }));
 
-  // ---------- view ----------
   return (
     <footer {...attrs} className="relative text-gray-300 h-[769px] px-20 py-16">
       {/* Background gradient */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
 
-      <div className="sm:px-8">
-        {(item.Title || item.SubTitle) && (
-          <p className="text-white text-4xl sm:text-5xl tracking-[-0.02em] max-w-[500px] leading-loose h-[104px]">
-            {item.Title || item.SubTitle}
-          </p>
+      <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 py-16 lg:py-24">
+        {(footerData.Title || footerData.SubTitle) && (
+          <Title
+            as="h2"
+            align="left"
+            color="rgba(255,255,255,0.95)"
+            fontWeight={400}
+            lineHeight="1.25"
+            fontSize="clamp(2.25rem, 2.5vw, 3rem)"
+            maxWidth="48rem"
+            className="max-w-3xl"
+          >
+            {footerData.Title || footerData.SubTitle}
+          </Title>
         )}
 
         <hr className="my-8 border-[#FFFFFF40]" />
@@ -158,8 +163,8 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                   <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15]">
                     {logoSrc && (
                       <Image
-                        src={logoSrc}
-                        alt={logoImg?.AlternativeText || logoImg?.Title || 'Footer logo'}
+                        src={footerData.Logo?.Urls?.[0] || logoSrc}
+                        alt={footerData.Logo?.Title || 'Footer logo'}
                         width={102}
                         height={45}
                         sizes="102px"
@@ -171,9 +176,9 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                   </div>
                 </div>
 
-                {item.Description && (
-                  <p className="max-w-[260px] font-lufga font-normal text-[14px] leading-[18px] text-[#E0E0E0]">
-                    {String(item.Description).replace(/\s+/g, ' ').trim()}
+                {footerData.Description && (
+                  <p className="max-w-[260px] font-lufga font-normal text-[14px] leading-[18px] text-gray-300/90">
+                    {String(footerData.Description).replace(/\s+/g, ' ').trim()}
                   </p>
                 )}
 
@@ -181,9 +186,9 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                 {socials?.length > 0 && (
                   <div className="flex items-center gap-4">
                     {socials.map((social, i) => {
-                      const sImg = firstMedia(social.Logo);
-                      const sRaw = imgPath(sImg);
-                      const sSrc = sRaw ? toAbsolute(sRaw, props.requestContext) : null;
+                      const sImg = selectPrimaryImage(social.Logo);
+                      const sRaw = getImageSrc(sImg);
+                      const sSrc = sRaw ? resolveAbsoluteUrl(sRaw, props.requestContext) : null;
 
                       return (
                         <Link
@@ -225,9 +230,11 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {/* Certifications */}
           <div className="flex items-center gap-6 md:w-[614px] flex-wrap">
             {certifications.map((info, i) => {
-              const img = firstMedia(info.Logo);
-              const rawSrc = imgPath(img);
-              const src = rawSrc ? toAbsolute(rawSrc, props.requestContext) : '/icons/sama.svg';
+              const img = selectPrimaryImage(info.Logo);
+              const rawSrc = getImageSrc(img);
+              const src = rawSrc
+                ? resolveAbsoluteUrl(rawSrc, props.requestContext)
+                : '/icons/sama.svg';
               const text = info.Description ?? info.description;
 
               return (
@@ -265,15 +272,15 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {/* Copyright */}
           <div className="text-center">
             <p className="font-[Lufga] font-normal text-[12px] leading-[100%] tracking-[0] text-gray-400">
-              {copyright}
+              {footerData.CopyrightText}
             </p>
           </div>
 
           {/* Right side (extra note) */}
           <div className="md:justify-self-end">
-            {item.ExtraNote && (
+            {footerData.ExtraNote && (
               <div className="font-[Lufga] font-normal text-[12px] leading-[100%] tracking-[0] text-gray-400">
-                {String(item.ExtraNote).replace(/"+$/, '')}
+                {String(footerData.ExtraNote).replace(/"+$/, '')}
               </div>
             )}
           </div>
