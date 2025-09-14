@@ -53,6 +53,7 @@ import StackLayout from '../components/widgets/layouts/stackLayout';
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
 import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/contactSubscription.entity';
 
+//This is
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
