@@ -1,30 +1,41 @@
-import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
+import { JSX } from 'react';
+import {
+  WidgetContext,
+  htmlAttributes,
+  getMinimumMetadata,
+  RenderWidgetService,
+} from '@progress/sitefinity-nextjs-sdk';
+import { Tracer } from '@progress/sitefinity-nextjs-sdk/diagnostics/empty';
+// import { SectionTestEntity } from './sectionTest.entity';
 
-export type StackLayoutEntity = Record<string, never>;
+const CONTENT = 'Content';
 
-export default function StackLayout(props: WidgetContext<StackLayoutEntity>) {
-  const attrs = htmlAttributes(props);
-  console.log('PROPERTIES', props.model.Properties);
-  const placeholders = (props.model as any)?.Children?.filter((c: any) => c?.PlaceHolder) || [];
-  console.log('placeholders:', placeholders[0].PlaceHolder);
+export async function StackLayout(props) {
+  const dataAttrs = htmlAttributes(props);
+  const attrs: { [k: string]: any } = { ...dataAttrs };
+
+  const children = (props.model.Children || [])
+    .filter((c) => c.PlaceHolder === CONTENT)
+    .map((m) => ({
+      model: m,
+      requestContext: props.requestContext,
+    }));
 
   return (
-    <section {...attrs} className="w-full">
-      <div className="rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-        <div className="py-16 md:p-10 flex flex-col gap-16">
-          {/* {placeholders.map((ph: any) => (
-            <div
-              key={ph.Id}
-              data-sfcontainer="true"
-              data-sfname={ph.Name}
-              data-sftitle={ph.Caption ?? ph.Name}
-              className="min-h-[20px]"
-            ></div>
-          ))} */}
-          <div data-sfcontainer="HowItWorks" data-sfname="HowItWorks"></div>
+    <>
+      <section {...attrs}>
+        <div
+          className="bg-white rounded-3xl p-4 flex flex-col gap-5 w-full"
+          {...(props.requestContext.isEdit
+            ? { 'data-sfcontainer': CONTENT, 'data-sfplaceholderlabel': 'Content' }
+            : {})}
+        >
+          {children.map((y, i) =>
+            RenderWidgetService.createComponent(y.model, props.requestContext),
+          )}
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 

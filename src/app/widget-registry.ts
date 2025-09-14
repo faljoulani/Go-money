@@ -6,7 +6,6 @@ import {
 } from '@progress/sitefinity-nextjs-sdk';
 import Hero from '../components/widgets/hero/hero';
 import { HeroEntity } from '../components/widgets/hero/hero.entity';
-import { SectionTest } from '../components/widgets/layouts/twoColContainer/sectionTest';
 
 import MainNavigation from '../components/widgets/mainNavigation/mainNavigation';
 import { MainNavigationEntity } from '../components/widgets/mainNavigation/MainNavigation.entity';
@@ -49,7 +48,7 @@ import ContactForm from '../components/widgets/contactForm/contactForm';
 import { TwoColumnLayoutEntity } from '../components/widgets/layouts/twoColumnLayout.entity';
 import TwoColumnLayout from '../components/widgets/layouts/TwoColumnLayout';
 
-import StackLayout from '../components/widgets/layouts/stackLayout';
+import { StackLayout } from '../components/widgets/layouts/stackLayout';
 
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
 import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/ContactSubscription.entity';
@@ -207,14 +206,6 @@ const customWidgetRegistry: WidgetRegistry = {
       editorMetadata: { Title: 'ContactForm' },
       views: {
         Default: { Title: 'Default', ViewFunction: ContactForm },
-      },
-    },
-      SectionTest: {
-      componentType: SectionTest,
-      ssr: true,
-      editorMetadata: { Title: 'Section Test' },
-      views: {
-        Default: { Title: 'Default', ViewFunction: SectionTest },
       },
     },
   },
