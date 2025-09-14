@@ -167,8 +167,8 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
 
   if (!data) {
     return props.requestContext.isEdit ? (
-      <section {...attrs} className="p-4 border rounded text-sm text-red-600">
-        Couldn’t load MainNavigation item. Check console.
+      <section {...attrs} className="p-4 border rounded text-sm text-black">
+        Select MainNavigation item.
       </section>
     ) : null;
   }
