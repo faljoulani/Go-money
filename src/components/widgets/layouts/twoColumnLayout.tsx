@@ -1,4 +1,3 @@
-import { JSX } from 'react';
 import {
   WidgetContext,
   htmlAttributes,
@@ -16,7 +15,6 @@ export default async function TwoColumnLayout(props) {
   const dataAttrs = htmlAttributes(props);
   const attrs: { [k: string]: any } = { ...dataAttrs };
 
-  // Children mapping
   const children = props.model.Children || [];
 
   const leftChildren = children
@@ -41,11 +39,9 @@ export default async function TwoColumnLayout(props) {
       requestContext: props.requestContext,
     }));
 
-  const TagName = 'section' as keyof JSX.IntrinsicElements;
-
   return (
     <>
-      <TagName {...attrs}>
+      <section {...attrs}>
         <div className="flex flex-row gap-8 w-[90%] mx-auto">
           <div
             className="basis-[40%] bg-white rounded-3xl"
@@ -69,7 +65,7 @@ export default async function TwoColumnLayout(props) {
             )}
           </div>
         </div>
-      </TagName>
+      </section>
       {Tracer.endSpan(span)}
     </>
   );
