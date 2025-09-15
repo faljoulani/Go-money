@@ -10,7 +10,6 @@ export class SupportInfoBoxEntity {
   @ContentSection('Content', 0)
   @DisplayName('SupportInfoBox item')
   @Content({
-    
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.SupportInfoBox.SupportInfoBox',
     AllowMultipleItemsSelection: false,
   })
@@ -24,3 +23,4 @@ export class SupportInfoBoxEntity {
   @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
   ViewName?: string;
 }
+

@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import ClientNavbar from './MainNavigationClient';
+import ClientNavbar from './mainNavigationClient';
 import { resolveAbsoluteUrl } from '../../../utils/utils';
 import { pickOneMedia } from '../../../utils/sitefinity';
-import type { ApiNavItem as ClientNavItem } from '../../../types/type';
+import type { ApiNavItem as ClientNavItem } from '../../../types/Type';
 import LanguageSwitcher from '../../customComponents/languageSwitcher/languageSwitcher';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 
@@ -47,16 +47,16 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl transition-[background-color,backdrop-filter,color] duration-300 ` +
+        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl transition-surface duration-300 ` +
         (scrolled
-          ? `bg-[var(--Background-background-white-opacity-75,hsla(0,0%,100%,0.75))]
-             text-[var(--Text-text-default,#000)]
+          ? `bg-surface
+             text-textDefault
              backdrop-blur-[70px] backdrop-saturate-150`
           : `bg-transparent text-white`)
       }
     >
       <div className="px-8 py-3">
-        <div className="flex items-center justify-between overflow-visible pointer-events-auto h-[76px] px-6 max-w-[1440px]">
+        <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container px-6">
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
@@ -73,11 +73,16 @@ export default function MainNavigationClientShell({
           </div>
 
           {/* Center: Nav */}
-          <ClientNavbar items={navItems} currentPath={currentPath} scrolled={scrolled} />
+          <ClientNavbar
+            className="text-head font-lufga"
+            items={navItems}
+            currentPath={currentPath}
+            scrolled={scrolled}
+          />
 
           {/* Right: Language switcher + Store badges */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 font-lufga text-[14px] font-medium leading-[100%] tracking-[0]">
+            <div className="flex items-center gap-3 font-lufga text-head leading-[100%] tracking-[0]">
               <ModeSwitcher />
               <LanguageSwitcher />
             </div>

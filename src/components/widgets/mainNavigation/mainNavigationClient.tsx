@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cleanHref, routeMatchKey, displayTitle } from '../../../utils/utils';
-import { ApiNavItem, ApiNavDropdown } from '../../../types/type';
+import { ApiNavItem, ApiNavDropdown } from '../../../types/Type';
 
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
   return Array.isArray((item as any)?.children);

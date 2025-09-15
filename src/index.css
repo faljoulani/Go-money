@@ -3,9 +3,15 @@
 @tailwind utilities;
 @import url('https://fonts.cdnfonts.com/css/lufga');
 
-/* tokens */
 :root {
   --Background-background-neutral-200: #eeeeee;
+  --bg-white-opacity-75: hsla(0, 0%, 100%, 0.75);
+  --color-primary: #010663;
+  --color-secondary: #0b2a8e;
+
+  --text-primary: #010663;
+  --text-default: #424242;
+  --line-default: #e0e0e0;
 }
 
 body {

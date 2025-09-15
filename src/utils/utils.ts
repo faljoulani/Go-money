@@ -1,6 +1,6 @@
 import type { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
 
-import { CmsLink } from '../types/type';
+import { CmsLink } from '../types/Type';
 
 export function mergeClasses(...xs: Array<string | undefined | false | null>) {
   return xs.filter(Boolean).join(' ');

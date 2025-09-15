@@ -2,13 +2,13 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { HighlightBlockEntity } from './highlightBlock.entity';
 import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
 import { fetchData } from '../../../utils/sitefinity';
-import { CmsImage } from '../../../types/type';
+import { CmsImage } from '../../../types/Type';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import ContentWithImage from './contentWithImage';
-import ContentWithoutImage from './ContentWithoutImage';
+import ContentWithoutImage from './contentWithoutImage';
 import CTA from '../../atoms/cta/cta';
 
 function imageUrl(img: CmsImage): string | undefined {

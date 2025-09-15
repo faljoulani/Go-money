@@ -1,6 +1,6 @@
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import { CmsImage } from '../types/type';
-import { CmsPage } from '../types/type';
+import { CmsImage } from '../types/Type';
+import { CmsPage } from '../types/Type';
 import { resolveSitefinitySelection } from './utils';
 
 type Culture = string | undefined;

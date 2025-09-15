@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import MoonIcon from '../../../../public/icons/moon.svg';
+import MoonIcon from 'icons/moon.svg';
 
 export default function ModeSwitcher() {
   const { resolvedTheme, setTheme } = useTheme();

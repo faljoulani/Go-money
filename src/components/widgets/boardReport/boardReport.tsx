@@ -58,7 +58,6 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
     return null;
   }
 
-  // helpers
   const normalizeFiles = (files: any[] = []) =>
     (Array.isArray(files) ? files : []).map((f) => ({
       Id: f?.Id,
