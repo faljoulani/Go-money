@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { resolveAbsoluteUrl } from '../../../utils/utils';
+import { resolveAbsoluteUrl, sortByOrder } from '../../../utils/utils';
 
 import ScrollableCards from './scrollableCards';
 import FeatureCards from './featuresCards';
@@ -15,7 +15,6 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
-import FadeUp from './fadeUp';
 
 interface ExpandBoxItem {
   Id: string;
@@ -141,6 +140,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         'Title',
         'Description',
         'Eyebrow',
+        'Order',
         'CtaText',
         'CtaUrl',
         'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
@@ -156,6 +156,15 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         ? [childCardPayload]
         : [];
   }
+
+  console.log('CARD ITEMS', JSON.stringify(cardItems));
+
+  cardItems = sortByOrder(
+    cardItems.map((card) => ({
+      ...card,
+      Order: typeof card?.Order === 'number' ? card.Order : Number((card as any)?.order ?? 0),
+    })),
+  );
 
   const childCardData = cardItems.map((card) => {
     const img = first<CmsImage>(card?.Image);

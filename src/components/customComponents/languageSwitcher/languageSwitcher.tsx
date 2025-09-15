@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import FullPageLoader from '../../atoms/fullPageLoader/FullPageLoader';
+import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
 export default function LanguageSwitcher() {
   const [isPageLoading, setIsPageLoading] = useState(false);
