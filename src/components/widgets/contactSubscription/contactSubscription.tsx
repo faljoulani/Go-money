@@ -173,11 +173,12 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
             >
               {/* Corner ribbon (from public/icons) */}
               {box.HasLabelCorner && (
-                <div className="absolute w-[110px] h-[110px] bg-[#1919E5] rounded-bl-[60px] top-0 right-0 ">
+                <div className="absolute w-[110px] h-[110px] bg-[#1919E5] rounded-bl-[60px] top-0 right-0">
                   <div className="absolute w-[52px] h-[52px] bg-white right-0 top-0"></div>
                 </div>
               )}
               {/* Title / Subtitle */}
+              
               {box.Title && (
                 <Title
                   as="h3"

@@ -20,9 +20,9 @@ export default function FooterLinks({ groups, className = '', dir = 'ltr' }: Pro
   const current = routeMatchKey(cleanHref(pathname || '/'));
 
   return (
-    <div className={mergeClasses('grid grid-cols-3 gap-8', className)} dir={dir}>
+    <div className={mergeClasses('grid grid-cols-3 gap-8 h-[153px]', className)} dir={dir}>
       {groups.map((g) => (
-        <nav key={g.id} aria-label={g.title} className="flex flex-col">
+        <nav key={g.id} aria-label={g.title} className="flex flex-col w-[215px]">
           <h3 className="text-white text-lg font-semibold font-lufga">{g.title}</h3>
           <ul className="mt-4 space-y-3">
             {g.links.map((l) => {
