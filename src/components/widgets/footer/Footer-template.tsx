@@ -132,7 +132,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
   }));
 
   return (
-    <footer {...attrs} className="relative text-gray-300">
+    <footer {...attrs} className="relative text-gray-300 ">
       {/* Background gradient */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15]" />
 

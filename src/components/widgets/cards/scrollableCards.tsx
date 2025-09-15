@@ -125,96 +125,103 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
 
   return (
     <section {...attributes} className="w-full bg-white my-16">
-      <div className="mx-auto max-w-7xl px-8">
+      <div className="mx-auto max-w-7xl px-8 h-[1500px]">
         {/* Heading */}
-        <div className="text-center fadeup">
-          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-          <Title variant="hero" className="mb-1 mt-3 h-[59px]">
-            {title}
-          </Title>
-          {subtitle && <Description>{subtitle}</Description>}
-        </div>
+        <div className="moveUp h-[900px]">
+          <div className="sticky z-10 top-5 text-center fadeup">
+            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+            <Title variant="hero" className="mb-1 mt-3 h-[59px]">
+              {title}
+            </Title>
+            {subtitle && <Description>{subtitle}</Description>}
+          </div>
 
-        {/* Alternating frame */}
-        <div className="mt-10 px-[205px]">
-          <div className="space-y-16">
-            {childCardData.map((card, i) => {
-              const isRight = i % 2 === 1;
-              const rowTemplate = isRight
-                ? '[grid-template-columns:minmax(0,1fr)_330px]'
-                : '[grid-template-columns:330px_minmax(0,1fr)]';
+          {/* Alternating frame */}
+          <div className="mt-10 px-[205px]">
+            <div className="space-y-16">
+              {childCardData.map((card, i) => {
+                const isRight = i % 2 === 1;
+                const rowTemplate = isRight
+                  ? '[grid-template-columns:minmax(0,1fr)_330px]'
+                  : '[grid-template-columns:330px_minmax(0,1fr)]';
 
-              return (
-                <div key={card.id ?? i} className={`grid items-center ${rowTemplate} fadeupSlow`}>
-                  {/* Image side */}
+                return (
                   <div
-                    className={isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'}
+                    key={card.id ?? i}
+                    className={`grid items-center ${rowTemplate} fadeScaleTranslate`}
                   >
-                    <div className="relative">
-                      {/* Card image */}
-                      <div
-                        className="
+                    {/* Image side */}
+                    <div
+                      className={
+                        isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'
+                      }
+                    >
+                      <div className="relative">
+                        {/* Card image */}
+                        <div
+                          className="
                         relative overflow-hidden
                         rounded-xl
                         w-[330px] h-[250px]"
-                      >
-                        {card.imgUrl && (
-                          <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
-                        )}
-                      </div>
-
-                      {/* Decorative chip */}
-                      <div
-                        className={`absolute ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
-                      >
-                        {/* Blue block */}
-                        <div
-                          className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
                         >
-                          {/* White square cutout */}
+                          {card.imgUrl && (
+                            <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
+                          )}
+                        </div>
+
+                        {/* Decorative chip */}
+                        <div
+                          className={`absolute ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
+                        >
+                          {/* Blue block */}
                           <div
-                            className={`absolute w-10 h-10 bg-white ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
-                          ></div>
+                            className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
+                          >
+                            {/* White square cutout */}
+                            <div
+                              className={`absolute w-10 h-10 bg-white ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
+                            ></div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Text side */}
-                  <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
-                    <div className="max-w-[38rem]">
-                      <h3 className="text-[1.8rem] leading-tight font-medium text-[color:var(--navy,#0B2A8E)]">
-                        {card.title}
-                      </h3>
-                      {card.description && (
-                        <p className="mt-3 text-base leading-7 text-slate-700">
-                          {card.description}
-                        </p>
-                      )}
+                    {/* Text side */}
+                    <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
+                      <div className="max-w-[38rem]">
+                        <h3 className="text-[1.8rem] leading-tight font-medium text-[color:var(--navy,#0B2A8E)]">
+                          {card.title}
+                        </h3>
+                        {card.description && (
+                          <p className="mt-3 text-base leading-7 text-slate-700">
+                            {card.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        {/* Parent CTA */}
-        {ctaText && (
-          <div className="mt-10 text-center">
-            <CTA
-              href={(ctaHref || '').trim() || '#'}
-              color="#010663"
-              borderColor="#001081"
-              variant="outline"
-              width={248}
-              height={56}
-              className="rounded-[20px] px-6 py-[18px] border opacity-100"
-            >
-              {ctaText}
-            </CTA>
-          </div>
-        )}
+          {/* Parent CTA */}
+          {ctaText && (
+            <div className="mt-10 text-center">
+              <CTA
+                href={(ctaHref || '').trim() || '#'}
+                color="#010663"
+                borderColor="#001081"
+                variant="outline"
+                width={248}
+                height={56}
+                className="rounded-[20px] px-6 py-[18px] border opacity-100"
+              >
+                {ctaText}
+              </CTA>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
