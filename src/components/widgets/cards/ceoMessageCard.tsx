@@ -153,62 +153,18 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
             {items[0]?.description && (
-              <Description
-                align="left"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                }}
-              >
-                {items[0]?.description}
-              </Description>
+              <Description align="left">{items[0]?.description}</Description>
             )}
-            {items[0]?.title && (
-              <Title
-                align="left"
-                style={{
-                  fontSize: '24px',
-                  color: 'var(--Text-text-primary, #010663)',
-                  fontWeight: 500,
-                }}
-              >
-                {items[0]?.title}
-              </Title>
-            )}
+            {items[0]?.title && <Title align="left">{items[0]?.title}</Title>}
           </div>
         </div>
 
         <div className="text-start w-[522px] space-y-3">
           <div className="space-y-3">
             {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-            {title && (
-              <Title
-                align="left"
-                style={{
-                  fontSize: '33px',
-                  color: 'var(--Text-text-primary, #010663)',
-                  fontWeight: 700,
-                }}
-              >
-                {title}
-              </Title>
-            )}
+            {title && <Title align="left">{title}</Title>}
           </div>
-          <div>
-            {subtitle && (
-              <Description
-                align="left"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                }}
-              >
-                {subtitle}
-              </Description>
-            )}
-          </div>
+          <div>{subtitle && <Description align="left">{subtitle}</Description>}</div>
         </div>
       </div>
     </section>

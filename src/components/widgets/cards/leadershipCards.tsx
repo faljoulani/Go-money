@@ -132,9 +132,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
   return (
     <section {...attributes} className="w-full px-20 pt-5 pb-14 bg-[#EEEEEE]">
       <div className="mb-10">
-        <Title variant="hero" className="text-start h-[63px] w-[650px] ml-0">
-          {title}
-        </Title>
+        <Title className="text-start h-[63px] w-[650px] ml-0">{title}</Title>
         {subtitle && (
           <Description className="text-start ml-0 mt-1.5 text-[17px]">{subtitle}</Description>
         )}
