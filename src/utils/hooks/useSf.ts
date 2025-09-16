@@ -11,11 +11,7 @@ const fetcher = (url: string) =>
     return r.json();
   });
 
-export function useSf<T = any>(
-  path: string | null,                
-  params?: Params,
-  config?: SWRConfiguration,
-) {
+export function useSf<T = any>(path: string | null, params?: Params, config?: SWRConfiguration) {
   const url = useMemo(() => {
     if (!path) return null;
     const qs = new URLSearchParams();
@@ -23,7 +19,7 @@ export function useSf<T = any>(
       if (v !== undefined && v !== null) qs.set(k, String(v));
     });
     const p = path.replace(/^\/+/, '');
-    return `/api/sf/${p}${qs.toString() ? `?${qs.toString()}` : ''}`; 
+    return `${p}${qs.toString() ? `?${qs.toString()}` : ''}`;
   }, [path, params]);
 
   const { data, error, isLoading, mutate } = useSWR<T>(url, fetcher, {
@@ -33,3 +29,4 @@ export function useSf<T = any>(
 
   return { data, error, isLoading, mutate };
 }
+
