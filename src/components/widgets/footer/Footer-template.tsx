@@ -12,7 +12,6 @@ import {
   extractSelectionId,
 } from '../../../utils/sitefinity';
 import Title from '../../atoms/title/title';
-import WakeUp from './wakeup';
 
 type FooterGroup = {
   Id: string;
@@ -133,8 +132,8 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
   }));
 
   return (
-    <section {...attrs} className="[perspective:1000px]">
-      <footer className="relative text-gray-300 h-[769px] container">
+    <section {...attrs} className="relative [perspective:1000px] ">
+      <footer className=" text-gray-300 h-[769px] flip">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         <img
@@ -142,7 +141,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           alt=""
           className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px]"
         />
-        <div className="w-full max-w-[1400px] px-20 py-16">
+        <div className="px-20 py-16">
           {(footerData.Title || footerData.SubTitle) && (
             <Title align="left" className="max-w-3xl">
               {footerData.Title || footerData.SubTitle}
