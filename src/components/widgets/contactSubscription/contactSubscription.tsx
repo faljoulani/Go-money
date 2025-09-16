@@ -82,18 +82,17 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
           {box.SubTitle && isSubscribe ? (
             <Description
               align="left"
-              color="text-14px font-normal leading-5"
               maxWidth="none"
-              className="mt-0 text-28px"
+              className="mt-0 text-lg font-normal leading-5"
             >
               {box.SubTitle}
             </Description>
           ) : (
             <Description
               align="left"
-              color="text-14px font-normal leading-5"
+              color=""
               maxWidth="none"
-              className="mt-0 text-[28px] w-72"
+              className="mt-0 text-[28px] w-72 text-lg font-normal leading-5"
             >
               {box.SubTitle}
             </Description>
@@ -103,14 +102,14 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
 
       {isSubscribe ? (
         <div className="mt-8">
-    <SubscribeEmailForm
-      placeholder={box.EmailPlaceholder || 'Enter your email address'}
-      label={box.EmailLabel || 'Email'}
-      button={box.ButtonLabel || 'Subscribe Now'}
-      endpoint="api/default/SubscriptionEmails"
-    />
-  </div>
-) : (
+          <SubscribeEmailForm
+            placeholder={box.EmailPlaceholder || 'Enter your email address'}
+            label={box.EmailLabel || 'Email'}
+            button={box.ButtonLabel || 'Subscribe Now'}
+            endpoint="api/default/SubscriptionEmails"
+          />
+        </div>
+      ) : (
         <div className="mt-6 flex flex-col items-center text-center">
           <div className="mb-8 grid w-full max-w-[520px] grid-cols-1 gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
@@ -172,7 +171,7 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
-            className="w-full max-w-[525px] rounded-[20px] border-[2px] px-6 py-[18px]"
+            className="w-full max-w-[525px] font-semibold rounded-[20px] border-[2px] px-6 py-[18px]"
           >
             {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
           </CTA>

@@ -2,11 +2,6 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HowItWorksSimple } from './howItWorksSimple';
-// import HowItWorksRings from './HowItWorksRings.png';
-// import NavyBackground from './NavyBackground.webp';
-// import pocketImg from './pocketHQ.webp';
-// import transparentNavy from './transparentNavy.png';
-// import Mobile from './Mobile.png';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -20,7 +15,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
-  // Read designer selection
+
   let selection = props.model?.Properties?.HowItWork ?? (props.model?.Properties as any)?.HowItWork;
   if (typeof selection === 'string') {
     try {
@@ -30,7 +25,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     }
   }
 
-  // Fetch selected section (only necessary fields)
   let item: any;
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
@@ -74,7 +68,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return null;
   }
 
-  // ---------- helpers ----------
   const first = (v: any) => (Array.isArray(v) ? v[0] : v) || null;
 
   const pickOneMedia = (val: any) => {
@@ -100,7 +93,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  // ---------- normalize for view ----------
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -130,16 +122,26 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
-  // ---------- render ----------
   if (selectedView === 'Simple') {
     return <HowItWorksSimple {...props} />;
   }
   return (
     <section {...attrs} className="relative mx-20 bg-white">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 mb-2 fadeup">
+      <div className="flex flex-col gap-2 text-center fadeup">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
-        {view.Title && <Title className="h-[59px] mt-3 mb-1">{view.Title}</Title>}
+        {view.Title && (
+          <Title
+            className="
+              text-5xl
+              font-bold     
+              tracking-tight
+              leading-[100%]
+            "
+          >
+            {view.Title}
+          </Title>
+        )}
         {view.HeaderText && <Description>{view.HeaderText}</Description>}
       </div>
 

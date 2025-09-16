@@ -12,7 +12,6 @@ import {
   extractSelectionId,
 } from '../../../utils/sitefinity';
 import Title from '../../atoms/title/title';
-import WakeUp from './wakeup';
 
 type FooterGroup = {
   Id: string;
@@ -25,6 +24,7 @@ type FooterGroup = {
     ViewUrl?: string;
     RelativeUrlPath?: string;
     HasChildren?: boolean;
+    Order?: number;
   }>;
 };
 
@@ -68,12 +68,15 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
   if (!id) {
     return isEdit ? (
-      <footer {...attrs} className="p-4 text-sm text-gray-500">
-        Select a Footer item.
-      </footer>
+      <section
+        {...attrs}
+        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+      >
+        <strong>Select a Footer item.</strong>
+        <div className="mt-1">Open the designer and select the desired item.</div>
+      </section>
     ) : null;
   }
-
   const FIELDS = [
     'Id',
     'Title',
@@ -84,7 +87,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
     'ExtraNote',
     'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
     'CertificationLinks($select=Id,Title,description,Order,Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
-    'FooterNavigation($select=Id,SectionTitle,Order,Pages($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath,HasChildren))',
+    'FooterNavigation($select=Id,SectionTitle,Order,Pages($select=Id,Title,UrlName,ViewUrl,Order,RelativeUrlPath,HasChildren))',
     'SocialLinks($select=Id,Title,Url,Order,Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
   ];
 
@@ -92,8 +95,6 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
     itemType: selection?.Content?.[0]?.Type,
     single: true,
   });
-
-  console.log('Footer data', { footerPayload });
 
   const footerData: FooterItem | null = footerPayload
     ? Array.isArray(footerPayload)
@@ -109,32 +110,32 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
     ) : null;
   }
 
-  /* maps on item data */
-
   const logoImg = selectPrimaryImage(footerData.Logo);
   const logoSrc = (() => {
-    const p = getImageSrc(logoImg);
-    return p ? resolveAbsoluteUrl(p, props.requestContext) : null;
+    const url = getImageSrc(logoImg);
+    return url ? resolveAbsoluteUrl(url, props.requestContext) : null;
   })();
-
-  const FooterNav: FooterGroup[] = sortByOrder(footerData.FooterNavigation || []);
 
   const certifications: Certification[] = sortByOrder(footerData.CertificationLinks || []);
   const socials: Social[] = sortByOrder(footerData.SocialLinks || []);
 
-  const linkGroups: FooterLinksGroup[] = FooterNav.map((nav, index) => ({
-    id: nav.Id ?? `grp-${index}-${nav.SectionTitle ?? 'untitled'}`,
+  const FooterNav: FooterGroup[] = sortByOrder(footerData.FooterNavigation || []);
+
+  const linkGroups: FooterLinksGroup[] = FooterNav.map((nav, gIndex) => ({
+    id: nav.Id ?? `grp-${gIndex}-${nav.SectionTitle ?? 'untitled'}`,
     title: nav.SectionTitle,
-    links: (nav.Pages || []).map((p, pi) => ({
-      id: p.Id ?? `link-${index}-${pi}-${p.Title ?? p.UrlName ?? p.RelativeUrlPath ?? 'untitled'}`,
-      title: p.Title,
-      href: pageHref(p),
+    links: sortByOrder(nav.Pages || []).map((page, pIndex) => ({
+      id:
+        page.Id ??
+        `link-${gIndex}-${pIndex}-${page.Title ?? page.UrlName ?? page.RelativeUrlPath ?? 'untitled'}`,
+      title: page.Title,
+      href: pageHref(page),
     })),
   }));
 
   return (
-    <section {...attrs} className="[perspective:1000px]">
-      <footer className="relative text-gray-300 h-[769px] container">
+    <section {...attrs} className="relative [perspective:1000px] ">
+      <footer className=" text-gray-300 h-[769px] flip">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         <img
@@ -142,9 +143,13 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           alt=""
           className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px]"
         />
-        <div className="w-full max-w-[1400px] px-20 py-16">
+        <div className="px-20 py-16">
           {(footerData.Title || footerData.SubTitle) && (
-            <Title align="left" className="max-w-3xl">
+            <Title
+              align="left"
+              color="text-white"
+              className="text-40px max-w-lg leading-[60px] tracking-[-0.02em]"
+            >
               {footerData.Title || footerData.SubTitle}
             </Title>
           )}
@@ -216,7 +221,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className="pl-16 text-left mt-8" dir="rtl" />
+              <FooterLinks groups={linkGroups} className="pl-16 text-left mt-8" />
             </div>
           </div>
 

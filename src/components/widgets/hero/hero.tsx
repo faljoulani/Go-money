@@ -3,14 +3,14 @@ import {
   htmlAttributes,
   RenderWidgetService,
 } from '@progress/sitefinity-nextjs-sdk';
-import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-import { HeroEntity } from './hero.entity';
+import type { HeroEntity } from './hero.entity';
 import Image from 'next/image';
-import { resolveSitefinitySelection } from '../../../utils/utils';
+import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
-import Eyebrow from '../../atoms/eyebrow/eyebrow';
+import { resolveSitefinitySelection, resolveAbsoluteUrl, linkToHref } from '../../../utils/utils';
+import { fetchData, pickOneMedia, getImageSrc } from '../../../utils/sitefinity';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -19,128 +19,83 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
-  try {
-    console.log('[Hero] Rendering view:', selectedView);
-  } catch {}
 
-  let selection = resolveSitefinitySelection(
+  const selection = resolveSitefinitySelection(
     props.model?.Properties?.Hero ?? (props.model?.Properties as any)?.Hero,
   );
 
-  let item: any;
-  if (selection?.Content?.length) {
-    const id = selection?.ItemIdsOrdered?.[0]?.toString();
-    const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
+  const heroType = selection?.Content?.[0]?.Type as string | undefined;
+  const heroId = selection?.ItemIdsOrdered?.[0]?.toString();
+
+  const heroFields = [
+    'Id',
+    'Title',
+    'Description',
+    'Eyebrow',
+    'CtaText',
+    'CtaUrl',
+    'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
+  ];
+
+  let item: any = null;
+  if (heroType && heroId) {
     try {
-      item = await RestClient.getItem({
-        id,
-        provider,
-        type: selection.Content[0].Type,
-        culture: props.requestContext.culture,
-        traceContext: props.traceContext,
-        fields: [
-          'Id',
-          'Title',
-          'Description',
-          'Eyebrow',
-          'CtaText',
-          'CtaUrl',
-          'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
-        ],
-      });
+      item = await fetchData(
+        [heroId],
+        { Cards: { ItemIdsOrdered: [heroId] } },
+        props.requestContext.culture,
+        heroFields,
+        { itemType: heroType, single: true },
+      );
     } catch {
-      /* ignore */
+      item = null;
     }
   }
 
   if (!item) {
     if (props.requestContext.isEdit) {
       return (
-        <section {...attrs} className="Hero-widget p-6 border border-dashed">
-          Select a Hero item.
+        <section
+          {...attrs}
+          className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+        >
+          <strong> Select a Hero item.</strong>
+          <div className="mt-1">Open the designer and select the desired item.</div>
         </section>
       );
     }
     return null;
   }
 
-  const firstOrSelf = (field: any) => (Array.isArray(field) ? field[0] : field);
-  const parseLink = (linkField: any): string | undefined => {
-    if (!linkField) return;
-    if (typeof linkField === 'string') {
-      try {
-        const parsed = JSON.parse(linkField);
-        return parsed?.[0]?.href || parsed?.[0]?.Href;
-      } catch {
-        return linkField;
-      }
-    }
-    if (Array.isArray(linkField)) return linkField[0]?.href || linkField[0]?.Href;
-    return linkField.href || linkField.Href || linkField;
-  };
-  const pickUrl = (m: any): string | undefined =>
-    m?.Url ||
-    m?.MediaUrl ||
-    m?.ThumbnailUrl ||
-    m?.EmbedUrl ||
-    m?.Urls?.Default ||
-    m?.Urls?.DefaultUrl;
-
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
-  const ctaUrl = parseLink(item.CtaUrl);
+  const ctaUrl = linkToHref(item.CtaUrl);
 
-  let bgMedia = firstOrSelf(item.BackgroundImage);
-  if (bgMedia && !pickUrl(bgMedia) && bgMedia.Id) {
+  let bgMedia = pickOneMedia(item.BackgroundImage);
+  if (bgMedia && !getImageSrc(bgMedia) && bgMedia.Id) {
     try {
-      const full = await RestClient.getItem({
-        type: 'Telerik.Sitefinity.Libraries.Model.Image',
-        id: bgMedia.Id?.toString(),
-        provider: bgMedia.Provider?.toString(),
-        culture: props.requestContext.culture,
-        traceContext: props.traceContext,
-        fields: [
-          'Id',
-          'Url',
-          'MediaUrl',
-          'ThumbnailUrl',
-          'EmbedUrl',
-          'Title',
-          'AlternativeText',
-          'Urls',
-        ],
-      });
-      bgMedia = { ...full, ...bgMedia };
+      const image = await fetchData(
+        [bgMedia.Id.toString()],
+        { Cards: { ItemIdsOrdered: [bgMedia.Id.toString()] } },
+        props.requestContext.culture,
+        ['Id', 'Url', 'MediaUrl', 'ThumbnailUrl', 'EmbedUrl', 'Title', 'AlternativeText', 'Urls'],
+        { itemType: selection?.Content?.[0]?.Type, single: true },
+      );
+      bgMedia = { ...image, ...bgMedia };
     } catch (err) {
-      console.error('Hero image fetch failed:', err);
+      console.warn('Could not fetch background image for Hero component');
     }
   }
-  const bgUrl = pickUrl(bgMedia);
+  const bgUrl = getImageSrc(bgMedia);
   const bgAlt = bgMedia?.AlternativeText || bgMedia?.Title || title;
+  const heroImgUrl = resolveAbsoluteUrl(bgUrl, props.requestContext);
 
-  const toAbsolute = (u?: string) => {
-    if (!u) return undefined;
-    if (/^https?:\/\//i.test(u)) return u;
-    const base =
-      (props.requestContext as any)?.siteData?.SiteUrl ??
-      (typeof window !== 'undefined' ? window.location.origin : undefined);
-    try {
-      return base ? new URL(u, base).toString() : u;
-    } catch {
-      return u;
-    }
-  };
-  const heroImgUrl = toAbsolute(bgUrl);
+  const breadcrumbs = props.model.Children.filter((c) => c.PlaceHolder === 'Breadcrumb').map(
+    (m) => ({ model: m, requestContext: props.requestContext }),
+  );
 
-  const bc = (props.model.Children)
-    .filter((c) => c.PlaceHolder === 'Breadcrumb')
-    .map((m) => ({
-      model: m,
-      requestContext: props.requestContext,
-    }));
-    
   const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
@@ -154,21 +109,13 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           backgroundPosition: 'center',
         }}
       >
-        <div className=" max-w-4xl px-6 pb-20 text-center">
+        <div className="max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
             <div className="mb-6" data-sfcontainer="Breadcrumb">
-              {bc.map((y, i) =>
+              {breadcrumbs.map((y) =>
                 RenderWidgetService.createComponent(y.model, props.requestContext),
-              )}{' '}
+              )}
             </div>
-            {/* <div className="mb-6">
-              <BreadcrumbCustomView
-                requestContext={props.requestContext}
-                items={[]}
-                widgetContext={props}
-                attributes={{}}
-              />
-            </div> */}
           </div>
           {title && (
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
@@ -181,7 +128,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     );
   }
 
-  // DEFAULT hero
   return (
     <section
       {...attrs}
@@ -205,40 +151,41 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
         <div className="flex flex-col gap-3 mb-44">
           {eyebrow && (
-            <Eyebrow className='fadeLeftHero' color="white" align="left">
+            <Eyebrow className="fadeLeftHero" color="white" align="left">
               {eyebrow}
             </Eyebrow>
           )}
+
           {title && (
             <Title
               align="left"
               color="text-white"
-              className="
-                mt-1 mx-0 max-w-[400px]
-                font-bold
-                text-[48px]
-                leading-[100%]
-                tracking-[-0.02em] fadeLeftHero
-              "
+              className="mt-1 mx-0 max-w-[500px] font-bold text-[60px] leading-[80px] tracking-[-0.02em] fadeLeftHero"
             >
               {title}
             </Title>
           )}
+
           {description && (
-            <Description align="left" html={description} className="text-white font-extralight fadeLeftHero" />
+            <Description
+              align="left"
+              html={description}
+              className="text-white font-extralight fadeLeftHero"
+            />
           )}
 
           {ctaText && (
             <div>
               <CTA
-                href={(ctaUrl || '').trim() || '#'}
-                textColor="text-white"
-                borderColor="border-white"
-                bgColor="transparent"
                 variant="outline"
-                icon="slot"
-                className="rounded-[20px] px-6 py-[18px] border opacity-100 fadeLeftHero"
+                colorText="text-white"
+                fontText="font-lufga"
+                fontWeight="font-semibold"
+                borderColor="border-white"
                 align="left"
+                icon="slot"
+                bgColor="transparent"
+                href={ctaUrl || '#'}
               >
                 {ctaText}
               </CTA>
