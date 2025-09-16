@@ -53,6 +53,9 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const eyebrow = parentCardData?.Eyebrow ?? '';
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
+  console.log('eyebrow', eyebrow);
+  console.log('title', title);
+  console.log('subtitle', subtitle);
   const ctaText = parentCardData?.CtaText ?? '';
   const ctaUrlRaw = parentCardData?.CtaUrl;
   const ctaHref =
@@ -127,12 +130,10 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
     <section {...attributes} className="w-full bg-white my-16">
       <div className="mx-auto max-w-7xl px-8">
         {/* Heading */}
-        <div className="text-center fadeup">
+        <div className="flex flex-col gap-2 text-center fadeup">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-          <Title variant="hero" className="mb-1 mt-3 h-[59px]">
-            {title}
-          </Title>
-          {subtitle && <Description>{subtitle}</Description>}
+          <Title>{title}</Title>
+          {subtitle && <Description className="font-extralight">{subtitle}</Description>}
         </div>
 
         {/* Alternating frame */}
@@ -169,7 +170,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                       >
                         {/* Blue block */}
                         <div
-                          className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
+                          className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : 'bg-secondary rounded-tl-3xl'}`}
                         >
                           {/* White square cutout */}
                           <div
@@ -201,15 +202,15 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
 
         {/* Parent CTA */}
         {ctaText && (
-          <div className="mt-10 text-center">
+          <div className="mt-12 text-center">
             <CTA
               href={(ctaHref || '').trim() || '#'}
-              color="#010663"
-              borderColor="#001081"
+              textColor="text-primary"
+              borderColor="border-primary"
+              bgColor="transparent"
               variant="outline"
-              width={248}
-              height={56}
-              className="rounded-[20px] px-6 py-[18px] border opacity-100"
+              icon="arrow"
+              className="mt-16"
             >
               {ctaText}
             </CTA>

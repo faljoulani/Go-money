@@ -3,68 +3,76 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-type BaseProps = {
+type Variant = 'outline' | 'solid';
+type Icon = 'arrow' | 'slot' | null;
+
+type Props = {
   children: React.ReactNode;
   className?: string;
-  color?: string;
-  borderColor?: string;
-  variant?: 'outline' | 'solid';
+  variant?: Variant;
+  icon?: Icon;
   disabled?: boolean;
-  icon?: 'arrow' | 'slot' | null;
-  width?: number;
-  height?: number;
+  href?: string;
   target?: '_self' | '_blank';
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  textColor?: string;
+  borderColor?: string;
+  bgColor?: string;
+  align?: 'left' | 'center' | 'right';
+  block?: boolean;
 };
-
-type Linkish = {
-  href?: string;
-};
-
-type Props = BaseProps & Linkish;
 
 export default function CTA({
   children,
   className = '',
-  color = '#0B2A8E',
-  borderColor = 'var(--background, #F7FAFC)',
   variant = 'outline',
-  disabled = false,
   icon = null,
-  width = 250,
-  height = 56,
-  target = '_self',
+  disabled = false,
   href,
+  target = '_self',
   onClick,
+  textColor = 'text-primary',
+  borderColor = 'border-primary',
+  bgColor = 'bg-primary',
+  align = 'center',
+  block = false,
 }: Props) {
   const router = useRouter();
 
-  const styleVars: React.CSSProperties = {
-    ['--cta-text' as any]: color,
-    ['--cta-border' as any]: borderColor,
-  };
-
   const base =
-    'inline-flex items-center justify-center gap-[10px] rounded-[20px] border font-semibold select-none ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-colors ' +
-    'shadow-[inset_0_1px_0_rgba(255,255,255,.8)]';
+    'inline-flex items-center gap-2 rounded-2xl select-none border ' +
+    'px-6 py-3 text-[16px] leading-[100%] font-light' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
+    'transition-colors';
 
-  const size = 'px-6 py-[18px]';
+  const alignClass =
+    align === 'left'
+      ? 'justify-start text-left'
+      : align === 'right'
+        ? 'justify-end text-right'
+        : 'justify-center text-center';
 
-  const outline =
-    'bg-transparent border-[color:var(--cta-border)] text-[color:var(--cta-text)] ' +
-    'hover:bg-[color:var(--cta-border)]/10';
+  const widthClass = block ? 'w-full' : '';
 
-  const solid = 'text-white border-transparent ' + 'bg-[color:var(--cta-text)] hover:brightness-95';
+  const outline = `bg-transparent ${textColor} ${borderColor} hover:opacity-80`;
+  const solid = `text-white ${bgColor} border-transparent hover:brightness-95`;
 
-  const disabledCls = disabled ? 'opacity-60 cursor-not-allowed' : '';
+  const disabledCls = disabled ? 'opacity-60 cursor-not-allowed pointer-events-none' : '';
 
-  const classes = [base, size, variant === 'solid' ? solid : outline, disabledCls, className]
+  const classes = [
+    base,
+    alignClass,
+    widthClass,
+    variant === 'solid' ? solid : outline,
+    disabledCls,
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
+
     if (onClick) {
       await onClick(e);
       if (e.defaultPrevented) return;
@@ -82,17 +90,15 @@ export default function CTA({
   return (
     <button
       type="button"
-      onClick={handleClick}
-      aria-disabled={disabled}
       role={href ? 'link' : 'button'}
+      aria-disabled={disabled}
+      onClick={handleClick}
       className={classes}
-      style={{ ...styleVars, width, height }}
     >
       <span className="whitespace-nowrap">{children}</span>
 
       {icon === 'arrow' && <img src="/icons/chevron-right.svg" alt="chevron-right" />}
-
-      {icon === 'slot' && <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="" />}
+      {icon === 'slot' && <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" />}
     </button>
   );
 }

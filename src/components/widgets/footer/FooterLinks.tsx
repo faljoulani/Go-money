@@ -35,8 +35,8 @@ export default function FooterLinks({ groups, className = '', dir = 'ltr' }: Pro
                     href={l.href}
                     aria-current={active ? 'page' : undefined}
                     className={mergeClasses(
-                      'font-lufga font-normal text-[16px] leading-[100%] no-underline transition-colors align-middle',
-                      active ? 'text-primary' : 'text-gray-300 hover:text-primary',
+                      'font-lufga font-normal text-base leading-[100%] no-underline transition-colors align-middle',
+                      active ? 'text-primary' : 'text-[#E0E0E0]',
                     )}
                   >
                     {l.title}

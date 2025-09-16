@@ -7,6 +7,7 @@ import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
+/* — helpers — */
 type ContactBox = {
   Id?: string;
   Title?: string;
@@ -19,92 +20,180 @@ type ContactBox = {
   CallUsText?: string;
   hasLabelCorner?: boolean;
   HasLabelCorner?: boolean;
-  CTAURL?: unknown;
+  CTAURL?: any;
   Variant?: 'subscribe' | 'contact';
   Mode?: 'subscribe' | 'contact';
   Layout?: 'subscribe' | 'contact';
-  IsSubscribeOnly?: boolean | string;
 };
-
 type ContactSubscriptionParent = {
   Id: string;
   Title?: string;
-  UrlName?: string;
   Box?: ContactBox[] | ContactBox | null;
 };
 
-type ParsedLink = { href: string; text?: string; target?: string } | null;
 const toBool = (v: any) => (typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true');
-
-function parseLink(value: any): ParsedLink {
-  if (!value) return null;
-  let raw: any = value;
-
-  if (typeof raw === 'string') {
-    const s = raw.trim();
-    if (!s) return null;
-    try {
-      raw = JSON.parse(s);
-    } catch {
-      return { href: s };
-    }
+const parseLink = (v: any) => {
+  if (!v) return null;
+  try {
+    const o = typeof v === 'string' ? JSON.parse(v) : Array.isArray(v) ? v[0] : v;
+    const href = String(o?.Href ?? o?.href ?? '').trim();
+    if (!href) return null;
+    return { href, text: o?.Text || o?.text, target: o?.Target || o?.target };
+  } catch {
+    return typeof v === 'string' ? { href: v } : null;
   }
-  if (Array.isArray(raw)) raw = raw.find(Boolean) ?? null;
-  if (!raw || typeof raw !== 'object') return null;
-
-  const href = String(raw.Href ?? raw.href ?? '').trim();
-  if (!href) return null;
-
-  const text = String(raw.Text ?? raw.text ?? raw.Title ?? '').trim() || undefined;
-  const target = String(raw.Target ?? raw.target ?? '').trim() || undefined;
-  return { href, text, target };
-}
-
-type NormalizedBox = {
-  Id?: string;
-  Title?: string;
-  SubTitle?: string;
-  ButtonLabel?: string;
-  EmailLabel?: string;
-  EmailText?: string;
-  EmailPlaceholder?: string;
-  CallUsLabel?: string;
-  CallUsText?: string;
-  HasLabelCorner: boolean;
-  CTA: ParsedLink;
-  variant: 'subscribe' | 'contact';
+};
+const normalize = (b: ContactBox) => {
+  const hasCorner = toBool((b as any).HasLabelCorner) || toBool(b.hasLabelCorner);
+  const hasInput = !!b.EmailPlaceholder;
+  const variant =
+    (b.Variant || b.Mode || b.Layout) ??
+    (hasCorner ? 'contact' : hasInput ? 'subscribe' : 'contact');
+  return {
+    ...b,
+    HasLabelCorner: hasCorner,
+    variant: variant as 'subscribe' | 'contact',
+    CTA: parseLink(b.CTAURL),
+  };
 };
 
-function normalizeBoxes(boxes: ContactBox[]): NormalizedBox[] {
-  return (boxes || []).map((b) => {
-    const hasCorner = toBool(b.hasLabelCorner) || toBool((b as any).HasLabelCorner);
-    const cta = parseLink(b.CTAURL);
+/* — small, single card — */
+function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; className?: string }) {
+  const isSubscribe = box.variant === 'subscribe';
+  return (
+    <div
+      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8 ${className}`}
+    >
+      {/* corner only for contact */}
+      {box.HasLabelCorner && !isSubscribe && (
+        <div className="pointer-events-none absolute right-0 top-0 h-[110px] w-[110px] rounded-bl-[60px] bg-[#1919E5]">
+          <div className="absolute right-0 top-0 h-[52px] w-[52px] bg-white" />
+        </div>
+      )}
 
-    const hasInput = !!b.EmailPlaceholder && String(b.EmailPlaceholder).trim().length > 0;
+      {(box.Title || box.SubTitle) && (
+        <div className="flex flex-col gap-3">
+          {box.Title && (
+            <Title align="left" color="text-primary" className="text-left text-40px leading-10">
+              {box.Title}
+            </Title>
+          )}
+          {box.SubTitle && isSubscribe ? (
+            <Description
+              align="left"
+              color="text-14px font-normal leading-5"
+              maxWidth="none"
+              className="mt-0 text-28px"
+            >
+              {box.SubTitle}
+            </Description>
+          ) : (
+            <Description
+              align="left"
+              color="text-14px font-normal leading-5"
+              maxWidth="none"
+              className="mt-0 text-[28px] w-72"
+            >
+              {box.SubTitle}
+            </Description>
+          )}
+        </div>
+      )}
 
-    const variant: 'subscribe' | 'contact' = hasCorner
-      ? 'contact'
-      : hasInput
-        ? 'subscribe'
-        : 'contact';
-
-    return {
-      Id: b.Id,
-      Title: b.Title,
-      SubTitle: b.SubTitle,
-      ButtonLabel: b.ButtonLabel,
-      EmailLabel: b.EmailLabel,
-      EmailText: b.EmailText,
-      EmailPlaceholder: b.EmailPlaceholder,
-      CallUsLabel: b.CallUsLabel,
-      CallUsText: b.CallUsText,
-      HasLabelCorner: hasCorner,
-      CTA: cta,
-      variant,
-    };
-  });
+      {isSubscribe ? (
+        <div className="mt-8">
+          <label className="sr-only">{box.EmailLabel || 'Email'}</label>
+          <div className="mb-4 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
+            <input
+              type="email"
+              inputMode="email"
+              placeholder={box.EmailPlaceholder || 'Enter your email address'}
+              aria-label={box.EmailLabel || 'Email'}
+              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
+            />
+          </div>
+          <CTA
+            borderColor="border-primary"
+            variant="outline"
+            icon="arrow"
+            className="w-full rounded-[20px] border-[2px] px-6 py-[18px]"
+          >
+            {box.ButtonLabel || 'Subscribe Now'}
+          </CTA>
+        </div>
+      ) : (
+        <div className="mt-6 flex flex-col items-center text-center">
+          <div className="mb-8 grid w-full max-w-[520px] grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
+              <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
+                {/* phone icon */}
+                <svg
+                  aria-hidden
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="shrink-0"
+                >
+                  <path
+                    d="M6 2h4l1 5-2 1a12 12 0 005 5l1-2 5 1v4c0 1-1 2-2 2A16 16 0 014 6c0-1 1-2 2-2z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span>{box.CallUsLabel || 'Call Us'}</span>
+              </div>
+              <div className="mt-2 h-px bg-[#EAEDF3]" />
+              <div className="mt-2 text-xs text-[#424242]">
+                {box.CallUsText || '+966 11 123 4567'}
+              </div>
+            </div>
+            <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
+              <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
+                {/* mail icon */}
+                <svg
+                  aria-hidden
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="shrink-0"
+                >
+                  <path
+                    d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm0 0l8 6 8-6"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span className="text-xs">{box.EmailLabel || 'Email'}</span>
+              </div>
+              <div className="mt-2 h-px bg-[#EAEDF3]" />
+              <div className="mt-2 text-xs text-[#424242]">
+                {box.EmailText || 'support@go-money.sa'}
+              </div>
+            </div>
+          </div>
+          <CTA
+            href={box.CTA?.href || '#'}
+            target={(box.CTA?.target as '_self' | '_blank') || '_self'}
+            borderColor="border-primary"
+            variant="outline"
+            icon="arrow"
+            className="w-full max-w-[525px] rounded-[20px] border-[2px] px-6 py-[18px]"
+          >
+            {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
+          </CTA>
+        </div>
+      )}
+    </div>
+  );
 }
 
+/* — main — */
 export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
@@ -112,11 +201,11 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const properties = (props.model?.Properties || {}) as any;
   const rawSel =
     resolveSitefinitySelection(properties?.ContactSubscription) ?? properties?.ContactSubscription;
-
   const parentId = extractSelectionId(rawSel);
+
   if (!parentId) {
     return isEdit ? (
-      <section {...attrs} className="ContactSubscription">
+      <section {...attrs}>
         <div className="w-full rounded-2xl border border-dashed p-6 text-center text-slate-600">
           <strong>Contact Subscription</strong>
           <div className="mt-1">Open the designer and select a Contact Subscription item.</div>
@@ -132,179 +221,37 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
     [
       'Id',
       'Title',
-      'UrlName',
-      'Box(' +
-        '$select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner' +
-        ')',
+      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner)',
     ],
     { itemType: rawSel?.Content?.[0]?.Type, single: true },
   )) as ContactSubscriptionParent | null;
 
-  const rawBoxes = Array.isArray(parent.Box) ? parent.Box : parent.Box ? [parent.Box] : [];
-  const boxes = normalizeBoxes(rawBoxes);
+  const raw = Array.isArray(parent?.Box) ? parent?.Box : parent?.Box ? [parent?.Box] : [];
+  const items = raw.map(normalize);
+
+  // decide left/right (subscribe then contact)
+  const left = items.find((x) => x.variant === 'subscribe') ?? items[0];
+  const right = items.find((x) => x !== left) ?? items[1];
 
   return (
-    <section
-      {...attrs}
-      className="ContactSubscription bg-[var(--Background-background-neutral-200,_#EEEEEE)] py-10 px-20 md:py-14"
-    >
-      <div className="mx-auto max-w-[1240px] ">
-        {parent.Title && (
-          <Title
-            as="h2"
-            align="left"
-            fontSize={40}
-            fontWeight={400}
-            lineHeight="100%"
-            letterSpacing="-0.02em"
-            maxWidth={710}
-            className="mb-8"
-          >
-            {parent.Title}
-          </Title>
-        )}
-        {/* Stretch items so all cards have equal height */}
-        <div className="grid items-stretch gap-8 md:grid-cols-2 h-[373px]">
-          {boxes.map((box, index) => (
-            <div
-              key={box.Id ?? box.Title}
-              className="gap-3 relative flex h-full flex-col overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8"
+    <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16">
+      <div className="mx-auto max-w-[1240px]">
+        {parent?.Title && (
+          <div className="mb-8 md:mb-10">
+            <Title
+              align="left"
+              color="text-primary"
+              className="font-lufga text-left font-normal text-[40px] leading-[100%] tracking-[-0.02em] max-w-[720px]"
             >
-              {/* Corner ribbon (from public/icons) */}
-              {box.HasLabelCorner && (
-                <div className="absolute w-[110px] h-[110px] bg-[#1919E5] rounded-bl-[60px] top-0 right-0 ">
-                  <div className="absolute w-[52px] h-[52px] bg-white right-0 top-0"></div>
-                </div>
-              )}
-              {/* Title / Subtitle */}
-              {box.Title && (
-                <Title
-                  as="h3"
-                  align="left"
-                  variant="section"
-                  fontSize={28}
-                  fontWeight={700}
-                  lineHeight="100%"
-                  letterSpacing="-0.02em"
-                  color="var(--Text-text-primary, #010663)"
-                  maxWidth="none"
-                  className="mb-2"
-                >
-                  {box.Title}
-                </Title>
-              )}
-              {box.SubTitle && (
-                <Description
-                  align="left"
-                  color="var(--Text-text-default, #424242)"
-                  maxWidth="none"
-                  className={`mt-0 text-[19px] leading-normal tracking-[0] ${index === 1 ? 'w-[300px] leading-normal' : ''}`}
-                >
-                  {box.SubTitle}
-                </Description>
-              )}
+              {parent.Title}
+            </Title>
+          </div>
+        )}
 
-              {/* Variant content + CTA pinned to bottom */}
-              {box.variant === 'subscribe' ? (
-                <div className="flex h-full flex-col">
-                  <div className="flex-1">
-                    <label className="sr-only">{box.EmailLabel || 'Email'}</label>
-                    <div className="mb-4 mt-12 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
-                      <input
-                        type="email"
-                        inputMode="email"
-                        placeholder={box.EmailPlaceholder || 'Enter your email address'}
-                        aria-label={box.EmailLabel || 'Email'}
-                        className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
-                      />
-                    </div>
-                  </div>
-                  <CTA
-                    color="#010663"
-                    borderColor="#010663"
-                    variant="outline"
-                    width={525.2}
-                    height={56.56}
-                    icon="arrow"
-                    className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
-                  >
-                    {box.ButtonLabel || 'Subscribe Now'}
-                  </CTA>
-                </div>
-              ) : (
-                <div className="flex h-full flex-col items-center text-center">
-                  <div className="mb-8 mt-6 grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 w-full max-w-[500px] h-[97px]">
-                    {/* Call block */}
-                    <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
-                      <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
-                        <svg
-                          aria-hidden
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          className="shrink-0"
-                        >
-                          <path
-                            d="M6 2h4l1 5-2 1a12 12 0 005 5l1-2 5 1v4c0 1-1 2-2 2A16 16 0 014 6c0-1 1-2 2-2z"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        <span>{box.CallUsLabel || 'Call Us'}</span>
-                      </div>
-                      <div className="mt-2 h-px bg-[#EAEDF3]" />
-                      <div className="mt-2 text-[14px] text-[#424242]">
-                        {box.CallUsText || '+966 11 123 4567'}
-                      </div>
-                    </div>
-                    {/* Email block */}
-                    <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
-                      <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
-                        <svg
-                          aria-hidden
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          className="shrink-0"
-                        >
-                          <path
-                            d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm0 0l8 6 8-6"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        <span>{box.EmailLabel || 'Email'}</span>
-                      </div>
-                      <div className="mt-2 h-px bg-[#EAEDF3]" />
-                      <div className="mt-2 text-[14px] text-[#424242]">
-                        {box.EmailText || 'support@go-money.sa'}
-                      </div>
-                    </div>
-                  </div>
-
-                  <CTA
-                    href={box.CTA?.href || '#'}
-                    target={(box.CTA?.target as '_self' | '_blank') || '_self'}
-                    color="#010663"
-                    borderColor="#010663"
-                    variant="outline"
-                    width={525.2}
-                    height={56.56}
-                    icon="arrow"
-                    className="mt-auto w-full max-w-[525.2px] rounded-[19.9px] border-[2.02px] px-[24.24px] py-[18.18px]"
-                  >
-                    {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
-                  </CTA>
-                </div>
-              )}
-            </div>
-          ))}
+        {/* each card is standalone → add your animations here */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 items-stretch">
+          {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
+          {right && <Card box={right} className="fadeRightSubscribe h-full" />}
         </div>
       </div>
     </section>

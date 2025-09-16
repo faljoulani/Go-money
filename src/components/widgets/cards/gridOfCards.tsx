@@ -184,29 +184,35 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
-        <div className="text-center">
-          {eyebrow && <Eyebrow color="#010663">{eyebrow}</Eyebrow>}
-          <Title variant="hero" color="#010663" className="my-1 h-[63px]">
+        <div className="flex flex-col gap-2 text-center">
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+          <Title
+            className="
+              text-5xl
+              font-bold     
+              tracking-tight
+              leading-[100%]
+            "
+          >
             {title}
           </Title>
-          {subtitle && <Description>{subtitle}</Description>}
+          {subtitle && <Description html={subtitle} />}
         </div>
 
         <div className="mt-12">
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-8">
+          <div className="grid grid-cols-3 gap-8">
             {childCardData.map((item) => (
               <div
                 key={item.id}
-                className="group rounded-[20px] bg-white p-8 transition-all hover:-translate-y-4"
+                className="group rounded-3xl bg-white p-8 transition-all hover:-translate-y-4"
               >
                 <div className="gap-4">
                   <div className="icon-wrapper">{item.icon}</div>
                 </div>
                 <div className="mr-7">
-                  <h3 className="text-[19px] font-bold text-[#010663]">{item.title}</h3>
-                  <p className="mt-2 text-gray-600 text-lg">{item.description}</p>
+                  <h3 className="text-xl font-bold text-primary">{item.title}</h3>
+                  <p className="mt-2 text-14px font-normal leading-5">{item.description}</p>
                 </div>
-                {item.href && <a href={item.href} className="mt-4 inline-block text-[#010663]"></a>}
               </div>
             ))}
           </div>
@@ -216,11 +222,10 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           <div className="mt-12 text-center">
             <CTA
               href={(ctaHref || '').trim() || '#'}
-              color="#0B2A8E"
-              borderColor="var(--Button-button-border-primary, #010663)"
+              textColor="text-primary"
+              borderColor="border-primary"
+              bgColor="transparent"
               variant="outline"
-              width={248}
-              height={56}
               icon="arrow"
             >
               {ctaText}

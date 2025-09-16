@@ -70,7 +70,7 @@ export default function LanguageSwitcher() {
   return (
     <div>
       <div className=" cursor-pointer uppercase" onClick={showLangSubMenu}>
-        <div className="flex items-center gap-2 p-2 transition">
+        <div className="flex items-center gap-2 p-2 transition text-white">
           {getCustomLabel(currentLang)}
           <svg
             className={`h-4 w-4 transition-transform `}
