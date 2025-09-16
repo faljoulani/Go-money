@@ -3,6 +3,7 @@ import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 
+import SubscribeEmailForm from './subscribeEmailForm';
 import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -102,26 +103,14 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
 
       {isSubscribe ? (
         <div className="mt-8">
-          <label className="sr-only">{box.EmailLabel || 'Email'}</label>
-          <div className="mb-4 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
-            <input
-              type="email"
-              inputMode="email"
-              placeholder={box.EmailPlaceholder || 'Enter your email address'}
-              aria-label={box.EmailLabel || 'Email'}
-              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
-            />
-          </div>
-          <CTA
-            borderColor="border-primary"
-            variant="outline"
-            icon="arrow"
-            className="w-full rounded-[20px] border-[2px] px-6 py-[18px]"
-          >
-            {box.ButtonLabel || 'Subscribe Now'}
-          </CTA>
-        </div>
-      ) : (
+    <SubscribeEmailForm
+      placeholder={box.EmailPlaceholder || 'Enter your email address'}
+      label={box.EmailLabel || 'Email'}
+      button={box.ButtonLabel || 'Subscribe Now'}
+      endpoint="api/default/SubscriptionEmails"
+    />
+  </div>
+) : (
         <div className="mt-6 flex flex-col items-center text-center">
           <div className="mb-8 grid w-full max-w-[520px] grid-cols-1 gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">

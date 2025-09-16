@@ -20,6 +20,7 @@ type Props = {
   bgColor?: string;
   align?: 'left' | 'center' | 'right';
   block?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 };
 
 export default function CTA({
@@ -36,6 +37,7 @@ export default function CTA({
   bgColor = 'bg-primary',
   align = 'center',
   block = false,
+  type = 'button',
 }: Props) {
   const router = useRouter();
 
@@ -89,7 +91,7 @@ export default function CTA({
 
   return (
     <button
-      type="button"
+      type={type || 'button'}
       role={href ? 'link' : 'button'}
       aria-disabled={disabled}
       onClick={handleClick}
