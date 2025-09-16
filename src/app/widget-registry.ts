@@ -45,7 +45,6 @@ import { SupportInfoBoxEntity } from '../components/widgets/SupportInfoBox/suppo
 
 import ContactForm from '../components/widgets/contactForm/contactForm';
 
-import { TwoColumnLayoutEntity } from '../components/widgets/layouts/twoColumnLayout.entity';
 import TwoColumnLayout from '../components/widgets/layouts/twoColumnLayout';
 
 import StackLayout from '../components/widgets/layouts/stackLayout';
@@ -167,7 +166,6 @@ const customWidgetRegistry: WidgetRegistry = {
     },
     TwoColumnLayout: {
       componentType: TwoColumnLayout,
-      entity: TwoColumnLayoutEntity,
       ssr: true,
       editorMetadata: {
         Title: 'Two Column Layout',
