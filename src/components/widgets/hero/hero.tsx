@@ -189,7 +189,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
         <div className="mb-24">
           {eyebrow && (
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
+            <p className="text-sm font-semibold uppercase tracking-widest text-white fadeLeftHero">
               {eyebrow}
             </p>
           )}
@@ -202,7 +202,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 fontWeight: 700,
                 lineHeight: '1.25',
               }}
-              className="mt-1 mx-0 sm:text-5xl lg:text-6xl"
+              className="mt-1 mx-0 sm:text-5xl lg:text-6xl fadeLeftHero"
             >
               {title}
             </Title>
@@ -216,7 +216,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 lineHeight: '100%',
                 color: 'white',
               }}
-              className="my-4"
+              className="my-4 fadeLeftHero"
             >
               {description}
             </Description>
@@ -232,7 +232,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 width={248}
                 height={56}
                 icon="slot"
-                className="rounded-[20px] px-6 py-[18px] border opacity-100"
+                className="rounded-[20px] px-6 py-[18px] border opacity-100 fadeLeftHero"
               >
                 {ctaText}
               </CTA>
@@ -240,7 +240,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
         </div>
 
-        <div className="relative h-[660px] w-[690px] bottom-5">
+        <div className="relative h-[660px] w-[690px] bottom-8 fadeupHero">
           {heroImgUrl ? (
             <Image
               src={heroImgUrl}

@@ -27,6 +27,15 @@ body {
   }
 }
 
+@layer utilities {
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
 /* utilities & animations */
 @layer utilities {
   @keyframes float {
@@ -44,11 +53,9 @@ body {
 
 @keyframes fadeup {
   from {
-    opacity: 0;
     transform: translateY(150px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -56,15 +63,29 @@ body {
 .fadeup {
   animation: fadeup 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 20% cover 100vh;
+  animation-range: entry 50% cover 100vh;
+}
+
+@keyframes fadeupHero {
+  from {
+    transform: translateY(150px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.fadeupHero {
+  animation: fadeupHero 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
 }
 
 @keyframes fadeRight {
   from {
-    
-    transform: translate(400px);
+    opacity: 0;
+    transform: translate(100px);
   }
   to {
+    opacity: 1;
     transform: translate(0);
   }
 }
@@ -72,13 +93,13 @@ body {
 .fadeRight {
   animation: fadeRight 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 20% cover 100vh;
+  animation-range: entry 90% cover 100vh;
 }
 
 @keyframes fadeLeft {
   from {
     opacity: 0;
-    transform: translate(-400px);
+    transform: translate(-100px);
   }
   to {
     opacity: 1;
@@ -89,7 +110,56 @@ body {
 .fadeLeft {
   animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 20% cover 100vh;
+  animation-range: entry 90% cover 100vh;
+}
+
+@keyframes fadeRightDownload {
+  from {
+    opacity: 0;
+    transform: translate(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeRightDownload {
+  animation: fadeRightDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 100vh;
+}
+
+@keyframes fadeLeftDownload {
+  from {
+    opacity: 0;
+    transform: translate(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeLeftDownload {
+  animation: fadeLeftDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 100vh;
+}
+
+@keyframes fadeLeftHero {
+  from {
+    opacity: 0;
+    transform: translate(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeLeftHero {
+  animation: fadeLeftHero 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
 }
 
 @keyframes scaleC {
@@ -106,7 +176,7 @@ body {
 .scaleC {
   animation: scaleC 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
   animation-timeline: view();
-  animation-range: entry 10% cover 100vh;
+  animation-range: entry 0% cover 100vh;
 }
 
 @keyframes fadeupSlow {
@@ -140,6 +210,46 @@ body {
 .fadeupCustom {
   animation: fadeupCustom 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 50% cover 10vh;
+  animation-range: entry 50% cover 100vh;
 }
 
+
+
+.container {
+  transform: rotateX(60deg);
+  transform-style: preserve-3d;
+
+  animation: flip 1s linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
+  will-change: transform
+}
+
+@keyframes flip {
+  from {
+    transform: rotateX(60deg)
+  }
+  to {
+    transform: rotateX(0deg)
+  }
+} 
+
+
+/* @keyframes flip {
+  from {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: rotateX(75deg);
+    opacity: 0.6;
+  }
+}
+
+.flip {
+  animation: flip 1s linear both;
+  animation-timeline: view();
+  animation-range: entry 100% cover 0%;
+  will-change: transform, opacity;
+}
+ */

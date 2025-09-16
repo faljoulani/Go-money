@@ -37,8 +37,8 @@ export default function QuestionsClient({ categories }: { categories: Category[]
   }, [active, questions]);
 
   return (
-    <div className="flex gap-8 px-20 pt-[58px] pb-16">
-      <aside className="w-[25%] fadeLeft">
+    <section className="flex gap-8 px-20 pt-[58px] pb-16">
+      <aside className="w-1/4 fadeLeft">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
             const isActive = active === cat.Id;
@@ -78,7 +78,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
       </aside>
 
       {/* Questions */}
-      <div className="w-[75%] fadeRight">
+      <div className="flex-1 fadeRight">
         <div className="divide-y rounded-xl">
           {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
           {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
@@ -124,7 +124,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
