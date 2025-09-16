@@ -276,6 +276,32 @@ body {
   animation-range: entry 50% cover 100vh;
 }
 
+@keyframes fadeScaleTranslate{
+  0%{
+    opacity:0;
+    scale: 0.7;
+  }
+  40%{
+    opacity:1;
+    scale:1;
+  }
+  100%{
+    opacity:0;
+  }
+}
+.fadeScaleTranslate {
+  animation: fadeScaleTranslate  cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 10% cover;
+}
+/* @keyframes moveUp{
+  from{
+    transform: translateY(0) 
+  }
+  to{
+    transform: translateY(-400px)
+  }
+} */
 
 
 .container {
