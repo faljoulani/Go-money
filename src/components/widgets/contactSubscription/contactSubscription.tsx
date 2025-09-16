@@ -81,18 +81,17 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
           {box.SubTitle && isSubscribe ? (
             <Description
               align="left"
-              color="text-14px font-normal leading-5"
               maxWidth="none"
-              className="mt-0 text-28px"
+              className="mt-0 text-lg font-normal leading-5"
             >
               {box.SubTitle}
             </Description>
           ) : (
             <Description
               align="left"
-              color="text-14px font-normal leading-5"
+              color=""
               maxWidth="none"
-              className="mt-0 text-[28px] w-72"
+              className="mt-0 text-[28px] w-72 text-lg font-normal leading-5"
             >
               {box.SubTitle}
             </Description>
@@ -116,7 +115,7 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
-            className="w-full rounded-[20px] border-[2px] px-6 py-[18px]"
+            className="w-full rounded-[20px] border-[2px] font-semibold px-6 py-[18px]"
           >
             {box.ButtonLabel || 'Subscribe Now'}
           </CTA>
@@ -183,7 +182,7 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
-            className="w-full max-w-[525px] rounded-[20px] border-[2px] px-6 py-[18px]"
+            className="w-full max-w-[525px] font-semibold rounded-[20px] border-[2px] px-6 py-[18px]"
           >
             {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
           </CTA>

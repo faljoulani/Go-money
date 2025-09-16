@@ -131,9 +131,16 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
       <div className="mx-auto max-w-7xl px-8 h-[1500px]">
         {/* Heading */}
         <div className="moveUp h-[900px]">
-          <div className="sticky z-10 top-5 text-center fadeup">
+          <div className="flex flex-col gap-2 text-center fadeup">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            <Title  className="mb-1 mt-3 h-[59px]">
+            <Title
+              className="
+              text-5xl
+              font-bold     
+              tracking-tight
+              leading-[100%]
+            "
+            >
               {title}
             </Title>
             {subtitle && <Description>{subtitle}</Description>}
@@ -208,23 +215,25 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             </div>
           </div>
 
-        {/* Parent CTA */}
-        {ctaText && (
-          <div className="mt-12 text-center">
-            <CTA
-              href={(ctaHref || '').trim() || '#'}
-              textColor="text-primary"
-              borderColor="border-primary"
-              bgColor="transparent"
-              variant="outline"
-              icon="arrow"
-              className="mt-16"
-            >
-              {ctaText}
-            </CTA>
-          </div>
-        )}
-      </div>
+          {/* CTA */}
+          {ctaText && (
+            <div className="mt-12 text-center">
+              <CTA
+                variant="outline"
+                colorText="text-primary"
+                fontText="font-lufga"
+                fontWeight="font-semibold"
+                borderColor="border-primary"
+                align="center"
+                icon="arrow"
+                bgColor="transparent"
+                href={ctaHref || '#'}
+              >
+                {ctaText}
+              </CTA>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

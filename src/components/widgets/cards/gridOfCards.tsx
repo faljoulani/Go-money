@@ -240,12 +240,15 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         {ctaText && (
           <div className="mt-12 text-center fadeup">
             <CTA
-              href={(ctaHref || '').trim() || '#'}
-              textColor="text-primary"
-              borderColor="border-primary"
-              bgColor="transparent"
               variant="outline"
+              colorText="text-primary"
+              fontText="font-lufga"
+              fontWeight="font-semibold"
+              borderColor="border-primary"
+              align="center"
               icon="arrow"
+              bgColor="transparent"
+              href={ctaHref || '#'}
             >
               {ctaText}
             </CTA>
