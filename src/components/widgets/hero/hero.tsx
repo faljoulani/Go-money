@@ -190,7 +190,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
         <div className="flex flex-col gap-3 mb-44">
           {eyebrow && (
-            <Eyebrow color="white" align="left">
+            <Eyebrow className='fadeLeftHero' color="white" align="left">
               {eyebrow}
             </Eyebrow>
           )}
@@ -203,14 +203,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 font-bold
                 text-[48px]
                 leading-[100%]
-                tracking-[-0.02em]
+                tracking-[-0.02em] fadeLeftHero
               "
             >
               {title}
             </Title>
           )}
           {description && (
-            <Description align="left" html={description} className="text-white font-extralight" />
+            <Description align="left" html={description} className="text-white font-extralight fadeLeftHero" />
           )}
 
           {ctaText && (
@@ -222,6 +222,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 bgColor="transparent"
                 variant="outline"
                 icon="slot"
+                className="rounded-[20px] px-6 py-[18px] border opacity-100 fadeLeftHero"
                 align="left"
               >
                 {ctaText}
@@ -230,7 +231,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
         </div>
 
-        <div className="relative h-[660px] w-[690px] bottom-5">
+        <div className="relative h-[660px] w-[690px] bottom-8 fadeupHero">
           {heroImgUrl ? (
             <Image
               src={heroImgUrl}

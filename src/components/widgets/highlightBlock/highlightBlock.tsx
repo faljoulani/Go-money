@@ -97,14 +97,14 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section className="mx-20 my-16 relative">
+    <section className="mx-20 my-16 relative scaleC">
       {/* Background div that scales */}
-      <div className="absolute inset-0 rounded-3xl bg-skyTint scaleC"></div>
+      <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 
       {/* Content above the background */}
       <div className="relative grid grid-cols-2 items-center gap-10 py-24 pl-16 pr-20">
         {/* Left: copy */}
-        <div className="flex flex-col gap-5 max-w-xl text-left fadeLeft">
+        <div className="flex flex-col gap-5 max-w-xl text-left fadeLeft duration-1000">
           {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
           <Title
             className="
@@ -143,7 +143,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
         </div>
 
         {/* Right: artwork / image panel */}
-        <div className="relative h-[392px] w-[490px] fadeRight">
+        <div className="relative h-[392px] w-[490px] fadeRight duration-1000">
           <div className="relative mx-auto h-[392px] w-[490px] rounded-[20px] overflow-hidden">
             {imgSrc ? (
               <img

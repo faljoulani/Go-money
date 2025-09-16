@@ -155,11 +155,6 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
             {items[0]?.description && (
               <Description
                 align="left"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                }}
               >
                 {items[0]?.description}
               </Description>
@@ -167,11 +162,6 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
             {items[0]?.title && (
               <Title
                 align="left"
-                style={{
-                  fontSize: '24px',
-                  color: 'var(--Text-text-primary, #010663)',
-                  fontWeight: 500,
-                }}
               >
                 {items[0]?.title}
               </Title>
@@ -185,11 +175,6 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
             {title && (
               <Title
                 align="left"
-                style={{
-                  fontSize: '33px',
-                  color: 'var(--Text-text-primary, #010663)',
-                  fontWeight: 700,
-                }}
               >
                 {title}
               </Title>
@@ -199,11 +184,6 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
             {subtitle && (
               <Description
                 align="left"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                }}
               >
                 {subtitle}
               </Description>

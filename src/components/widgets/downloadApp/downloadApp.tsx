@@ -198,6 +198,7 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
               height={525}
               priority
               className="pointer-events-none select-none object-contain animate-float absolute -top-2"
+              
             />
           )}
         </div>

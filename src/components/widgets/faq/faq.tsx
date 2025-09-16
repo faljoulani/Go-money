@@ -147,7 +147,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   //   );
   return (
     <section {...attrs}>
-      <div className="mx-auto w-full flex flex-col justify-center items-center gap-2 px-6 pt-12 pb-4">
+      <div className="mx-auto w-full  flex flex-col justify-center items-center gap-2 px-6 pt-12 pb-4 fadeup">
         {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && <Title>{rootData.Title}</Title>}
         {rootData?.Description && (

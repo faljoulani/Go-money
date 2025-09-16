@@ -199,12 +199,31 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           {subtitle && <Description html={subtitle} />}
         </div>
 
-        <div className="mt-12">
-          <div className="grid grid-cols-3 gap-8">
-            {childCardData.map((item) => (
+        <div className="mt-12 fadeup">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
+            {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="group rounded-3xl bg-white p-8 transition-all hover:-translate-y-4"
+                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
+              >
+                <div className="gap-4">
+                  <div className="icon-wrapper">{item.icon}</div>
+                </div>
+                <div className="mr-7">
+                  <h3 className="text-[19px] font-bold text-[#010663]">{item.title}</h3>
+                  <p className="mt-2 text-gray-600 text-lg">{item.description}</p>
+                </div>
+                {item.href && <a href={item.href} className="mt-4 inline-block text-[#010663]"></a>}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-8 fadeup">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-8">
+            {childCardData.slice(3, 6).map((item) => (
+              <div
+                key={item.id}
+                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
               >
                 <div className="gap-4">
                   <div className="icon-wrapper">{item.icon}</div>
@@ -219,7 +238,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         </div>
 
         {ctaText && (
-          <div className="mt-12 text-center">
+          <div className="mt-12 text-center fadeup">
             <CTA
               href={(ctaHref || '').trim() || '#'}
               textColor="text-primary"
