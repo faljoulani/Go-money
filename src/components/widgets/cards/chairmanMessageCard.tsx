@@ -152,11 +152,6 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             {items[0]?.description && (
               <Description
                 align="left"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                }}
               >
                 {items[0]?.description}
               </Description>
@@ -164,11 +159,6 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             {items[0]?.title && (
               <Title
                 align="left"
-                style={{
-                  fontSize: '24px',
-                  color: 'var(--Text-text-primary, #010663)',
-                  fontWeight: 500,
-                }}
               >
                 {items[0]?.title}
               </Title>
@@ -182,11 +172,6 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             {title && (
               <Title
                 align="left"
-                style={{
-                  fontSize: '33px',
-                  color: 'var(--Text-text-primary, #010663)',
-                  fontWeight: 700,
-                }}
               >
                 {title}
               </Title>
@@ -196,11 +181,6 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             {subtitle && (
               <Description
                 align="left"
-                style={{
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%',
-                }}
               >
                 {subtitle}
               </Description>

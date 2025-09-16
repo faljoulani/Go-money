@@ -147,11 +147,8 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                         <div className="pt-2 self-start">
                           <CTA
                             href={href}
-                            color="#010663"
                             borderColor="#010663"
                             variant="outline"
-                            width={248}
-                            height={56}
                             className="rounded-[20px] px-6 py-[18px] border"
                           >
                             {card.CtaText}
