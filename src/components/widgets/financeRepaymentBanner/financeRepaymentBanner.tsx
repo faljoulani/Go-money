@@ -4,6 +4,7 @@ import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import type { FinanceRepaymentBannerEntity } from './financeRepaymentBanner.entity';
 
 import Title from '../../atoms/title/title';
+import CTA from '../../atoms/cta/cta';
 
 interface FinanceRepaymentBannerItem {
   Id: string;
@@ -122,39 +123,33 @@ export default async function FinanceRepaymentBanner(
 
       {/* content container (to align children vertically center) */}
       <div className="relative z-10 flex w-full items-center">
-        <div className="flex text-white">
-          <div className="w-full max-w-[560px]">
-            <div className="relative h-[180px] w-[590px] rounded-lg ml-10">
+        <div className="text-white">
+          <div className="flex flex-col gap-6 pl-24 w-full max-w-[560px]">
+            <div className="relative -left-8 -mb-12 h-[180px] w-[590px] rounded-lg">
               <Image src={url(cards)} alt={cards?.AlternativeText || 'Cards'} fill priority />
             </div>
 
             {title && (
-              <Title
-                align="left"
-                color="white"
-                variant="hero"
-                className="ml-16 w-[380px] mb-6 leading-tight"
-              >
+              <Title align="left" color="white">
                 {title}
               </Title>
             )}
 
-            <a
-              href={ctaUrl}
-              className="inline-flex items-center gap-2 rounded-2xl border border-white bg-transparent px-5 py-3 text-white transition ml-16"
-            >
-              {ctaText}
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path d="M5 12h14" />
-                <path d="m13 5 7 7-7 7" />
-              </svg>
-            </a>
+            {ctaText && (
+              <div>
+                <CTA
+                  href={(ctaUrl || '').trim() || '#'}
+                  textColor="text-white"
+                  borderColor="border-white"
+                  bgColor="transparent"
+                  variant="outline"
+                  icon="slot"
+                  align="left"
+                >
+                  {ctaText}
+                </CTA>
+              </div>
+            )}
           </div>
         </div>
 

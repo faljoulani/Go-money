@@ -130,7 +130,6 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
         {/* Section header */}
         <div className="mb-8 text-center">
           <Title
-            variant="hero"
             className="
               font-lufga font-bold
               text-[48px] leading-[100%] tracking-[-0.02em]

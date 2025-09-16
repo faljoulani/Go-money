@@ -53,6 +53,9 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const eyebrow = parentCardData?.Eyebrow ?? '';
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
+  console.log('eyebrow', eyebrow);
+  console.log('title', title);
+  console.log('subtitle', subtitle);
   const ctaText = parentCardData?.CtaText ?? '';
   const ctaUrlRaw = parentCardData?.CtaUrl;
   const ctaHref =
@@ -130,7 +133,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         <div className="moveUp h-[900px]">
           <div className="sticky z-10 top-5 text-center fadeup">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            <Title variant="hero" className="mb-1 mt-3 h-[59px]">
+            <Title  className="mb-1 mt-3 h-[59px]">
               {title}
             </Title>
             {subtitle && <Description>{subtitle}</Description>}
@@ -205,23 +208,23 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             </div>
           </div>
 
-          {/* Parent CTA */}
-          {ctaText && (
-            <div className="mt-10 text-center">
-              <CTA
-                href={(ctaHref || '').trim() || '#'}
-                color="#010663"
-                borderColor="#001081"
-                variant="outline"
-                width={248}
-                height={56}
-                className="rounded-[20px] px-6 py-[18px] border opacity-100"
-              >
-                {ctaText}
-              </CTA>
-            </div>
-          )}
-        </div>
+        {/* Parent CTA */}
+        {ctaText && (
+          <div className="mt-12 text-center">
+            <CTA
+              href={(ctaHref || '').trim() || '#'}
+              textColor="text-primary"
+              borderColor="border-primary"
+              bgColor="transparent"
+              variant="outline"
+              icon="arrow"
+              className="mt-16"
+            >
+              {ctaText}
+            </CTA>
+          </div>
+        )}
+      </div>
       </div>
     </section>
   );

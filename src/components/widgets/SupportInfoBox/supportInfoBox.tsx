@@ -64,15 +64,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   return (
     <section {...attrs} className="relative overflow-hidden rounded-[28px] bg-white p-12 shadow-sm">
       <div className="space-y-4">
-        <Title
-          align="left"
-          color="var(--Text-text-primary, #010663)"
-          variant="section"
-          fontSize="28px"
-          fontWeight={700}
-          lineHeight="100%"
-          letterSpacing="-0.02em"
-        >
+        <Title align="left" color="var(--Text-text-primary, #010663)">
           {item.Title}
         </Title>
         <Description

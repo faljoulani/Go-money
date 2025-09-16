@@ -4,19 +4,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color-primary)',
+        primary: 'var(--color-primary)', // Use it with bg-primary, text-primary, border-primary
         secondary: 'var(--color-secondary)',
-        textPrimary: 'var(--text-primary)',
-        textDefault: 'var(--text-default)',
+        default: 'var(--text-default)', // Use it with bg-default, text-default, border-default
         surface: 'var(--bg-white-opacity-75)',
         line: 'var(--line-default)',
         bgNeutral200: 'var(--Background-background-neutral-200)',
+        skyTint: '#CFE8F1',
       },
+      safelist: [{ pattern: /text-(28|32|40)px/ }],
       fontSize: {
-        head: ['14px', { lineHeight: '100%', fontWeight: '500' }], // use text-head
-        section: ['32px', { lineHeight: '40px', fontWeight: '600' }], // use text-section
-        body: ['18px', { lineHeight: '28px', fontWeight: '400' }], // use text-body
-        small: ['14px', { lineHeight: '20px', fontWeight: '400' }], // use text-small
+        '14px': ['14px', { lineHeight: '100%' }], //text-14px
+        '28px': ['28px', { lineHeight: '100%' }], //text-28px
+        '32px': ['32px', { lineHeight: '100%' }], //text-28px
+        '40px': ['40px', { lineHeight: '100%' }], //text-40px
       },
       fontFamily: {
         lufga: ['Lufga', 'sans-serif'],
@@ -32,8 +33,47 @@ module.exports = {
       transitionProperty: {
         surface: 'background-color, backdrop-filter, color',
       },
+      keyframes: {
+        flipInX: {
+          '0%': { transform: 'rotateX(90deg)' },
+          '100%': { transform: 'rotateX(0deg)' },
+        },
+        flipInY: {
+          '0%': { transform: 'rotateY(90deg)' },
+          '100%': { transform: 'rotateY(0deg)' },
+        },
+      },
+      animation: {
+        'flip-in-x': 'flipInX 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both',
+        'flip-in-y': 'flipInY 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both',
+      },
     },
   },
   plugins: [],
 };
+
+/**
+ * 
+ * 
+ * 
+
+48px → ✅ text-5xl
+
+18px → ✅ text-lg
+
+16px → ✅ text-base
+
+32px → ❌ not built-in (closest is text-3xl = 30px or text-4xl = 36px)
+
+28px → ❌ not built-in (closest is text-2xl = 24px or text-3xl = 30px)
+
+40px → ❌ not built-in (closest is text-4xl = 36px or text-5xl = 48px)
+
+20px → ✅ text-xl
+
+12px → ✅ text-xs
+ * 
+ * 
+ * 
+ */
 

@@ -1,4 +1,8 @@
-import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
+import {
+  WidgetContext,
+  htmlAttributes,
+  RenderWidgetService,
+} from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { HeroEntity } from './hero.entity';
 import Image from 'next/image';
@@ -6,6 +10,7 @@ import { resolveSitefinitySelection } from '../../../utils/utils';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
+import Eyebrow from '../../atoms/eyebrow/eyebrow';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -129,6 +134,13 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   };
   const heroImgUrl = toAbsolute(bgUrl);
 
+  const bc = (props.model.Children)
+    .filter((c) => c.PlaceHolder === 'Breadcrumb')
+    .map((m) => ({
+      model: m,
+      requestContext: props.requestContext,
+    }));
+    
   const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
@@ -144,7 +156,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       >
         <div className=" max-w-4xl px-6 pb-20 text-center">
           <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="mb-6" data-sfcontainer="Breadcrumb"></div>
+            <div className="mb-6" data-sfcontainer="Breadcrumb">
+              {bc.map((y, i) =>
+                RenderWidgetService.createComponent(y.model, props.requestContext),
+              )}{' '}
+            </div>
             {/* <div className="mb-6">
               <BreadcrumbCustomView
                 requestContext={props.requestContext}
@@ -159,7 +175,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               {title}
             </h1>
           )}
-          {description && <Description>{description}</Description>}
+          {description && <Description html={description} />}
         </div>
       </section>
     );
@@ -187,52 +203,42 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       />
 
       <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
-        <div className="mb-24">
+        <div className="flex flex-col gap-3 mb-44">
           {eyebrow && (
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
+            <Eyebrow className='fadeLeftHero' color="white" align="left">
               {eyebrow}
-            </p>
+            </Eyebrow>
           )}
           {title && (
             <Title
               align="left"
-              style={{
-                maxWidth: '400px',
-                fontSize: '48px',
-                fontWeight: 700,
-                lineHeight: '1.25',
-              }}
-              className="mt-1 mx-0 sm:text-5xl lg:text-6xl"
+              color="text-white"
+              className="
+                mt-1 mx-0 max-w-[400px]
+                font-bold
+                text-[48px]
+                leading-[100%]
+                tracking-[-0.02em] fadeLeftHero
+              "
             >
               {title}
             </Title>
           )}
           {description && (
-            <Description
-              align="left"
-              style={{
-                fontWeight: 300,
-                fontSize: '16px',
-                lineHeight: '100%',
-                color: 'white',
-              }}
-              className="my-4"
-            >
-              {description}
-            </Description>
+            <Description align="left" html={description} className="text-white font-extralight fadeLeftHero" />
           )}
 
           {ctaText && (
-            <div className="mt-4 text-center flex felx-col">
+            <div>
               <CTA
                 href={(ctaUrl || '').trim() || '#'}
-                color="white"
-                borderColor="white"
+                textColor="text-white"
+                borderColor="border-white"
+                bgColor="transparent"
                 variant="outline"
-                width={248}
-                height={56}
                 icon="slot"
-                className="rounded-[20px] px-6 py-[18px] border opacity-100"
+                className="rounded-[20px] px-6 py-[18px] border opacity-100 fadeLeftHero"
+                align="left"
               >
                 {ctaText}
               </CTA>
@@ -240,7 +246,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
         </div>
 
-        <div className="relative h-[660px] w-[690px] bottom-5">
+        <div className="relative h-[660px] w-[690px] bottom-8 fadeupHero">
           {heroImgUrl ? (
             <Image
               src={heroImgUrl}

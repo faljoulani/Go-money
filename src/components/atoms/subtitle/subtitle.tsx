@@ -19,7 +19,7 @@ export default function Subtitle<T extends React.ElementType = 'h3'>({
   children,
   className,
   align = 'center',
-  color = 'var(--Text-text-default, #424242)',
+  color = 'text-default',
   fontSize = 18,
   fontWeight = 600,
   lineHeight = '100%',

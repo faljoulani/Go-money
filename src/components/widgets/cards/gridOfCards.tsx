@@ -184,20 +184,27 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
-        <div className="text-center">
-          {eyebrow && <Eyebrow color="#010663">{eyebrow}</Eyebrow>}
-          <Title variant="hero" color="#010663" className="my-1 h-[63px]">
+        <div className="flex flex-col gap-2 text-center">
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+          <Title
+            className="
+              text-5xl
+              font-bold     
+              tracking-tight
+              leading-[100%]
+            "
+          >
             {title}
           </Title>
-          {subtitle && <Description>{subtitle}</Description>}
+          {subtitle && <Description html={subtitle} />}
         </div>
 
-        <div className="mt-12">
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-8">
-            {childCardData.map((item) => (
+        <div className="mt-12 fadeup">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
+            {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="group rounded-[20px] bg-white p-8 transition-all hover:-translate-y-4"
+                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
               >
                 <div className="gap-4">
                   <div className="icon-wrapper">{item.icon}</div>
@@ -211,16 +218,33 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             ))}
           </div>
         </div>
+        <div className="mt-8 fadeup">
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-8">
+            {childCardData.slice(3, 6).map((item) => (
+              <div
+                key={item.id}
+                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
+              >
+                <div className="gap-4">
+                  <div className="icon-wrapper">{item.icon}</div>
+                </div>
+                <div className="mr-7">
+                  <h3 className="text-xl font-bold text-primary">{item.title}</h3>
+                  <p className="mt-2 text-14px font-normal leading-5">{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {ctaText && (
-          <div className="mt-12 text-center">
+          <div className="mt-12 text-center fadeup">
             <CTA
               href={(ctaHref || '').trim() || '#'}
-              color="#0B2A8E"
-              borderColor="var(--Button-button-border-primary, #010663)"
+              textColor="text-primary"
+              borderColor="border-primary"
+              bgColor="transparent"
               variant="outline"
-              width={248}
-              height={56}
               icon="arrow"
             >
               {ctaText}

@@ -126,7 +126,7 @@ export default function ClientNavbar({
                       href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${'text-[var(--Text-text-default,#424242)] hover:bg-[#E6E8FF]'}`}
+                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] tracking-normal text-14px font-normal leading-5 text-default hover:bg-[#E6E8FF]`}
                     >
                       {displayTitle(child.title)}
                     </Link>

@@ -184,39 +184,29 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
   return (
     <section
       {...attrs}
-      className="relative h-auto w-auto rounded-3xl mx-20 my-16"
+      className="relative h-auto w-auto rounded-3xl mx-20 my-16 px-16 fadeup"
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex h-full w-full items-center justify-between gap-[30px]">
+      <div className="relative z-10 flex h-full w-full items-center gap-[30px]">
         {/* CHILD 1: ONLY IMAGE (phone) */}
-        <div className="flex h-full w-1/2 items-center justify-center overflow-hidden">
+        <div className="flex h-[528px] w-[507px] items-center justify-center fadeLeftDownload">
           {mobileUrl && (
             <Image
               src={mobileUrl}
               alt={mobileImg?.AlternativeText || 'Mobile'}
-              width={289}
+              width={507}
               height={525}
               priority
               className="pointer-events-none select-none object-contain animate-float absolute -top-2"
-              style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
+              
             />
           )}
         </div>
 
         {/* CHILD 2: Title + Description + Info row + Store badges row */}
-        <div className="flex h-full w-1/2 items-center mr-16 my-16">
+        <div className="flex h-full w-1/2 items-center my-16 fadeRightDownload">
           <div className="w-full max-w-[560px] text-[#010663]">
-            <Title
-              as="h2"
-              align="left"
-              variant="hero"
-              fontSize="48px"
-              fontWeight={700}
-              lineHeight="100%"
-              letterSpacing="-0.02em"
-            >
-              {title}
-            </Title>
+            <Title align="left">{title}</Title>
             {description && (
               <Description
                 align="left"
@@ -231,13 +221,13 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
                   const icon = Array.isArray(card.Image) ? card.Image[0] : card.Image;
                   return (
                     <div key={card.Id} className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                      <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
                         {icon && (
                           <Image
                             src={imgUrl(icon)}
                             alt={icon?.AlternativeText || card.Title || 'icon'}
-                            width={32}
-                            height={32}
+                            width={48}
+                            height={48}
                             className="object-contain"
                           />
                         )}

@@ -20,9 +20,9 @@ export default function FooterLinks({ groups, className = '', dir = 'ltr' }: Pro
   const current = routeMatchKey(cleanHref(pathname || '/'));
 
   return (
-    <div className={mergeClasses('grid grid-cols-3 gap-8', className)} dir={dir}>
+    <div className={mergeClasses('grid grid-cols-3 gap-8 h-[153px]', className)} dir={dir}>
       {groups.map((g) => (
-        <nav key={g.id} aria-label={g.title} className="flex flex-col">
+        <nav key={g.id} aria-label={g.title} className="flex flex-col w-[215px]">
           <h3 className="text-white text-lg font-semibold font-lufga">{g.title}</h3>
           <ul className="mt-4 space-y-3">
             {g.links.map((l) => {
@@ -35,8 +35,8 @@ export default function FooterLinks({ groups, className = '', dir = 'ltr' }: Pro
                     href={l.href}
                     aria-current={active ? 'page' : undefined}
                     className={mergeClasses(
-                      'font-lufga font-normal text-[16px] leading-[100%] no-underline transition-colors align-middle',
-                      active ? 'text-primary' : 'text-gray-300 hover:text-primary',
+                      'font-lufga font-normal text-base leading-[100%] no-underline transition-colors align-middle',
+                      active ? 'text-primary' : 'text-[#E0E0E0]',
                     )}
                   >
                     {l.title}
