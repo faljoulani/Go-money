@@ -47,7 +47,7 @@ import ContactForm from '../components/widgets/contactForm/contactForm';
 
 import TwoColumnLayout from '../components/widgets/layouts/twoColumnLayout';
 
-import StackLayout from '../components/widgets/layouts/stackLayout';
+import { StackLayout } from '../components/widgets/layouts/stackLayout';
 
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
 import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/contactSubscription.entity';
@@ -208,6 +208,7 @@ const customWidgetRegistry: WidgetRegistry = {
     },
   },
 };
+// (customWidgetRegistry.widgets as any).StackLayout.isLayout = true;
 
 addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
   Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
