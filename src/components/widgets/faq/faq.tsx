@@ -4,12 +4,11 @@ import {
   RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
 import QuestionsClient from './QuestionsClient';
-import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import { FaqSectionEntity } from './faq.entity';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
-import React, { useState } from 'react';
+import React from 'react';
 
 const FAQ_ROOT_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FAQS';
 const FAQ_CATEGORY_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategory';
@@ -81,8 +80,6 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   //   urlencoded.append('client_id', 'postman');
   //   urlencoded.append('client_secret', 'secret');
 
-
-
   //   const requestOptions = {
   //     method: 'POST',
   //     headers: myHeaders,
@@ -114,7 +111,6 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   //   myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
   //   myHeaders.append('Authorization', `Bearer ${token}`);
 
-  
   //   const response = await fetch(url, { headers: myHeaders });
   //   // const result = await response.text();
 
@@ -134,8 +130,6 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   //   }
   //   return {questions, grouped};
 
-
-
   // }
 
   // let questions: Question[] = [];
@@ -148,22 +142,20 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   //   console.error('[FAQ] questions fetch failed:', e);
   // }
 
-//  const groupedLower = Object.fromEntries(
-//     Object.entries(grouped).map(([k, v]) => [k.toLowerCase(), v]),
-//   );
+  //  const groupedLower = Object.fromEntries(
+  //     Object.entries(grouped).map(([k, v]) => [k.toLowerCase(), v]),
+  //   );
   return (
     <section {...attrs}>
       <div className="mx-auto w-full  flex flex-col justify-center items-center gap-2 px-6 pt-12 pb-4 fadeup">
         {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && <Title>{rootData.Title}</Title>}
-        {rootData?.Description && <Description>{rootData.Description}</Description>}
+        {rootData?.Description && (
+          <Description className="font-extralight">{rootData.Description}</Description>
+        )}
       </div>
 
-      {categories.length > 0 && (
-        <QuestionsClient
-          categories={categories}
-        />
-      )}
+      {categories.length > 0 && <QuestionsClient categories={categories} />}
     </section>
   );
 }

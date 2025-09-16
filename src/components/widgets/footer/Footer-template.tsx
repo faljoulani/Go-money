@@ -12,6 +12,7 @@ import {
   extractSelectionId,
 } from '../../../utils/sitefinity';
 import Title from '../../atoms/title/title';
+import WakeUp from './wakeup';
 
 type FooterGroup = {
   Id: string;
@@ -143,16 +144,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
         />
         <div className="w-full max-w-[1400px] px-20 py-16">
           {(footerData.Title || footerData.SubTitle) && (
-            <Title
-              as="h2"
-              align="left"
-              color="rgba(255,255,255,0.95)"
-              fontWeight={400}
-              lineHeight="1.25"
-              fontSize="40px"
-              maxWidth="550px"
-              className="max-w-3xl"
-            >
+            <Title align="left" className="max-w-3xl">
               {footerData.Title || footerData.SubTitle}
             </Title>
           )}

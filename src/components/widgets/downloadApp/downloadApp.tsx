@@ -206,17 +206,7 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
         {/* CHILD 2: Title + Description + Info row + Store badges row */}
         <div className="flex h-full w-1/2 items-center my-16 fadeRightDownload">
           <div className="w-full max-w-[560px] text-[#010663]">
-            <Title
-              as="h2"
-              align="left"
-              variant="hero"
-              fontSize="48px"
-              fontWeight={700}
-              lineHeight="100%"
-              letterSpacing="-0.02em"
-            >
-              {title}
-            </Title>
+            <Title align="left">{title}</Title>
             {description && (
               <Description
                 align="left"
