@@ -1,39 +1,39 @@
 import React from 'react';
-import clsx from 'clsx';
 
 type Props = {
   children: React.ReactNode;
   className?: string;
   align?: 'left' | 'center' | 'right';
   color?: string;
-  fontSize?: string | number;
-  fontWeight?: number | string;
-  lineHeight?: string | number;
+  fontSize?: string;
+  fontWeight?: string;
+  lineHeight?: string;
 };
 
 export default function Eyebrow({
   children,
-  className,
+  className = '',
   align = 'center',
-  color = 'var(--Text-text-primary, #010663)',
+  color = 'text-primary',
   fontSize = 'text-lg',
-  fontWeight = 400,
-  lineHeight = '100%',
+  fontWeight = 'font-normal',
+  lineHeight = 'leading-[100%]',
 }: Props) {
   const alignClass =
     align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
 
-  const style: React.CSSProperties = {
+  const combinedClassName = [
+    'font-lufga tracking-normal',
+    alignClass,
     color,
-    fontSize: typeof fontSize === 'number' ? `${fontSize}px` : fontSize,
+    fontSize,
     fontWeight,
     lineHeight,
-  };
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  return (
-    <p className={clsx('font-lufga tracking-normal', alignClass, className)} style={style}>
-      {children}
-    </p>
-  );
+  return <p className={combinedClassName}>{children}</p>;
 }
 

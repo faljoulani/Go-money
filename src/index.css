@@ -8,7 +8,6 @@
   --bg-white-opacity-75: hsla(0, 0%, 100%, 0.75);
   --color-primary: #010663;
   --color-secondary: #0b2a8e;
-
   --text-primary: #010663;
   --text-default: #424242;
   --line-default: #e0e0e0;
@@ -24,6 +23,15 @@ body {
 @layer base {
   .font-lufga {
     font-family: 'Lufga', sans-serif;
+  }
+}
+
+@layer utilities {
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
   }
 }
 
@@ -61,9 +69,11 @@ body {
 
 @keyframes fadeRight {
   from {
+    opacity: 0;
     transform: translate(200px);
   }
   to {
+    opacity: 1;
     transform: translate(0);
   }
 }
@@ -89,6 +99,70 @@ body {
   animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
   animation-range: entry 20% cover 100vh;
+}
+
+@keyframes fadeRightSubscribe {
+  from {
+    transform: translate(200px);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+
+.fadeRightSubscribe {
+  animation: fadeRightSubscribe 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
+}
+
+@keyframes fadeLeftSubscribe {
+  from {
+    transform: translate(-200px);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+
+.fadeLeftSubscribe {
+  animation: fadeLeftSubscribe 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 20% cover 100vh;
+}
+
+@keyframes fadeRightDownload {
+  from {
+    opacity: 0;
+    transform: translate(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeRightDownload {
+  animation: fadeRightDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 100vh;
+}
+
+@keyframes fadeLeftDownload {
+  from {
+    opacity: 0;
+    transform: translate(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeLeftDownload {
+  animation: fadeLeftDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 100vh;
 }
 
 @keyframes scaleC {

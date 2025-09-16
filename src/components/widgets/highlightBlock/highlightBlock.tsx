@@ -99,34 +99,44 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
   return (
     <section className="mx-20 my-16 relative">
       {/* Background div that scales */}
-      <div className="absolute inset-0 rounded-[28px] bg-[#CFE8F1] scaleC"></div>
+      <div className="absolute inset-0 rounded-3xl bg-skyTint scaleC"></div>
 
       {/* Content above the background */}
-      <div className="relative py-[94px] pl-16 pr-[87px] grid grid-cols-1 items-center gap-10 md:grid-cols-2">
+      <div className="relative grid grid-cols-2 items-center gap-10 py-24 pl-16 pr-20">
         {/* Left: copy */}
-        <div className="max-w-xl text-left fadeLeft">
-          <div>
-            {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-            {title && (
-              <Title align="left" variant="hero" className="mb-3 mt-5 h-[59px]">
-                {title}
-              </Title>
-            )}
-            {description && <Description align="left">{description}</Description>}
-          </div>
+        <div className="flex flex-col gap-5 max-w-xl text-left fadeLeft">
+          {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
+          <Title
+            className="
+                text-5xl
+                font-bold     
+                tracking-tight
+                leading-[100%]
+              "
+            align="left"
+          >
+            {title}
+          </Title>
+          {description && (
+            <Description
+              className="font-extralight leading-[24px]"
+              align="left"
+              html={description}
+            />
+          )}
 
           {ctaText && (
-            <div className="mt-4">
+            <div>
               <CTA
                 href={(ctaHref || '').trim() || '#'}
-                color="#010663"
-                borderColor="var(--Button-button-border-primary, #001081)"
+                textColor="text-primary"
+                borderColor="border-primary"
+                bgColor="transparent"
                 variant="outline"
-                width={248}
-                height={56}
                 icon="arrow"
+                align="left"
               >
-                <div className="my-4 font-medium">{ctaText}</div>
+                {ctaText}
               </CTA>
             </div>
           )}
@@ -143,7 +153,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
                 draggable={false}
               />
             ) : (
-              <div className="h-[392px] w-[490px] rounded-[20px] bg-gradient-to-br from-white to-slate-100" />
+              <div className="h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100" />
             )}
           </div>
         </div>

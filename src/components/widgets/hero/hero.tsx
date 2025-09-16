@@ -6,6 +6,7 @@ import { resolveSitefinitySelection } from '../../../utils/utils';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
+import Eyebrow from '../../atoms/eyebrow/eyebrow';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -159,7 +160,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               {title}
             </h1>
           )}
-          {description && <Description>{description}</Description>}
+          {description && <Description html={description} />}
         </div>
       </section>
     );
@@ -187,52 +188,41 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       />
 
       <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
-        <div className="mb-24">
+        <div className="flex flex-col gap-3 mb-44">
           {eyebrow && (
-            <p className="text-sm font-semibold uppercase tracking-widest text-white/80">
+            <Eyebrow color="white" align="left">
               {eyebrow}
-            </p>
+            </Eyebrow>
           )}
           {title && (
             <Title
               align="left"
-              style={{
-                maxWidth: '400px',
-                fontSize: '48px',
-                fontWeight: 700,
-                lineHeight: '1.25',
-              }}
-              className="mt-1 mx-0 sm:text-5xl lg:text-6xl"
+              color="text-white"
+              className="
+                mt-1 mx-0 max-w-[400px]
+                font-bold
+                text-[48px]
+                leading-[100%]
+                tracking-[-0.02em]
+              "
             >
               {title}
             </Title>
           )}
           {description && (
-            <Description
-              align="left"
-              style={{
-                fontWeight: 300,
-                fontSize: '16px',
-                lineHeight: '100%',
-                color: 'white',
-              }}
-              className="my-4"
-            >
-              {description}
-            </Description>
+            <Description align="left" html={description} className="text-white font-extralight" />
           )}
 
           {ctaText && (
-            <div className="mt-4 text-center flex felx-col">
+            <div>
               <CTA
                 href={(ctaUrl || '').trim() || '#'}
-                color="white"
-                borderColor="white"
+                textColor="text-white"
+                borderColor="border-white"
+                bgColor="transparent"
                 variant="outline"
-                width={248}
-                height={56}
                 icon="slot"
-                className="rounded-[20px] px-6 py-[18px] border opacity-100"
+                align="left"
               >
                 {ctaText}
               </CTA>
