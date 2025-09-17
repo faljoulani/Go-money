@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import type { FinanceRepaymentBannerEntity } from './financeRepaymentBanner.entity';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 
 import Title from '../../atoms/title/title';
 import CTA from '../../atoms/cta/cta';
@@ -22,14 +23,9 @@ export default async function FinanceRepaymentBanner(
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  let selection = props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox;
-  if (typeof selection === 'string') {
-    try {
-      selection = JSON.parse(selection);
-    } catch {
-      selection = undefined;
-    }
-  }
+  let selection = resolveSitefinitySelection(
+    props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox,
+  );
 
   const id = extractSelectionId(selection);
 
@@ -128,7 +124,17 @@ export default async function FinanceRepaymentBanner(
               </div>
 
               {title && (
-                <Title align="left" color="white">
+                <Title
+                  className="
+                    text-5xl
+                    font-bold     
+                    tracking-tight
+                    leading-[100%]
+                    max-w-[100%]
+                  "
+                  color="white"
+                  align="left"
+                >
                   {title}
                 </Title>
               )}
@@ -136,13 +142,15 @@ export default async function FinanceRepaymentBanner(
               {ctaText && (
                 <div>
                   <CTA
-                    href={(ctaUrl || '').trim() || '#'}
-                    textColor="text-white"
-                    borderColor="border-white"
-                    bgColor="transparent"
                     variant="outline"
-                    icon="slot"
+                    colorText="text-white"
+                    fontText="font-lufga"
+                    fontWeight="font-light"
+                    borderColor="border-white"
                     align="left"
+                    icon="slot"
+                    bgColor="transparent"
+                    href={ctaUrl || '#'}
                   >
                     {ctaText}
                   </CTA>

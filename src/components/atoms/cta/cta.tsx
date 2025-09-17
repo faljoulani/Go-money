@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-type Variant = 'outline' | 'solid';
+type Variant = 'outline' | 'solid' | 'ghost';
 type Icon = 'arrow' | 'slot' | null;
 
 type Props = {
@@ -15,11 +15,14 @@ type Props = {
   href?: string;
   target?: '_self' | '_blank';
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
-  textColor?: string;
+  colorText?: string;
+  fontText?: string;
+  fontWeight?: string;
   borderColor?: string;
   bgColor?: string;
   align?: 'left' | 'center' | 'right';
   block?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 };
 
 export default function CTA({
@@ -31,17 +34,20 @@ export default function CTA({
   href,
   target = '_self',
   onClick,
-  textColor = 'text-primary',
+  colorText = 'text-primary',
+  fontText = 'font-lufga',
+  fontWeight = 'font-normal',
   borderColor = 'border-primary',
   bgColor = 'bg-primary',
   align = 'center',
   block = false,
+  type = 'button',
 }: Props) {
   const router = useRouter();
 
   const base =
     'inline-flex items-center gap-2 rounded-2xl select-none border ' +
-    'px-6 py-3 text-[16px] leading-[100%] font-light' +
+    'px-6 py-3 text-[16px] leading-[100%] ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
     'transition-colors';
 
@@ -54,19 +60,15 @@ export default function CTA({
 
   const widthClass = block ? 'w-full' : '';
 
-  const outline = `bg-transparent ${textColor} ${borderColor} hover:opacity-80`;
-  const solid = `text-white ${bgColor} border-transparent hover:brightness-95`;
+  const outline = `bg-transparent ${colorText} ${borderColor} hover:opacity-80`;
+  const solid = `${bgColor} text-white border-transparent hover:brightness-95`;
+  const ghost = `bg-transparent ${colorText} border-0 hover:opacity-80`;
+
+  const look = variant === 'solid' ? solid : variant === 'ghost' ? ghost : outline;
 
   const disabledCls = disabled ? 'opacity-60 cursor-not-allowed pointer-events-none' : '';
 
-  const classes = [
-    base,
-    alignClass,
-    widthClass,
-    variant === 'solid' ? solid : outline,
-    disabledCls,
-    className,
-  ]
+  const classes = [base, fontText, fontWeight, alignClass, widthClass, look, disabledCls, className]
     .filter(Boolean)
     .join(' ');
 
@@ -89,7 +91,7 @@ export default function CTA({
 
   return (
     <button
-      type="button"
+      type={type || 'button'}
       role={href ? 'link' : 'button'}
       aria-disabled={disabled}
       onClick={handleClick}

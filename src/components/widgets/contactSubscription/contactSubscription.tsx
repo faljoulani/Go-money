@@ -3,6 +3,7 @@ import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 
+import SubscribeEmailForm from './subscribeEmailForm';
 import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -81,18 +82,17 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
           {box.SubTitle && isSubscribe ? (
             <Description
               align="left"
-              color="text-14px font-normal leading-5"
               maxWidth="none"
-              className="mt-0 text-28px"
+              className="mt-0 text-lg font-normal leading-5"
             >
               {box.SubTitle}
             </Description>
           ) : (
             <Description
               align="left"
-              color="text-14px font-normal leading-5"
+              color=""
               maxWidth="none"
-              className="mt-0 text-[28px] w-72"
+              className="mt-0 text-[28px] w-72 text-lg font-normal leading-5"
             >
               {box.SubTitle}
             </Description>
@@ -102,24 +102,12 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
 
       {isSubscribe ? (
         <div className="mt-8">
-          <label className="sr-only">{box.EmailLabel || 'Email'}</label>
-          <div className="mb-4 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4">
-            <input
-              type="email"
-              inputMode="email"
-              placeholder={box.EmailPlaceholder || 'Enter your email address'}
-              aria-label={box.EmailLabel || 'Email'}
-              className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
-            />
-          </div>
-          <CTA
-            borderColor="border-primary"
-            variant="outline"
-            icon="arrow"
-            className="w-full rounded-[20px] border-[2px] px-6 py-[18px]"
-          >
-            {box.ButtonLabel || 'Subscribe Now'}
-          </CTA>
+          <SubscribeEmailForm
+            placeholder={box.EmailPlaceholder || 'Enter your email address'}
+            label={box.EmailLabel || 'Email'}
+            button={box.ButtonLabel || 'Subscribe Now'}
+            endpoint="api/default/SubscriptionEmails"
+          />
         </div>
       ) : (
         <div className="mt-6 flex flex-col items-center text-center">
@@ -183,7 +171,7 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
-            className="w-full max-w-[525px] rounded-[20px] border-[2px] px-6 py-[18px]"
+            className="w-full max-w-[525px] font-semibold rounded-[20px] border-[2px] px-6 py-[18px]"
           >
             {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
           </CTA>

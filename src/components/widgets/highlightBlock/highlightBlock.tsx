@@ -129,7 +129,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
             <div>
               <CTA
                 href={(ctaHref || '').trim() || '#'}
-                textColor="text-primary"
+                colorText="text-primary"
                 borderColor="border-primary"
                 bgColor="transparent"
                 variant="outline"
