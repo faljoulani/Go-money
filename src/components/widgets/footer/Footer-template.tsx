@@ -139,7 +139,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
         <img
           src="/assets/footer.png"
           alt=""
-          className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px]"
+          className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
         />
         <div className="px-20 py-16">
           {(footerData.Title || footerData.SubTitle) && (
@@ -215,7 +215,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className="pl-16 text-left mt-8" dir="rtl" />
+              <FooterLinks groups={linkGroups} className="pl-16 text-left mt-8 z-20" dir="rtl" />
             </div>
           </div>
 
