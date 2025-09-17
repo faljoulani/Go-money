@@ -134,14 +134,14 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
   }));
 
   return (
-    <section {...attrs} className="relative [perspective:1000px] ">
+    <section {...attrs} className="relative [perspective:1000px] overflow-x-clip">
       <footer className=" text-gray-300 h-[769px] flip">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         <img
           src="/assets/footer.png"
           alt=""
-          className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px]"
+          className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
         />
         <div className="px-20 py-16">
           {(footerData.Title || footerData.SubTitle) && (
@@ -157,10 +157,10 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <hr className="border-[#FFFFFF40] mt-8" />
 
           {/* container */}
-          <div className="mx-auto w-full max-w-[1240px]">
-            <div className="flex">
+          <div className="mx-auto w-full">
+            <div className="flex w-auto">
               <div className="col-span-1">
-                <div className="w-[400px] max-w-[400px] h-[423px] border-r border-white/15 flex flex-col gap-8">
+                <div className=" h-[423px] border-r border-white/15 flex flex-col gap-8 pr-48">
                   <div className="flex items-center gap-3">
                     <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                       {logoSrc && (
@@ -221,7 +221,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className="pl-16 text-left mt-8" />
+              <FooterLinks groups={linkGroups} className="pl-16 text-left mt-8 z-20" />
             </div>
           </div>
 

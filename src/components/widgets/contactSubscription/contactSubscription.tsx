@@ -208,7 +208,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const right = items.find((x) => x !== left) ?? items[1];
 
   return (
-    <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16">
+    <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16 overflow-clip">
       <div className="mx-auto max-w-[1240px]">
         {parent?.Title && (
           <div className="mb-8 md:mb-10">

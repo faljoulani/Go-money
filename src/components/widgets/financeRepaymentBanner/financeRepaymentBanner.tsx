@@ -92,8 +92,8 @@ export default async function FinanceRepaymentBanner(
   const url = (im: any) => im?.MediaUrl || im?.Url || im?.ThumbnailUrl || '';
 
   return (
-    <section {...attrs} className="relative [perspective:1000px]">
-      <div className="flex h-[550px] w-auto items-center overflow-hidden rounded-[32px] mx-20 flip">
+    <section {...attrs} className="relative [perspective:1000px] overflow-clip">
+      <div className="flex h-[550px] w-auto items-center rounded-[32px] mx-20 flip overflow-clip">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -116,7 +116,7 @@ export default async function FinanceRepaymentBanner(
         </div>
 
         {/* content container (to align children vertically center) */}
-        <div className="relative z-10 flex w-full items-center">
+        <div className="relative z-10 flex w-full items-center ">
           <div className="text-white">
             <div className="flex flex-col gap-6 pl-24 w-full max-w-[560px]">
               <div className="relative -left-8 -mb-12 h-[180px] w-[590px] rounded-lg">
@@ -161,22 +161,21 @@ export default async function FinanceRepaymentBanner(
 
           {/* Right: phone image (index 1, absolutely positioned) ----->>> the property name must be "phone"*/}
           {phone && (
-            <div className="absolute right-0 top-0 z-20 flex h-full items-center">
+            <div className="absolute right-0 z-20 fadeRightFinanch">
               <Image
                 src={url(phone)}
                 alt={phone?.AlternativeText || 'Phone'}
-                width={630}
+                width={550}
                 height={900}
                 priority
                 className="pointer-events-none select-none animate-float"
-                style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
               />
             </div>
           )}
         </div>
       </div>
       {/* subtle ring */}
-      <div className="pointer-events-none absolute inset-0 rounded-[32px] ring-1 ring-white/10" />
+      <div className="" />
     </section>
   );
 }
