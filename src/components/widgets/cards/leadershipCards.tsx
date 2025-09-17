@@ -140,7 +140,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
         )}
       </div>
 
-      <div className="bg-gradient-to-br from-[#10CEBB] to-[#0357AD] rounded-[30px] pt-10.5 pb-14 px-[142px]">
+      <div className="bg-gradient-to-br from-[#10CEBB] to-[#0357AD] rounded-[30px] py-14 px-[142px]">
         <div className="grid grid-cols-3 gap-x-25">
           {/* First 3 items */}
           {items.slice(0, 3).map((item: any, i: number) => (
@@ -152,7 +152,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                   className="rounded-full w-[251px] h-[363px]"
                 />
               )}
-              <div className="text-center mt-8.5">
+              <div className="text-center mt-6">
                 <h1 className="text-white text-[25px] whitespace-nowrap font-bold">{item.title}</h1>
                 <p className="text-white text-lg">{item.description}</p>
               </div>
@@ -160,7 +160,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
           ))}
 
           {/* Last 2 items */}
-          <div className="col-span-3 flex justify-center gap-x-25 mt-14.5">
+          <div className="col-span-3 flex justify-center gap-x-25 mt-14">
             {items.slice(3, 5).map((item: any, i: number) => (
               <div key={i} className="flex flex-col items-center">
                 {item.iconUrl && (
