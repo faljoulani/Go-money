@@ -148,17 +148,16 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
-      <div className="relative grid max-w-7xl grid-cols-1 items-center px-20 py-24 md:grid-cols-2 lg:gap-16">
-        <div className="flex flex-col gap-3 mb-44">
+      <div className="relative grid grid-cols-2 gap-16 max-w-7xl px-20 py-24 ">
+        <div className="flex flex-col items-start justify-center gap-3 mb-44">
           {eyebrow && (
-            <Eyebrow className="fadeLeftHero" color="white" align="left">
+            <Eyebrow className="fadeLeftHero" color="white">
               {eyebrow}
             </Eyebrow>
           )}
 
           {title && (
             <Title
-              align="left"
               color="text-white"
               className="mt-1 mx-0 max-w-[500px] font-bold text-[60px] leading-[80px] tracking-[-0.02em] fadeLeftHero"
             >
@@ -167,11 +166,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
 
           {description && (
-            <Description
-              align="left"
-              html={description}
-              className="text-white font-extralight fadeLeftHero"
-            />
+            <Description html={description} className="text-white font-extralight fadeLeftHero" />
           )}
 
           {ctaText && (
@@ -182,7 +177,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 fontText="font-lufga"
                 fontWeight="font-semibold"
                 borderColor="border-white"
-                align="left"
                 icon="slot"
                 bgColor="transparent"
                 href={ctaUrl || '#'}

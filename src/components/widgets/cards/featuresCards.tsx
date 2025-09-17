@@ -136,7 +136,6 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
 
           {sectionSubtitle && (
             <Description
-              align="center"
               maxWidth={640}
               className="
                 mt-4

@@ -133,7 +133,6 @@ export default async function FinanceRepaymentBanner(
                     max-w-[100%]
                   "
                   color="white"
-                  align="left"
                 >
                   {title}
                 </Title>

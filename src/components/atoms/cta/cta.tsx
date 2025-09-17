@@ -99,7 +99,9 @@ export default function CTA({
     >
       <span className="whitespace-nowrap">{children}</span>
 
-      {icon === 'arrow' && <img src="/icons/chevron-right.svg" alt="chevron-right" />}
+      {icon === 'arrow' && (
+        <img src="/icons/chevron-right.svg" alt="" className="cta-arrow" aria-hidden />
+      )}
       {icon === 'slot' && <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" />}
     </button>
   );

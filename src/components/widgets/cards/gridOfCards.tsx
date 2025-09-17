@@ -170,7 +170,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
-        <div className="flex flex-col gap-2 text-center">
+        <div className="flex flex-col items-center gap-2 text-center">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title
             className="
@@ -197,7 +197,12 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 </div>
                 <div className="mr-7">
                   <h3 className="text-xl font-bold text-primary">{item.title}</h3>
-                  <p className="mt-2 text-default text-base">{item.description}</p>
+                  {/* <p className="mt-2 text-default text-base">{item.description}</p> */}
+                  {item.description ? (
+                    <div className="mt-2 text-default text-base">
+                      <Description html={item.description} />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ))}
