@@ -37,7 +37,7 @@ body {
 
 /* utilities & animations */
 @layer utilities {
-  @keyframes float {
+  @keyframes animate-float {
     0% {
       transform: translateY(-15px);
     }
@@ -46,7 +46,7 @@ body {
     }
   }
   .animate-float {
-    animation: float 2s ease-in-out infinite alternate;
+    animation: animate-float 2s ease-in-out infinite alternate;
   }
 }
 
@@ -92,15 +92,25 @@ body {
 .fadeRight {
   animation: fadeRight 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 90% cover 100%;
+  animation-range: entry 70% cover 100%;
 }
 
-.fadeRightThenFloat {
-  animation: 
-    fadeRight 1s cubic-bezier(0.2, 0.8, 0.4, 1) both,
-    float 2s ease-in-out infinite alternate;
-  animation-delay: 0s, 1000s; 
-  animation-fill-mode: both, none;
+@keyframes fadeRightFinanch {
+  from {
+    opacity: 0;
+    transform: translate(200px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeRightFinanch {
+  animation-delay: 250ms;
+  animation: fadeRightFinanch 3.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 50%;
 }
 
 @keyframes fadeLeft {
@@ -117,7 +127,7 @@ body {
 .fadeLeft {
   animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 90% cover 100vh;
+  animation-range: entry 70% cover 100vh;
 }
 
 @keyframes fadeRightDownload {

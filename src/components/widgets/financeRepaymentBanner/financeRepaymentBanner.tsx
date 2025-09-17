@@ -92,8 +92,8 @@ export default async function FinanceRepaymentBanner(
   const url = (im: any) => im?.MediaUrl || im?.Url || im?.ThumbnailUrl || '';
 
   return (
-    <section {...attrs} className="relative [perspective:1000px]">
-      <div className="flex h-[550px] w-auto items-center rounded-[32px] mx-20 flip">
+    <section {...attrs} className="relative [perspective:1000px] overflow-clip">
+      <div className="flex h-[550px] w-auto items-center rounded-[32px] mx-20 flip overflow-clip">
         <div className="absolute inset-0 z-0">
           <div
             className="absolute inset-0"
@@ -161,17 +161,15 @@ export default async function FinanceRepaymentBanner(
 
           {/* Right: phone image (index 1, absolutely positioned) ----->>> the property name must be "phone"*/}
           {phone && (
-            <div className="overflow-hidden">
-              <div className="absolute right-0 top-0 z-20">
-                <Image
-                  src={url(phone)}
-                  alt={phone?.AlternativeText || 'Phone'}
-                  width={550}
-                  height={900}
-                  priority
-                  className="pointer-events-none select-none fadeRight"
-                />
-              </div>
+            <div className="absolute right-0 z-20 fadeRightFinanch">
+              <Image
+                src={url(phone)}
+                alt={phone?.AlternativeText || 'Phone'}
+                width={550}
+                height={900}
+                priority
+                className="pointer-events-none select-none animate-float"
+              />
             </div>
           )}
         </div>
