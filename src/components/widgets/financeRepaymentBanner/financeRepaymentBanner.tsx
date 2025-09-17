@@ -35,7 +35,7 @@ export default async function FinanceRepaymentBanner(
         {...attrs}
         className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
       >
-        <strong>FinanceRepaymentBanner</strong>
+        <strong>Select a FinanceRepaymentBanner</strong>
         <div className="mt-1">Open the designer and select the desired item.</div>
       </section>
     ) : null;

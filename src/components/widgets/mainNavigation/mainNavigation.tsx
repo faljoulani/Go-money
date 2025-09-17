@@ -137,7 +137,7 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
         {...attrs}
         className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
       >
-        <strong>MainNavigation</strong>
+        <strong>Select a MainNavigation</strong>
         <div className="mt-1">Select a MainNavigation item.</div>
       </section>
     ) : null;

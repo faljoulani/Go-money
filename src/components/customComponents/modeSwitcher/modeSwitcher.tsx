@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import MoonIcon from 'icons/moon.svg';
 
 export default function ModeSwitcher() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -21,7 +20,7 @@ export default function ModeSwitcher() {
     >
       <svg
         viewBox="0 0 24 24"
-        className="h-6 w-6 stroke-white fill-transparent"
+        className="h-6 w-6 stroke-current fill-transparent"
         strokeWidth={1.5}
         aria-hidden
       >
