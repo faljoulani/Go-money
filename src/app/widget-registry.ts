@@ -52,6 +52,9 @@ import { StackLayout } from '../components/widgets/layouts/stackLayout';
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
 import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/contactSubscription.entity';
 
+import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
+import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -205,6 +208,12 @@ const customWidgetRegistry: WidgetRegistry = {
       views: {
         Default: { Title: 'Default', ViewFunction: ContactForm },
       },
+    },
+    FinanceCalculator: {
+      componentType: FinanceCalculator,
+      entity: FinanceCalculatorEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Finance Calculator' },
     },
   },
 };
