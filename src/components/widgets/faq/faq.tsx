@@ -9,6 +9,8 @@ import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import React from 'react';
+import { resolveSitefinitySelection } from '../../../utils/utils';
+import { extractSelectionId } from '../../../utils/sitefinity';
 
 const FAQ_ROOT_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FAQS';
 const FAQ_CATEGORY_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategory';
@@ -16,13 +18,28 @@ const FAQ_CATEGORY_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FAQs.FaqCategor
 export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   const attrs = htmlAttributes(props);
   const model = props.model?.Properties;
+  const { isEdit } = props.requestContext;
 
-  const parseContent = (c: any) => (typeof c === 'string' ? JSON.parse(c) : c);
-  const faqRoot = parseContent(model?.FaqRoot);
-  const selectedCategories = parseContent(model?.FaqCategories);
+  const faqRoot = resolveSitefinitySelection(model?.FaqRoot);
+  const selectedCategories = resolveSitefinitySelection(model?.FaqCategories);
 
   let rootData: any = undefined;
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
+
+  const id = extractSelectionId(faqRoot);
+  console.log('ID FAQ ' + id);
+
+  if (!id) {
+    return isEdit ? (
+      <section
+        {...attrs}
+        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+      >
+        <strong>Select a FAQ</strong>
+        <div className="mt-1">Open the designer and select an item.</div>
+      </section>
+    ) : null;
+  }
 
   try {
     if (faqRoot?.Content?.length) {

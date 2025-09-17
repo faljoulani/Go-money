@@ -32,7 +32,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         {...attributes}
         className="p-6 border border-dashed rounded-lg text-center text-slate-500"
       >
-        <strong>Cards</strong>
+        <strong>Cards list</strong>
         <div className="mt-1">Open the designer and select a Card List.</div>
       </section>
     ) : null;
@@ -53,9 +53,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const eyebrow = parentCardData?.Eyebrow ?? '';
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
-  console.log('eyebrow', eyebrow);
-  console.log('title', title);
-  console.log('subtitle', subtitle);
   const ctaText = parentCardData?.CtaText ?? '';
   const ctaUrlRaw = parentCardData?.CtaUrl;
   const ctaHref =
@@ -100,27 +97,27 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         : [];
   }
 
-  const childCardData = cardItems.map((c: any) => {
-    const rawHref = c?.LinkUrl ?? '';
+  const childCardData = cardItems.map((card: any) => {
+    const rawHref = card?.LinkUrl ?? '';
     const href = rawHref?.trim() || '#';
 
     const img =
-      (Array.isArray(c?.Image) && c.Image[0]) ||
-      c?.Image ||
-      (Array.isArray(c?.Images) && c.Images[0]) ||
-      c?.HeroImage ||
-      c?.Banner ||
-      c?.Media ||
-      c?.FeaturedImage ||
+      (Array.isArray(card?.Image) && card.Image[0]) ||
+      card?.Image ||
+      (Array.isArray(card?.Images) && card.Images[0]) ||
+      card?.HeroImage ||
+      card?.Banner ||
+      card?.Media ||
+      card?.FeaturedImage ||
       null;
 
     const imgUrl =
       img?.Url || img?.MediaUrl || img?.ThumbnailUrl || (Array.isArray(img?.Urls) && img.Urls[0]);
 
     return {
-      id: c?.Id,
-      title: c?.Title ?? '',
-      description: c?.Description ?? '',
+      id: card?.Id,
+      title: card?.Title ?? '',
+      description: card?.Description ?? '',
       href,
       imgUrl,
     };
@@ -149,15 +146,15 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
           {/* Alternating frame */}
           <div className="mt-10 px-[205px]">
             <div className="space-y-16">
-              {childCardData.map((card, i) => {
-                const isRight = i % 2 === 1;
+              {childCardData.map((card, index) => {
+                const isRight = index % 2 === 1;
                 const rowTemplate = isRight
                   ? '[grid-template-columns:minmax(0,1fr)_330px]'
                   : '[grid-template-columns:330px_minmax(0,1fr)]';
 
                 return (
                   <div
-                    key={card.id ?? i}
+                    key={card.id ?? index}
                     className={`grid items-center ${rowTemplate} fadeScaleTranslate`}
                   >
                     {/* Image side */}

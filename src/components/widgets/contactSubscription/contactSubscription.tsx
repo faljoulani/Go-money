@@ -1,14 +1,13 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { resolveSitefinitySelection } from '../../../utils/utils';
+import { resolveSitefinitySelection, extractHref } from '../../../utils/utils';
 
 import SubscribeEmailForm from './subscribeEmailForm';
 import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
-/* — helpers — */
 type ContactBox = {
   Id?: string;
   Title?: string;
@@ -19,54 +18,42 @@ type ContactBox = {
   EmailPlaceholder?: string;
   CallUsLabel?: string;
   CallUsText?: string;
-  hasLabelCorner?: boolean;
-  HasLabelCorner?: boolean;
+  hasLabelCorner?: boolean | string;
+  HasLabelCorner?: boolean | string;
   CTAURL?: any;
   Variant?: 'subscribe' | 'contact';
   Mode?: 'subscribe' | 'contact';
   Layout?: 'subscribe' | 'contact';
 };
+
 type ContactSubscriptionParent = {
   Id: string;
   Title?: string;
   Box?: ContactBox[] | ContactBox | null;
 };
 
-const toBool = (v: any) => (typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true');
-const parseLink = (v: any) => {
-  if (!v) return null;
-  try {
-    const o = typeof v === 'string' ? JSON.parse(v) : Array.isArray(v) ? v[0] : v;
-    const href = String(o?.Href ?? o?.href ?? '').trim();
-    if (!href) return null;
-    return { href, text: o?.Text || o?.text, target: o?.Target || o?.target };
-  } catch {
-    return typeof v === 'string' ? { href: v } : null;
-  }
-};
-const normalize = (b: ContactBox) => {
-  const hasCorner = toBool((b as any).HasLabelCorner) || toBool(b.hasLabelCorner);
-  const hasInput = !!b.EmailPlaceholder;
-  const variant =
-    (b.Variant || b.Mode || b.Layout) ??
-    (hasCorner ? 'contact' : hasInput ? 'subscribe' : 'contact');
-  return {
-    ...b,
-    HasLabelCorner: hasCorner,
-    variant: variant as 'subscribe' | 'contact',
-    CTA: parseLink(b.CTAURL),
-  };
+const getVariant = (box: ContactBox): 'subscribe' | 'contact' => {
+  const explicit = box.Variant || box.Mode || box.Layout;
+  if (explicit) return explicit;
+  const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+  return hasCorner ? 'contact' : box.EmailPlaceholder ? 'subscribe' : 'contact';
 };
 
-/* — small, single card — */
-function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; className?: string }) {
-  const isSubscribe = box.variant === 'subscribe';
+function Card({ box, className = '' }: { box: ContactBox; className?: string }) {
+  const variant = getVariant(box);
+  const isSubscribe = variant === 'subscribe';
+  const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+
+  const ctaHref = extractHref(box.CTAURL) || '#';
+  const ctaText = box.ButtonLabel || box.CTAURL?.Text || box.CTAURL?.text || 'Contact Us';
+  const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
+
   return (
     <div
       className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8 ${className}`}
     >
       {/* corner only for contact */}
-      {box.HasLabelCorner && !isSubscribe && (
+      {hasCorner && !isSubscribe && (
         <div className="pointer-events-none absolute right-0 top-0 h-[110px] w-[110px] rounded-bl-[60px] bg-[#1919E5]">
           <div className="absolute right-0 top-0 h-[52px] w-[52px] bg-white" />
         </div>
@@ -79,24 +66,25 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
               {box.Title}
             </Title>
           )}
-          {box.SubTitle && isSubscribe ? (
-            <Description
-              align="left"
-              maxWidth="none"
-              className="mt-0 text-lg font-normal leading-5"
-            >
-              {box.SubTitle}
-            </Description>
-          ) : (
-            <Description
-              align="left"
-              color=""
-              maxWidth="none"
-              className="mt-0 text-[28px] w-72 text-lg font-normal leading-5"
-            >
-              {box.SubTitle}
-            </Description>
-          )}
+          {box.SubTitle &&
+            (isSubscribe ? (
+              <Description
+                align="left"
+                maxWidth="none"
+                className="mt-0 text-lg font-normal leading-5"
+              >
+                {box.SubTitle}
+              </Description>
+            ) : (
+              <Description
+                align="left"
+                color=""
+                maxWidth="none"
+                className="mt-0 text-[28px] w-72 text-lg font-normal leading-5"
+              >
+                {box.SubTitle}
+              </Description>
+            ))}
         </div>
       )}
 
@@ -165,15 +153,16 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
               </div>
             </div>
           </div>
+
           <CTA
-            href={box.CTA?.href || '#'}
-            target={(box.CTA?.target as '_self' | '_blank') || '_self'}
+            href={ctaHref}
+            target={ctaTarget}
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
             className="w-full max-w-[525px] font-semibold rounded-[20px] border-[2px] px-6 py-[18px]"
           >
-            {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
+            {ctaText}
           </CTA>
         </div>
       )}
@@ -181,7 +170,6 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
   );
 }
 
-/* — main — */
 export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
@@ -209,20 +197,18 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
     [
       'Id',
       'Title',
-      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner)',
+      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner,HasLabelCorner,Variant,Mode,Layout)',
     ],
     { itemType: rawSel?.Content?.[0]?.Type, single: true },
   )) as ContactSubscriptionParent | null;
 
-  const raw = Array.isArray(parent?.Box) ? parent?.Box : parent?.Box ? [parent?.Box] : [];
-  const items = raw.map(normalize);
+  const items = Array.isArray(parent?.Box) ? parent!.Box : parent?.Box ? [parent!.Box] : [];
 
-  // decide left/right (subscribe then contact)
-  const left = items.find((x) => x.variant === 'subscribe') ?? items[0];
+  const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
   const right = items.find((x) => x !== left) ?? items[1];
 
   return (
-    <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16">
+    <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16 overflow-clip">
       <div className="mx-auto max-w-[1240px]">
         {parent?.Title && (
           <div className="mb-8 md:mb-10">
@@ -236,7 +222,6 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
           </div>
         )}
 
-        {/* each card is standalone → add your animations here */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 items-stretch">
           {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
           {right && <Card box={right} className="fadeRightSubscribe h-full" />}

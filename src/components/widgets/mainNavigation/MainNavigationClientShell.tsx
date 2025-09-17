@@ -50,7 +50,7 @@ export default function MainNavigationClientShell({
         `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl transition-surface duration-300 ` +
         (scrolled
           ? `bg-surface
-             text-textDefault
+             text-black
              backdrop-blur-[70px] backdrop-saturate-150`
           : `bg-transparent text-white`)
       }
@@ -82,7 +82,11 @@ export default function MainNavigationClientShell({
 
           {/* Right: Language switcher + Store badges */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 font-lufga text-14px font-normal leading-5 tracking-[0]">
+            <div
+              className={`flex items-center gap-3 font-lufga text-14px font-normal leading-5 tracking-[0] ${
+                scrolled ? 'text-primary' : 'text-white'
+              }`}
+            >
               <ModeSwitcher />
               <LanguageSwitcher />
             </div>

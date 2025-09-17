@@ -1,18 +1,16 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cleanHref, routeMatchKey, displayTitle } from '../../../utils/utils';
 import { ApiNavItem, ApiNavDropdown } from '../../../types/Type';
+import { useDismissable } from '../../../utils/hooks/useDismissable';
 
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
   return Array.isArray((item as any)?.children);
 }
-
-function toHref(url: string, stripQuery: boolean) {
-  return stripQuery ? cleanHref(url) : url;
-}
+const toHref = (url: string, stripQuery: boolean) => (stripQuery ? cleanHref(url) : url);
 
 export default function ClientNavbar({
   items,
@@ -29,25 +27,7 @@ export default function ClientNavbar({
 }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
-  const navRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onPointerDown = (e: PointerEvent) => {
-      const root = navRef.current;
-      if (!root) return;
-      if (!root.contains(e.target as Node)) setOpenIdx(null);
-    };
-    document.addEventListener('pointerdown', onPointerDown, { passive: true });
-    return () => document.removeEventListener('pointerdown', onPointerDown as any);
-  }, []);
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpenIdx(null);
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, []);
+  const navRef = useDismissable<HTMLDivElement>(openIdx !== null, () => setOpenIdx(null));
 
   useEffect(() => {
     setOpenIdx(null);
@@ -126,7 +106,7 @@ export default function ClientNavbar({
                       href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className={`block rounded-lg px-3 py-2 no-underline font-["Lufga"] tracking-normal text-14px font-normal leading-5 text-default hover:bg-[#E6E8FF]`}
+                      className="block rounded-lg px-3 py-2 no-underline font-['Lufga'] tracking-normal text-14px font-normal leading-5 text-default hover:bg-[#E6E8FF]"
                     >
                       {displayTitle(child.title)}
                     </Link>

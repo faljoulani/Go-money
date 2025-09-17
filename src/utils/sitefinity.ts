@@ -108,6 +108,11 @@ export const pickOneMedia = (arr: CmsImage | CmsImage[] | null | undefined): Cms
   };
 };
 
+export function pickImageUrl(img?: CmsImage): string | undefined {
+  if (!img) return undefined;
+  return img.Url || img.MediaUrl || img.ThumbnailUrl || img.Urls?.[0] || img.EmbedUrl || undefined;
+}
+
 export const getImageSrc = (img?: CmsImage | null): string | null => {
   if (!img) return null;
   const src = img.MediaUrl || img.Url || img.EmbedUrl || null;

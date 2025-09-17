@@ -1,7 +1,6 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
-import { fetchData } from '../../../utils/sitefinity';
-import { CmsImage } from '../../../types/Type';
+import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import { resolveAbsoluteUrl } from '../../../utils/utils';
@@ -18,11 +17,6 @@ type ServerSelection = {
   ViewName?: string;
   SfWidgetLabel?: string;
 } & Record<string, any>;
-
-function pickImageUrl(img?: CmsImage): string | undefined {
-  if (!img) return undefined;
-  return img.Url || img.MediaUrl || img.ThumbnailUrl || img.Urls?.[0] || img.EmbedUrl || undefined;
-}
 
 function takeIds(sel?: { ItemIdsOrdered?: string[] | null }): string[] {
   if (!sel) return [];
@@ -95,19 +89,19 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
     cardItems = [];
   }
 
-  const items = cardItems.map((c) => {
+  const items = cardItems.map((card) => {
     const img =
-      (Array.isArray(c?.Image) ? c.Image[0] : c?.Image) ||
-      (Array.isArray(c?.Icon) ? c.Icon[0] : c?.Icon) ||
-      (Array.isArray(c?.Logo) ? c.Logo[0] : c?.Logo);
+      (Array.isArray(card?.Image) ? card.Image[0] : card?.Image) ||
+      (Array.isArray(card?.Icon) ? card.Icon[0] : card?.Icon) ||
+      (Array.isArray(card?.Logo) ? card.Logo[0] : card?.Logo);
 
     const iconUrl = resolveAbsoluteUrl(pickImageUrl(img), props.requestContext);
-    const iconAlt = img?.AlternativeText || img?.Title || c?.Title || 'Icon';
+    const iconAlt = img?.AlternativeText || img?.Title || card?.Title || 'Icon';
 
     return {
-      id: c?.Id ?? `${c?.Title ?? 'value'}-${Math.random().toString(36).slice(2)}`,
-      title: c?.Title ?? '',
-      description: c?.Description ?? '',
+      id: card?.Id ?? `${card?.Title ?? 'value'}-${Math.random().toString(36).slice(2)}`,
+      title: card?.Title ?? '',
+      description: card?.Description ?? '',
       iconUrl,
       iconAlt,
     };
