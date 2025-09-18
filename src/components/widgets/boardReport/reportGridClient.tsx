@@ -48,7 +48,7 @@ export default function ReportGridClient({
   }, [activeYear]);
 
   const { data, error, isLoading } = useSf<ODataList<ReportedFile>>(
-    params ? 'api/default/reportedfiles' : null,
+     'api/default/reportedfiles',
     params || undefined,
     {
       revalidateOnFocus: false,

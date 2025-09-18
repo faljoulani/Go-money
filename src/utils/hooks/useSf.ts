@@ -1,4 +1,3 @@
-// src/utils/hooks/useSf.ts
 'use client';
 
 import { useMemo } from 'react';
@@ -8,6 +7,7 @@ type Params = Record<string, string | number | boolean | undefined>;
 const fetcher = (url: string) =>
   fetch(url, { headers: { Accept: 'application/json' } }).then(async (r) => {
     if (!r.ok) throw new Error(await r.text());
+      console.log('UQIWEUQIWE', url);
     return r.json();
   });
 
