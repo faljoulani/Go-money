@@ -146,7 +146,6 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
         <div className="px-20 py-16">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
-              align="left"
               color="text-white"
               className="text-40px max-w-lg leading-[60px] tracking-[-0.02em]"
             >

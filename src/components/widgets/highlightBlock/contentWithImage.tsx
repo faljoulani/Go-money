@@ -101,18 +101,15 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
 
         {/* Right: Text */}
         <div className="text-left space-y-4">
-          {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
 
           {title && (
-            <Title
-              align="left"
-              className="font-lufga font-bold text-[40px] leading-[100%] tracking-[-0.8px] align-middle"
-            >
+            <Title className="font-lufga font-bold text-[40px] leading-[100%] tracking-[-0.8px] align-middle">
               {title}
             </Title>
           )}
 
-          {description && <Description align="left">{description}</Description>}
+          {description && <Description>{description}</Description>}
         </div>
       </div>
     </section>

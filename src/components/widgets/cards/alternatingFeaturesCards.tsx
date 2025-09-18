@@ -124,21 +124,16 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                 >
                   <div className="max-w-[760px]">
                     <div className="flex flex-col items-start space-y-3">
-                      {card.Eyebrow && <Eyebrow align="left">{card.Eyebrow}</Eyebrow>}
+                      {card.Eyebrow && <Eyebrow>{card.Eyebrow}</Eyebrow>}
 
                       {card.Title && (
-                        <Title className="!text-[28px] !leading-[34px]" align="left">
-                          {card.Title}
-                        </Title>
+                        <Title className="!text-[28px] !leading-[34px]">{card.Title}</Title>
                       )}
 
-                      {card.Subtitle && <Subtitle align="left">{card.Subtitle}</Subtitle>}
+                      {card.Subtitle && <Subtitle>{card.Subtitle}</Subtitle>}
 
                       {card.Description && (
-                        <Description
-                          className="!text-[16px] !leading-[26px] text-[#424242]"
-                          align="left"
-                        >
+                        <Description className="!text-[16px] !leading-[26px] text-[#424242]">
                           {card.Description}
                         </Description>
                       )}

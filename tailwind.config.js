@@ -11,6 +11,7 @@ module.exports = {
         line: '#e0e0e0',
         bgNeutral200: '#eeeeee',
         skyTint: '#CFE8F1',
+        lineMuted: '#EAEDF3',
       },
       safelist: [{ pattern: /text-(28|32|40)px/ }],
       fontSize: {
@@ -21,6 +22,7 @@ module.exports = {
       },
       fontFamily: {
         lufga: ['Lufga', 'sans-serif'],
+        cairo: ['Cairo', 'sans-serif'],
       },
     },
   },

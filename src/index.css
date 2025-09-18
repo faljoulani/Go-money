@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import url('https://fonts.cdnfonts.com/css/lufga');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap');
 
 :root {
   --Background-background-neutral-200: #eeeeee;
@@ -13,6 +14,15 @@ body {
 .defaultBgColor {
   background-color: var(--Background-background-neutral-200);
 }
+
+[dir='rtl'] .cta-arrow {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] {
+  font-family: 'Cairo', sans-serif;
+}
+
 /* base helpers */
 @layer base {
   .font-lufga {
@@ -237,25 +247,24 @@ body {
   animation-range: entry 50% cover 100vh;
 }
 
-@keyframes fadeScaleTranslate{
-  0%{
-    opacity:0;
+@keyframes fadeScaleTranslate {
+  0% {
+    opacity: 0;
     scale: 0.7;
   }
-  40%{
-    opacity:1;
-    scale:1;
+  40% {
+    opacity: 1;
+    scale: 1;
   }
-  100%{
-    opacity:0;
+  100% {
+    opacity: 0;
   }
 }
 .fadeScaleTranslate {
-  animation: fadeScaleTranslate  cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation: fadeScaleTranslate cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
   animation-range: entry 10% cover;
 }
-
 
 
 .flip {
@@ -265,31 +274,15 @@ body {
   animation: flip 1s linear both;
   animation-timeline: view();
   animation-range: entry 0% cover 40%;
-  will-change: transform
+  will-change: transform;
 }
 
 @keyframes flip {
   from {
-    transform: rotateX(60deg)
+    transform: rotateX(60deg);
   }
   to {
-    transform: rotateX(0deg)
+    transform: rotateX(0deg);
   }
-} 
-
-.bgAnimation{
-  background: linear-gradient(-45deg, blur(25px),blur(50px),blur(75px),blur(100px));
-  animation: bgAnimation 12s ease infinite;
 }
-@keyframes bgAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100%{
-    background-position: 0% 50%;
-  }
-} 
 

@@ -64,11 +64,8 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   return (
     <section {...attrs} className="relative overflow-hidden rounded-[28px] bg-white p-12 shadow-sm">
       <div className="space-y-4">
-        <Title align="left" color="var(--Text-text-primary, #010663)">
-          {item.Title}
-        </Title>
+        <Title color="var(--Text-text-primary, #010663)">{item.Title}</Title>
         <Description
-          align="left"
           color="var(--Text-text-neutral, #9E9E9E)"
           className="text-[18px] font-semibold leading-[100%] tracking-[0]"
           html={item.Description}
@@ -92,7 +89,6 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 />
               )}
               <Description
-                align="left"
                 color="var(--Text-text-default, #424242)"
                 className="text-[16px] font-semibold leading-[100%] tracking-[0]"
                 html={social.Description}

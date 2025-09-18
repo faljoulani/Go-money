@@ -198,21 +198,16 @@ async function DownloadAppDefault(props: WidgetContext<DownloadAppEntity>) {
               height={525}
               priority
               className="pointer-events-none select-none object-contain animate-float absolute -top-2"
-              
             />
           )}
         </div>
 
         {/* CHILD 2: Title + Description + Info row + Store badges row */}
         <div className="flex h-full w-1/2 items-center my-16 fadeRightDownload">
-          <div className="w-full max-w-[560px] text-primary">
-            <Title align="left" className='text-[48px] font-bold tracking-[-0.02em]'>{title}</Title>
+          <div className="w-full max-w-[560px] text-[#010663]">
+            <Title>{title}</Title>
             {description && (
-              <Description
-                align="left"
-                html={description}
-                className="mt-4 text-base"
-              />
+              <Description html={description} className="mt-4 text-base leading-relaxed" />
             )}
             {/* One-line info cards (non-store) */}
             {infoCards.length > 0 && (
