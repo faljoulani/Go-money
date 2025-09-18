@@ -12,7 +12,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
   const [active, setActive] = useState<string>(defaultActive);
 
   const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
-    'api/default/faqquestions',
+    '/faqquestions',
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
@@ -87,7 +87,11 @@ export default function QuestionsClient({ categories }: { categories: Category[]
           {questions.map((q) => {
             const isOpen = openId === q.Id;
             return (
-              <details key={q.Id} className="group p-6 border rounded-md mb-4 bg-white border-[#E0E0E0]" open={isOpen}>
+              <details
+                key={q.Id}
+                className="group p-6 border rounded-md mb-4 bg-white border-[#E0E0E0]"
+                open={isOpen}
+              >
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer"
                   onClick={(e) => {
