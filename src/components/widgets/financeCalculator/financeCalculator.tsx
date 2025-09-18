@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { FinanceCalculatorEntity } from './financeCalculator.entity';
-
+import {useSfMutation} from '../../../utils/hooks/useSfMutation';
 type Nationality = 'saudi' | 'nonsaudi';
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const parseNum = (v: number | '') => (v === '' ? null : Number(v));
@@ -49,6 +49,8 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
   const amountFill = useRangeFill(requestedFinanceAmount, AMIN, AMAX, '#0B2A8E', '#C9CDD6');
   const instFill = useRangeFill(installments, IMIN, IMAX, '#0B2A8E', '#C9CDD6');
 
+  const {post} = useSfMutation('eligibility/get')
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -69,7 +71,21 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     };
 
     console.log('FinanceCalculator payload:', payload);
+<<<<<<< Updated upstream
+=======
+
+  try{
+    const res = await post(payload);
+    if(res.IsEligible){
+      setResult('success')
+    }else{
+      setResult('fail');
+    }
+  }catch (err: any) {
+    console.error('Subscribe error:', err);
+>>>>>>> Stashed changes
   }
+}
 
   const nationalityOptions = cfg.NationalityChoices?.length
     ? cfg.NationalityChoices
@@ -82,6 +98,152 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     ? cfg.LengthOfServicesChoices
     : ['3 Months', '6 Months', '1 Year', '2 Years', '3+ Years'];
 
+<<<<<<< Updated upstream
+=======
+  // if (result === 'success') {
+  //   const successIcon = cfg.SuccessIconUrl || '/assets/success.png'; 
+  //   const title =
+  //     cfg.SuccessTitle || "You're Eligible for Our Financing!";
+  //   const desc =
+  //     cfg.SuccessDescription ||
+  //     'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
+  //   const noteTitle = cfg.SuccessNoteTitle || 'Important Note';
+  //   const noteDesc =
+  //     cfg.SuccessNoteDescription ||
+  //     'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
+
+  //   const backText = cfg.SuccessBackCtaText || 'Back to Calculator';
+  //   const appCtaText = cfg.SuccessPrimaryCtaText || 'Download Our App';
+  //   const appCtaHref = (cfg.SuccessPrimaryCtaHref as string) || '#';
+
+    // return (
+    //   <section {...attrs} className="w-full">
+    //     <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+    //       <div className="mx-auto mb-6 grid place-items-center">
+    //         <img src={successIcon} alt="success" className="h-24 w-24 object-contain" />
+    //       </div>
+    //       <h2 className="text-[36px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
+    //       <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
+
+    //       <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
+    //         <div className="flex items-start gap-2 justify-center md:justify-start">
+    //           <InfoIcon />
+    //           <div>
+    //             <strong>{noteTitle}</strong>
+    //             <p className="mt-1">{noteDesc}</p>
+    //           </div>
+    //         </div>
+    //       </div>
+
+    //       <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+    //         <button
+    //           type="button"
+    //           onClick={() => setResult(null)}
+    //           className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
+    //         >
+    //           {backText}
+    //         </button>
+    //         <a
+    //           href={appCtaHref}
+    //           className="rounded-full bg-[#0B2A8E] text-white px-6 py-3 text-[15px] hover:opacity-90"
+    //         >
+    //           {appCtaText}
+    //         </a>
+    //       </div>
+    //     </div>
+    //   </section>
+//     );
+//   }
+
+//   if (result === 'fail') {
+//     const failIcon = cfg.FailIconUrl || '/assets/failed.png'; 
+//     const title = cfg.FailTitle || 'Not Eligible Yet';
+//     const sub =
+//       cfg.FailSubtitle ||
+//       'Unfortunately, we are unable to proceed with your application at this time.';
+
+//     const reasonsLeft = splitList(
+//       cfg.FailReasonsLeft ||
+//         `Your verified information does not meet our internal policy requirements.
+// Your current financial obligations are too high for us to offer a loan at this time.`,
+//     );
+//     const reasonsRight = splitList(
+//       cfg.FailReasonsRight || `Your credit history does not currently meet our eligibility criteria.`,
+//     );
+
+//     const tipsTitle = cfg.FailTipsTitle || "But don't worry — this isn’t permanent!";
+//     const tipsSubtitle = cfg.FailTipsSubtitle || "Here’s what you can do:";
+//     const tipsLeft = splitList(cfg.FailTipsLeft || `Use Go Money regularly\nRepay any pending dues`);
+//     const tipsRight = splitList(cfg.FailTipsRight || `Try again in 30 days`);
+
+//     const footer = cfg.FailFooterText || "We’re here when you’re ready.";
+//     const backText = cfg.FailBackCtaText || 'Back to Calculator';
+
+//     return (
+//       <section {...attrs} className="w-full">
+//         <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+//           <div className="mx-auto mb-6 grid place-items-center">
+//             <img src={failIcon} alt="not-eligible" className="h-24 w-24 object-contain" />
+//           </div>
+//           <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
+//           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{sub}</p>
+
+//           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+//               <strong className="block mb-3 text-[#0B2A8E]">
+//                 This could be due to one or more of the following reasons:
+//               </strong>
+//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
+//                 {reasonsLeft.map((r, i) => (
+//                   <li key={`rL-${i}`}>{r}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
+//                 {reasonsRight.map((r, i) => (
+//                   <li key={`rR-${i}`}>{r}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+
+//           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+//               <strong className="block text-[#0B2A8E]">{tipsTitle}</strong>
+//               <span className="block text-[#333] mb-3">{tipsSubtitle}</span>
+//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
+//                 {tipsLeft.map((t, i) => (
+//                   <li key={`tL-${i}`}>{t}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
+//                 {tipsRight.map((t, i) => (
+//                   <li key={`tR-${i}`}>{t}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//           </div>
+
+//           <p className="mt-8 text-[#555]">{footer}</p>
+
+//           <div className="mt-8">
+//             <button
+//               type="button"
+//               onClick={() => setResult(null)}
+//               className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
+//             >
+//               {backText}
+//             </button>
+//           </div>
+//         </div>
+//       </section>
+//     );
+//   }
+
+>>>>>>> Stashed changes
   return (
     <section {...attrs} className="w-full">
       <form

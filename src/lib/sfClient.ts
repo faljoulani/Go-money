@@ -1,4 +1,3 @@
-// src/lib/sfClient.ts (server-only)
 let cachedToken: { token: string; exp: number } | null = null;
 
 const SF_BASE = (process.env.SF_BASE_URL || 'http://dev-sfall.ddns.net:9095').replace(/\/$/, '');
