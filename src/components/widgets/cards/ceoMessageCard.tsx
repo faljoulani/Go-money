@@ -2,7 +2,6 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
-import Card from '../../atoms/card/card';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -15,21 +14,19 @@ interface CeoMessage {
   Eyebrow?: string;
   Description?: string;
   CtaText?: string;
+  isOverlay?: boolean | string;
   CtaUrl?: string | { Href?: string } | Array<{ Href?: string }>;
   Image?: any | any[];
 }
 
+const toBool = (v: unknown) =>
+  typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true';
+
 export default async function CeoMessage(props: WidgetContext<CardSectionEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
-  const { culture } = props.requestContext;
-
-  const isEdit = props.requestContext.isEdit;
+  const { culture, isEdit } = props.requestContext;
   const id = extractSelectionId(selection);
-  console.log('ID OF PARENT ========== >>>>>>>>>>>>> ' + JSON.stringify(id));
-
-  console.log('selection ========== >>>>>>>>>>>>> ' + JSON.stringify(selection));
-
   if (!id) {
     return isEdit ? (
       <section
@@ -54,19 +51,21 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
       'Eyebrow',
       'CtaText',
       'CtaUrl',
+      'isOverlay',
       'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
     ],
-    {
-      itemType: selection?.CardListData?.Content?.[0]?.Type,
-      single: true,
-    },
+    { itemType: selection?.CardListData?.Content?.[0]?.Type, single: true },
   );
   const parent = parentFetched as CeoMessage;
-
+  console.log('PARENT:', parent);
   const eyebrow = parent?.Eyebrow ?? '';
   const title = parent?.Title ?? 'Cards';
   const subtitle = parent?.Description ?? parent?.SubTitle ?? '';
   const ctaText = parent?.CtaText ?? '';
+  const isOverlay = parent?.isOverlay ?? true;
+  console.log('zksmdkfasdkf', isOverlay);
+  console.log('zzzzzzzzz', ctaText);
+
   const ctaUrlRaw = parent?.CtaUrl;
   const ctaHref =
     typeof ctaUrlRaw === 'string'
@@ -82,8 +81,6 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     if (Array.isArray((raw as any)?.ItemIdsOrdered)) return (raw as any).ItemIdsOrdered as string[];
     return [];
   })();
-
-  console.log('DATA OF PARENT =========== >>>>>>>>>>>> ' + JSON.stringify(parent));
 
   let cardItems: any[] = [];
   if (selectedIds.length > 0) {
@@ -118,15 +115,12 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           : (itemHrefRaw?.Href ?? c?.LinkUrl ?? undefined);
 
     const img = Array.isArray(c?.Image) ? c.Image[0] : c?.Image;
-    const icon = Array.isArray(c?.Icon) ? c.Icon[0] : c?.Icon;
     const iconUrl =
       img?.Url ||
       img?.MediaUrl ||
       img?.ThumbnailUrl ||
       img?.Urls?.[0] ||
       img?.EmbedUrl ||
-      icon?.Url ||
-      icon?.MediaUrl ||
       undefined;
 
     return {
@@ -136,59 +130,67 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
       iconUrl,
     };
   });
+
+  const wrapCls = toBool(isOverlay)
+    ? 'relative z-20 -mt-20 md:-mt-28 lg:-mt-36 max-w-[90%] mx-auto'
+    : 'bg-[#EEEEEE] w-full px-20 pb-10';
+
+  const cardShellCls = isOverlay
+    ? 'flex flex-row items-center gap-8 bg-white rounded-3xl px-8 py-7 shadow-xl ring-1 ring-black/5'
+    : 'flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8 shadow-sm';
+
+  const figureCls = isOverlay ? 'relative justify-start' : 'relative justify-start';
+
+  const imageCls = isOverlay
+    ? 'rounded-[20px] w-[360px] h-[440px] md:w-[400px] md:h-[480px] object-cover'
+    : 'rounded-[20px] w-[417px] h-[506px] object-cover';
+
+  const overlayPanelCls = isOverlay
+    ? 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-5 py-4 w-[90%] text-start shadow-md'
+    : 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start';
+
+  const textColCls = isOverlay
+    ? 'text-start w-[520px] space-y-3'
+    : 'text-start w-[522px] space-y-3';
+  // ------------------------------------
+
   return (
-    <section {...attributes} className="bg-[#EEEEEE] w-full px-20 pb-10">
-      <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8">
-        <div className="absolute top-0 right-20 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-white"></div>
-        </div>
-        <div className="absolute top-[204px] right-2">
-          <img src="/icons/Floating-button.svg" alt="Floating-button" />
-        </div>
-        <div className="relative justify-start">
-          <img
-            src={items[0]?.iconUrl}
-            alt={items[0]?.title}
-            className="rounded-[20px] w-[417px] h-[506px] object-cover"
-          />
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
+    <section {...attributes} className={wrapCls}>
+      <div className={cardShellCls}>
+        <>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-white" />
+          </div>
+          <div className="absolute top-[204px] right-2">
+            <img src="/icons/Floating-button.svg" alt="Floating-button" />
+          </div>
+        </>
+
+        <div className={figureCls}>
+          {items[0]?.iconUrl && (
+            <img src={items[0].iconUrl} alt={items[0]?.title || ''} className={imageCls} />
+          )}
+          <div className={overlayPanelCls}>
             {items[0]?.description && (
-              <Description
-                align="left"
-              >
-                {items[0]?.description}
-              </Description>
+              <Description align="left">{items[0].description}</Description>
             )}
-            {items[0]?.title && (
-              <Title
-                align="left"
-              >
-                {items[0]?.title}
-              </Title>
-            )}
+            {items[0]?.title && <Title align="left">{items[0].title}</Title>}
           </div>
         </div>
 
-        <div className="text-start w-[522px] space-y-3">
+        <div className={textColCls}>
           <div className="space-y-3">
             {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-            {title && (
-              <Title
-                align="left"
-              >
-                {title}
-              </Title>
-            )}
+            {title && <Title align="left">{title}</Title>}
           </div>
-          <div>
-            {subtitle && (
-              <Description
-                align="left"
-              >
-                {subtitle}
-              </Description>
-            )}
-          </div>
+          {subtitle && <Description align="left" html={subtitle}></Description>}
+          {!!ctaText && !!ctaHref && (
+            <div className="pt-2">
+              <CTA href={ctaHref} variant="outline" className="rounded-[16px] px-5 py-3">
+                {ctaText}
+              </CTA>
+            </div>
+          )}
         </div>
       </div>
     </section>
