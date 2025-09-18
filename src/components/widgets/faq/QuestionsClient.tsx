@@ -77,7 +77,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
 
       {/* Questions */}
       <div className="flex-1 fadeRight">
-        <div className="divide-y rounded-xl">
+        <div className=" rounded-xl">
           {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
           {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
           {!isLoading && !error && questions.length === 0 && (
@@ -89,14 +89,14 @@ export default function QuestionsClient({ categories }: { categories: Category[]
             return (
               <details key={q.Id} className="group p-6 border rounded-md mb-4 bg-white border-[#E0E0E0]" open={isOpen}>
                 <summary
-                  className="flex list-none items-center justify-between cursor-pointer"
+                  className="flex list-none items-center justify-between cursor-pointer "
                   onClick={(e) => {
                     e.preventDefault();
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
                   <span className="text-slate-900">{q.Title}</span>
-                  <span className="ml-6 grid size-9 place-items-center rounded-lg bg-[#0B1C5A] text-white">
+                  <span className="ml-6 grid size-9 place-items-center rounded-lg bg-primary text-white">
                     <svg
                       viewBox="0 0 14 14"
                       className="w-[15px] h-[15px]"
@@ -116,7 +116,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
                     </svg>
                   </span>
                 </summary>
-                {q.Answer && <div className="mt-3 text-slate-600 leading-6">{q.Answer}</div>}
+                {q.Answer && <div className="mt-6 text-slate-600 leading-6">{q.Answer}</div>}
               </details>
             );
           })}

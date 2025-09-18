@@ -164,7 +164,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-hidden bg-black h-[725px]">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black h-[725px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
               src="/assets/transparentN.png"
@@ -186,12 +186,12 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px]">
+                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px] fadeup">
                   {view.IntroLead}
                 </h2>
               )}
 
-              <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 fadeup">
                 {view.Steps.map((s, i) => {
                   const logoSrc = mediaSrc(s.Logo);
                   const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
@@ -230,7 +230,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
               {/* CTA */}
               {view.CTALabel && (
-                <div className="mt-12 flex justify-center">
+                <div className="mt-12 flex justify-center fadeup">
                   <a
                     href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
                     className="group inline-flex items-center gap-2 rounded-full px-6 py-3

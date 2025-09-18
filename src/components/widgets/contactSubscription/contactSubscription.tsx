@@ -207,6 +207,8 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
   const right = items.find((x) => x !== left) ?? items[1];
 
+  const lines = parent.Title.split('\n');
+
   return (
     <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16 overflow-clip">
       <div className="mx-auto max-w-[1240px]">
@@ -215,9 +217,21 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
             <Title
               align="left"
               color="text-primary"
-              className="font-lufga text-left font-normal text-[40px] leading-[100%] tracking-[-0.02em] max-w-[720px]"
+              className="font-lufga text-left  font-normal text-[40px] leading-[100%] tracking-[-0.02em] max-w-[720px]"
             >
-              {parent.Title}
+              {parent.Title.split('\n').map((line, index) => {
+                const colors = [
+                  'text-red-500',
+                  'text-green-500',
+                  'text-blue-500',
+                ];
+                const colorClass = colors[index % colors.length]; 
+                return (
+                  <span key={index} className={`${colorClass} block`}>
+                    {line}
+                  </span>
+                );
+              })}
             </Title>
           </div>
         )}

@@ -5,12 +5,6 @@
 
 :root {
   --Background-background-neutral-200: #eeeeee;
-  --bg-white-opacity-75: hsla(0, 0%, 100%, 0.75);
-  --color-primary: #010663;
-  --color-secondary: #0b2a8e;
-  --text-primary: #010663;
-  --text-default: #424242;
-  --line-default: #e0e0e0;
 }
 
 body {
@@ -226,23 +220,6 @@ body {
   animation-range: entry 0% cover 100vh;
 }
 
-@keyframes fadeupSlow {
-  from {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fadeupSlow {
-  animation: fadeupSlow 2s cubic-bezier(0.1, 0.1, 0.1, 0.1) both;
-  animation-timeline: view();
-  animation-range: entry 20% cover 100%;
-}
-
 @keyframes fadeupCustom {
   from {
     opacity: 0;
@@ -278,14 +255,7 @@ body {
   animation-timeline: view();
   animation-range: entry 10% cover;
 }
-/* @keyframes moveUp{
-  from{
-    transform: translateY(0) 
-  }
-  to{
-    transform: translateY(-400px)
-  }
-} */
+
 
 
 .flip {
@@ -307,5 +277,19 @@ body {
   }
 } 
 
-
+.bgAnimation{
+  background: linear-gradient(-45deg, blur(25px),blur(50px),blur(75px),blur(100px));
+  animation: bgAnimation 12s ease infinite;
+}
+@keyframes bgAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100%{
+    background-position: 0% 50%;
+  }
+} 
 
