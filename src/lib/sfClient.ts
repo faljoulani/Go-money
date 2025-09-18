@@ -1,4 +1,3 @@
-// src/lib/sfClient.ts (server-only)
 let cachedToken: { token: string; exp: number } | null = null;
 
 const SF_BASE = (
