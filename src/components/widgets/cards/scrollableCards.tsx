@@ -125,25 +125,14 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
 
   return (
     <section {...attributes} className="w-full bg-white my-16">
-      <div className="mx-auto max-w-7xl px-8 h-[1500px]">
-        {/* Heading */}
-        <div className="moveUp h-[900px]">
-          <div className="flex flex-col items-center gap-2 text-center fadeup">
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="relative">
+          <div className="sticky top-20 flex flex-col gap-2 text-center fadeup bg-white  h-[600px]">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            <Title
-              className="
-              text-5xl
-              font-bold     
-              tracking-tight
-              leading-[100%]
-            "
-            >
-              {title}
-            </Title>
+            <Title className="text-5xl font-bold tracking-tight leading-[100%]">{title}</Title>
             {subtitle && <Description>{subtitle}</Description>}
           </div>
 
-          {/* Alternating frame */}
           <div className="mt-10 px-[205px]">
             <div className="space-y-16">
               {childCardData.map((card, index) => {
@@ -157,34 +146,24 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                     key={card.id ?? index}
                     className={`flex flex-row gap-8 items-center ${rowTemplate} fadeScaleTranslate`}
                   >
-                    {/* Image side */}
                     <div
                       className={
                         isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'
                       }
                     >
                       <div className="relative">
-                        {/* Card image */}
-                        <div
-                          className="
-                        relative overflow-hidden
-                        rounded-xl
-                        w-[330px] h-[250px]"
-                        >
+                        <div className="relative overflow-hidden rounded-xl w-[330px] h-[250px]">
                           {card.imgUrl && (
                             <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
                           )}
                         </div>
 
-                        {/* Decorative chip */}
                         <div
                           className={`absolute ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
                         >
-                          {/* Blue block */}
                           <div
                             className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
                           >
-                            {/* White square cutout */}
                             <div
                               className={`absolute w-10 h-10 bg-white ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
                             ></div>
@@ -193,7 +172,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                       </div>
                     </div>
 
-                    {/* Text side */}
                     <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
                       <div className="max-w-[38rem]">
                         <h3 className="text-32px leading-tight font-medium text-primary">
@@ -209,26 +187,25 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
               })}
             </div>
           </div>
-
-          {/* CTA */}
-          {ctaText && (
-            <div className="mt-12 text-center">
-              <CTA
-                variant="outline"
-                colorText="text-primary"
-                fontText="font-lufga"
-                fontWeight="font-semibold"
-                borderColor="border-primary"
-                align="center"
-                icon="arrow"
-                bgColor="transparent"
-                href={ctaHref || '#'}
-              >
-                {ctaText}
-              </CTA>
-            </div>
-          )}
         </div>
+
+        {ctaText && (
+          <div className="mt-12 text-center">
+            <CTA
+              variant="outline"
+              colorText="text-primary"
+              fontText="font-lufga"
+              fontWeight="font-semibold"
+              borderColor="border-primary"
+              align="center"
+              icon="arrow"
+              bgColor="transparent"
+              href={ctaHref || '#'}
+            >
+              {ctaText}
+            </CTA>
+          </div>
+        )}
       </div>
     </section>
   );
