@@ -32,7 +32,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         {...attributes}
         className="p-6 border border-dashed rounded-lg text-center text-slate-500"
       >
-        <strong>Cards</strong>
+        <strong>Cards list</strong>
         <div className="mt-1">Open the designer and select a Card List.</div>
       </section>
     ) : null;
@@ -53,9 +53,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const eyebrow = parentCardData?.Eyebrow ?? '';
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
-  console.log('eyebrow', eyebrow);
-  console.log('title', title);
-  console.log('subtitle', subtitle);
   const ctaText = parentCardData?.CtaText ?? '';
   const ctaUrlRaw = parentCardData?.CtaUrl;
   const ctaHref =
@@ -100,27 +97,27 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         : [];
   }
 
-  const childCardData = cardItems.map((c: any) => {
-    const rawHref = c?.LinkUrl ?? '';
+  const childCardData = cardItems.map((card: any) => {
+    const rawHref = card?.LinkUrl ?? '';
     const href = rawHref?.trim() || '#';
 
     const img =
-      (Array.isArray(c?.Image) && c.Image[0]) ||
-      c?.Image ||
-      (Array.isArray(c?.Images) && c.Images[0]) ||
-      c?.HeroImage ||
-      c?.Banner ||
-      c?.Media ||
-      c?.FeaturedImage ||
+      (Array.isArray(card?.Image) && card.Image[0]) ||
+      card?.Image ||
+      (Array.isArray(card?.Images) && card.Images[0]) ||
+      card?.HeroImage ||
+      card?.Banner ||
+      card?.Media ||
+      card?.FeaturedImage ||
       null;
 
     const imgUrl =
       img?.Url || img?.MediaUrl || img?.ThumbnailUrl || (Array.isArray(img?.Urls) && img.Urls[0]);
 
     return {
-      id: c?.Id,
-      title: c?.Title ?? '',
-      description: c?.Description ?? '',
+      id: card?.Id,
+      title: card?.Title ?? '',
+      description: card?.Description ?? '',
       href,
       imgUrl,
     };
@@ -128,59 +125,45 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
 
   return (
     <section {...attributes} className="w-full bg-white my-16">
-      <div className="mx-auto max-w-7xl px-8 h-[1500px]">
-        {/* Heading */}
-        <div className="moveUp h-[900px]">
-          <div className="sticky z-10 top-5 text-center fadeup">
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="relative">
+          <div className="sticky top-20 flex flex-col gap-2 text-center fadeup bg-white  h-[600px]">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            <Title  className="mb-1 mt-3 h-[59px]">
-              {title}
-            </Title>
+            <Title className="text-5xl font-bold tracking-tight leading-[100%]">{title}</Title>
             {subtitle && <Description>{subtitle}</Description>}
           </div>
 
-          {/* Alternating frame */}
           <div className="mt-10 px-[205px]">
             <div className="space-y-16">
-              {childCardData.map((card, i) => {
-                const isRight = i % 2 === 1;
+              {childCardData.map((card, index) => {
+                const isRight = index % 2 === 1;
                 const rowTemplate = isRight
                   ? '[grid-template-columns:minmax(0,1fr)_330px]'
                   : '[grid-template-columns:330px_minmax(0,1fr)]';
 
                 return (
                   <div
-                    key={card.id ?? i}
-                    className={`grid items-center ${rowTemplate} fadeScaleTranslate`}
+                    key={card.id ?? index}
+                    className={`flex flex-row gap-8 items-center ${rowTemplate} fadeScaleTranslate`}
                   >
-                    {/* Image side */}
                     <div
                       className={
                         isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'
                       }
                     >
                       <div className="relative">
-                        {/* Card image */}
-                        <div
-                          className="
-                        relative overflow-hidden
-                        rounded-xl
-                        w-[330px] h-[250px]"
-                        >
+                        <div className="relative overflow-hidden rounded-xl w-[330px] h-[250px]">
                           {card.imgUrl && (
                             <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
                           )}
                         </div>
 
-                        {/* Decorative chip */}
                         <div
                           className={`absolute ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
                         >
-                          {/* Blue block */}
                           <div
                             className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
                           >
-                            {/* White square cutout */}
                             <div
                               className={`absolute w-10 h-10 bg-white ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
                             ></div>
@@ -189,16 +172,13 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                       </div>
                     </div>
 
-                    {/* Text side */}
                     <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
                       <div className="max-w-[38rem]">
-                        <h3 className="text-[1.8rem] leading-tight font-medium text-[color:var(--navy,#0B2A8E)]">
+                        <h3 className="text-32px leading-tight font-medium text-primary">
                           {card.title}
                         </h3>
                         {card.description && (
-                          <p className="mt-3 text-base leading-7 text-slate-700">
-                            {card.description}
-                          </p>
+                          <p className="mt-3 leading-7 text-default">{card.description}</p>
                         )}
                       </div>
                     </div>
@@ -207,24 +187,25 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
               })}
             </div>
           </div>
+        </div>
 
-        {/* Parent CTA */}
         {ctaText && (
           <div className="mt-12 text-center">
             <CTA
-              href={(ctaHref || '').trim() || '#'}
-              textColor="text-primary"
-              borderColor="border-primary"
-              bgColor="transparent"
               variant="outline"
+              colorText="text-primary"
+              fontText="font-lufga"
+              fontWeight="font-semibold"
+              borderColor="border-primary"
+              align="center"
               icon="arrow"
-              className="mt-16"
+              bgColor="transparent"
+              href={ctaHref || '#'}
             >
               {ctaText}
             </CTA>
           </div>
         )}
-      </div>
       </div>
     </section>
   );

@@ -59,6 +59,13 @@ export function resolveAbsoluteUrl(
   return siteBaseUrl ? `${siteBaseUrl}${url.startsWith('/') ? url : `/${url}`}` : url;
 }
 
+export function extractHref(raw?: any): string {
+  if (!raw) return '';
+  if (typeof raw === 'string') return raw;
+  if (Array.isArray(raw)) return raw.find((x) => x?.Href)?.Href || '';
+  return raw?.Href || '';
+}
+
 export const cleanHref = (href: string) => href.split('#')[0].split('?')[0];
 
 export function routeMatchKey(urlOrPath?: string): string {

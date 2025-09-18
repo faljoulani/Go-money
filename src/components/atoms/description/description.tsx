@@ -3,7 +3,6 @@ import React from 'react';
 type Props = {
   children?: React.ReactNode;
   className?: string;
-  align?: 'left' | 'center' | 'right';
   maxWidth?: number | string;
   color?: string;
   html?: string;
@@ -22,7 +21,6 @@ function cleanSfHtml(input: string) {
 export default function Description({
   children,
   className = '',
-  align = 'center',
   maxWidth = 686,
   color = 'text-default',
   html,
@@ -30,18 +28,7 @@ export default function Description({
 }: Props) {
   const Tag = as;
 
-  const alignClass =
-    align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
-
-  const combinedClassName = [
-    'font-lufga',
-    'text-description',
-    'tracking-normal',
-    color,
-    alignClass,
-    align === 'center' ? 'mx-auto' : '',
-    className,
-  ]
+  const combinedClassName = ['font-lufga', 'text-description', 'tracking-normal', color, className]
     .filter(Boolean)
     .join(' ');
 

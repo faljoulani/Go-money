@@ -2,15 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 @import url('https://fonts.cdnfonts.com/css/lufga');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap');
 
 :root {
   --Background-background-neutral-200: #eeeeee;
-  --bg-white-opacity-75: hsla(0, 0%, 100%, 0.75);
-  --color-primary: #010663;
-  --color-secondary: #0b2a8e;
-  --text-primary: #010663;
-  --text-default: #424242;
-  --line-default: #e0e0e0;
 }
 
 body {
@@ -19,6 +14,15 @@ body {
 .defaultBgColor {
   background-color: var(--Background-background-neutral-200);
 }
+
+[dir='rtl'] .cta-arrow {
+  transform: scaleX(-1);
+}
+
+[dir='rtl'] {
+  font-family: 'Cairo', sans-serif;
+}
+
 /* base helpers */
 @layer base {
   .font-lufga {
@@ -37,7 +41,7 @@ body {
 
 /* utilities & animations */
 @layer utilities {
-  @keyframes float {
+  @keyframes animate-float {
     0% {
       transform: translateY(-15px);
     }
@@ -46,7 +50,7 @@ body {
     }
   }
   .animate-float {
-    animation: float 2s ease-in-out infinite alternate;
+    animation: animate-float 2s ease-in-out infinite alternate;
   }
 }
 
@@ -92,7 +96,25 @@ body {
 .fadeRight {
   animation: fadeRight 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 90% cover 100vh;
+  animation-range: entry 70% cover 100%;
+}
+
+@keyframes fadeRightFinanch {
+  from {
+    opacity: 0;
+    transform: translate(200px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeRightFinanch {
+  animation-delay: 250ms;
+  animation: fadeRightFinanch 3.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 50%;
 }
 
 @keyframes fadeLeft {
@@ -109,7 +131,7 @@ body {
 .fadeLeft {
   animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
-  animation-range: entry 90% cover 100vh;
+  animation-range: entry 70% cover 100vh;
 }
 
 @keyframes fadeRightDownload {
@@ -191,40 +213,6 @@ body {
   animation-range: entry 20% cover 100vh;
 }
 
-@keyframes fadeRightDownload {
-  from {
-    opacity: 0;
-    transform: translate(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(0);
-  }
-}
-
-.fadeRightDownload {
-  animation: fadeRightDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
-  animation-timeline: view();
-  animation-range: entry 50% cover 100vh;
-}
-
-@keyframes fadeLeftDownload {
-  from {
-    opacity: 0;
-    transform: translate(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(0);
-  }
-}
-
-.fadeLeftDownload {
-  animation: fadeLeftDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
-  animation-timeline: view();
-  animation-range: entry 50% cover 100vh;
-}
-
 @keyframes scaleC {
   from {
     opacity: 0;
@@ -240,23 +228,6 @@ body {
   animation: scaleC 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
   animation-timeline: view();
   animation-range: entry 0% cover 100vh;
-}
-
-@keyframes fadeupSlow {
-  from {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fadeupSlow {
-  animation: fadeupSlow 2s cubic-bezier(0.1, 0.1, 0.1, 0.1) both;
-  animation-timeline: view();
-  animation-range: entry 20% cover 100%;
 }
 
 @keyframes fadeupCustom {
@@ -276,69 +247,42 @@ body {
   animation-range: entry 50% cover 100vh;
 }
 
-@keyframes fadeScaleTranslate{
-  0%{
-    opacity:0;
+@keyframes fadeScaleTranslate {
+  0% {
+    opacity: 0;
     scale: 0.7;
   }
-  40%{
-    opacity:1;
-    scale:1;
+  40% {
+    opacity: 1;
+    scale: 1;
   }
-  100%{
-    opacity:0;
+  100% {
+    opacity: 0;
   }
 }
 .fadeScaleTranslate {
-  animation: fadeScaleTranslate  cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation: fadeScaleTranslate cubic-bezier(0.2, 0.8, 0.4, 1) both;
   animation-timeline: view();
   animation-range: entry 10% cover;
 }
-/* @keyframes moveUp{
-  from{
-    transform: translateY(0) 
-  }
-  to{
-    transform: translateY(-400px)
-  }
-} */
 
 
-.container {
+.flip {
   transform: rotateX(60deg);
   transform-style: preserve-3d;
 
   animation: flip 1s linear both;
   animation-timeline: view();
-  animation-range: entry 0% cover 20%;
-  will-change: transform
+  animation-range: entry 0% cover 40%;
+  will-change: transform;
 }
 
 @keyframes flip {
   from {
-    transform: rotateX(60deg)
+    transform: rotateX(60deg);
   }
   to {
-    transform: rotateX(0deg)
-  }
-} 
-
-
-/* @keyframes flip {
-  from {
-    transform: rotateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: rotateX(75deg);
-    opacity: 0.6;
+    transform: rotateX(0deg);
   }
 }
 
-.flip {
-  animation: flip 1s linear both;
-  animation-timeline: view();
-  animation-range: entry 100% cover 0%;
-  will-change: transform, opacity;
-}
- */

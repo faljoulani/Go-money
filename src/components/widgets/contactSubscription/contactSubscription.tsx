@@ -1,14 +1,14 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { resolveSitefinitySelection } from '../../../utils/utils';
+import { resolveSitefinitySelection, extractHref } from '../../../utils/utils';
 
 import SubscribeEmailForm from './subscribeEmailForm';
 import CTA from '../../atoms/cta/cta';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
+import Image from 'next/image';
 
-/* — helpers — */
 type ContactBox = {
   Id?: string;
   Title?: string;
@@ -19,162 +19,121 @@ type ContactBox = {
   EmailPlaceholder?: string;
   CallUsLabel?: string;
   CallUsText?: string;
-  hasLabelCorner?: boolean;
-  HasLabelCorner?: boolean;
+  hasLabelCorner?: boolean | string;
+  HasLabelCorner?: boolean | string;
   CTAURL?: any;
   Variant?: 'subscribe' | 'contact';
   Mode?: 'subscribe' | 'contact';
   Layout?: 'subscribe' | 'contact';
 };
+
 type ContactSubscriptionParent = {
   Id: string;
   Title?: string;
   Box?: ContactBox[] | ContactBox | null;
 };
 
-const toBool = (v: any) => (typeof v === 'boolean' ? v : String(v ?? '').toLowerCase() === 'true');
-const parseLink = (v: any) => {
-  if (!v) return null;
-  try {
-    const o = typeof v === 'string' ? JSON.parse(v) : Array.isArray(v) ? v[0] : v;
-    const href = String(o?.Href ?? o?.href ?? '').trim();
-    if (!href) return null;
-    return { href, text: o?.Text || o?.text, target: o?.Target || o?.target };
-  } catch {
-    return typeof v === 'string' ? { href: v } : null;
-  }
-};
-const normalize = (b: ContactBox) => {
-  const hasCorner = toBool((b as any).HasLabelCorner) || toBool(b.hasLabelCorner);
-  const hasInput = !!b.EmailPlaceholder;
-  const variant =
-    (b.Variant || b.Mode || b.Layout) ??
-    (hasCorner ? 'contact' : hasInput ? 'subscribe' : 'contact');
-  return {
-    ...b,
-    HasLabelCorner: hasCorner,
-    variant: variant as 'subscribe' | 'contact',
-    CTA: parseLink(b.CTAURL),
-  };
+const getVariant = (box: ContactBox): 'subscribe' | 'contact' => {
+  const explicit = box.Variant || box.Mode || box.Layout;
+  if (explicit) return explicit as 'subscribe' | 'contact';
+  const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+  return hasCorner ? 'contact' : box.EmailPlaceholder ? 'subscribe' : 'contact';
 };
 
-/* — small, single card — */
-function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; className?: string }) {
-  const isSubscribe = box.variant === 'subscribe';
+function Card({ box, className = '' }: { box: ContactBox; className?: string }) {
+  const variant = getVariant(box);
+  const isSubscribe = variant === 'subscribe';
+  const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+
+  const ctaHref = extractHref(box.CTAURL) || '#';
+  const ctaText = box.ButtonLabel || box.CTAURL?.Text || box.CTAURL?.text || 'Contact Us';
+  const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
+
+  // const cornerSide = isRTL ? 'left-0' : 'right-0';
+  // const cornerRound = isRTL ? 'rounded-br-[60px]' : 'rounded-bl-[60px]';
+  // const notchSide = cornerSide;
+
   return (
     <div
       className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8 ${className}`}
     >
-      {/* corner only for contact */}
-      {box.HasLabelCorner && !isSubscribe && (
-        <div className="pointer-events-none absolute right-0 top-0 h-[110px] w-[110px] rounded-bl-[60px] bg-[#1919E5]">
-          <div className="absolute right-0 top-0 h-[52px] w-[52px] bg-white" />
+      {/* Corner label only for contact variant */}
+      {hasCorner && !isSubscribe && (
+        <div
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[60px] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] h-[110px] w-[110px] bg-secondary`}
+        >
+          <div className={`absolute top-0 h-[52px] w-[52px] bg-white`} />
         </div>
       )}
 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title align="left" color="text-primary" className="text-left text-40px leading-10">
+            <Title color="text-primary" className="text-40px leading-10">
               {box.Title}
             </Title>
           )}
-          {box.SubTitle && isSubscribe ? (
-            <Description
-              align="left"
-              color="text-14px font-normal leading-5"
-              maxWidth="none"
-              className="mt-0 text-28px"
-            >
-              {box.SubTitle}
-            </Description>
-          ) : (
-            <Description
-              align="left"
-              color="text-14px font-normal leading-5"
-              maxWidth="none"
-              className="mt-0 text-[28px] w-72"
-            >
-              {box.SubTitle}
-            </Description>
-          )}
+          {box.SubTitle &&
+            (isSubscribe ? (
+              <Description maxWidth="none" className="mt-0 text-lg font-normal leading-5">
+                {box.SubTitle}
+              </Description>
+            ) : (
+              <Description
+                color=""
+                maxWidth="none"
+                className="mt-0 w-72 text-lg font-normal leading-5"
+              >
+                {box.SubTitle}
+              </Description>
+            ))}
         </div>
       )}
 
       {isSubscribe ? (
         <div className="mt-8">
-    <SubscribeEmailForm
-      placeholder={box.EmailPlaceholder || 'Enter your email address'}
-      label={box.EmailLabel || 'Email'}
-      button={box.ButtonLabel || 'Subscribe Now'}
-      endpoint="api/default/SubscriptionEmails"
-    />
-  </div>
-) : (
-        <div className="mt-6 flex flex-col items-center text-center">
-          <div className="mb-8 grid w-full max-w-[520px] grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
-              <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
-                {/* phone icon */}
-                <svg
-                  aria-hidden
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="shrink-0"
-                >
-                  <path
-                    d="M6 2h4l1 5-2 1a12 12 0 005 5l1-2 5 1v4c0 1-1 2-2 2A16 16 0 014 6c0-1 1-2 2-2z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+          <SubscribeEmailForm
+            placeholder={box.EmailPlaceholder || 'Enter your email address'}
+            label={box.EmailLabel || 'Email'}
+            button={box.ButtonLabel || 'Subscribe Now'}
+            endpoint="api/default/SubscriptionEmails"
+          />
+        </div>
+      ) : (
+        <div className="flex flex-col items-center text-center mt-6">
+          <div className="grid grid-cols-2 mb-8 w-full max-w-[520px]">
+            <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
+              <div className="flex items-center justify-center gap-2 text-14px text-default">
+                <Image src="/icons/phone.svg" alt="phone" width={17} height={17} />
                 <span>{box.CallUsLabel || 'Call Us'}</span>
               </div>
-              <div className="mt-2 h-px bg-[#EAEDF3]" />
-              <div className="mt-2 text-xs text-[#424242]">
+              <div className="mt-2 h-px bg-lineMuted" />
+              <div className="mt-2 text-xs text-default">
                 {box.CallUsText || '+966 11 123 4567'}
               </div>
             </div>
-            <div className="rounded-xl border border-[#E7E9EF] px-4 pb-3 pt-5">
-              <div className="flex items-center justify-center gap-2 text-[14px] text-[#424242]">
-                {/* mail icon */}
-                <svg
-                  aria-hidden
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="shrink-0"
-                >
-                  <path
-                    d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm0 0l8 6 8-6"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+
+            <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
+              <div className="flex items-center justify-center gap-2 text-14px text-default">
+                <Image src="/icons/mail.svg" alt="email" width={17} height={17} />
                 <span className="text-xs">{box.EmailLabel || 'Email'}</span>
               </div>
-              <div className="mt-2 h-px bg-[#EAEDF3]" />
-              <div className="mt-2 text-xs text-[#424242]">
+              <div className="mt-2 h-px bg-lineMuted" />
+              <div className="mt-2 text-xs text-default">
                 {box.EmailText || 'support@go-money.sa'}
               </div>
             </div>
           </div>
+
           <CTA
-            href={box.CTA?.href || '#'}
-            target={(box.CTA?.target as '_self' | '_blank') || '_self'}
+            href={ctaHref}
+            target={ctaTarget}
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
-            className="w-full max-w-[525px] rounded-[20px] border-[2px] px-6 py-[18px]"
+            className="w-full max-w-[525px] font-semibold rounded-[20px] border-[2px] px-6 py-[18px]"
           >
-            {box.ButtonLabel || box.CTA?.text || 'Contact Us'}
+            {ctaText}
           </CTA>
         </div>
       )}
@@ -182,10 +141,10 @@ function Card({ box, className = '' }: { box: ReturnType<typeof normalize>; clas
   );
 }
 
-/* — main — */
 export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
+  const isRTL = (culture || '').toLowerCase().startsWith('ar');
 
   const properties = (props.model?.Properties || {}) as any;
   const rawSel =
@@ -195,7 +154,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   if (!parentId) {
     return isEdit ? (
       <section {...attrs}>
-        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-slate-600">
+        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-default">
           <strong>Contact Subscription</strong>
           <div className="mt-1">Open the designer and select a Contact Subscription item.</div>
         </div>
@@ -210,35 +169,44 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
     [
       'Id',
       'Title',
-      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner)',
+      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner,HasLabelCorner,Variant,Mode,Layout)',
     ],
     { itemType: rawSel?.Content?.[0]?.Type, single: true },
   )) as ContactSubscriptionParent | null;
 
-  const raw = Array.isArray(parent?.Box) ? parent?.Box : parent?.Box ? [parent?.Box] : [];
-  const items = raw.map(normalize);
-
-  // decide left/right (subscribe then contact)
-  const left = items.find((x) => x.variant === 'subscribe') ?? items[0];
+  const items = Array.isArray(parent?.Box) ? parent!.Box : parent?.Box ? [parent!.Box] : [];
+  const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
   const right = items.find((x) => x !== left) ?? items[1];
 
+  const lines = parent.Title.split('\n');
+
   return (
-    <section {...attrs} className="defaultBgColor px-5 py-12 md:py-16">
+    <section {...attrs} className="defaultBgColor px-5 py-16 overflow-clip">
       <div className="mx-auto max-w-[1240px]">
         {parent?.Title && (
-          <div className="mb-8 md:mb-10">
+          <div className="mb-10">
             <Title
-              align="left"
               color="text-primary"
-              className="font-lufga text-left font-normal text-[40px] leading-[100%] tracking-[-0.02em] max-w-[720px]"
+              className="font-lufga font-normal text-40px leading-[100%] tracking-[-0.02em] max-w-[720px]"
             >
-              {parent.Title}
+              {parent.Title.split('\n').map((line, index) => {
+                const colors = [
+                  'text-red-500',
+                  'text-green-500',
+                  'text-blue-500',
+                ];
+                const colorClass = colors[index % colors.length]; 
+                return (
+                  <span key={index} className={`${colorClass} block`}>
+                    {line}
+                  </span>
+                );
+              })}
             </Title>
           </div>
         )}
 
-        {/* each card is standalone → add your animations here */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 items-stretch">
+        <div className="grid grid-cols-2 gap-8 items-stretch">
           {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
           {right && <Card box={right} className="fadeRightSubscribe h-full" />}
         </div>

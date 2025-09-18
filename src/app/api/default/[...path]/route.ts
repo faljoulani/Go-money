@@ -4,8 +4,12 @@ import { sfFetch } from '../../../../lib/sfClient';
 type Ctx = { params: Promise<{ path: string[] }> };
 
 export async function GET(req: NextRequest, ctx: Ctx) {
-  const { path } = await ctx.params; 
-  const joined = Array.isArray(path) ? path.join('/') : String(path);
+  const { path } = await ctx.params;
+  let joined = Array.isArray(path) ? path.join('/') : String(path);
+
+  // if (joined.startsWith('api/sf/')) {
+  //   joined = joined.replace(/^api\/sf\//, '');
+  // }
 
   const qs = Object.fromEntries(req.nextUrl.searchParams.entries());
   const data = await sfFetch<any>(joined, { params: qs });

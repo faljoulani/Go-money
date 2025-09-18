@@ -104,8 +104,8 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
       {/* Content above the background */}
       <div className="relative grid grid-cols-2 items-center gap-10 py-24 pl-16 pr-20">
         {/* Left: copy */}
-        <div className="flex flex-col gap-5 max-w-xl text-left fadeLeft duration-1000">
-          {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
+        <div className="flex flex-col items- gap-5 max-w-xl fadeLeft duration-1000">
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title
             className="
                 text-5xl
@@ -113,23 +113,18 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
                 tracking-tight
                 leading-[100%]
               "
-            align="left"
           >
             {title}
           </Title>
           {description && (
-            <Description
-              className="font-extralight leading-[24px]"
-              align="left"
-              html={description}
-            />
+            <Description className="font-extralight leading-[24px]" html={description} />
           )}
 
           {ctaText && (
             <div>
               <CTA
                 href={(ctaHref || '').trim() || '#'}
-                textColor="text-primary"
+                colorText="text-primary"
                 borderColor="border-primary"
                 bgColor="transparent"
                 variant="outline"

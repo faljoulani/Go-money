@@ -149,43 +149,17 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             className="rounded-[20px] w-[417px] h-[506px] object-cover"
           />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
-            {items[0]?.description && (
-              <Description
-                align="left"
-              >
-                {items[0]?.description}
-              </Description>
-            )}
-            {items[0]?.title && (
-              <Title
-                align="left"
-              >
-                {items[0]?.title}
-              </Title>
-            )}
+            {items[0]?.description && <Description>{items[0]?.description}</Description>}
+            {items[0]?.title && <Title>{items[0]?.title}</Title>}
           </div>
         </div>
 
         <div className="text-start w-[522px] space-y-3">
           <div className="space-y-3">
-            {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-            {title && (
-              <Title
-                align="left"
-              >
-                {title}
-              </Title>
-            )}
+            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+            {title && <Title>{title}</Title>}
           </div>
-          <div>
-            {subtitle && (
-              <Description
-                align="left"
-              >
-                {subtitle}
-              </Description>
-            )}
-          </div>
+          <div>{subtitle && <Description>{subtitle}</Description>}</div>
         </div>
       </div>
     </section>

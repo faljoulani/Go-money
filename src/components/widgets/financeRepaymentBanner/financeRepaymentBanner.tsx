@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import type { FinanceRepaymentBannerEntity } from './financeRepaymentBanner.entity';
+import { resolveSitefinitySelection } from '../../../utils/utils';
 
 import Title from '../../atoms/title/title';
 import CTA from '../../atoms/cta/cta';
@@ -22,14 +23,9 @@ export default async function FinanceRepaymentBanner(
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  let selection = props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox;
-  if (typeof selection === 'string') {
-    try {
-      selection = JSON.parse(selection);
-    } catch {
-      selection = undefined;
-    }
-  }
+  let selection = resolveSitefinitySelection(
+    props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox,
+  );
 
   const id = extractSelectionId(selection);
 
@@ -39,7 +35,7 @@ export default async function FinanceRepaymentBanner(
         {...attrs}
         className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
       >
-        <strong>FinanceRepaymentBanner</strong>
+        <strong>Select a FinanceRepaymentBanner</strong>
         <div className="mt-1">Open the designer and select the desired item.</div>
       </section>
     ) : null;
@@ -96,80 +92,89 @@ export default async function FinanceRepaymentBanner(
   const url = (im: any) => im?.MediaUrl || im?.Url || im?.ThumbnailUrl || '';
 
   return (
-    <section
-      {...attrs}
-      className="relative flex h-[550px] w-auto items-center overflow-hidden rounded-[32px] mx-20"
-    >
-      <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
+    <section {...attrs} className="relative [perspective:1000px] overflow-clip">
+      <div className="flex h-[550px] w-auto items-center rounded-[32px] mx-20 flip overflow-clip">
+        <div className="absolute inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `
               linear-gradient(180deg, rgba(0,0,0,0) 0%, #000 100%),
               linear-gradient(97.8deg, #010663 0%, #6BE5BF 100%)
             `,
-          }}
-        />
-        {mainBg && (
-          <Image
-            src={url(mainBg)}
-            alt={mainBg?.AlternativeText || 'Background'}
-            fill
-            priority
-            className="object-cover"
+            }}
           />
-        )}
-      </div>
-
-      {/* content container (to align children vertically center) */}
-      <div className="relative z-10 flex w-full items-center">
-        <div className="text-white">
-          <div className="flex flex-col gap-6 pl-24 w-full max-w-[560px]">
-            <div className="relative -left-8 -mb-12 h-[180px] w-[590px] rounded-lg">
-              <Image src={url(cards)} alt={cards?.AlternativeText || 'Cards'} fill priority />
-            </div>
-
-            {title && (
-              <Title align="left" color="white">
-                {title}
-              </Title>
-            )}
-
-            {ctaText && (
-              <div>
-                <CTA
-                  href={(ctaUrl || '').trim() || '#'}
-                  textColor="text-white"
-                  borderColor="border-white"
-                  bgColor="transparent"
-                  variant="outline"
-                  icon="slot"
-                  align="left"
-                >
-                  {ctaText}
-                </CTA>
-              </div>
-            )}
-          </div>
+          {mainBg && (
+            <Image
+              src={url(mainBg)}
+              alt={mainBg?.AlternativeText || 'Background'}
+              fill
+              priority
+              className="object-cover"
+            />
+          )}
         </div>
 
-        {/* Right: phone image (index 1, absolutely positioned) ----->>> the property name must be "phone"*/}
-        {phone && (
-          <div className="absolute right-0 top-0 z-20 flex h-full items-center">
-            <Image
-              src={url(phone)}
-              alt={phone?.AlternativeText || 'Phone'}
-              width={630}
-              height={900}
-              priority
-              className="pointer-events-none select-none animate-float"
-              style={{ filter: 'drop-shadow(28px -18px 42px rgba(0,0,0,0.35))' }}
-            />
+        {/* content container (to align children vertically center) */}
+        <div className="relative z-10 flex w-full items-center ">
+          <div className="text-white">
+            <div className="flex flex-col gap-6 pl-24 w-full max-w-[560px]">
+              <div className="relative -left-8 -mb-12 h-[180px] w-[590px] rounded-lg">
+                <Image src={url(cards)} alt={cards?.AlternativeText || 'Cards'} fill priority />
+              </div>
+
+              {title && (
+                <Title
+                  className="
+                    text-5xl
+                    font-bold     
+                    tracking-tight
+                    leading-[100%]
+                    max-w-[100%]
+                  "
+                  color="white"
+                >
+                  {title}
+                </Title>
+              )}
+
+              {ctaText && (
+                <div>
+                  <CTA
+                    variant="outline"
+                    colorText="text-white"
+                    fontText="font-lufga"
+                    fontWeight="font-light"
+                    borderColor="border-white"
+                    align="left"
+                    icon="slot"
+                    bgColor="transparent"
+                    href={ctaUrl || '#'}
+                  >
+                    {ctaText}
+                  </CTA>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+
+          {/* Right: phone image (index 1, absolutely positioned) ----->>> the property name must be "phone"*/}
+          {phone && (
+            <div className="absolute right-0 z-20 fadeRightFinanch">
+              <Image
+                src={url(phone)}
+                alt={phone?.AlternativeText || 'Phone'}
+                width={550}
+                height={900}
+                priority
+                className="pointer-events-none select-none animate-float"
+              />
+            </div>
+          )}
+        </div>
       </div>
       {/* subtle ring */}
-      <div className="pointer-events-none absolute inset-0 rounded-[32px] ring-1 ring-white/10" />
+      <div className="" />
     </section>
   );
 }

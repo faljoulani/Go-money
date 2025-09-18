@@ -4,13 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color-primary)', // Use it with bg-primary, text-primary, border-primary
-        secondary: 'var(--color-secondary)',
-        default: 'var(--text-default)', // Use it with bg-default, text-default, border-default
-        surface: 'var(--bg-white-opacity-75)',
-        line: 'var(--line-default)',
-        bgNeutral200: 'var(--Background-background-neutral-200)',
+        primary: '#010663', // Use it with bg-primary, text-primary, border-primary
+        secondary: '#0b2a8e',
+        default: '#424242', // Use it with bg-default, text-default, border-default
+        surface: 'hsla(0, 0%, 100%, 0.75)',
+        line: '#e0e0e0',
+        bgNeutral200: '#eeeeee',
         skyTint: '#CFE8F1',
+        lineMuted: '#EAEDF3',
       },
       safelist: [{ pattern: /text-(28|32|40)px/ }],
       fontSize: {
@@ -21,31 +22,7 @@ module.exports = {
       },
       fontFamily: {
         lufga: ['Lufga', 'sans-serif'],
-      },
-      height: {
-        header: '76px', // use h-header
-        hero: '600px', // use h-hero
-        card: '320px', // use h-card
-      },
-      maxWidth: {
-        container: '1440px', // use max-w-container
-      },
-      transitionProperty: {
-        surface: 'background-color, backdrop-filter, color',
-      },
-      keyframes: {
-        flipInX: {
-          '0%': { transform: 'rotateX(90deg)' },
-          '100%': { transform: 'rotateX(0deg)' },
-        },
-        flipInY: {
-          '0%': { transform: 'rotateY(90deg)' },
-          '100%': { transform: 'rotateY(0deg)' },
-        },
-      },
-      animation: {
-        'flip-in-x': 'flipInX 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both',
-        'flip-in-y': 'flipInY 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both',
+        cairo: ['Cairo', 'sans-serif'],
       },
     },
   },
