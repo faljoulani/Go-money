@@ -69,21 +69,17 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primary" className="text-40px leading-10">
+            <Title color="text-primary" className="text-40px font-bold">
               {box.Title}
             </Title>
           )}
           {box.SubTitle &&
             (isSubscribe ? (
-              <Description maxWidth="none" className="mt-0 text-lg font-normal leading-5">
+              <Description maxWidth="none" className="mt-0 text-lg leading-6">
                 {box.SubTitle}
               </Description>
             ) : (
-              <Description
-                color=""
-                maxWidth="none"
-                className="mt-0 w-72 text-lg font-normal leading-5"
-              >
+              <Description maxWidth="none" className="mt-0 w-72 text-lg leading-6">
                 {box.SubTitle}
               </Description>
             ))}
@@ -100,7 +96,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
           />
         </div>
       ) : (
-        <div className="flex flex-col items-center text-center mt-6">
+        <div className="flex flex-col items-center text-center mt-7">
           <div className="grid grid-cols-2 mb-8 w-full max-w-[520px]">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
@@ -112,7 +108,6 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
                 {box.CallUsText || '+966 11 123 4567'}
               </div>
             </div>
-
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
                 <Image src="/icons/mail.svg" alt="email" width={17} height={17} />
@@ -131,7 +126,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             borderColor="border-primary"
             variant="outline"
             icon="arrow"
-            className="w-full max-w-[525px] font-semibold rounded-[20px] border-[2px] px-6 py-[18px]"
+            className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] px-6 py-[18px]"
           >
             {ctaText}
           </CTA>
@@ -187,21 +182,9 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
           <div className="mb-10">
             <Title
               color="text-primary"
-              className="font-lufga font-normal text-40px leading-[100%] tracking-[-0.02em] max-w-[720px]"
+              className="font-normal text-40px tracking-[-0.02em] max-w-[720px]"
             >
-              {parent.Title.split('\n').map((line, index) => {
-                const colors = [
-                  'text-red-500',
-                  'text-green-500',
-                  'text-blue-500',
-                ];
-                const colorClass = colors[index % colors.length]; 
-                return (
-                  <span key={index} className={`${colorClass} block`}>
-                    {line}
-                  </span>
-                );
-              })}
+              {parent.Title}
             </Title>
           </div>
         )}

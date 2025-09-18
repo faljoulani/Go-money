@@ -20,8 +20,8 @@ import GridOfCards from '../components/widgets/cards/gridOfCards';
 import Footer from '../components/widgets/footer/Footer-template';
 import { FooterEntity } from '../components/widgets/footer/Footer.entity';
 
-import FinanceRepaymentBanner from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner';
-import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner.entity';
+import FinanceBanner from '../components/widgets/financeRepaymentBanner/financeBanner';
+import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanner/financeBanner.entity';
 
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
@@ -94,12 +94,12 @@ const customWidgetRegistry: WidgetRegistry = {
       },
     },
     BannerTwo: {
-      componentType: FinanceRepaymentBanner,
-      entity: FinanceRepaymentBannerEntity,
+      componentType: FinanceBanner,
+      entity: FinanceBannerEntity,
       ssr: true,
       editorMetadata: { Title: 'Finance banner' },
       views: {
-        Default: { Title: 'Finance Banner', ViewFunction: FinanceRepaymentBanner },
+        Default: { Title: 'Finance Banner', ViewFunction: FinanceBanner },
       },
     },
     HowItWorks: {

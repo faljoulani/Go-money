@@ -107,9 +107,27 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           backgroundImage: `url('/assets/HeroBackground.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          alignItems: 'buttom'
         }}
       >
-        <div className="max-w-4xl px-6 pb-20 text-center">
+        <img
+          src="/assets/BoxRight.png"
+          alt="BoxRight"
+          className="absolute top-[40px] right-[40px]"
+        />
+        <img
+          src="/assets/BoxLeft.png"
+          alt="BoxLeft"
+          className="absolute top-1/2 left-[40px] -translate-y-1/2"
+        />
+        <div
+          className="max-w-4xl px-6 pb-20 text-center"
+          style={{
+            backgroundImage: `url('/assets/cyrcls.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
           <div className="mx-auto max-w-7xl px-6 pt-8">
             <div className="mb-6" data-sfcontainer="Breadcrumb">
               {breadcrumbs.map((y) =>
@@ -117,11 +135,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               )}
             </div>
           </div>
-          {title && (
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-              {title}
-            </h1>
-          )}
+          {title && <h1 className="text-4xl font-extrabold leading-tight">{title}</h1>}
           {description && <Description html={description} />}
         </div>
       </section>

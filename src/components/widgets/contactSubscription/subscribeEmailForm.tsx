@@ -66,7 +66,7 @@ export default function SubscribeEmailForm({
         borderColor="border-primary"
         variant="outline"
         icon="arrow"
-        className="w-full rounded-[20px] border-[2px] px-6 py-[18px]"
+        className="w-full rounded-[20px] border-[2px] px-6 py-[18px] text-lg font-medium tracking-[-0.025%em]"
         disabled={state === 'loading'}
         type="submit"
       >
