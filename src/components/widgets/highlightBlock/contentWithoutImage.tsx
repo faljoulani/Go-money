@@ -57,7 +57,6 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
         <div className="max-w-[720px] text-[#424242]">
           {description ? (
             <Description
-              align="center"
               className="font-poppins font-normal text-[18px] leading-[30px] tracking-[0px] text-center
                text-[hsla(0,0%,26%,1)] w-[400px] h-[60px] mx-auto"
             >

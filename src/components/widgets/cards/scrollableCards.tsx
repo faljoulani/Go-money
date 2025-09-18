@@ -128,7 +128,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
       <div className="mx-auto max-w-7xl px-8 h-[1500px]">
         {/* Heading */}
         <div className="moveUp h-[900px]">
-          <div className="flex flex-col gap-2 text-center fadeup">
+          <div className="flex flex-col items-center gap-2 text-center fadeup">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
             <Title
               className="
@@ -155,7 +155,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                 return (
                   <div
                     key={card.id ?? index}
-                    className={`grid items-center ${rowTemplate} fadeScaleTranslate`}
+                    className={`flex flex-row gap-8 items-center ${rowTemplate} fadeScaleTranslate`}
                   >
                     {/* Image side */}
                     <div
@@ -196,13 +196,11 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                     {/* Text side */}
                     <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
                       <div className="max-w-[38rem]">
-                        <h3 className="text-[1.8rem] leading-tight font-medium text-[color:var(--navy,#0B2A8E)]">
+                        <h3 className="text-32px leading-tight font-medium text-primary">
                           {card.title}
                         </h3>
                         {card.description && (
-                          <p className="mt-3 text-base leading-7 text-slate-700">
-                            {card.description}
-                          </p>
+                          <p className="mt-3 leading-7 text-default">{card.description}</p>
                         )}
                       </div>
                     </div>

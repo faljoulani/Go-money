@@ -128,7 +128,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative mx-20 bg-white">
       {/* Top headline block */}
-      <div className="flex flex-col gap-2 text-center fadeup">
+      <div className="flex flex-col items-center text-center gap-2 fadeup">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title

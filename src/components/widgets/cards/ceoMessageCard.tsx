@@ -155,42 +155,32 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
   // ------------------------------------
 
   return (
-    <section {...attributes} className={wrapCls}>
-      <div className={cardShellCls}>
-        <>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-white" />
-          </div>
-          <div className="absolute top-[204px] right-2">
-            <img src="/icons/Floating-button.svg" alt="Floating-button" />
-          </div>
-        </>
-
-        <div className={figureCls}>
-          {items[0]?.iconUrl && (
-            <img src={items[0].iconUrl} alt={items[0]?.title || ''} className={imageCls} />
-          )}
-          <div className={overlayPanelCls}>
-            {items[0]?.description && (
-              <Description align="left">{items[0].description}</Description>
-            )}
-            {items[0]?.title && <Title align="left">{items[0].title}</Title>}
+    <section {...attributes} className="bg-[#EEEEEE] w-full px-20 pb-10">
+      <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8">
+        <div className="absolute top-0 right-20 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-white"></div>
+        </div>
+        <div className="absolute top-[204px] right-2">
+          <img src="/icons/Floating-button.svg" alt="Floating-button" />
+        </div>
+        <div className="relative justify-start">
+          <img
+            src={items[0]?.iconUrl}
+            alt={items[0]?.title}
+            className="rounded-[20px] w-[417px] h-[506px] object-cover"
+          />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
+            {items[0]?.description && <Description>{items[0]?.description}</Description>}
+            {items[0]?.title && <Title>{items[0]?.title}</Title>}
           </div>
         </div>
 
         <div className={textColCls}>
           <div className="space-y-3">
-            {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
-            {title && <Title align="left">{title}</Title>}
+            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+            {title && <Title>{title}</Title>}
           </div>
-          {subtitle && <Description align="left" html={subtitle}></Description>}
-          {!!ctaText && !!ctaHref && (
-            <div className="pt-2">
-              <CTA href={ctaHref} variant="outline" className="rounded-[16px] px-5 py-3">
-                {ctaText}
-              </CTA>
-            </div>
-          )}
+          <div>{subtitle && <Description>{subtitle}</Description>}</div>
         </div>
       </div>
     </section>

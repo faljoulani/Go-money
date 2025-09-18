@@ -1,7 +1,9 @@
 // src/lib/sfClient.ts (server-only)
 let cachedToken: { token: string; exp: number } | null = null;
 
-const SF_BASE = (process.env.SF_BASE_URL || 'http://dev-sfall.ddns.net:9095').replace(/\/$/, '');
+const SF_BASE = (
+  process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL || 'http://dev-sfall.ddns.net:9095'
+).replace(/\/$/, '');
 const TOKEN_URL = process.env.SF_OIDC_TOKEN_URL || `${SF_BASE}/sitefinity/oauth/token`;
 const FLOW = (process.env.SF_AUTH_FLOW || 'client_credentials') as
   | 'client_credentials'
@@ -74,9 +76,9 @@ export async function sfFetch<T>(
     body?: any;
   } = {},
 ): Promise<T> {
-  let cleanPath=path.replace(/^\/+/,'');
-  if(cleanPath.startsWith('api/sf/')){
-    cleanPath=cleanPath.replace(/^api\/sf\//,'')
+  let cleanPath = path.replace(/^\/+/, '');
+  if (cleanPath.startsWith('api/sf/')) {
+    cleanPath = cleanPath.replace(/^api\/sf\//, '');
   }
 
   const u = new URL(cleanPath.startsWith('http') ? cleanPath : `/${cleanPath}`, SF_BASE);
