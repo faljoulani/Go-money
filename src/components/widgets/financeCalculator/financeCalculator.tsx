@@ -3,8 +3,10 @@
 import { useMemo, useState } from 'react';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { FinanceCalculatorEntity } from './financeCalculator.entity';
-import {useSfMutation} from '../../../utils/hooks/useSfMutation';
+
 type Nationality = 'saudi' | 'nonsaudi';
+type ResultState = null | 'success' | 'fail';
+
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const parseNum = (v: number | '') => (v === '' ? null : Number(v));
 const formatSar = (n: number) =>
@@ -18,19 +20,20 @@ function useRangeFill(value: number, min: number, max: number, fill: string, res
   );
 }
 
+const splitList = (v?: string) =>
+  (v || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
 export default function FinanceCalculator(props: WidgetContext<FinanceCalculatorEntity>) {
   const attrs = htmlAttributes(props);
   const cfg = props.model.Properties || ({} as FinanceCalculatorEntity);
 
-  const AMIN = 1000,
-    AMAX = 20000,
-    ASTEP = 500,
-    ADEF = 15000;
-  const IMIN = 6,
-    IMAX = 36,
-    ISTEP = 1,
-    IDEF = 24;
+  const AMIN = 1000, AMAX = 20000, ASTEP = 500, ADEF = 15000;
+  const IMIN = 6, IMAX = 36, ISTEP = 1, IDEF = 24;
 
+  const [result, setResult] = useState<ResultState>(null); // ← toggles views
   const [nationality, setNationality] = useState<Nationality>('saudi');
   const [employer, setEmployer] = useState('');
   const [serviceLength, setServiceLength] = useState(
@@ -49,14 +52,12 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
   const amountFill = useRangeFill(requestedFinanceAmount, AMIN, AMAX, '#0B2A8E', '#C9CDD6');
   const instFill = useRangeFill(installments, IMIN, IMAX, '#0B2A8E', '#C9CDD6');
 
-  const {post} = useSfMutation('eligibility/get')
-
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setMsg('');
 
-    //temporary
+    // Build payload (what you’ll POST)
     const payload = {
       nationality,
       employerType: employer || null,
@@ -71,21 +72,12 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     };
 
     console.log('FinanceCalculator payload:', payload);
-<<<<<<< Updated upstream
-=======
 
-  try{
-    const res = await post(payload);
-    if(res.IsEligible){
-      setResult('success')
-    }else{
-      setResult('fail');
-    }
-  }catch (err: any) {
-    console.error('Subscribe error:', err);
->>>>>>> Stashed changes
+    setTimeout(() => {
+      setSubmitting(false);
+      setResult(requestedFinanceAmount >= 15000 ? 'success' : 'fail');
+    }, 400);
   }
-}
 
   const nationalityOptions = cfg.NationalityChoices?.length
     ? cfg.NationalityChoices
@@ -94,69 +86,68 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
   const employerOptions = cfg.EmployerChoices?.length
     ? cfg.EmployerChoices
     : ['Government', 'Semi-government', 'Private'];
+
   const lengthOptions = cfg.LengthOfServicesChoices?.length
     ? cfg.LengthOfServicesChoices
     : ['3 Months', '6 Months', '1 Year', '2 Years', '3+ Years'];
 
-<<<<<<< Updated upstream
-=======
-  // if (result === 'success') {
-  //   const successIcon = cfg.SuccessIconUrl || '/assets/success.png'; 
-  //   const title =
-  //     cfg.SuccessTitle || "You're Eligible for Our Financing!";
-  //   const desc =
-  //     cfg.SuccessDescription ||
-  //     'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
-  //   const noteTitle = cfg.SuccessNoteTitle || 'Important Note';
-  //   const noteDesc =
-  //     cfg.SuccessNoteDescription ||
-  //     'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
+//   if (result === 'success') {
+//     const successIcon = cfg.SuccessIconUrl || '/images/checkmark.png'; // image uploaded by author later
+//     const title =
+//       cfg.SuccessTitle || "You're Eligible for Our Financing!";
+//     const desc =
+//       cfg.SuccessDescription ||
+//       'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
+//     const noteTitle = cfg.SuccessNoteTitle || 'Important Note';
+//     const noteDesc =
+//       cfg.SuccessNoteDescription ||
+//       'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
 
-  //   const backText = cfg.SuccessBackCtaText || 'Back to Calculator';
-  //   const appCtaText = cfg.SuccessPrimaryCtaText || 'Download Our App';
-  //   const appCtaHref = (cfg.SuccessPrimaryCtaHref as string) || '#';
+//     const backText = cfg.SuccessBackCtaText || 'Back to Calculator';
+//     const appCtaText = cfg.SuccessPrimaryCtaText || 'Download Our App';
+//     const appCtaHref = (cfg.SuccessPrimaryCtaHref as string) || '#';
 
-    // return (
-    //   <section {...attrs} className="w-full">
-    //     <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
-    //       <div className="mx-auto mb-6 grid place-items-center">
-    //         <img src={successIcon} alt="success" className="h-24 w-24 object-contain" />
-    //       </div>
-    //       <h2 className="text-[36px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
-    //       <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
+//     return (
+//       <section {...attrs} className="w-full">
+//         <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+//           <div className="mx-auto mb-6 grid place-items-center">
+//             <img src={successIcon} alt="success" className="h-24 w-24 object-contain" />
+//           </div>
+//           <h2 className="text-[36px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
+//           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
 
-    //       <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
-    //         <div className="flex items-start gap-2 justify-center md:justify-start">
-    //           <InfoIcon />
-    //           <div>
-    //             <strong>{noteTitle}</strong>
-    //             <p className="mt-1">{noteDesc}</p>
-    //           </div>
-    //         </div>
-    //       </div>
+//           <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
+//             <div className="flex items-start gap-2 justify-center md:justify-start">
+//               <InfoIcon />
+//               <div>
+//                 <strong>{noteTitle}</strong>
+//                 <p className="mt-1">{noteDesc}</p>
+//               </div>
+//             </div>
+//           </div>
 
-    //       <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-    //         <button
-    //           type="button"
-    //           onClick={() => setResult(null)}
-    //           className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
-    //         >
-    //           {backText}
-    //         </button>
-    //         <a
-    //           href={appCtaHref}
-    //           className="rounded-full bg-[#0B2A8E] text-white px-6 py-3 text-[15px] hover:opacity-90"
-    //         >
-    //           {appCtaText}
-    //         </a>
-    //       </div>
-    //     </div>
-    //   </section>
+//           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+//             <button
+//               type="button"
+//               onClick={() => setResult(null)}
+//               className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
+//             >
+//               {backText}
+//             </button>
+//             <a
+//               href={appCtaHref}
+//               className="rounded-full bg-[#0B2A8E] text-white px-6 py-3 text-[15px] hover:opacity-90"
+//             >
+//               {appCtaText}
+//             </a>
+//           </div>
+//         </div>
+//       </section>
 //     );
 //   }
 
 //   if (result === 'fail') {
-//     const failIcon = cfg.FailIconUrl || '/assets/failed.png'; 
+//     const failIcon = cfg.FailIconUrl || '/images/cross.png'; // image uploaded by author later
 //     const title = cfg.FailTitle || 'Not Eligible Yet';
 //     const sub =
 //       cfg.FailSubtitle ||
@@ -188,6 +179,7 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
 //           <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
 //           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{sub}</p>
 
+//           {/* Reasons */}
 //           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
 //             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
 //               <strong className="block mb-3 text-[#0B2A8E]">
@@ -208,6 +200,7 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
 //             </div>
 //           </div>
 
+//           {/* Tips */}
 //           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
 //             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
 //               <strong className="block text-[#0B2A8E]">{tipsTitle}</strong>
@@ -243,7 +236,6 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
 //     );
 //   }
 
->>>>>>> Stashed changes
   return (
     <section {...attrs} className="w-full">
       <form
@@ -351,7 +343,7 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
                   setRequestedFinanceAmount(clamp(Number(e.target.value), AMIN, AMAX))
                 }
                 className="sf-range"
-                style={amountFill}
+                style={amountFill as any}
                 aria-label="Requested amount"
               />
             </div>
@@ -378,7 +370,7 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
                 value={installments}
                 onChange={(e) => setInstallments(clamp(Number(e.target.value), IMIN, IMAX))}
                 className="sf-range"
-                style={instFill}
+                style={instFill as any}
                 aria-label="Installments"
               />
             </div>
@@ -581,4 +573,3 @@ function InfoIcon({ className = '' }: { className?: string }) {
     </svg>
   );
 }
-
