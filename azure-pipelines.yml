@@ -1,8 +1,7 @@
 trigger:
   branches:
     include:
-      - main
-      - feature/*
+      - 'feature/development'
 
 variables:
   artifactName: 'gomoney-fe'
@@ -280,3 +279,4 @@ stages:
                       Restart-WebAppPool -Name "DefaultAppPool" -ErrorAction SilentlyContinue
                     } catch {}
                   displayName: 'Recycle IIS (optional)'
+
