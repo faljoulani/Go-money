@@ -1,0 +1,91 @@
+trigger: none
+pr: none
+
+variables:
+  sqlServerName: 'SC-Workstation'
+  sqlDatabaseName: 'preprodgomoney'
+  sqlUserName: 'sitefinity'
+  backupDirectory: 'C:\\temp'
+  bacpacBaseName: 'preprodgomoney'
+  commandTimeoutSeconds: 1200
+
+stages:
+  - stage: Backup
+    displayName: Export preprodgomoney bacpac
+    jobs:
+      - deployment: ExportBacpac
+        displayName: Run sqlpackage export on SC-WORKSTATION
+        environment:
+          name: 'Gomoney-Dev'
+          resourceType: 'virtualMachine'
+          resourceName: 'SC-WORKSTATION'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: none
+                - task: PowerShell@2
+                  displayName: Export database to bacpac
+                  env:
+                    SQLPACKAGE_PASSWORD: $(SqlPassword)
+                  inputs:
+                    targetType: inline
+                    script: |
+                      if (-not [bool]::Parse('$(System.Debug)')) {
+                        $ProgressPreference = 'SilentlyContinue'
+                      }
+
+                      Write-Host "Preparing to export database bacpac"
+
+                      $password = $env:SQLPACKAGE_PASSWORD
+                      if ([string]::IsNullOrWhiteSpace($password)) {
+                        throw 'Set the secret pipeline variable "SqlPassword" before running this pipeline.'
+                      }
+
+                      $targetDirectory = '$(backupDirectory)'
+                      Write-Host "Backup directory: $targetDirectory"
+                      if (-not (Test-Path -LiteralPath $targetDirectory)) {
+                        Write-Host "Directory does not exist. Creating..."
+                        New-Item -ItemType Directory -Path $targetDirectory -Force | Out-Null
+                      } else {
+                        Write-Host "Directory already exists."
+                      }
+
+                      $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+                      $targetFilePath = Join-Path $targetDirectory "$(bacpacBaseName)-$timestamp.bacpac"
+
+                      Write-Host "Export configuration:"
+                      Write-Host "  Server   : $(sqlServerName)"
+                      Write-Host "  Database : $(sqlDatabaseName)"
+                      Write-Host "  Username : $(sqlUserName)"
+                      Write-Host "  Target   : $targetFilePath"
+                      Write-Host "  Timeout  : $(commandTimeoutSeconds) seconds"
+
+                      $arguments = @(
+                        '/Action:Export'
+                        '/SourceTrustServerCertificate:true'
+                        "/SourceServerName:$(sqlServerName)"
+                        "/SourceDatabaseName:$(sqlDatabaseName)"
+                        "/SourceUser:$(sqlUserName)"
+                        "/SourcePassword:$password"
+                        "/TargetFile:$targetFilePath"
+                        "/p:CommandTimeout=$(commandTimeoutSeconds)"
+                      )
+
+                      Write-Host "Starting sqlpackage export..."
+                      & sqlpackage @arguments
+
+                      if ($LASTEXITCODE -ne 0) {
+                        throw "sqlpackage failed with exit code $LASTEXITCODE"
+                      }
+
+                      Write-Host "sqlpackage export completed successfully."
+
+                      if (Test-Path -LiteralPath $targetFilePath) {
+                        $fileInfo = Get-Item -LiteralPath $targetFilePath
+                        Write-Host "Generated file: $($fileInfo.FullName)"
+                        Write-Host "File size    : $([Math]::Round($fileInfo.Length / 1MB, 2)) MB ($($fileInfo.Length) bytes)"
+                        Write-Host "Created time : $($fileInfo.CreationTimeUtc.ToString('u')) UTC"
+                      } else {
+                        Write-Warning "Expected bacpac file not found at $targetFilePath"
+                      }
