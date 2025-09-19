@@ -28,6 +28,7 @@ stages:
                   displayName: Export database to bacpac
                   env:
                     SQLPACKAGE_PASSWORD: $(SqlPassword)
+                    SQLPACKAGE_EXPLICIT_PATH: $(SqlPackagePath)
                   inputs:
                     targetType: inline
                     script: |
@@ -74,9 +75,10 @@ stages:
                       Write-Host "  Timeout  : $(commandTimeoutSeconds) seconds"
 
                       $sqlPackagePath = $null
-                      $explicitSqlPackagePath = '$(SqlPackagePath)'
-
-                      if ($explicitSqlPackagePath -and $explicitSqlPackagePath -ne '$(SqlPackagePath)') {
+                      $explicitSqlPackagePath = $env:SQLPACKAGE_EXPLICIT_PATH
+                      if ([string]::IsNullOrWhiteSpace($explicitSqlPackagePath)) {
+                        Write-Host "[sqlpackage] No SqlPackagePath variable provided (empty)."
+                      } else {
                         Write-Host "[sqlpackage] SqlPackagePath variable supplied: $explicitSqlPackagePath"
                         if (Test-Path -LiteralPath $explicitSqlPackagePath) {
                           $sqlPackagePath = (Resolve-Path -LiteralPath $explicitSqlPackagePath).Path
@@ -85,8 +87,10 @@ stages:
                           Write-Host "[sqlpackage] Provided path not found: $explicitSqlPackagePath"
                           throw "SqlPackagePath '$explicitSqlPackagePath' does not exist or is inaccessible to the agent service account."
                         }
-                      } else {
-                        Write-Host "[sqlpackage] SqlPackagePath variable not provided. Attempting discovery."
+                      }
+
+                      if (-not $sqlPackagePath) {
+                        Write-Host "[sqlpackage] SqlPackagePath variable not provided or unusable. Attempting discovery."
 
                         $sqlPackageCmd = Get-Command sqlpackage -ErrorAction SilentlyContinue
                         if ($sqlPackageCmd) {
