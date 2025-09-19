@@ -37,6 +37,18 @@ stages:
 
                       Write-Host "Preparing to export database bacpac"
 
+                      $currentUser   = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+                      $machineName   = $env:COMPUTERNAME
+                      $psVersion     = $PSVersionTable.PSVersion.ToString()
+                      $processBits   = if ([Environment]::Is64BitProcess) { '64-bit' } else { '32-bit' }
+                      $osBits        = if ([Environment]::Is64BitOperatingSystem) { '64-bit' } else { '32-bit' }
+                      Write-Host "[env] Machine      : $machineName"
+                      Write-Host "[env] User         : $currentUser"
+                      Write-Host "[env] PS Version   : $psVersion"
+                      Write-Host "[env] Process bits : $processBits (OS: $osBits)"
+                      Write-Host "[env] Working dir  : $(Get-Location)"
+                      Write-Host "[env] PATH         : $($env:PATH)"
+
                       $password = $env:SQLPACKAGE_PASSWORD
                       if ([string]::IsNullOrWhiteSpace($password)) {
                         throw 'Set the secret pipeline variable "SqlPassword" before running this pipeline.'
@@ -61,14 +73,65 @@ stages:
                       Write-Host "  Target   : $targetFilePath"
                       Write-Host "  Timeout  : $(commandTimeoutSeconds) seconds"
 
-                      $sqlPackageCmd = Get-Command sqlpackage -ErrorAction SilentlyContinue
-                      if (-not $sqlPackageCmd) {
-                        throw "sqlpackage not found in PATH. Install Microsoft SqlPackage (v17+) or expose the executable on PATH for the agent account."
+                      $sqlPackagePath = $null
+                      $explicitSqlPackagePath = '$(SqlPackagePath)'
+
+                      if ($explicitSqlPackagePath -and $explicitSqlPackagePath -ne '$(SqlPackagePath)') {
+                        Write-Host "[sqlpackage] SqlPackagePath variable supplied: $explicitSqlPackagePath"
+                        if (Test-Path -LiteralPath $explicitSqlPackagePath) {
+                          $sqlPackagePath = (Resolve-Path -LiteralPath $explicitSqlPackagePath).Path
+                          Write-Host "[sqlpackage] Using provided path: $sqlPackagePath"
+                        } else {
+                          Write-Host "[sqlpackage] Provided path not found: $explicitSqlPackagePath"
+                          throw "SqlPackagePath '$explicitSqlPackagePath' does not exist or is inaccessible to the agent service account."
+                        }
+                      } else {
+                        Write-Host "[sqlpackage] SqlPackagePath variable not provided. Attempting discovery."
+
+                        $sqlPackageCmd = Get-Command sqlpackage -ErrorAction SilentlyContinue
+                        if ($sqlPackageCmd) {
+                          $sqlPackagePath = $sqlPackageCmd.Source
+                          Write-Host "[sqlpackage] Found via Get-Command: $sqlPackagePath"
+                        } else {
+                          Write-Host "[sqlpackage] Get-Command failed. Probing common install locations..."
+                          $candidatePaths = @(
+                            'C:\\Program Files\\SqlPackage\\sqlpackage.exe'
+                            'C:\\Program Files\\Microsoft SQL Server\\170\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files\\Microsoft SQL Server\\160\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files\\Microsoft SQL Server\\150\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files\\Microsoft SQL Server\\140\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files (x86)\\Microsoft SQL Server\\170\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files (x86)\\Microsoft SQL Server\\160\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files (x86)\\Microsoft SQL Server\\150\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Program Files (x86)\\Microsoft SQL Server\\140\\DAC\\bin\\sqlpackage.exe'
+                            'C:\\Users\\*\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Microsoft.SqlPackage_*\\sqlpackage.exe'
+                          )
+
+                          foreach ($candidate in $candidatePaths) {
+                            Write-Host "[sqlpackage] Checking candidate: $candidate"
+                            try {
+                              $resolved = Resolve-Path -Path $candidate -ErrorAction Stop
+                              if ($resolved) {
+                                foreach ($item in $resolved) {
+                                  Write-Host "[sqlpackage]   Found candidate: $($item.Path)"
+                                  $sqlPackagePath = $item.Path
+                                  break
+                                }
+                              }
+                            } catch {
+                              Write-Host "[sqlpackage]   Not accessible: $candidate"
+                            }
+
+                            if ($sqlPackagePath) { break }
+                          }
+                        }
                       }
 
-                      $sqlPackagePath = $sqlPackageCmd.Source
-                      Write-Host "[sqlpackage] Resolved executable via Get-Command: $sqlPackagePath"
+                      if (-not $sqlPackagePath) {
+                        throw "sqlpackage not found. Install Microsoft SqlPackage (v17+) or expose the executable on PATH for the agent account."
+                      }
 
+                      Write-Host "[sqlpackage] Selected executable: $sqlPackagePath"
                       try {
                         $fileInfo = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($sqlPackagePath)
                         Write-Host "[sqlpackage] File version : $($fileInfo.FileVersion)"
