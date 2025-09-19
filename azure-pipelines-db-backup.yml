@@ -61,6 +61,94 @@ stages:
                       Write-Host "  Target   : $targetFilePath"
                       Write-Host "  Timeout  : $(commandTimeoutSeconds) seconds"
 
+                      function Get-SqlPackagePath {
+                        param(
+                          [string[]]$CandidatePaths,
+                          [string[]]$SearchRoots
+                        )
+
+                        Write-Host "[sqlpackage] Attempting to resolve sqlpackage.exe"
+
+                        $cmd = Get-Command sqlpackage -ErrorAction SilentlyContinue
+                        if ($cmd -and $cmd.Source) {
+                          Write-Host "[sqlpackage] Found via PATH: $($cmd.Source)"
+                          return $cmd.Source
+                        }
+                        Write-Host "[sqlpackage] Not found on PATH"
+
+                        foreach ($candidate in $CandidatePaths) {
+                          if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
+                          Write-Host "[sqlpackage] Checking candidate path: $candidate"
+                          if (Test-Path -LiteralPath $candidate) {
+                            Write-Host "[sqlpackage] Found at candidate path"
+                            return (Resolve-Path -LiteralPath $candidate).Path
+                          }
+                        }
+
+                        foreach ($root in $SearchRoots) {
+                          if (-not (Test-Path -LiteralPath $root)) {
+                            Write-Host "[sqlpackage] Search root missing: $root"
+                            continue
+                          }
+
+                          Write-Host "[sqlpackage] Searching under root: $root"
+                          try {
+                            $match = Get-ChildItem -LiteralPath $root -Filter sqlpackage.exe -Recurse -ErrorAction Stop |
+                                     Sort-Object LastWriteTime -Descending |
+                                     Select-Object -First 1
+                          } catch {
+                            Write-Host "[sqlpackage] Search failed in $root : $($_.Exception.Message)"
+                            $match = $null
+                          }
+
+                          if ($match) {
+                            Write-Host "[sqlpackage] Found by search: $($match.FullName)"
+                            return $match.FullName
+                          }
+                        }
+
+                        return $null
+                      }
+
+                      $explicitSqlPackagePath = '$(SqlPackagePath)'
+                      if ($explicitSqlPackagePath -and $explicitSqlPackagePath -ne '$(SqlPackagePath)') {
+                        Write-Host "[sqlpackage] SqlPackagePath variable provided: $explicitSqlPackagePath"
+                      } else {
+                        $explicitSqlPackagePath = $null
+                      }
+
+                      $defaultSqlPackagePaths = @(
+                        $explicitSqlPackagePath,
+                        'C:\\Program Files\\SqlPackage\\sqlpackage.exe',
+                        'C:\\Program Files\\Microsoft SQL Server\\160\\DAC\\bin\\sqlpackage.exe',
+                        'C:\\Program Files\\Microsoft SQL Server\\150\\DAC\\bin\\sqlpackage.exe',
+                        'C:\\Program Files\\Microsoft SQL Server\\140\\DAC\\bin\\sqlpackage.exe',
+                        'C:\\Program Files (x86)\\Microsoft SQL Server\\160\\DAC\\bin\\sqlpackage.exe',
+                        'C:\\Program Files (x86)\\Microsoft SQL Server\\150\\DAC\\bin\\sqlpackage.exe',
+                        'C:\\Program Files (x86)\\Microsoft SQL Server\\140\\DAC\\bin\\sqlpackage.exe'
+                      ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+
+                      $searchRoots = @(
+                        'C:\\Program Files\\SqlPackage',
+                        'C:\\Program Files\\Microsoft SQL Server',
+                        'C:\\Program Files (x86)\\Microsoft SQL Server'
+                      )
+
+                      $sqlPackagePath = Get-SqlPackagePath -CandidatePaths $defaultSqlPackagePaths -SearchRoots $searchRoots
+                      if (-not $sqlPackagePath) {
+                        throw "sqlpackage not found. Install the SQL Server Data-Tier Application Framework (DacFx) or provide sqlpackage.exe on PATH."
+                      }
+
+                      Write-Host "[sqlpackage] Using executable: $sqlPackagePath"
+                      try {
+                        $fileInfo = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($sqlPackagePath)
+                        Write-Host "[sqlpackage] File version : $($fileInfo.FileVersion)"
+                        Write-Host "[sqlpackage] Product name : $($fileInfo.ProductName)"
+                        Write-Host "[sqlpackage] Product version: $($fileInfo.ProductVersion)"
+                      } catch {
+                        Write-Host "[sqlpackage] Unable to read file version info: $($_.Exception.Message)"
+                      }
+
                       $arguments = @(
                         '/Action:Export'
                         '/SourceTrustServerCertificate:true'
@@ -73,7 +161,7 @@ stages:
                       )
 
                       Write-Host "Starting sqlpackage export..."
-                      & sqlpackage @arguments
+                      & $sqlPackagePath @arguments
 
                       if ($LASTEXITCODE -ne 0) {
                         throw "sqlpackage failed with exit code $LASTEXITCODE"
