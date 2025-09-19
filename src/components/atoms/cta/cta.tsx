@@ -102,7 +102,9 @@ export default function CTA({
       {icon === 'arrow' && (
         <img src="/icons/chevron-right.svg" alt="" className="cta-arrow" aria-hidden />
       )}
-      {icon === 'slot' && <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" />}
+      {icon === 'slot' && (
+        <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
+      )}
     </button>
   );
 }

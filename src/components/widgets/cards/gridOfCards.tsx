@@ -146,7 +146,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
       (Array.isArray(card?.Logo) ? card.Logo[0] : card?.Logo);
 
     const iconUrl = resolveAbsoluteUrl(pickImageUrl(img), props.requestContext);
-    console.log('iconUrl ' + JSON.stringify(iconUrl));
     const altText = img?.AlternativeText || img?.Title || card?.Title || 'Icon';
 
     const iconEl = iconUrl ? (

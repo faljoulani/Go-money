@@ -5,7 +5,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
-import { fetchData } from '../../../utils/sitefinity';
+import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
 import { CmsImage } from '../../../types/Type';
 
@@ -18,11 +18,6 @@ type ContentWithImageItem = {
   CtaUrl?: any;
   Image?: any;
 };
-
-function imageUrl(img: CmsImage): string | undefined {
-  if (!img) return undefined;
-  return img.MediaUrl || img.Url || img.ThumbnailUrl || img.EmbedUrl;
-}
 
 export default async function ContentWithImage(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
@@ -73,7 +68,7 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
   const description: string | undefined = data.Description;
 
   const img = Array.isArray(data.Image) ? data.Image[0] : data.Image;
-  const imgSrc: string | undefined = imageUrl(img);
+  const imgSrc: string | undefined = pickImageUrl(img);
   const imgAlt: string = img?.AlternativeText || title || 'illustration';
 
   return (
