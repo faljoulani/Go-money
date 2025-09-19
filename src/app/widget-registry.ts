@@ -57,6 +57,8 @@ import { ContactSubscriptionEntity } from '../components/widgets/contactSubscrip
 
 import FinanceBanner from '../components/widgets/financeRepaymentBanner/financeBanner';
 import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanner/financeBanner.entity';
+import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
+import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -223,6 +225,12 @@ const customWidgetRegistry: WidgetRegistry = {
       views: {
         Default: { Title: 'Default', ViewFunction: ContactForm },
       },
+    },
+    FinanceCalculator: {
+      componentType: FinanceCalculator,
+      entity: FinanceCalculatorEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Finance Calculator' },
     },
   },
 };

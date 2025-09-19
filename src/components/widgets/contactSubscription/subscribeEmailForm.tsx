@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import CTA from '../../atoms/cta/cta';
-
+import { useSf } from '../../../utils/hooks/useSf';
 export default function SubscribeEmailForm({
   placeholder = 'Enter your email address',
   label = 'Email',
   button = 'Subscribe Now',
-  endpoint = 'api/default/SubscriptionEmails',
+  endpoint = '/SubscriptionEmails',
   className = '',
 }: {
   placeholder?: string;
@@ -30,7 +30,7 @@ export default function SubscribeEmailForm({
     setState('loading');
     setMsg('');
     try {
-      const res = await fetch(`/api/sf/${endpoint}`, {
+      const res = await fetch(`${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ Email: email }),
