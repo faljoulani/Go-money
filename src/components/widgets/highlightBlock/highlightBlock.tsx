@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { HighlightBlockEntity } from './highlightBlock.entity';
 import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
-import { fetchData } from '../../../utils/sitefinity';
+import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
 import { CmsImage } from '../../../types/Type';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
@@ -10,11 +10,6 @@ import Description from '../../atoms/description/description';
 import ContentWithImage from './contentWithImage';
 import ContentWithoutImage from './contentWithoutImage';
 import CTA from '../../atoms/cta/cta';
-
-function imageUrl(img: CmsImage): string | undefined {
-  if (!img) return undefined;
-  return img.MediaUrl || img.Url || img.ThumbnailUrl || img.EmbedUrl;
-}
 
 function EmptySafe({ isEdit, label }: { isEdit: boolean; label: string }) {
   return isEdit ? (
@@ -88,7 +83,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
   const description: string | undefined = data.Description;
   const ctaText: string | undefined = data.CtaText || 'More details';
   const ctaHref: string | undefined = linkToHref(data.CtaUrl);
-  const imgSrc: string | undefined = imageUrl(
+  const imgSrc: string | undefined = pickImageUrl(
     Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );
   const imgAlt: string =
