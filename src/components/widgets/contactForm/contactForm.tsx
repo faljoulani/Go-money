@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 import type { FormEntity } from './contactForm.entity';
-import ContactFormClient from './ContactFormClient';
+import ContactFormClient from './contactFormClient';
 
 type Option = { id: string; label: string };
 
