@@ -172,7 +172,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         <div className="relative z-10 flex w-full items-center">
           <div className="text-white">
-            <div className="flex flex-col gap-6 pl-24 w-full max-w-[560px]">
+            <div className="flex flex-col pl-24 w-full max-w-[560px]">
               {viewName === 'WithHeading' && (
                 <div className="text-surface/90 text-sm tracking-wide uppercase">Finance</div>
               )}
@@ -180,7 +180,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               {/* Cards strip (maps from floatUrl → cards) under the title area */}
 
               {financeRepaymentBanner.images.cards.url && (
-                <div className="relative -left-8 -mb-12 h-[180px] w-[590px] rounded-lg">
+                <div className="relative -left-8 h-[160px] w-[540px] rounded-lg">
                   <Image
                     src={financeRepaymentBanner.images.cards.url}
                     alt={financeRepaymentBanner.images.cards.alt}
@@ -192,7 +192,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
               {!!financeRepaymentBanner.title && (
                 <Title
-                  className="text-5xl font-bold tracking-tight leading-[100%] max-w-[100%]"
+                  className="text-[44px] font-bold tracking-tight leading-tight max-w-[100%] mb-6"
                   color="text-white"
                 >
                   {financeRepaymentBanner.title}

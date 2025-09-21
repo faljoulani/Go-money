@@ -119,31 +119,17 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
     ) : null;
   }
   return (
-    <section {...attributes} className="w-full py-16">
-      <div className="mx-auto max-w-[1240px] px-4 sm:px-6">
+    <section {...attributes} className="w-full pt-16">
+      <div className="mx-auto px-20">
         {/* Section header */}
         <div className="mb-8 text-center">
-          <Title
-            className="
-              font-lufga font-bold
-              text-[48px] leading-[100%] tracking-[-0.02em]
-              text-center align-middle
-              text-[#010663]
-            ß"
-          >
+          <Title className="text-[48px] leading-tight tracking-tight text-center align-middle font-bold">
             {sectionTitle}
           </Title>
-
           {sectionSubtitle && (
             <Description
-              maxWidth={640}
-              className="
-                mt-4
-                font-lufga font-normal
-                text-[16px] leading-[100%] tracking-[0]
-                text-center align-middle
-                text-[#757575]
-              "
+              color="text-[#757575]"
+              className="mt-2 text-[16px] mx-auto align-middle text-center"
             >
               {sectionSubtitle}
             </Description>
@@ -152,33 +138,29 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
 
         {/* Gradient container */}
         <div
-          className="relative mx-auto rounded-[30px] p-10 md:p-12 lg:p-[72px] overflow-hidden"
+          className="relative mx-auto rounded-[30px] p-16 overflow-hidden"
           style={{
             background: 'linear-gradient(111.49deg,#000000 14.92%,#010552 46.49%,#0F148C 100.01%)',
           }}
         >
           {/* subtle grid pattern */}
-          <div className="pointer-events-none absolute inset-0 opacity-[0.15] [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:48px_48px] rounded-[30px]" />
 
           {/* cards grid */}
-          <div className="relative grid gap-6 md:gap-8 lg:gap-10 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="relative grid gap-8 grid-cols-3">
             {items.map((item) => (
               <div key={item.id} className="group">
-                <div className="rounded-3xl p-px [background:linear-gradient(322.31deg,rgba(255,255,255,0)_58.6%,#ffffff_105.96%)]">
-                  <div
-                    className="
-                      rounded-3xl border border-white/10
-                      bg-white/10 backdrop-blur-[45.5px]
-                      px-10 py-16
-                      h-[265px] flex flex-col items-center justify-center text-center
-                      transition-transform duration-200 group-hover:-translate-y-1
-                    "
+                <div className='rounded-[32px]' >
+                  <div className="
+                      rounded-[32px]                    
+                    bg-white/10 
+                      px-12 py-14
+                      h-[265px] flex flex-col items-center justify-center text-center"
                   >
                     {item.iconUrl ? (
                       <img
                         src={item.iconUrl}
                         alt={item.iconAlt}
-                        className="mb-6 h-12 w-12 object-contain"
+                        className="mb-4 h-12 w-12 object-contain"
                         loading="lazy"
                         decoding="async"
                       />
@@ -188,12 +170,12 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
                       </div>
                     )}
 
-                    <h3 className="font-lufga text-white text-[22px] leading-tight">
+                    <h3 className="font-lufga text-white text-[24px] leading-tight">
                       {item.title}
                     </h3>
 
                     {item.description && (
-                      <p className="mt-3 max-w-[260px] text-white/80 text-[14px] leading-[20px]">
+                      <p className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] leading-7">
                         {item.description}
                       </p>
                     )}

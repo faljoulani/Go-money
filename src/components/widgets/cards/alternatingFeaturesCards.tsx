@@ -38,37 +38,50 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
   const selection = (props.model?.Properties || {}) as any;
   const { culture, isEdit } = props.requestContext;
 
-  const listId = extractSelectionId(selection);
-  if (!listId) {
+  const id = extractSelectionId(selection);
+
+  if (!id) {
     return isEdit ? (
       <section
         {...attributes}
         className="p-6 border border-dashed rounded-lg text-center text-slate-500"
       >
-        <strong>Cards</strong>
+        <strong>Cards list</strong>
         <div className="mt-1">Open the designer and select a Card List.</div>
       </section>
     ) : null;
   }
 
-  const parentFetched = await fetchData(
-    [listId],
+  const parentCardPayload = await fetchData(
+    [id],
     null,
     culture,
-    ['Id', 'Title', 'Eyebrow', 'Description', 'SubTitle', 'CtaText', 'CtaUrl', 'Cards'],
-    { itemType: selection?.CardListData?.Content?.[0]?.Type, single: true },
+    ['Id', 'Title', 'Eyebrow', 'Description', 'CtaText', 'CtaUrl', 'Cards'],
+    {
+      itemType: selection?.CardListData?.Content?.[0]?.Type,
+      single: true,
+    },
   );
-  const parent = parentFetched as Parent;
+  const parentCardData = parentCardPayload as CardItem;
 
-  const chosenIds: string[] =
-    (selection?.Cards?.ItemIdsOrdered as string[]) ??
-    (parent?.Cards?.ItemIdsOrdered as string[]) ??
-    [];
+  const eyebrow = parentCardData?.Eyebrow ?? '';
+  const title = parentCardData?.Title ?? 'Cards';
+  const subtitle = parentCardData?.Description ?? '';
+  const ctaText = parentCardData?.CtaText ?? '';
+  const ctaUrlRaw = parentCardData?.CtaUrl;
+  const ctaHref =
+    typeof ctaUrlRaw === 'string'
+      ? ctaUrlRaw
+      : Array.isArray(ctaUrlRaw)
+        ? (ctaUrlRaw.find((x) => x?.Href)?.Href ?? '')
+        : (ctaUrlRaw?.Href ?? '');
+
+  const selectedIds: string[] = (selection?.Cards?.ItemIdsOrdered as string[]) ?? [];
 
   let items: CardItem[] = [];
-  if (chosenIds.length > 0) {
-    const fetched = await fetchData(
-      chosenIds,
+  if (selectedIds.length > 0) {
+    const childCardPayload = await fetchData(
+      selectedIds,
       null,
       culture,
       [
@@ -87,66 +100,91 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
         single: false,
       },
     );
-    items = (Array.isArray(fetched) ? fetched : fetched ? [fetched] : []) as CardItem[];
+    items = Array.isArray(childCardPayload)
+      ? childCardPayload
+      : childCardPayload
+        ? [childCardPayload]
+        : [];
   }
+
+  const childCardData = items.map((card: any) => {
+    const img = (Array.isArray(card?.Image) && card.Image[0]) || null;
+
+    const imgUrl =
+      img?.Url || img?.MediaUrl || img?.ThumbnailUrl || (Array.isArray(img?.Urls) && img.Urls[0]);
+
+    const href = (card?.LinkUrl || '').trim();
+
+    return {
+      id: card?.Id,
+      title: card?.Title ?? '',
+      description: card?.Description ?? '',
+      href,
+      imgUrl,
+      ctaText: card?.CtaText ?? '',
+    };
+  });
 
   return (
     <section {...attributes} className="w-full bg-white">
-      <div className="mx-auto max-w-[1240px] px-6">
+      <div className="mx-auto px-20">
         {/* rows */}
-        <div className="space-y-10">
-          {items.map((card, i) => {
+        <div className="">
+          {childCardData.map((card, i) => {
             const isRight = i % 2 === 0;
             const gridCols = isRight
               ? 'grid-cols-[minmax(0,1fr)_460px]'
               : 'grid-cols-[460px_minmax(0,1fr)]';
 
-            const imgUrl = ImgUrl(card);
-            const href = (card?.LinkUrl || '').trim();
-
             return (
               <div
-                key={card.Id ?? i}
-                className={`grid items-center min-h-[588px] ${gridCols} py-28 gap-x-10 gap-y-8`}
+                key={card.id ?? i}
+                className={`grid items-center min-h-[588px] ${gridCols} gap-x-10 gap-y-8`}
               >
                 {/* image column */}
                 <div
                   className={isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'}
                 >
                   <div className="relative w-[460px] h-[460px] overflow-hidden rounded-2xl">
-                    {imgUrl && <CardImage img={imgUrl} alt={card.Title || 'image'} />}
+                    {card.imgUrl && (
+                      <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
+                    )}
                   </div>
                 </div>
 
                 {/* text column */}
                 <div
-                  className={`${isRight ? 'order-1 pr-6 md:pr-12' : 'order-2 pl-6 md:pl-12'} text-left`}
+                  className={`${isRight ? 'order-1 ' : 'order-2 '} text-left rtl:text-right`}
                 >
                   <div className="max-w-[760px]">
                     <div className="flex flex-col items-start space-y-3">
-                      {card.Eyebrow && <Eyebrow>{card.Eyebrow}</Eyebrow>}
+                      {/* {card.Eyebrow && <Eyebrow>{card.Eyebrow}</Eyebrow>} */}
 
-                      {card.Title && (
-                        <Title className="!text-[28px] !leading-[34px]">{card.Title}</Title>
+                      {card.title && (
+                        <Title className="text-[40px] leading-[52px] font-bold tracking-[-0.02em]">
+                          {card.title}
+                        </Title>
                       )}
 
-                      {card.Subtitle && <Subtitle>{card.Subtitle}</Subtitle>}
+                      {/* {card.Subtitle && <Subtitle>{card.Subtitle}</Subtitle>} */}
 
-                      {card.Description && (
-                        <Description className="!text-[16px] !leading-[26px] text-[#424242]">
-                          {card.Description}
-                        </Description>
+                      {card.description && (
+                        <Description
+                          maxWidth={597}
+                          className="text-[18px] rtl:max-w-[760px]"
+                          html={card.description}
+                        />
                       )}
 
-                      {card.CtaText && (
+                      {card.ctaText && (
                         <div className="pt-2 self-start">
                           <CTA
-                            href={href}
+                            href={card.href}
                             borderColor="#010663"
-                            variant="outline"
-                            className="rounded-[20px] px-6 py-[18px] border"
+                            variant="solid"
+                            className="rounded-[18px] w-[250px] h-12 border"
                           >
-                            {card.CtaText}
+                            {card.ctaText}
                           </CTA>
                         </div>
                       )}

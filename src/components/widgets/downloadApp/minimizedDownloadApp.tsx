@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { DownloadAppEntity } from './downloadApp.entity';
+import type { DownloadEntity } from './download.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
 interface MinimizedDownloadNow {
@@ -13,7 +13,7 @@ interface MinimizedDownloadNow {
   Image?: any | any[];
 }
 
-export default async function MinimizedDownloadNow(props: WidgetContext<DownloadAppEntity>) {
+export default async function MinimizedDownloadNow(props: WidgetContext<DownloadEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
@@ -148,14 +148,14 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
 
           {/* RIGHT: text + logos */}
           <div className="flex h-full w-[75%] items-center justify-between">
-            <div className="w-full max-w-[400px] text-[#0A1B2E]">
-              <h2 className="text-[40px] font-[800] leading-[1.05] tracking-[-0.02em] text-[#00145A]">
+            <div className="w-full max-w-[427px] text-[#0A1B2E]">
+              <h2 className="text-[36px] font-bold leading-[67px] tracking-[-0.02em] text-primary">
                 {title}
               </h2>
 
               {subtitle && (
                 <div
-                  className="mt-3 text-[15px] leading-relaxed opacity-90"
+                  className="mt-3 text-[16px] text-default"
                   dangerouslySetInnerHTML={{ __html: subtitle }}
                 />
               )}
@@ -163,9 +163,9 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
             {/* round store logos */}
 
             {childCardsData.length > 0 && (
-              <div className="relative my-16 flex items-center">
+              <div className="relative my-16 flex items-end rtl:ml-24">
                 {childCardsData.slice(0, 3).map((item: any, index: number) => (
-                  <a key={index} href={item.href} rel="" className="flex flex-col items-center">
+                  <a key={index} href={item.href} rel="" className="flex flex-col items-end">
                     {item.iconUrl && (
                       <div
                         className={`flex items-center justify-center h-[56px] w-[56px] rounded-full bg-black border-2 border-[#6BE5BF] ${index === 0 ? 'absolute right-[95px] top-0 z-30' : `${index === 1 ? 'absolute right-12 top-0' : ''}`}`}

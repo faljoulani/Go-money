@@ -15,6 +15,9 @@ import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 import DownloadApp from '../components/widgets/downloadApp/downloadApp';
 import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
 
+import Download from '../components/widgets/downloadApp/download';
+import { DownloadEntity } from '../components/widgets/downloadApp/download.entity';
+
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 
 import Footer from '../components/widgets/footer/Footer-template';
@@ -135,6 +138,12 @@ const customWidgetRegistry: WidgetRegistry = {
       entity: DownloadAppEntity,
       ssr: true,
       editorMetadata: { Title: 'DownloadApp' },
+    },
+    Download: {
+      componentType: Download,
+      entity: DownloadEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Download' },
     },
     GotQuestions: {
       componentType: ContactBox,

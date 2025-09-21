@@ -7,7 +7,7 @@ import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import CardImage from '../../atoms/cardImage/cardImage';
 
-interface Cardtem {
+interface CardItem {
   Id: string;
   Title?: string;
   SubTitle?: string;
@@ -48,7 +48,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
       single: true,
     },
   );
-  const parentCardData = parentCardPayload as Cardtem;
+  const parentCardData = parentCardPayload as CardItem;
 
   const eyebrow = parentCardData?.Eyebrow ?? '';
   const title = parentCardData?.Title ?? 'Cards';
@@ -130,7 +130,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
           <div className="sticky top-20 flex flex-col gap-2 text-center fadeup bg-white  h-[600px]">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
             <Title className="text-5xl font-bold tracking-tight leading-[100%]">{title}</Title>
-            {subtitle && <Description>{subtitle}</Description>}
+            {subtitle && <Description className='mx-auto'>{subtitle}</Description>}
           </div>
 
           <div className="mt-10 px-[205px]">

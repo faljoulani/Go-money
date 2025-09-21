@@ -68,6 +68,7 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
       <div />
     );
 
+    
   const eyebrow: string | undefined = data.Eyebrow;
   const title: string | undefined = data.Title;
   const description: string | undefined = data.Description;
@@ -76,8 +77,9 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
   const imgSrc: string | undefined = imageUrl(img);
   const imgAlt: string = img?.AlternativeText || title || 'illustration';
 
+
   return (
-    <section className="mx-auto max-w-[1400px] h-[488px] px-[150px] py-7xl">
+    <section className="mx-auto max-w-[1400px] h-[488px] px-[150px] py-7xl ">
       <div className="grid grid-cols-2 items-center gap-5 h-full">
         {/* Left: Image */}
         <div className="flex justify-center">
@@ -100,16 +102,16 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
         </div>
 
         {/* Right: Text */}
-        <div className="text-left space-y-4">
-          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+        <div className="text-left space-y-3 rtl:text-right">
+          {eyebrow && <Eyebrow className='h-6'>{eyebrow}</Eyebrow>}
 
           {title && (
-            <Title className="font-lufga font-bold text-[40px] leading-[100%] tracking-[-0.8px] align-middle">
+            <Title className="font-bold text-[40px] leading-tight tracking-tight align-middle">
               {title}
             </Title>
           )}
 
-          {description && <Description>{description}</Description>}
+          {description && <Description html={description}/>}
         </div>
       </div>
     </section>

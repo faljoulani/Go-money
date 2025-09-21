@@ -56,20 +56,20 @@ export default function BreadcrumbCustomView(props: CustomBreadcrumbProps) {
 
   return (
     <nav {...props.attributes} aria-label="Breadcrumb">
-      <ol className="flex flex-wrap justify-center items-center gap-3 text-lg sm:text-2xl leading-none">
+      <ol className="flex flex-wrap justify-center items-center gap-1 text-sm">
         {items.map((node, idx) => {
           const isLast = idx === items.length - 1;
 
           return (
-            <li key={node.ViewUrl ?? idx} className="flex items-center gap-3">
+            <li key={node.ViewUrl ?? idx} className="flex items-center gap-1">
               {isLast ? (
-                <span className="whitespace-nowrap font-extrabold bg-gradient-to-r from-[#42F0B6] to-[#4EA6FF] bg-clip-text text-transparent">
+                <span className="whitespace-nowrap text-[#6BE5BF] text-transparent">
                   {node.Title}
                 </span>
               ) : (
                 <a
                   href={node.ViewUrl}
-                  className="whitespace-nowrap text-white/90 hover:text-white transition"
+                  className="whitespace-nowrap text-white/90 hover:text-white"
                 >
                   {node.Title}
                 </a>

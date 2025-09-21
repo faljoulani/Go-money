@@ -102,41 +102,35 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className="relative overflow-hidden h-[550px] text-white flex items-center justify-center flex-col rounded-2xl"
+        className="relative h-[450px] text-white flex items-center justify-center flex-col rounded-2xl"
         style={{
           backgroundImage: `url('/assets/HeroBackground.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          alignItems: 'buttom'
         }}
       >
         <img
           src="/assets/BoxRight.png"
           alt="BoxRight"
-          className="absolute top-[40px] right-[40px]"
-        />
-        <img
-          src="/assets/BoxLeft.png"
-          alt="BoxLeft"
-          className="absolute top-1/2 left-[40px] -translate-y-1/2"
+          className="absolute top-[107px] right-[166px] z-0"
         />
         <div
-          className="max-w-4xl px-6 pb-20 text-center"
+          className="text-center w-[1040px] h-[370px] "
           style={{
             backgroundImage: `url('/assets/cyrcls.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="mb-6" data-sfcontainer="Breadcrumb">
+          <div className="mx-auto px-6 mt-[145px]">
+            <div className="mb-5" data-sfcontainer="Breadcrumb">
               {breadcrumbs.map((y) =>
                 RenderWidgetService.createComponent(y.model, props.requestContext),
               )}
             </div>
           </div>
-          {title && <h1 className="text-4xl font-extrabold leading-tight">{title}</h1>}
-          {description && <Description html={description} />}
+          {title && <Title><h1 className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</h1></Title>}
+          {description && <Description html={description} className="text-white w-[485px] mx-auto text-center" />}
         </div>
       </section>
     );
