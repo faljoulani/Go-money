@@ -149,15 +149,15 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             className="rounded-[20px] w-[417px] h-[506px] object-cover"
           />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
-            {items[0]?.description && <Description>{items[0]?.description}</Description>}
-            {items[0]?.title && <Title>{items[0]?.title}</Title>}
+            {items[0]?.description && <Description className='text-[18px]'>{items[0]?.description}</Description>}
+            {items[0]?.title && <Title className='text-2xl font-medium'>{items[0]?.title}</Title>}
           </div>
         </div>
 
-        <div className="text-start w-[522px] space-y-3">
+        <div className="text-start max-w-[790px] space-y-3">
           <div className="space-y-3">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            {title && <Title>{title}</Title>}
+            {title && <Title className='font-bold text-5xl tracking-[-0.02em] leading-[63px]' >{title}</Title>}
           </div>
           <div>{subtitle && <Description>{subtitle}</Description>}</div>
         </div>

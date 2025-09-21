@@ -1,5 +1,5 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { DownloadEntity } from './download.entity';
+import type { DownloadAppEntity } from './downloadApp.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 
 interface MinimizedDownloadNow {
@@ -13,7 +13,7 @@ interface MinimizedDownloadNow {
   Image?: any | any[];
 }
 
-export default async function MinimizedDownloadNow(props: WidgetContext<DownloadEntity>) {
+export default async function MinimizedDownloadNow(props: WidgetContext<DownloadAppEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
@@ -148,7 +148,7 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
 
           {/* RIGHT: text + logos */}
           <div className="flex h-full w-[75%] items-center justify-between">
-            <div className="w-full max-w-[427px] text-[#0A1B2E]">
+            <div className="w-full max-w-[440px] text-[#0A1B2E]">
               <h2 className="text-[36px] font-bold leading-[67px] tracking-[-0.02em] text-primary">
                 {title}
               </h2>

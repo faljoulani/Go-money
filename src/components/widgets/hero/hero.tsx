@@ -71,8 +71,17 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const title = item.Title || '';
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
-  const ctaUrl = linkToHref(item.CtaUrl);
+  let rawCtaUrl = item.CtaUrl;
 
+try {
+  if (typeof rawCtaUrl === 'string') {
+    rawCtaUrl = JSON.parse(rawCtaUrl);
+  }
+} catch {
+  // If parsing fails, leave it as-is
+}
+
+const ctaUrl = linkToHref(rawCtaUrl);
   let bgMedia = pickOneMedia(item.BackgroundImage);
   if (bgMedia && !getImageSrc(bgMedia) && bgMedia.Id) {
     try {
@@ -88,6 +97,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       console.warn('Could not fetch background image for Hero component');
     }
   }
+
   const bgUrl = getImageSrc(bgMedia);
   const bgAlt = bgMedia?.AlternativeText || bgMedia?.Title || title;
   const heroImgUrl = resolveAbsoluteUrl(bgUrl, props.requestContext);
@@ -129,8 +139,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               )}
             </div>
           </div>
-          {title && <Title><h1 className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</h1></Title>}
-          {description && <Description html={description} className="text-white w-[485px] mx-auto text-center" />}
+          {title && (
+            <Title>
+              <h1 className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</h1>
+            </Title>
+          )}
+          {description && (
+            <Description html={description} className="text-white w-[485px] mx-auto text-center" />
+          )}
         </div>
       </section>
     );

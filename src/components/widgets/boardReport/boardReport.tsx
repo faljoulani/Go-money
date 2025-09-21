@@ -87,7 +87,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
   return (
     <section
       {...attrs}
-      className="rounded-[20px] bg-white p-6 md:p-8 border border-slate-200"
+      className="bg-white  px-20 rounded-[32px]"
     >
       <ReportGridClient
         title={view.Title}

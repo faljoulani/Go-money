@@ -27,12 +27,25 @@ export function firstIdFromSelection(sel: any) {
   return maybeContentId || undefined;
 }
 
-export function linkToHref(link: CmsLink): string | undefined {
+export function linkToHref(link: CmsLink | CmsLink[]): string | undefined {
   if (!link) return undefined;
+
+  // If link is a string
   if (typeof link === 'string') return link;
-  const any = link as any;
-  return Array.isArray(any) ? (typeof any[0] === 'string' ? any[0] : any[0]?.Href) : any?.Href;
+
+  // If link is an array, take the first item
+  const first = Array.isArray(link) ? link[0] : link;
+
+  // If the first item is a string, return it
+  if (typeof first === 'string') return first;
+
+  // If the first item is an object with href, return href
+  if (first && typeof first === 'object' && 'href' in first) return (first as { href: string }).href;
+
+  return undefined;
 }
+
+
 
 export function computeBaseUrl(ctx: WidgetContext<any>['requestContext']): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL;
