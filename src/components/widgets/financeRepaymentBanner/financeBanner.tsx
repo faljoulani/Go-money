@@ -1,49 +1,36 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import {
+  fetchData,
+  extractSelectionId,
+  pickOneMedia,
+  pickImageUrl,
+} from '../../../utils/sitefinity';
 import type { FinanceBannerEntity } from './financeBanner.entity';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 import { extractHref } from '../../../utils/utils';
 import Title from '../../atoms/title/title';
 import CTA from '../../atoms/cta/cta';
 
-// Helper to read a URL from a Sitefinity media object
-
-function mediaUrl(im?: any | null): string {
-  if (!im) return '';
-  return im.MediaUrl || im.Url || im.ThumbnailUrl || im.EmbedUrl || '';
-}
-
-// Pick a single media from Sitefinity related media field (array or single)
-
-function pickOneMedia(img: any | any[] | null | undefined) {
-  const media = Array.isArray(img) ? img[0] : img;
-  return media || null;
-}
-
-// Raw item shape coming from Module Builder
-
-interface FinanceBannerItemRaw {
+interface FinanceBannerItem {
   Id: string;
   Title?: string;
   LabelButton?: string;
-  CTA?: any; // Link (Href/Url/Text/Title)
+  CTA?: any;
   BackgroundImage?: any | any[];
   ForegroundImage?: any | any[];
   FloatImage?: any | any[];
 }
 
-// Normalized UI shape (matches your console example exactly)
-
-interface FinanceRepaymentBannerUI {
+interface FinanceBannerUI {
   id: string;
   title: string;
   ctaLabel: string;
   ctaHref: string;
   images: {
-    mainBg: { url: string; alt: string; width: number; height: number };
-    phone: { url: string; alt: string; width: number; height: number };
-    cards: { url: string; alt: string; width: number; height: number };
+    backgroundUrl: { url: string; alt: string; width: number; height: number };
+    foregroundUrl: { url: string; alt: string; width: number; height: number };
+    floatUrl: { url: string; alt: string; width: number; height: number };
   };
 }
 
@@ -83,7 +70,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
       itemType: selection?.Content?.[0]?.Type,
       single: true,
     },
-  )) as FinanceBannerItemRaw | null;
+  )) as FinanceBannerItem | null;
 
   if (!item) {
     return isEdit ? (
@@ -96,40 +83,31 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     ) : null;
   }
 
-  // Build the exact UI object you logged in console
+  const backgroundImage = pickOneMedia(item.BackgroundImage);
+  const foregroundImage = pickOneMedia(item.ForegroundImage);
+  const floatImage = pickOneMedia(item.FloatImage);
 
-  const bg = pickOneMedia(item.BackgroundImage);
-  const fg = pickOneMedia(item.ForegroundImage);
-  const fl = pickOneMedia(item.FloatImage);
-
-  const financeRepaymentBanner: FinanceRepaymentBannerUI = {
+  const financeRepaymentBanner: FinanceBannerUI = {
     id: item.Id,
     title: item.Title ?? '',
     ctaLabel: item.LabelButton || item.CTA?.Text || item.CTA?.Title || 'Learn more →',
     ctaHref: extractHref(item.CTA) || '#',
     images: {
-      // backgroundUrl → mainBg
-      mainBg: {
-        url: mediaUrl(bg),
-        alt: (bg?.AlternativeText as string) || 'background',
+      backgroundUrl: {
+        url: pickImageUrl(backgroundImage),
+        alt: (backgroundImage?.AlternativeText as string) || 'background',
         width: 1240,
         height: 550,
       },
-
-      // foregroundUrl → phone
-
-      phone: {
-        url: mediaUrl(fg),
-        alt: (fg?.AlternativeText as string) || 'phone',
+      foregroundUrl: {
+        url: pickImageUrl(foregroundImage),
+        alt: (foregroundImage?.AlternativeText as string) || 'phone',
         width: 626,
         height: 550,
       },
-
-      // floatUrl → cards
-
-      cards: {
-        url: mediaUrl(fl),
-        alt: (fl?.AlternativeText as string) || 'cards',
+      floatUrl: {
+        url: pickImageUrl(floatImage),
+        alt: (floatImage?.AlternativeText as string) || 'cards',
         width: 600,
         height: 170,
       },
@@ -148,7 +126,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     >
       <div className="flex h-[550px] w-auto items-center rounded-[32px] mx-20 flip overflow-clip">
         {/* Layer 1: gradient + main background image */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 rtl:scale-x-[-1]">
           <div
             className="absolute inset-0"
             style={{
@@ -157,10 +135,10 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             }}
           />
 
-          {financeRepaymentBanner.images.mainBg.url && (
+          {financeRepaymentBanner.images.backgroundUrl.url && (
             <Image
-              src={financeRepaymentBanner.images.mainBg.url}
-              alt={financeRepaymentBanner.images.mainBg.alt}
+              src={financeRepaymentBanner.images.backgroundUrl.url}
+              alt={financeRepaymentBanner.images.backgroundUrl.alt}
               fill
               priority
               className="object-cover"
@@ -172,18 +150,14 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         <div className="relative z-10 flex w-full items-center">
           <div className="text-white">
-            <div className="flex flex-col pl-24 w-full max-w-[560px]">
-              {viewName === 'WithHeading' && (
-                <div className="text-surface/90 text-sm tracking-wide uppercase">Finance</div>
-              )}
-
+            <div className="flex flex-col gap-6 pl-24 rtl:pr-24 w-full max-w-[560px]">
               {/* Cards strip (maps from floatUrl → cards) under the title area */}
 
-              {financeRepaymentBanner.images.cards.url && (
-                <div className="relative -left-8 h-[160px] w-[540px] rounded-lg">
+              {financeRepaymentBanner.images.floatUrl.url && (
+                <div className="relative -left-8 -mb-12 rtl:-right-12 rtl:-mb-12 h-[180px] w-[590px] rounded-lg">
                   <Image
-                    src={financeRepaymentBanner.images.cards.url}
-                    alt={financeRepaymentBanner.images.cards.alt}
+                    src={financeRepaymentBanner.images.floatUrl.url}
+                    alt={financeRepaymentBanner.images.floatUrl.alt}
                     fill
                     priority
                   />
@@ -192,7 +166,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
               {!!financeRepaymentBanner.title && (
                 <Title
-                  className="text-[44px] font-bold tracking-tight leading-tight max-w-[100%] mb-6"
+                  className="text-5xl font-bold tracking-tight leading-[100%] max-w-[100%]"
                   color="text-white"
                 >
                   {financeRepaymentBanner.title}
@@ -221,11 +195,11 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
           {/* Phone image on the right (foregroundUrl → phone) */}
 
-          {financeRepaymentBanner.images.phone.url && (
-            <div className="absolute right-0 z-20 fadeRightFinanch">
+          {financeRepaymentBanner.images.foregroundUrl.url && (
+            <div className="absolute z-20 fadeRightFinanch ltr:right-0 ltr:left-auto rtl:left-0 rtl:right-auto">
               <Image
-                src={financeRepaymentBanner.images.phone.url}
-                alt={financeRepaymentBanner.images.phone.alt}
+                src={financeRepaymentBanner.images.foregroundUrl.url}
+                alt={financeRepaymentBanner.images.foregroundUrl.alt}
                 width={550}
                 height={900}
                 priority

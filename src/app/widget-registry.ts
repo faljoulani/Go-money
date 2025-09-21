@@ -12,7 +12,10 @@ import { MainNavigationEntity } from '../components/widgets/mainNavigation/mainN
 
 import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 
-import DownloadApp from '../components/widgets/downloadApp/downloadApp';
+// import DownloadApp from '../components/widgets/downloadApp/downloadApp';
+// import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
+
+import DownloadApp from '../components/widgets/downloadApp/download';
 import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
 
 import Download from '../components/widgets/downloadApp/download';
@@ -22,9 +25,6 @@ import GridOfCards from '../components/widgets/cards/gridOfCards';
 
 import Footer from '../components/widgets/footer/Footer-template';
 import { FooterEntity } from '../components/widgets/footer/Footer.entity';
-
-import FinanceBanner from '../components/widgets/financeRepaymentBanner/financeBanner';
-import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanner/financeBanner.entity';
 
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
@@ -54,6 +54,11 @@ import { StackLayout } from '../components/widgets/layouts/stackLayout';
 
 import ContactSubscription from '../components/widgets/contactSubscription/contactSubscription';
 import { ContactSubscriptionEntity } from '../components/widgets/contactSubscription/contactSubscription.entity';
+
+import FinanceBanner from '../components/widgets/financeRepaymentBanner/financeBanner';
+import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanner/financeBanner.entity';
+import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
+import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -133,17 +138,23 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: BoardReport },
       },
     },
-    DownloadApp: {
+    // DownloadApp: {
+    //   componentType: DownloadApp,
+    //   entity: DownloadEntity,
+    //   ssr: true,
+    //   editorMetadata: { Title: 'DownloadApp' },
+    // },
+    Download: {
       componentType: DownloadApp,
-      entity: DownloadAppEntity,
+      entity: DownloadEntity,
       ssr: true,
       editorMetadata: { Title: 'DownloadApp' },
     },
-    Download: {
-      componentType: Download,
-      entity: DownloadEntity,
+    FinanceBanner: {
+      componentType: FinanceBanner,
+      entity: FinanceBannerEntity,
       ssr: true,
-      editorMetadata: { Title: 'Download' },
+      editorMetadata: { Title: 'FinanceBanner' },
     },
     GotQuestions: {
       componentType: ContactBox,
@@ -214,6 +225,12 @@ const customWidgetRegistry: WidgetRegistry = {
       views: {
         Default: { Title: 'Default', ViewFunction: ContactForm },
       },
+    },
+    FinanceCalculator: {
+      componentType: FinanceCalculator,
+      entity: FinanceCalculatorEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Finance Calculator' },
     },
   },
 };

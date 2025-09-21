@@ -23,3 +23,4 @@ export class FinanceBannerEntity {
   @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
   ViewName?: string;
 }
+

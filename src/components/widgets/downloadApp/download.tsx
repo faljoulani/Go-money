@@ -1,6 +1,10 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import {
+  fetchData,
+  extractSelectionId,
+  pickImageUrl,
+} from '../../../utils/sitefinity';
 import type { DownloadEntity } from './download.entity';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 
@@ -20,17 +24,14 @@ interface DownloadAppItem {
   Title?: string;
   description?: string;
   ForegroundImage?: any | any[];
-
-  // match your OData shape exactly
   Certifications?: Array<{
     Id: string;
     Title?: string;
     description?: string;
     Order?: number;
     IsVisible?: boolean;
-    Logo?: any | any[]; // expanded media
+    Logo?: any | any[];
   }>;
-
   stores?: Array<{
     Id: string;
     Title?: string;
@@ -38,16 +39,14 @@ interface DownloadAppItem {
     Url?: string;
     Order?: number;
     IsVisible?: boolean;
-    Icon?: any | any[]; // expanded media
+    Icon?: any | any[];
   }>;
 }
 
-// -------------------- view -----------------------
-export default async function DownloadView(props: WidgetContext<DownloadEntity>) {
+export default async function DownloadApp(props: WidgetContext<DownloadEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  // Read selected content (single item)
   const selection = resolveSitefinitySelection((props.model?.Properties as any)?.DownloadApp);
   const id = extractSelectionId(selection);
 
@@ -63,7 +62,6 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
     ) : null;
   }
 
-  // ✅ Expand Logo on Certifications and Icon on stores
   const item = (await fetchData(
     [id],
     null,
@@ -104,7 +102,6 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
   const description = item.description || '';
   console.log('DESCRIPTION ' + description);
 
-  // Phone image from ForegroundImage
   const phoneIm = pickOneMedia(item.ForegroundImage);
   const phoneUrl = mediaUrl(phoneIm);
   const phoneAlt = (phoneIm?.AlternativeText as string) || phoneIm?.Title || 'App screenshot';
@@ -115,25 +112,18 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
       id: card?.Id,
       title: card?.Title || '',
       desc: card?.description || '',
-      logoUrl: mediaUrl(logo),
+      logoUrl: pickImageUrl(logo),
       logoAlt: logo?.AlternativeText || logo?.Title || card?.Title || 'certification',
     };
   });
 
-  console.log('info cards ===== >>>> ' + JSON.stringify(infoCards));
-
-  // Stores → preserve order; use Icon
-  const storesList = (item.stores || [])
-    .filter((s) => s?.IsVisible !== false)
-    .sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
-
-  const orderedStores = storesList.map((s, index) => {
-    const icon = pickOneMedia(s?.Icon);
+  const orderedStores = item.stores.map((store, index) => {
+    const icon = pickOneMedia(store?.Icon);
     return {
-      title: s?.Title || '',
-      href: s?.Url || '#',
-      iconUrl: mediaUrl(icon),
-      iconAlt: icon?.AlternativeText || icon?.Title || s?.Title || `store-badge-${index + 1}`,
+      title: store?.Title || '',
+      href: store?.Url || '#',
+      iconUrl: pickImageUrl(icon),
+      iconAlt: icon?.AlternativeText || icon?.Title || store?.Title || `store-badge-${index + 1}`,
     };
   });
 
@@ -164,16 +154,17 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
         {/* Right: content */}
         <div className="flex h-full w-1/2 items-center my-16 fadeRightDownload">
           <div className="w-full max-w-[560px] text-[#010663]">
-            {!!title && <Title className='font-bold tracking-tight text-5xl leading-snug'>{title}</Title>}
-            {!!description && (
-              <Description html={description} className="mt-4 text-base" />
+            {!!title && (
+              <Title className="font-bold tracking-tight text-5xl leading-snug">{title}</Title>
             )}
+            {!!description && <Description html={description} className="mt-4 text-base" />}
 
             {/* Info chips from Certifications (max 2) */}
             {infoCards.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 gap-8">
+              <div className="mt-6 flex divide-x divide-[#7B80FF]">
                 {infoCards.map((card) => (
-                  <div key={card.id} className="flex items-center gap-4">
+                  <div key={card.id} className="flex-1 flex items-start gap-4 px-6">
+                    {/* Logo */}
                     <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
                       {card.logoUrl && (
                         <Image
@@ -185,6 +176,7 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
                         />
                       )}
                     </div>
+                    {/* Text */}
                     <div className="min-w-0">
                       <div className="text-lg font-semibold">{card.title}</div>
                       {!!card.desc && (
@@ -201,13 +193,13 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
 
             {/* Store badges (ordered as provided) */}
             {orderedStores.length > 0 && (
-              <div className="mt-6 flex items-center gap-3 mr-16">
-                {orderedStores.map((s, idx) =>
-                  s.iconUrl ? (
-                    <a key={idx} href={s.href}>
+              <div className="mt-6 flex items-center rtl:justify-end gap-3 rtl:flex-row-reverse">
+                {orderedStores.map((store, idx) =>
+                  store.iconUrl ? (
+                    <a key={idx} href={store.href}>
                       <Image
-                        src={s.iconUrl}
-                        alt={s.iconAlt}
+                        src={store.iconUrl}
+                        alt={store.iconAlt}
                         width={173}
                         height={52}
                         priority
@@ -217,10 +209,10 @@ export default async function DownloadView(props: WidgetContext<DownloadEntity>)
                   ) : (
                     <a
                       key={idx}
-                      href={s.href}
+                      href={store.href}
                       className="px-4 py-2 rounded-xl bg-white/20 text-sm font-semibold"
                     >
-                      {s.title}
+                      {store.title}
                     </a>
                   ),
                 )}
