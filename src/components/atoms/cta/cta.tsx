@@ -48,8 +48,7 @@ export default function CTA({
   const base =
     'inline-flex items-center gap-2 rounded-2xl select-none border ' +
     'px-6 py-3 text-[16px] leading-[100%] ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
-    'transition-colors';
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ';
 
   const alignClass =
     align === 'left'

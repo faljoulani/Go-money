@@ -16,15 +16,15 @@ import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 // import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
 
 import DownloadApp from '../components/widgets/downloadApp/download';
+import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
+
+import Download from '../components/widgets/downloadApp/download';
 import { DownloadEntity } from '../components/widgets/downloadApp/download.entity';
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 
 import Footer from '../components/widgets/footer/Footer-template';
 import { FooterEntity } from '../components/widgets/footer/Footer.entity';
-
-//import FinanceRepaymentBanner from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner';
-//import { FinanceRepaymentBannerEntity } from '../components/widgets/financeRepaymentBanner/financeRepaymentBanner.entity';
 
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
@@ -101,15 +101,15 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: Footer },
       },
     },
-    // BannerTwo: {
-    //   componentType: FinanceRepaymentBanner,
-    //   entity: FinanceRepaymentBannerEntity,
-    //   ssr: true,
-    //   editorMetadata: { Title: 'Finance banner' },
-    //   views: {
-    //     Default: { Title: 'Finance Banner', ViewFunction: FinanceRepaymentBanner },
-    //   },
-    // },
+    BannerTwo: {
+      componentType: FinanceBanner,
+      entity: FinanceBannerEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Finance banner' },
+      views: {
+        Default: { Title: 'Finance Banner', ViewFunction: FinanceBanner },
+      },
+    },
     HowItWorks: {
       componentType: HowItWorks,
       entity: HowItWorkEntity,

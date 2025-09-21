@@ -6,16 +6,16 @@ import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorator
 import { ViewSelector } from '@progress/sitefinity-widget-designers-sdk/decorators/view-selector';
 
 /**
- * Download App widget entity
- *
- * Dynamic type: 'Telerik.Sitefinity.DynamicTypes.Model.DownloadApp.Downloadapp'
- * Fields available on the content item (Module Builder):
- *  - Title (Short text)
- *  - description (Short text)
- *  - ForegroundImage (Related media)
- *  - Certifications (Related data)
- *  - stores (Related data)
- */
+* Download App widget entity
+*
+* Dynamic type: 'Telerik.Sitefinity.DynamicTypes.Model.DownloadApp.Downloadapp'
+* Fields available on the content item (Module Builder):
+*  - Title (Short text)
+*  - description (Short text)
+*  - ForegroundImage (Related media)
+*  - Certifications (Related data)
+*  - stores (Related data)
+*/
 @WidgetEntity('DownloadApp', 'Download App')
 export class DownloadEntity {
   @ContentSection('Content', 0)
@@ -31,7 +31,9 @@ export class DownloadEntity {
 
   @ContentSection('Design', 1)
   @DisplayName('View')
-  @ViewSelector([{ Name: 'Default', Title: 'Default', Value: 'Default' }])
+  @ViewSelector([
+      { Title: 'DownloadApp', Value: 'DownloadApp' },
+      { Title: 'Minimized DownloadApp', Value: 'MinimizedDownloadApp' },
+    ])
   ViewName?: string;
 }
-

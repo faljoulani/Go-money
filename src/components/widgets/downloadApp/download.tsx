@@ -3,7 +3,6 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import {
   fetchData,
   extractSelectionId,
-  pickOneMedia,
   pickImageUrl,
 } from '../../../utils/sitefinity';
 import type { DownloadEntity } from './download.entity';
@@ -12,6 +11,14 @@ import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
+// -------------------- helpers --------------------
+const mediaUrl = (im?: any | null): string =>
+  im?.MediaUrl || im?.Url || im?.ThumbnailUrl || im?.EmbedUrl || '';
+
+const pickOneMedia = (img: any | any[] | null | undefined) =>
+  (Array.isArray(img) ? img[0] : img) || null;
+
+// -------------------- types ----------------------
 interface DownloadAppItem {
   Id: string;
   Title?: string;
@@ -96,7 +103,7 @@ export default async function DownloadApp(props: WidgetContext<DownloadEntity>) 
   console.log('DESCRIPTION ' + description);
 
   const phoneIm = pickOneMedia(item.ForegroundImage);
-  const phoneUrl = pickImageUrl(phoneIm);
+  const phoneUrl = mediaUrl(phoneIm);
   const phoneAlt = (phoneIm?.AlternativeText as string) || phoneIm?.Title || 'App screenshot';
 
   const infoCards = item.Certifications.map((card) => {
@@ -219,3 +226,4 @@ export default async function DownloadApp(props: WidgetContext<DownloadEntity>) 
   );
 }
 
+ 

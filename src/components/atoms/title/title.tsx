@@ -8,7 +8,7 @@ type Props = {
 
 export default function Title({
   children,
-  className = 'text-title',
+  className = 'text-5xl',
   color = 'text-primary',
 }: Props) {
   const combinedClassName = ['font-lufga', color, className].filter(Boolean).join(' ');

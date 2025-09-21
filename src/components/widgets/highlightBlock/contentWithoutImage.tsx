@@ -45,10 +45,10 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
 
   return (
     <div className="mx-auto w-full bg-[#EEEEEE]">
-      <div className="mx-auto max-w-[1400px] h-[244px] sm:h-[300px] md:h-[356px] lg:h-[420px] xl:h-[488px] px-[24px] sm:px-[48px] md:px-[96px] lg:px-[150px] py-7xl flex flex-col items-center justify-center text-center space-y-6">
+      <div className="mx-auto max-w-[1400px] h-[313px] px-[24px] py-16 flex flex-col items-center justify-center text-center space-y-4">
         {/* Title */}
         {title ? (
-          <h2 className="font-lufga font-bold text-[32px] sm:text-[36px] md:text-[40px] leading-[100%] tracking-[-0.8px] text-[#010663] inline-flex items-center gap-2">
+          <h2 className="font-semibold text-[52px]  leading-[62px] tracking-wide text-[#010663] inline-flex items-center gap-2">
             {title}
           </h2>
         ) : null}
@@ -57,22 +57,17 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
         <div className="max-w-[720px] text-[#424242]">
           {description ? (
             <Description
-              className="font-poppins font-normal text-[18px] leading-[30px] tracking-[0px] text-center
-               text-[hsla(0,0%,26%,1)] w-[400px] h-[60px] mx-auto"
-            >
-              {description}
-            </Description>
+              html={description}
+              className="text-[18px] leading-[30px] tracking-[0px] text-center
+               text-default w-[400px] h-[60px] mx-auto"
+            />
           ) : null}
         </div>
 
         {/* CTA */}
         {ctaText ? (
-          <div className="pt-2">
-            <CTA
-              href={ctaHref}
-              icon="arrow"
-              className="bg-[hsla(237,98%,20%,1)] text-white font-poppins font-extralight"
-            >
+          <div>
+            <CTA href={ctaHref} variant="solid" className="bg-primary text-white font-medium leading-snug px-[76px] rounded-[18px]">
               {ctaText}
             </CTA>
           </div>
