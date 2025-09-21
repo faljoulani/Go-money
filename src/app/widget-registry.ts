@@ -47,6 +47,7 @@ import SupportInfoBox from '../components/widgets/SupportInfoBox/supportInfoBox'
 import { SupportInfoBoxEntity } from '../components/widgets/SupportInfoBox/supportInfoBox.entity';
 
 import ContactForm from '../components/widgets/contactForm/contactForm';
+import { FormEntity } from '../components/widgets/contactForm/contactForm.entity';
 
 import TwoColumnLayout from '../components/widgets/layouts/twoColumnLayout';
 
@@ -220,6 +221,7 @@ const customWidgetRegistry: WidgetRegistry = {
     },
     ContactForm: {
       componentType: ContactForm,
+      entity: FormEntity,
       ssr: true,
       editorMetadata: { Title: 'ContactForm' },
       views: {

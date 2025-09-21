@@ -49,8 +49,6 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
     { itemType: selection?.Content?.[0]?.Type, single: true },
   )) as any | null;
 
-  console.log('SupportInfoBox item:', JSON.stringify(item));
-
   if (!item) return null;
 
   const infos = (item.InfoLinks || [])
@@ -62,17 +60,22 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   );
 
   return (
-    <section {...attrs} className="relative overflow-hidden rounded-[28px] bg-white p-12 shadow-sm">
+    <section
+      {...attrs}
+      className="relative flex flex-col items-start justify-between overflow-hidden rounded-[28px] h-full bg-white p-12 shadow-sm"
+    >
       <div className="space-y-4">
-        <Title color="var(--Text-text-primary, #010663)">{item.Title}</Title>
+        <Title color="text-primary" className="text-28px font-bold">
+          {item.Title}
+        </Title>
         <Description
-          color="var(--Text-text-neutral, #9E9E9E)"
-          className="text-[18px] font-semibold leading-[100%] tracking-[0]"
+          color="text-neutral"
+          className="text-18px font-semibold leading-[100%] tracking-[0]"
           html={item.Description}
         />
       </div>
 
-      {/* Info links */}
+      {/* Info */}
       <div className="mt-10 space-y-2">
         {infos.map((social: any) => {
           const media =
@@ -89,8 +92,8 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 />
               )}
               <Description
-                color="var(--Text-text-default, #424242)"
-                className="text-[16px] font-semibold leading-[100%] tracking-[0]"
+                color="text-default"
+                className="font-semibold leading-[100%] tracking-[0]"
                 html={social.Description}
               />
             </div>
@@ -132,8 +135,8 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       )}
 
       {item.HasLabel && (
-        <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#0023F5] rounded-tl-[60px]">
-          <div className="absolute bottom-0 right-0 w-16 h-16 bg-white"></div>
+        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-32 h-32 bg-primary ltr:rounded-tl-[60px] rtl:rounded-tr-[60px] ">
+          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-16 h-16 bg-white"></div>
         </div>
       )}
     </section>
