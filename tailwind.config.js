@@ -8,6 +8,7 @@ module.exports = {
         secondary: '#0b2a8e',
         default: '#424242', // Use it with bg-default, text-default, border-default
         surface: 'hsla(0, 0%, 100%, 0.75)',
+        neutral: '#9E9E9E',
         line: '#e0e0e0',
         bgNeutral200: '#eeeeee',
         skyTint: '#CFE8F1',
