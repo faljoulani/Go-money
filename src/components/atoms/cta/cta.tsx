@@ -48,8 +48,7 @@ export default function CTA({
   const base =
     'inline-flex items-center gap-2 rounded-2xl select-none border ' +
     'px-6 py-3 text-[16px] leading-[100%] ' +
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
-    'transition-colors';
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ';
 
   const alignClass =
     align === 'left'
@@ -102,7 +101,9 @@ export default function CTA({
       {icon === 'arrow' && (
         <img src="/icons/chevron-right.svg" alt="" className="cta-arrow" aria-hidden />
       )}
-      {icon === 'slot' && <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" />}
+      {icon === 'slot' && (
+        <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
+      )}
     </button>
   );
 }

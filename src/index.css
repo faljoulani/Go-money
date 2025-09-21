@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import url('https://fonts.cdnfonts.com/css/lufga');
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap');
 
 :root {
   --Background-background-neutral-200: #eeeeee;
@@ -82,23 +82,6 @@ body {
   animation: fadeupHero 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
 }
 
-@keyframes fadeRight {
-  from {
-    opacity: 0;
-    transform: translate(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(0);
-  }
-}
-
-.fadeRight {
-  animation: fadeRight 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
-  animation-timeline: view();
-  animation-range: entry 70% cover 100%;
-}
-
 @keyframes fadeRightFinanch {
   from {
     opacity: 0;
@@ -117,10 +100,10 @@ body {
   animation-range: entry 50% cover 50%;
 }
 
-@keyframes fadeLeft {
+@keyframes fadeRight {
   from {
     opacity: 0;
-    transform: translate(-100px);
+    transform: translate(200px);
   }
   to {
     opacity: 1;
@@ -128,10 +111,39 @@ body {
   }
 }
 
+@keyframes fadeLeft {
+  from {
+    opacity: 0;
+    transform: translate(-200px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+.fadeRight,
 .fadeLeft {
-  animation: fadeLeft 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-duration: 2s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation-fill-mode: both;
   animation-timeline: view();
-  animation-range: entry 70% cover 100vh;
+  animation-range: entry 70% cover 100%;
+}
+
+/* LTR defaults */
+.fadeRight {
+  animation-name: fadeRight;
+}
+.fadeLeft {
+  animation-name: fadeLeft;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRight {
+  animation-name: fadeLeft;
+}
+[dir='rtl'] .fadeLeft {
+  animation-name: fadeRight;
 }
 
 @keyframes fadeRightDownload {
@@ -145,12 +157,6 @@ body {
   }
 }
 
-.fadeRightDownload {
-  animation: fadeRightDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
-  animation-timeline: view();
-  animation-range: entry 50% cover 100vh;
-}
-
 @keyframes fadeLeftDownload {
   from {
     opacity: 0;
@@ -162,10 +168,29 @@ body {
   }
 }
 
+.fadeRightDownload,
 .fadeLeftDownload {
-  animation: fadeLeftDownload 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-duration: 2s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation-fill-mode: both;
   animation-timeline: view();
-  animation-range: entry 50% cover 100vh;
+  animation-range: entry 50% cover 100%;
+}
+
+/* LTR defaults */
+.fadeRightDownload {
+  animation-name: fadeRightDownload;
+}
+.fadeLeftDownload {
+  animation-name: fadeLeftDownload;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRightDownload {
+  animation-name: fadeLeftDownload;
+}
+[dir='rtl'] .fadeLeftDownload {
+  animation-name: fadeRightDownload;
 }
 
 @keyframes fadeLeftHero {
@@ -192,12 +217,6 @@ body {
   }
 }
 
-.fadeRightSubscribe {
-  animation: fadeRightSubscribe 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
-  animation-timeline: view();
-  animation-range: entry 20% cover 100vh;
-}
-
 @keyframes fadeLeftSubscribe {
   from {
     transform: translate(-200px);
@@ -207,10 +226,29 @@ body {
   }
 }
 
+.fadeRightSubscribe,
 .fadeLeftSubscribe {
-  animation: fadeLeftSubscribe 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-duration: 2s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation-fill-mode: both;
   animation-timeline: view();
-  animation-range: entry 20% cover 100vh;
+  animation-range: entry 70% cover 100%;
+}
+
+/* LTR defaults */
+.fadeRightSubscribe {
+  animation-name: fadeRightSubscribe;
+}
+.fadeLeftSubscribe {
+  animation-name: fadeLeftSubscribe;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRightSubscribe {
+  animation-name: fadeLeftSubscribe;
+}
+[dir='rtl'] .fadeLeftSubscribe {
+  animation-name: fadeRightSubscribe;
 }
 
 @keyframes scaleC {
@@ -265,7 +303,6 @@ body {
   animation-timeline: view();
   animation-range: entry 10% cover;
 }
-
 
 .flip {
   transform: rotateX(60deg);

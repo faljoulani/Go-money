@@ -5,7 +5,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 
-import { fetchData } from '../../../utils/sitefinity';
+import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
 import { CmsImage } from '../../../types/Type';
 
@@ -18,11 +18,6 @@ type ContentWithImageItem = {
   CtaUrl?: any;
   Image?: any;
 };
-
-function imageUrl(img: CmsImage): string | undefined {
-  if (!img) return undefined;
-  return img.MediaUrl || img.Url || img.ThumbnailUrl || img.EmbedUrl;
-}
 
 export default async function ContentWithImage(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
@@ -68,16 +63,18 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
       <div />
     );
 
+    
   const eyebrow: string | undefined = data.Eyebrow;
   const title: string | undefined = data.Title;
   const description: string | undefined = data.Description;
 
   const img = Array.isArray(data.Image) ? data.Image[0] : data.Image;
-  const imgSrc: string | undefined = imageUrl(img);
+  const imgSrc: string | undefined = pickImageUrl(img);
   const imgAlt: string = img?.AlternativeText || title || 'illustration';
 
+
   return (
-    <section className="mx-auto max-w-[1400px] h-[488px] px-[150px] py-7xl">
+    <section className="mx-auto max-w-[1400px] h-[488px] px-[150px] py-7xl ">
       <div className="grid grid-cols-2 items-center gap-5 h-full">
         {/* Left: Image */}
         <div className="flex justify-center">
@@ -100,16 +97,16 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
         </div>
 
         {/* Right: Text */}
-        <div className="text-left space-y-4">
-          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+        <div className="text-left space-y-3 rtl:text-right">
+          {eyebrow && <Eyebrow className='h-6'>{eyebrow}</Eyebrow>}
 
           {title && (
-            <Title className="font-lufga font-bold text-[40px] leading-[100%] tracking-[-0.8px] align-middle">
+            <Title className="font-bold text-[40px] leading-tight tracking-tight align-middle">
               {title}
             </Title>
           )}
 
-          {description && <Description>{description}</Description>}
+          {description && <Description html={description}/>}
         </div>
       </div>
     </section>
