@@ -12,7 +12,7 @@ export default function QuestionsClient({ categories }: { categories: Category[]
   const [active, setActive] = useState<string>(defaultActive);
 
   const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
-    'api/default/faqquestions',
+    '/faqquestions',
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
