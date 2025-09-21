@@ -69,7 +69,7 @@ export default function ReportGridClient({
     <div className="w-full">
       {(title || description) && (
         <header className="mb-6">
-          {title && <h2 className="text-2xl md:text-3xl font-semibold text-[#0B1C5A]">{title}</h2>}
+          {title && <h2 className="text-5xl font-bold text-primary">{title}</h2>}
           {description && <p className="mt-4 text-slate-600">{description}</p>}
         </header>
       )}

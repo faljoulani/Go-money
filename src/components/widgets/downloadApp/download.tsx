@@ -162,8 +162,8 @@ export default async function DownloadApp(props: WidgetContext<DownloadEntity>) 
             {/* Info chips from Certifications (max 2) */}
             {infoCards.length > 0 && (
               <div className="mt-6 flex divide-x divide-[#7B80FF]">
-                {infoCards.map((card) => (
-                  <div key={card.id} className="flex-1 flex items-start gap-4 px-6">
+                {infoCards.map((card, index) => (
+                  <div key={index} className="flex-1 flex items-start gap-4 px-6">
                     {/* Logo */}
                     <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
                       {card.logoUrl && (
