@@ -7,6 +7,7 @@ import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 
 type Nationality = 'saudi' | 'nonsaudi';
 type ResultState = null | 'success' | 'fail';
+const MSG_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message';
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const parseNum = (v: number | '') => (v === '' ? null : Number(v));
@@ -152,6 +153,7 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     // } finally {
     //   setSubmitting(false);
     // }
+
     setTimeout(() => {
       setSubmitting(false);
       setResult(requestedFinanceAmount >= 15000 ? 'success' : 'fail');
@@ -224,6 +226,7 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
   //       </section>
   //     );
   //   }
+
   if (result === 'success') {
     const iconUrl = getMediaUrl(successMsg?.Image) || ''; // author will upload later
     const title = successMsg?.Title || '!';
@@ -330,7 +333,6 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
             </div>
           </div>
 
-          {/* Actions / Tips */}
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
               <strong className="block text-[#0B2A8E]">{actionsTitle}</strong>
