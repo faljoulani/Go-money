@@ -1,153 +1,239 @@
 'use client';
-import { useState } from 'react';
+import * as React from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
-export default function ContactFormClient() {
-  const [resStatus, setResStatus] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [contactUsObj, setContactUsObj] = useState({
-    title: 'New inquiry 3',
-    firstName: 'Omar 2',
-    lastName: 'Khatib',
-    mobileNumber: '+97150000000',
-    email: 'omar@example.com',
-    topic: 'Need help with onboarding.',
-  });
+type Option = { id: string; label: string };
+type Data = {
+  title?: string;
+  subTitle?: string;
+  ctaText?: string;
+  ctaHref?: string;
+  firstNameLabel?: string;
+  firstNamePlaceholder?: string;
+  lastNameLabel?: string;
+  lastNamePlaceholder?: string;
+  phoneNumberLabel?: string;
+  phoneNumberPlaceholder?: string;
+  emailLabel?: string;
+  emailPlaceholder?: string;
+  requestTypeLabel?: string;
+  requestTypeChoices?: Option[];
+  topicLabel?: string;
+  topicPlaceholder?: string;
+  notesLabel?: string;
+  notesPlaceholder?: string;
+};
 
-  const submitContactUSForm = async (e) => {
+type Props = { postUrl?: string; data: Data; dir?: 'ltr' | 'rtl' | 'auto' };
+
+export default function ContactFormClient({
+  postUrl = '/api/default/ContactUsLists',
+  data,
+  dir = 'auto',
+}: Props) {
+  const FIELD =
+    'w-[326.5px] h-[48px] px-3 py-3 rounded-[18px] border border-[#BDBDBD] ' +
+    'bg-white text-14px leading-6 outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
+
+  const LABEL = 'mb-2 block text-14px font-medium text-[#2B2B2B]';
+  const reqStar = <span className="text-[#E53935]"> *</span>;
+  const requestType = data.requestTypeChoices ?? [];
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [resStatus, setResStatus] = React.useState<null | 'success' | 'error'>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //validations
-    if (true) {
-      setIsLoading(true);
-      const res = await fetch('/api/default/ContactUsLists', {
+    setResStatus(null);
+    setIsLoading(true);
+
+    try {
+      const fd = new FormData(e.currentTarget);
+      const payload = {
+        title: data.title ?? 'New inquiry',
+        firstName: String(fd.get('firstName') || '').trim(),
+        lastName: String(fd.get('lastName') || '').trim(),
+        mobileNumber: `+966${String(fd.get('phone') || '').trim()}`,
+        email: String(fd.get('email') || '').trim(),
+        topic: String(fd.get('topic') || '').trim(),
+        requestType: String(fd.get('requestType') || ''),
+        notes: String(fd.get('notes') || '').trim(),
+      };
+
+      const res = await fetch(postUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactUsObj),
+        body: JSON.stringify(payload),
       });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      setResStatus('success');
+      formRef.current?.reset();
+    } catch (err) {
+      console.error('Contact form submit failed:', err);
+      setResStatus('error');
+    } finally {
       setIsLoading(false);
-      console.log('response ----> ', res);
     }
   };
 
   return (
     <>
       {isLoading && <FullPageLoader />}
-      <div className="w-full rounded-2xl bg-white/80 p-6 shadow-sm ring-1 ring-black/5 md:p-8">
-        <form className="font-lufga" onSubmit={submitContactUSForm}>
-          <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-            {/* First Name */}
-            <div>
-              <label className="mb-2 block text-[16px] font-semibold text-[#424242]">
-                First Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter Your First Name"
-                className="w-full rounded-[14px] border border-[#E7E9EF] bg-white px-5 py-4 text-[16px] text-[#424242] outline-none placeholder:text-[#BDBDBD]"
-                aria-required="true"
-                value={contactUsObj.firstName}
-                onChange={(e) =>
-                  setContactUsObj((prev) => ({ ...prev, firstName: e.target.value }))
-                }
-                required
-              />
-            </div>
+      <form ref={formRef} onSubmit={handleSubmit} dir={dir} className="space-y-5">
+        <div className="grid grid-cols-2 gap-5">
+          {/* First Name */}
+          <div>
+            <label className={LABEL}>
+              {data.firstNameLabel ?? 'First Name'}
+              {reqStar}
+            </label>
+            <input
+              name="firstName"
+              placeholder={data.firstNamePlaceholder ?? ''}
+              className={FIELD}
+              required
+              autoComplete="given-name"
+              disabled={isLoading}
+            />
+          </div>
 
-            {/* Last Name */}
-            <div>
-              <label className="mb-2 block text-[16px] font-semibold text-[#424242]">
-                Last Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter Your Last Name"
-                className="w-full rounded-[14px] border border-[#E7E9EF] bg-white px-5 py-4 text-[16px] text-[#424242] outline-none placeholder:text-[#BDBDBD]"
-                aria-required="true"
-                value={contactUsObj.lastName}
-                onChange={(e) => setContactUsObj((prev) => ({ ...prev, lastName: e.target.value }))}
-              />
-            </div>
+          {/* Last Name */}
+          <div>
+            <label className={LABEL}>
+              {data.lastNameLabel ?? 'Last Name'}
+              {reqStar}
+            </label>
+            <input
+              name="lastName"
+              placeholder={data.lastNamePlaceholder ?? ''}
+              className={FIELD}
+              required
+              autoComplete="family-name"
+              disabled={isLoading}
+            />
+          </div>
 
-            {/* Phone Number */}
-            <div>
-              <label className="mb-2 block text-[16px] font-semibold text-[#424242]">
-                Phone Number <span className="text-red-500">*</span>
-              </label>
-
-              <div className="flex items-stretch gap-3">
-                {/* KSA prefix box */}
-                <div className="flex items-center gap-2 rounded-[14px] border border-[#E7E9EF] bg-white px-4 py-3">
-                  {/* Simple KSA emblem circle (placeholder) */}
-                  <span
-                    aria-hidden
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#0FA958] text-white"
-                  >
-                    SA
-                  </span>
-                  <span className="text-[16px] font-semibold text-[#424242]">+966</span>
-                </div>
-
-                {/* Number field */}
-                <input
-                  type="tel"
-                  placeholder="00 000 0000"
-                  className="w-full rounded-[14px] border border-[#E7E9EF] bg-white px-5 py-4 text-[16px] text-[#424242] outline-none placeholder:text-[#BDBDBD]"
-                  aria-required="true"
-                  value={contactUsObj.mobileNumber}
-                  onChange={(e) =>
-                    setContactUsObj((prev) => ({ ...prev, mobileNumber: e.target.value }))
-                  }
-                />
+          {/* Phone */}
+          <div>
+            <label className={LABEL}>
+              {data.phoneNumberLabel ?? 'Phone Number'}
+              {reqStar}
+            </label>
+            <div className="w-[326.5px] flex items-stretch gap-1">
+              {/* Prefix chip */}
+              <div className="h-[48px] rounded-[18px] border border-[#BDBDBD] bg-white px-3 flex items-center gap-2">
+                <span aria-hidden className="inline-flex h-6 min-w-6 items-center justify-center">
+                  🇸🇦
+                </span>
+                <span className="text-sm font-medium text-[#2B2B2B]">+966</span>
               </div>
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="mb-2 block text-[16px] font-semibold text-[#424242]">Email</label>
+              {/* Phone input */}
               <input
-                type="email"
-                placeholder="Example@email.com"
-                className="w-full rounded-[14px] border border-[#E7E9EF] bg-white px-5 py-4 text-[16px] text-[#424242] outline-none placeholder:text-[#BDBDBD]"
-                value={contactUsObj.email}
-                onChange={(e) => setContactUsObj((prev) => ({ ...prev, email: e.target.value }))}
+                name="phone"
+                placeholder={data.phoneNumberPlaceholder ?? ''}
+                className="flex-1 h-[48px] px-3 rounded-[18px] border border-[#BDBDBD] bg-white
+                           text-14px leading-6 outline-none focus:ring-2 focus:ring-[#0B2A8E]/20"
                 required
+                inputMode="tel"
+                autoComplete="tel"
+                disabled={isLoading}
               />
             </div>
-
-            <div className="md:col-span-1">
-              <label className="mb-2 block text-[16px] font-semibold text-[#424242]">
-                Topic <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter the topic"
-                className="w-full rounded-[14px] border border-[#E7E9EF] bg-white px-5 py-4 text-[16px] text-[#424242] outline-none placeholder:text-[#BDBDBD]"
-                aria-required="true"
-                value={contactUsObj.topic}
-                onChange={(e) => setContactUsObj((prev) => ({ ...prev, topic: e.target.value }))}
-              />
-            </div>
-            <div className="hidden md:block" />
           </div>
 
-          {/* CTA */}
-          <div className="mt-8 flex justify-end">
-            <button
-              type="submit"
-              className="rounded-2xl bg-[#0B2A8E] px-8 py-4 text-[18px] font-bold text-white"
-            >
-              Send Message
-            </button>
+          {/* Email */}
+          <div>
+            <label className={LABEL}>
+              {data.emailLabel ?? 'Email'}
+              {reqStar}
+            </label>
+            <input
+              name="email"
+              type="email"
+              placeholder={data.emailPlaceholder ?? ''}
+              className={FIELD}
+              required
+              autoComplete="email"
+              disabled={isLoading}
+            />
           </div>
-          {/* <div className="flex justify-end">
-            <div className="text-red-400">
-              <div className="rtl:hidden">Your message was successfly sent</div>
-              <div className="ltr:hidden">لقد تم ارسال رسالتك</div>
+
+          {/* Request type */}
+          <div>
+            <label className={LABEL}>
+              {data.requestTypeLabel ?? 'Request type'}
+              {/* removed {reqStar} */}
+            </label>
+            <div className="relative">
+              <select
+                name="requestType"
+                className={`${FIELD} appearance-none pr-10`}
+                disabled={isLoading}
+              >
+                <option value="" hidden>
+                  Select item
+                </option>
+
+                {/* ✅ Static option */}
+                <option value="staticValue">Static Value</option>
+              </select>
             </div>
-            <div className="text-green-400">Your message was successfly sent</div>
-          </div> */}
-        </form>
-      </div>
+          </div>
+
+          {/* Topic */}
+          <div>
+            <label className={LABEL}>
+              {data.topicLabel ?? 'Topic'}
+              {reqStar}
+            </label>
+            <input
+              name="topic"
+              placeholder={data.topicPlaceholder ?? ''}
+              className={FIELD}
+              required
+              autoComplete="off"
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="col-span-2">
+            <label className={LABEL}>
+              {data.notesLabel ?? 'Notes'}
+              {reqStar}
+            </label>
+            <textarea
+              name="notes"
+              placeholder={data.notesPlaceholder ?? ''}
+              className={`${FIELD} h-[81px] w-full`}
+              required
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+
+        <div className="mt-2 flex items-center justify-between">
+          <span className="text-sm" aria-live="polite">
+            {resStatus === 'success' && (
+              <span className="text-green-600">Your message was successfully sent.</span>
+            )}
+            {resStatus === 'error' && (
+              <span className="text-red-600">There was a problem sending your message.</span>
+            )}
+          </span>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="rounded-[16px] px-6 py-3 text-white shadow-sm bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
+          >
+            {isLoading ? 'Sending…' : (data.ctaText ?? 'Send Message')}
+          </button>
+        </div>
+      </form>
     </>
   );
 }

@@ -42,7 +42,7 @@ export default async function TwoColumnLayout(props) {
   return (
     <>
       <section {...attrs}>
-        <div className="flex flex-row gap-8 w-[90%] mx-auto">
+        <div className="flex flex-row gap-8 w-[90%] mx-auto my-16">
           <div
             className="basis-[40%] bg-white rounded-3xl"
             {...(props.requestContext.isEdit
