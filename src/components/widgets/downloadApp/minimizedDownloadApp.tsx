@@ -1,133 +1,109 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { DownloadAppEntity } from './downloadApp.entity';
-import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import type { DownloadEntity } from './download.entity';
+import { fetchData, extractSelectionId, pickImageUrl } from '../../../utils/sitefinity';
+import { resolveSitefinitySelection } from '../../../utils/utils';
+
+const mediaUrl = (im?: any | null): string =>
+  im?.MediaUrl || im?.Url || im?.ThumbnailUrl || im?.EmbedUrl || '';
+
+const pickOneMedia = (img: any | any[] | null | undefined) =>
+  (Array.isArray(img) ? img[0] : img) || null;
 
 interface MinimizedDownloadNow {
   Id: string;
   Title?: string;
-  SubTitle?: string;
-  Eyebrow?: string;
-  Description?: string;
-  CtaText?: string;
-  CtaUrl?: string | { Href?: string } | Array<{ Href?: string }>;
-  Image?: any | any[];
+  description?: string;
+  ForegroundImage?: any | any[];
+  stores?: Array<{
+    Id: string;
+    Title?: string;
+    Description?: string;
+    Url?: string;
+    Order?: number;
+    IsVisible?: boolean;
+    Icon?: any | any[];
+  }>;
 }
 
-export default async function MinimizedDownloadNow(props: WidgetContext<DownloadAppEntity>) {
-  const attributes = htmlAttributes(props);
-  const selection = (props.model?.Properties || {}) as any;
+export default async function MinimizedDownloadApp(props: WidgetContext<DownloadEntity>) {
+  const attrs = htmlAttributes(props);
+  const selection = resolveSitefinitySelection((props.model?.Properties as any)?.DownloadApp);
+    const id = extractSelectionId(selection);
   const { culture } = props.requestContext;
 
   const isEdit = props.requestContext.isEdit;
-  const id = extractSelectionId(selection);
+  
+ console.log("------>id", id)
+ console.log("MINNMIZES COMPONENT")
+ console.log("selection" + JSON.stringify(selection))
 
   if (!id) {
     return isEdit ? (
       <section
-        {...attributes}
+        {...attrs}
         className="p-6 border border-dashed rounded-lg text-center text-slate-500"
       >
-        <strong>Cards</strong>
-        <div className="mt-1">Open the designer and select a Card List.</div>
+        <strong>Minimized Downlaod App</strong>
+        <div className="mt-1">Open the designer and select a Downlaod List.</div>
       </section>
     ) : null;
   }
 
-  const parentPayload = await fetchData(
-    [id],
-    null,
-    culture,
-    [
-      'Id',
-      'Title',
-      'Description',
-      'SubTitle',
-      'Eyebrow',
-      'CtaText',
-      'CtaUrl',
-      'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
-    ],
-    {
-      itemType: selection?.CardListData?.Content?.[0]?.Type,
-      single: true,
-    },
-  );
-  const parentData = parentPayload as MinimizedDownloadNow;
-
-  const title = parentData?.Title ?? 'Cards';
-  const subtitle = parentData?.Description ?? parentData?.SubTitle ?? '';
-  const parentImage = Array.isArray(parentData?.Image) ? parentData.Image[0] : parentData?.Image;
-
-  const parentImgUrl =
-    parentImage?.Url ||
-    parentImage?.MediaUrl ||
-    parentImage?.ThumbnailUrl ||
-    parentImage?.Urls?.[0] ||
-    parentImage?.EmbedUrl ||
-    undefined;
-
-  const selectedIds: string[] = (() => {
-    const raw = selection?.Cards;
-    if (!raw) return [];
-    if (Array.isArray(raw)) return raw as string[];
-    if (Array.isArray((raw as any)?.ItemIdsOrdered)) return (raw as any).ItemIdsOrdered as string[];
-    return [];
-  })();
-
-  let cardItems: any[] = [];
-  if (selectedIds.length > 0) {
-    const childPayload = await fetchData(
-      selectedIds,
+  const item = (await fetchData(
+      [id],
       null,
       culture,
       [
         'Id',
         'Title',
-        'Description',
-        'Eyebrow',
-        'CtaText',
-        'CtaUrl',
-        'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
+        'description',
+        'ForegroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
+        'Certifications($select=Id,Title,description,Order,IsVisible,' +
+          'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
+        'stores($select=Id,Title,Description,Order,IsVisible,' +
+          'Icon($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
       ],
       {
-        itemType: selection?.Cards?.Content?.[0]?.Type ?? selection?.Content?.[0]?.Type,
-        single: false,
+        itemType:
+          selection?.Content?.[0]?.Type ||
+          'Telerik.Sitefinity.DynamicTypes.Model.DownloadApp.Downloadapp',
+        single: true,
       },
-    );
-    cardItems = Array.isArray(childPayload) ? childPayload : childPayload ? [childPayload] : [];
-  }
-
-  const childCardsData = cardItems.map((c: any) => {
-    const itemHrefRaw = c?.CtaUrl;
-    const itemHref =
-      typeof itemHrefRaw === 'string'
-        ? itemHrefRaw
-        : Array.isArray(itemHrefRaw)
-          ? (itemHrefRaw.find((x) => x?.Href)?.Href ?? '')
-          : (itemHrefRaw?.Href ?? c?.LinkUrl ?? undefined);
-
-    const image = Array.isArray(c?.Image) ? c.Image[0] : c?.Image;
-    const icon = Array.isArray(c?.Icon) ? c.Icon[0] : c?.Icon;
-    const iconUrl =
-      image?.Url ||
-      image?.MediaUrl ||
-      image?.ThumbnailUrl ||
-      image?.Urls?.[0] ||
-      image?.EmbedUrl ||
-      icon?.Url ||
-      icon?.MediaUrl ||
-      undefined;
-
-    return {
-      title: c?.Title ?? '',
-      description: c?.Description ?? '',
-      href: itemHref || undefined,
-      iconUrl,
-    };
-  });
+    )) as MinimizedDownloadNow | null;
+  
+    if (!item) {
+      return isEdit ? (
+        <section
+          {...(attrs as any)}
+          className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+        >
+          Unable to load the Download App item.
+        </section>
+      ) : null;
+    }
+  
+    const title = item.Title || 'Download Go Money App Today';
+    const description = item.description || '';
+   
+  
+    const phoneIm = pickOneMedia(item.ForegroundImage);
+    const phoneUrl = mediaUrl(phoneIm);
+    const phoneAlt = (phoneIm?.AlternativeText as string) || phoneIm?.Title || 'App screenshot';
+  
+    
+  
+    const orderedStores = item.stores.map((store, index) => {
+      const icon = pickOneMedia(store?.Icon);
+      return {
+        title: store?.Title || '',
+        href: store?.Url || '#',
+        iconUrl: pickImageUrl(icon),
+        iconAlt: icon?.AlternativeText || icon?.Title || store?.Title || `store-badge-${index + 1}`,
+      };
+    });
 
   return (
-    <section {...attributes}>
+    <section {...attrs}>
       <div
         className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-[100px]"
         style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
@@ -135,10 +111,10 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
         <div className="relative flex h-full w-full gap-6  px-16">
           {/* LEFT: phone image */}
           <div className="relative z-30 w-[279px] h-[282px]">
-            {parentImgUrl && (
+            {phoneUrl && (
               <img
-                src={parentImgUrl}
-                alt={parentImgUrl?.AlternativeText || 'Mobile'}
+                src={phoneUrl}
+                alt={phoneAlt|| 'Mobile'}
                 width={360}
                 height={720}
                 className="absolute left-0 bottom-[98px]"
@@ -153,18 +129,18 @@ export default async function MinimizedDownloadNow(props: WidgetContext<Download
                 {title}
               </h2>
 
-              {subtitle && (
+              {description && (
                 <div
                   className="mt-3 text-[16px] text-default"
-                  dangerouslySetInnerHTML={{ __html: subtitle }}
+                  dangerouslySetInnerHTML={{ __html: description }}
                 />
               )}
             </div>
             {/* round store logos */}
 
-            {childCardsData.length > 0 && (
+            {orderedStores.length > 0 && (
               <div className="relative my-16 flex items-end rtl:ml-24">
-                {childCardsData.slice(0, 3).map((item: any, index: number) => (
+                {orderedStores.slice(0, 3).map((item: any, index: number) => (
                   <a key={index} href={item.href} rel="" className="flex flex-col items-end">
                     {item.iconUrl && (
                       <div

@@ -173,9 +173,9 @@ const ctaUrl = linkToHref(rawCtaUrl);
       />
 
       <div className="relative grid grid-cols-2 gap-16 max-w-7xl px-20 py-24 ">
-        <div className="flex flex-col items-start justify-center gap-3 mb-44">
+        <div className="flex flex-col items-start justify-center gap-3 mb-44 fadeLeftHero ">
           {eyebrow && (
-            <Eyebrow className="fadeLeftHero" color="white">
+            <Eyebrow className="" color="white">
               {eyebrow}
             </Eyebrow>
           )}
@@ -183,14 +183,14 @@ const ctaUrl = linkToHref(rawCtaUrl);
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 max-w-[500px] font-bold text-[60px] leading-[80px] tracking-[-0.02em] fadeLeftHero"
+              className="mt-1 mx-0 max-w-[500px] font-bold text-[60px] leading-[80px] tracking-[-0.02em] "
             >
               {title}
             </Title>
           )}
 
           {description && (
-            <Description html={description} className="text-white font-extralight fadeLeftHero" />
+            <Description html={description} className="text-white font-extralight " />
           )}
 
           {ctaText && (

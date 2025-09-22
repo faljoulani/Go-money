@@ -119,7 +119,7 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
     ) : null;
   }
   return (
-    <section {...attributes} className="w-full pt-16">
+    <section {...attributes} className="w-full">
       <div className="mx-auto px-20">
         {/* Section header */}
         <div className="mb-8 text-center">

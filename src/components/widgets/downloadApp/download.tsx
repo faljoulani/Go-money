@@ -1,15 +1,13 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import {
-  fetchData,
-  extractSelectionId,
-  pickImageUrl,
-} from '../../../utils/sitefinity';
+import { fetchData, extractSelectionId, pickImageUrl } from '../../../utils/sitefinity';
 import type { DownloadEntity } from './download.entity';
+import MinimizedDownloadApp from './minimizedDownloadApp';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
+import { log } from 'console';
 
 // -------------------- helpers --------------------
 const mediaUrl = (im?: any | null): string =>
@@ -43,12 +41,38 @@ interface DownloadAppItem {
   }>;
 }
 
-export default async function DownloadApp(props: WidgetContext<DownloadEntity>) {
+export default async function Download(props: WidgetContext<DownloadEntity>) {
+  const attrs = htmlAttributes(props);
+  const selectedView =
+    (props.model as any)?.ViewName ||
+    (props.model?.Properties as any)?.ViewName ||
+    (props as any)?.viewName ||
+    'Default';
+    
+
+  return (
+    <section {...attrs} data-view={selectedView}>
+      <div data-react-root>
+        {selectedView === 'MinimizedDownloadApp' ? (
+          <MinimizedDownloadApp {...props} />
+        ) : (
+          <DownloadApp {...props} />
+        )}
+      </div>
+    </section>
+  );
+  console.log("seeelected",selectedView )
+}
+  
+async function DownloadApp(props: WidgetContext<DownloadEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
   const selection = resolveSitefinitySelection((props.model?.Properties as any)?.DownloadApp);
   const id = extractSelectionId(selection);
+
+  //console.log("------>id", id)
+  console.log("MAIN COMPONENT")
 
   if (!id) {
     return isEdit ? (
@@ -226,4 +250,3 @@ export default async function DownloadApp(props: WidgetContext<DownloadEntity>) 
   );
 }
 
- 

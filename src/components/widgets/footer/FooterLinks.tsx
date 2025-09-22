@@ -26,16 +26,13 @@ export default function FooterLinks({ groups, className = '' }: Props) {
           <ul className="mt-4 space-y-3">
             {group.links.map((link) => {
               const hrefNorm = routeMatchKey(cleanHref(link.href));
-              const isActive =
-                current === hrefNorm || (hrefNorm !== '/' && current.startsWith(hrefNorm));
 
               return (
                 <li key={link.id}>
                   <Link
                     href={link.href}
-                    aria-current={isActive ? 'page' : undefined}
                     className={`font-lufga font-normal text-base leading-[100%] no-underline transition-colors align-middle ${
-                      isActive ? 'text-primary' : 'text-[#E0E0E0]'
+                      'text-[#E0E0E0]'
                     }`}
                   >
                     {link.title}

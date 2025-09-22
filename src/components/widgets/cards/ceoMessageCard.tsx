@@ -132,11 +132,11 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
   });
 
   const wrapCls = toBool(isOverlay)
-    ? 'relative z-20 -mt-32 md:-mt-44 lg:-mt-38 max-w-[90%] mx-auto'
+    ? 'relative z-20 -mt-40 max-w-[90%] mx-auto '
     : 'bg-[#EEEEEE] w-full px-20 pb-10';
 
   const cardShellCls = isOverlay
-    ? 'relative flex flex-row items-center gap-8 bg-white rounded-3xl px-8 py-7 shadow-xl ring-1 ring-black/5 overflow-hidden'
+    ? 'relative flex flex-row items-center gap-8 bg-white rounded-3xl px-24 pb-10 shadow-xl ring-1 ring-black/5 overflow-hidden'
     : 'flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8 shadow-sm';
 
   const figureCls = isOverlay ? 'relative justify-start' : 'relative justify-start';
@@ -146,11 +146,11 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     : 'rounded-[20px] w-[417px] h-[506px] object-cover';
 
   const overlayPanelCls = isOverlay
-    ? 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-5 py-4 w-[90%] text-start shadow-md'
+    ? 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] p-6 w-[90%] h-[115px] text-start shadow-md'
     : 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start';
 
   const textColCls = isOverlay
-    ? 'text-start w-[520px] space-y-3'
+    ? 'text-start w-[605px] space-y-3'
     : 'text-start w-[522px] space-y-3';
   // ------------------------------------
 
@@ -158,12 +158,12 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     <section {...attributes} className={wrapCls}>
       <div className={cardShellCls}>
         <>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#0023F5] rounded-bl-[60px]">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-white" />
+          <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-32 h-32 bg-[#0023F5] rounded-bl-[60px] rtl:rounded-br-[60px] rtl:rounded-bl-none">
+            <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-14 h-14 bg-white" />
           </div>
-          <div className="absolute top-[204px] right-2">
+          {/* <div className="absolute top-[204px] right-2">
             <img src="/icons/Floating-button.svg" alt="Floating-button" />
-          </div>
+          </div> */}
         </>
 
         <div className={figureCls}>
@@ -172,16 +172,22 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           )}
           <div className={overlayPanelCls}>
             {items[0]?.description && <Description>{items[0].description}</Description>}
-            {items[0]?.title && <Title>{items[0].title}</Title>}
+            {items[0]?.title && (
+              <Title className="text-2xl font-medium mt-3">{items[0].title}</Title>
+            )}
           </div>
         </div>
 
         <div className={textColCls}>
           <div className="space-y-3">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            {title && <Title>{title}</Title>}
+            {title && (
+              <Title className="text-[#001081] text-3xl font-bold tracking-wide">{title}</Title>
+            )}
           </div>
-          {subtitle && <Description html={subtitle}></Description>}
+          {subtitle && (
+            <Description className="text[16px] tracking-wider" html={subtitle}></Description>
+          )}
           {!!ctaText && !!ctaHref && (
             <div className="pt-2">
               <CTA href={ctaHref} variant="outline" className="rounded-[16px] px-5 py-3">
