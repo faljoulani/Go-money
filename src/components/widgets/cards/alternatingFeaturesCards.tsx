@@ -91,7 +91,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
         'Eyebrow',
         'CtaText',
         'CtaUrl',
-        'Subtitle',
+        'SubTitle',
         'LinkUrl',
         'Image($select=Id,Url,MediaUrl,ThumbnailUrl,AlternativeText,Urls)',
       ],
@@ -105,6 +105,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
       : childCardPayload
         ? [childCardPayload]
         : [];
+    console.log('Child card payload:', childCardPayload);
   }
 
   const childCardData = items.map((card: any) => {
@@ -119,6 +120,8 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
       id: card?.Id,
       title: card?.Title ?? '',
       description: card?.Description ?? '',
+      subtitle: card?.SubTitle ?? '',
+      eyebrow: card?.Eyebrow ?? '',
       href,
       imgUrl,
       ctaText: card?.CtaText ?? '',
@@ -153,12 +156,10 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                 </div>
 
                 {/* text column */}
-                <div
-                  className={`${isRight ? 'order-1 ' : 'order-2 '} text-left rtl:text-right`}
-                >
+                <div className={`${isRight ? 'order-1 ' : 'order-2 '} text-left rtl:text-right`}>
                   <div className="max-w-[760px]">
                     <div className="flex flex-col items-start space-y-3">
-                      {/* {card.Eyebrow && <Eyebrow>{card.Eyebrow}</Eyebrow>} */}
+                      {card.eyebrow && <Eyebrow>{card.eyebrow}</Eyebrow>}
 
                       {card.title && (
                         <Title className="text-[40px] leading-[52px] font-bold tracking-[-0.02em]">
@@ -166,7 +167,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                         </Title>
                       )}
 
-                      {/* {card.Subtitle && <Subtitle>{card.Subtitle}</Subtitle>} */}
+                      {card.subtitle && <Subtitle align='left'>{card.subtitle}</Subtitle>}
 
                       {card.description && (
                         <Description
@@ -177,7 +178,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                       )}
 
                       {card.ctaText && (
-                        <div className="pt-2 self-start">
+                        <div className="self-start">
                           <CTA
                             href={card.href}
                             borderColor="#010663"
