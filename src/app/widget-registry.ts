@@ -60,6 +60,8 @@ import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanne
 import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
 import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
 
+import Careers from '../components/widgets/careers/ApplyForJob';
+
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
     Hero: {
@@ -231,6 +233,11 @@ const customWidgetRegistry: WidgetRegistry = {
       entity: FinanceCalculatorEntity,
       ssr: true,
       editorMetadata: { Title: 'Finance Calculator' },
+    },
+    Careers: {
+      componentType: Careers,
+      ssr: true,
+      editorMetadata: { Title: 'Careers' },
     },
   },
 };
