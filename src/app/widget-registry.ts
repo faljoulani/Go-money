@@ -58,7 +58,7 @@ import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanne
 import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
 import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
 
-import Careers from '../components/widgets/careers/ApplyForJob';
+import Careers from '../components/widgets/careers/applyForJob';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
