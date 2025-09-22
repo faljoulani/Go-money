@@ -19,7 +19,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   const attrs = htmlAttributes(props);
   const model = props.model?.Properties;
   const { isEdit } = props.requestContext;
-
+  const lang = props.requestContext.culture || 'en';
   const faqRoot = resolveSitefinitySelection(model?.FaqRoot);
   const selectedCategories = resolveSitefinitySelection(model?.FaqCategories);
 
@@ -27,7 +27,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
 
   const id = extractSelectionId(faqRoot);
-  console.log('ID FAQ ' + id);
+  console.log('culture ', lang);
 
   if (!id) {
     return isEdit ? (
@@ -96,7 +96,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
         )}
       </div>
 
-      {categories.length > 0 && <QuestionsClient categories={categories} />}
+      {categories.length > 0 && <QuestionsClient lang={lang} categories={categories}/>}
     </section>
   );
 }
