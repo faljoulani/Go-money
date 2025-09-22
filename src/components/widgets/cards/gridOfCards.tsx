@@ -23,7 +23,7 @@ interface ExpandBoxItem {
   Eyebrow?: string;
   Description?: string;
   CtaText?: string;
-  CtaUrl?: string | undefined ;
+  CtaUrl?: string | undefined;
   Image?: CmsImage | CmsImage[] | null;
 }
 
@@ -102,7 +102,17 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
   const ctaText = parentCardData?.CtaText ?? '';
-  const ctaHref = extractHref(JSON.parse(parentCardData.CtaUrl)[0]?.href);
+  let ctaHref = undefined;
+  if (parentCardData?.CtaUrl) {
+    try {
+      const parsed = JSON.parse(parentCardData.CtaUrl);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        ctaHref = extractHref(parsed[0]?.href);
+      }
+    } catch (e) {
+      console.error('Invalid CtaUrl JSON:', parentCardData.CtaUrl, e);
+    }
+  }
 
   const selectedIds: string[] = (() => {
     const raw = selection?.Cards;
