@@ -23,7 +23,7 @@ interface ExpandBoxItem {
   Eyebrow?: string;
   Description?: string;
   CtaText?: string;
-  CtaUrl?: string | { Href?: string } | Array<{ Href?: string }>;
+  CtaUrl?: string | undefined;
   Image?: CmsImage | CmsImage[] | null;
 }
 
@@ -102,7 +102,17 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
   const ctaText = parentCardData?.CtaText ?? '';
-  const ctaHref = extractHref(parentCardData?.CtaUrl);
+  let ctaHref = undefined;
+  if (parentCardData?.CtaUrl) {
+    try {
+      const parsed = JSON.parse(parentCardData.CtaUrl);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        ctaHref = extractHref(parsed[0]?.href);
+      }
+    } catch (e) {
+      console.error('Invalid CtaUrl JSON:', parentCardData.CtaUrl, e);
+    }
+  }
 
   const selectedIds: string[] = (() => {
     const raw = selection?.Cards;
@@ -186,7 +196,30 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
 
         <div className="mt-12 fadeup">
           <div className="grid grid-cols-3 gap-8">
-            {childCardData.slice(0, 6).map((item) => (
+            {childCardData.slice(0, 3).map((item) => (
+              <div
+                key={item.id}
+                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
+              >
+                <div className="gap-4">
+                  <div className="icon-wrapper">{item.icon}</div>
+                </div>
+                <div className="mr-7">
+                  <h3 className="text-xl font-bold text-primary">{item.title}</h3>
+                  {/* <p className="mt-2 text-default text-base">{item.description}</p> */}
+                  {item.description ? (
+                    <div className="mt-2 text-default text-base">
+                      <Description html={item.description} />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-12 fadeup">
+          <div className="grid grid-cols-3 gap-8">
+            {childCardData.slice(3, 6).map((item) => (
               <div
                 key={item.id}
                 className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"

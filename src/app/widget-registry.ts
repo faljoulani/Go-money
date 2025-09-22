@@ -15,7 +15,7 @@ import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 // import DownloadApp from '../components/widgets/downloadApp/downloadApp';
 // import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
 
-import DownloadApp from '../components/widgets/downloadApp/download';
+import DownloadApp from '../components/widgets/downloadApp/downloadApp';
 import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
 
 import Download from '../components/widgets/downloadApp/download';
@@ -60,6 +60,8 @@ import FinanceBanner from '../components/widgets/financeRepaymentBanner/financeB
 import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanner/financeBanner.entity';
 import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
 import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
+
+import Careers from '../components/widgets/careers/ApplyForJob';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -139,17 +141,17 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: BoardReport },
       },
     },
-    // DownloadApp: {
-    //   componentType: DownloadApp,
-    //   entity: DownloadEntity,
-    //   ssr: true,
-    //   editorMetadata: { Title: 'DownloadApp' },
-    // },
-    Download: {
+    DownloadApp: {
       componentType: DownloadApp,
-      entity: DownloadEntity,
+      entity: DownloadAppEntity,
       ssr: true,
       editorMetadata: { Title: 'DownloadApp' },
+    },
+    Download: {
+      componentType: Download,
+      entity: DownloadEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Download' },
     },
     FinanceBanner: {
       componentType: FinanceBanner,
@@ -233,6 +235,11 @@ const customWidgetRegistry: WidgetRegistry = {
       entity: FinanceCalculatorEntity,
       ssr: true,
       editorMetadata: { Title: 'Finance Calculator' },
+    },
+    Careers: {
+      componentType: Careers,
+      ssr: true,
+      editorMetadata: { Title: 'Careers' },
     },
   },
 };

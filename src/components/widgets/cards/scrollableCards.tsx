@@ -1,6 +1,8 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
-import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import { fetchData, extractSelectionId} from '../../../utils/sitefinity';
+import { extractHref } from '../../../utils/utils';
+
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -14,7 +16,7 @@ interface CardItem {
   Eyebrow?: string;
   Description?: string;
   CtaText?: string;
-  CtaUrl?: string | { Href?: string } | Array<{ Href?: string }>;
+  CtaUrl?: string | undefined;
   Image?: any | any[];
   Cards?: { ItemIdsOrdered?: string[] };
 }
@@ -54,13 +56,9 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const title = parentCardData?.Title ?? 'Cards';
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
   const ctaText = parentCardData?.CtaText ?? '';
-  const ctaUrlRaw = parentCardData?.CtaUrl;
-  const ctaHref =
-    typeof ctaUrlRaw === 'string'
-      ? ctaUrlRaw
-      : Array.isArray(ctaUrlRaw)
-        ? (ctaUrlRaw.find((x) => x?.Href)?.Href ?? '')
-        : (ctaUrlRaw?.Href ?? '');
+  const ctaHref = extractHref(JSON.parse(parentCardData.CtaUrl)[0]?.href);
+
+    
 
   const selectedIds: string[] =
     (selection?.Cards?.ItemIdsOrdered as string[]) ??
@@ -124,7 +122,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   });
 
   return (
-    <section {...attributes} className="w-full bg-white my-16">
+    <section {...attributes} className="w-full bg-white">
       <div className="mx-auto max-w-7xl px-8">
         <div className="relative">
           <div className="sticky top-20 flex flex-col gap-2 text-center fadeup bg-white  h-[600px]">

@@ -92,7 +92,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section className="mx-20 my-16 relative scaleC">
+    <section className="mx-20 relative scaleC">
       {/* Background div that scales */}
       <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 

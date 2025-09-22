@@ -60,7 +60,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
       'Id',
       'Title',
       'LabelButton',
-      'CTA($select=Href,Url,Text,Title)',
+      'CTA',
       'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
       'ForegroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
       'FloatImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
@@ -91,7 +91,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     id: item.Id,
     title: item.Title ?? '',
     ctaLabel: item.LabelButton || item.CTA?.Text || item.CTA?.Title || 'Learn more →',
-    ctaHref: extractHref(item.CTA) || '#',
+    ctaHref: extractHref(JSON.parse(item.CTA)[0]?.href),
     images: {
       backgroundUrl: {
         url: pickImageUrl(backgroundImage),
@@ -114,6 +114,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     },
   };
 
+  console.log("cta ------",financeRepaymentBanner.ctaHref )
   const viewName = props.model?.Properties?.ViewName || 'Default';
 
   return (
