@@ -3,9 +3,11 @@
 import { useMemo, useState } from 'react';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { FinanceCalculatorEntity } from './financeCalculator.entity';
+import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 
 type Nationality = 'saudi' | 'nonsaudi';
 type ResultState = null | 'success' | 'fail';
+const MSG_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message';
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const parseNum = (v: number | '') => (v === '' ? null : Number(v));
@@ -26,14 +28,80 @@ const splitList = (v?: string) =>
     .map((s) => s.trim())
     .filter(Boolean);
 
+type LinkLike = string | { Href?: string } | Array<{ Href?: string }>;
+type MediaLike = any | any[];
+
+type Message = {
+  Title?: string;
+  Description?: string;
+  NoteTitle?: string;
+  NoteDescription?: string;
+
+  ExploreLabel?: string;
+  DownloadLabel?: string;
+  ExploreUrl?: LinkLike;
+  BackLabel?: string;
+  BackUrl?: LinkLike;
+
+  ValidationText?: string;
+  Image?: MediaLike;
+  DownloadUrl?: MediaLike;
+
+  ReasonsTitle?: string;
+  ReasonsDescription?: string;
+  ActionsTitle?: string;
+  ActionsDescription?: string;
+};
+
+function getHref(v?: LinkLike): string | undefined {
+  if (!v) return undefined;
+  if (typeof v === 'string') return v;
+  if (Array.isArray(v)) return v.find((x) => x?.Href)?.Href || undefined;
+  return v.Href || undefined;
+}
+
+function getMediaUrl(m?: MediaLike): string | undefined {
+  const x = Array.isArray(m) ? m[0] : m;
+  return (
+    x?.Url ||
+    x?.MediaUrl ||
+    x?.ThumbnailUrl ||
+    (Array.isArray(x?.Urls) ? x.Urls[0] : undefined) ||
+    x?.EmbedUrl ||
+    undefined
+  );
+}
+
+const lines = (v?: string) =>
+  (v || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
 export default function FinanceCalculator(props: WidgetContext<FinanceCalculatorEntity>) {
   const attrs = htmlAttributes(props);
   const cfg = props.model.Properties || ({} as FinanceCalculatorEntity);
+  const { post } = useSfMutation('api/default/eligibility/get');
 
-  const AMIN = 1000, AMAX = 20000, ASTEP = 500, ADEF = 15000;
-  const IMIN = 6, IMAX = 36, ISTEP = 1, IDEF = 24;
+  console.log('CFG:', cfg);
 
-  const [result, setResult] = useState<ResultState>(null); // ← toggles views
+  const successMsg = (cfg as any).SuccessMessage as Message | undefined;
+  const failMsg = (cfg as any).FailMessage as Message | undefined;
+
+  console.log('SSSSSSS:', successMsg);
+  console.log('ffffffff:', failMsg);
+  console.log(successMsg?.Title);
+
+  const AMIN = 1000,
+    AMAX = 20000,
+    ASTEP = 500,
+    ADEF = 15000;
+  const IMIN = 6,
+    IMAX = 36,
+    ISTEP = 1,
+    IDEF = 24;
+
+  const [result, setResult] = useState<ResultState>(null);
   const [nationality, setNationality] = useState<Nationality>('saudi');
   const [employer, setEmployer] = useState('');
   const [serviceLength, setServiceLength] = useState(
@@ -57,7 +125,6 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     setSubmitting(true);
     setMsg('');
 
-    // Build payload (what you’ll POST)
     const payload = {
       nationality,
       employerType: employer || null,
@@ -72,6 +139,21 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     };
 
     console.log('FinanceCalculator payload:', payload);
+
+    try {
+      const res = await post(payload);
+      console.log('FinanceCalculator response:', res);
+
+      if (res?.Data?.IsEligible) {
+        setResult('success');
+      } else {
+        setResult('fail');
+      }
+    } catch (err) {
+      console.error('FinanceCalculator error:', err);
+    } finally {
+      setSubmitting(false);
+    }
 
     setTimeout(() => {
       setSubmitting(false);
@@ -91,150 +173,147 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
     ? cfg.LengthOfServicesChoices
     : ['3 Months', '6 Months', '1 Year', '2 Years', '3+ Years'];
 
-//   if (result === 'success') {
-//     const successIcon = cfg.SuccessIconUrl || '/images/checkmark.png'; // image uploaded by author later
-//     const title =
-//       cfg.SuccessTitle || "You're Eligible for Our Financing!";
-//     const desc =
-//       cfg.SuccessDescription ||
-//       'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
-//     const noteTitle = cfg.SuccessNoteTitle || 'Important Note';
-//     const noteDesc =
-//       cfg.SuccessNoteDescription ||
-//       'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
+  if (result === 'success') {
+    const iconUrl = getMediaUrl(successMsg?.Image) || '/assets/success.png';
+    const title = successMsg?.Title || 'You are Eligible for Our Financing';
+    const desc =
+      successMsg?.Description ||
+      'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
+    const noteTitle = successMsg?.NoteTitle || 'Important Note';
+    const noteDesc =
+      successMsg?.NoteDescription ||
+      'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
+    const backText = successMsg?.BackLabel || 'Back to Calculator';
+    const primaryText = successMsg?.ExploreLabel || 'Download Our App';
+    const primaryHref = getHref(successMsg?.ExploreUrl) || '#';
 
-//     const backText = cfg.SuccessBackCtaText || 'Back to Calculator';
-//     const appCtaText = cfg.SuccessPrimaryCtaText || 'Download Our App';
-//     const appCtaHref = (cfg.SuccessPrimaryCtaHref as string) || '#';
+    return (
+      <section {...attrs} className="w-full">
+        <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+          <div className="mx-auto mb-6 grid place-items-center">
+            <img src={iconUrl} alt="success" className="h-24 w-24 object-contain" />
+          </div>
+          <h2 className="text-[36px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
+          <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
 
-//     return (
-//       <section {...attrs} className="w-full">
-//         <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
-//           <div className="mx-auto mb-6 grid place-items-center">
-//             <img src={successIcon} alt="success" className="h-24 w-24 object-contain" />
-//           </div>
-//           <h2 className="text-[36px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
-//           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
+          <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
+            <div className="flex flex-col items-start gap-2">
+              <div className="flex gap-2">
+                <InfoIcon />
+                <strong>{noteTitle}</strong>
+              </div>
+              <div>
+                <p className="mt-1 ml-6">{noteDesc}</p>
+              </div>
+            </div>
+          </div>
 
-//           <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
-//             <div className="flex items-start gap-2 justify-center md:justify-start">
-//               <InfoIcon />
-//               <div>
-//                 <strong>{noteTitle}</strong>
-//                 <p className="mt-1">{noteDesc}</p>
-//               </div>
-//             </div>
-//           </div>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => setResult(null)}
+              className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
+            >
+              {backText}
+            </button>
+            <a
+              href={primaryHref}
+              className="rounded-full bg-[#0B2A8E] text-white px-6 py-3 text-[15px] hover:opacity-90"
+            >
+              {primaryText}
+            </a>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-//           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-//             <button
-//               type="button"
-//               onClick={() => setResult(null)}
-//               className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
-//             >
-//               {backText}
-//             </button>
-//             <a
-//               href={appCtaHref}
-//               className="rounded-full bg-[#0B2A8E] text-white px-6 py-3 text-[15px] hover:opacity-90"
-//             >
-//               {appCtaText}
-//             </a>
-//           </div>
-//         </div>
-//       </section>
-//     );
-//   }
+  if (result === 'fail') {
+    const iconUrl = getMediaUrl(failMsg?.Image) || '/assets/failed.png';
+    const title = failMsg?.Title || 'Not Eligible Yet';
+    const sub =
+      failMsg?.Description ||
+      'Unfortunately, we are unable to proceed with your application at this time.';
 
-//   if (result === 'fail') {
-//     const failIcon = cfg.FailIconUrl || '/images/cross.png'; // image uploaded by author later
-//     const title = cfg.FailTitle || 'Not Eligible Yet';
-//     const sub =
-//       cfg.FailSubtitle ||
-//       'Unfortunately, we are unable to proceed with your application at this time.';
+    const reasonsTitle =
+      failMsg?.ReasonsTitle || 'This could be due to one or more of the following reasons:';
+    const reasonsLeft = lines(failMsg?.ReasonsDescription) || [
+      'Your verified information does not meet our internal policy requirements.',
+      'Your current financial obligations are too high for us to offer a loan at this time.',
+    ];
+    const reasonsRight = ['Your credit history does not currently meet our eligibility criteria.'];
 
-//     const reasonsLeft = splitList(
-//       cfg.FailReasonsLeft ||
-//         `Your verified information does not meet our internal policy requirements.
-// Your current financial obligations are too high for us to offer a loan at this time.`,
-//     );
-//     const reasonsRight = splitList(
-//       cfg.FailReasonsRight || `Your credit history does not currently meet our eligibility criteria.`,
-//     );
+    const actionsTitle = failMsg?.ActionsTitle || 'But don’t worry — this isn’t permanent!';
+    const actionsSub = 'Here’s what you can do:';
+    const actionsLeft = lines(failMsg?.ActionsDescription) || [
+      'Use Go Money regularly',
+      'Repay any pending dues',
+    ];
+    const actionsRight = ['Try again in 30 days'];
+    const footer = failMsg?.ValidationText || 'We’re here when you’re ready.';
+    const backText = failMsg?.BackLabel || 'Back to Calculator';
 
-//     const tipsTitle = cfg.FailTipsTitle || "But don't worry — this isn’t permanent!";
-//     const tipsSubtitle = cfg.FailTipsSubtitle || "Here’s what you can do:";
-//     const tipsLeft = splitList(cfg.FailTipsLeft || `Use Go Money regularly\nRepay any pending dues`);
-//     const tipsRight = splitList(cfg.FailTipsRight || `Try again in 30 days`);
+    return (
+      <section {...attrs} className="w-full">
+        <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+          <div className="mx-auto mb-6 grid place-items-center">
+            <img src={iconUrl} alt="not-eligible" className="h-24 w-24 object-contain" />
+          </div>
+          <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
+          <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{sub}</p>
 
-//     const footer = cfg.FailFooterText || "We’re here when you’re ready.";
-//     const backText = cfg.FailBackCtaText || 'Back to Calculator';
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+              <strong className="block mb-3 text-[#0B2A8E]">{reasonsTitle}</strong>
+              <ul className="list-disc pl-5 space-y-2 text-[#333]">
+                {reasonsLeft.map((r, i) => (
+                  <li key={`rL-${i}`}>{r}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+              <ul className="list-disc pl-5 space-y-2 text-[#333]">
+                {reasonsRight.map((r, i) => (
+                  <li key={`rR-${i}`}>{r}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
-//     return (
-//       <section {...attrs} className="w-full">
-//         <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
-//           <div className="mx-auto mb-6 grid place-items-center">
-//             <img src={failIcon} alt="not-eligible" className="h-24 w-24 object-contain" />
-//           </div>
-//           <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
-//           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{sub}</p>
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+              <strong className="block text-[#0B2A8E]">{actionsTitle}</strong>
+              <span className="block text-[#333] mb-3">{actionsSub}</span>
+              <ul className="list-disc pl-5 space-y-2 text-[#333]">
+                {actionsLeft.map((t, i) => (
+                  <li key={`tL-${i}`}>{t}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+              <ul className="list-disc pl-5 space-y-2 text-[#333]">
+                {actionsRight.map((t, i) => (
+                  <li key={`tR-${i}`}>{t}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
-//           {/* Reasons */}
-//           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-//               <strong className="block mb-3 text-[#0B2A8E]">
-//                 This could be due to one or more of the following reasons:
-//               </strong>
-//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
-//                 {reasonsLeft.map((r, i) => (
-//                   <li key={`rL-${i}`}>{r}</li>
-//                 ))}
-//               </ul>
-//             </div>
-//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
-//                 {reasonsRight.map((r, i) => (
-//                   <li key={`rR-${i}`}>{r}</li>
-//                 ))}
-//               </ul>
-//             </div>
-//           </div>
+          <p className="mt-8 text-[#555]">{footer}</p>
 
-//           {/* Tips */}
-//           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-//               <strong className="block text-[#0B2A8E]">{tipsTitle}</strong>
-//               <span className="block text-[#333] mb-3">{tipsSubtitle}</span>
-//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
-//                 {tipsLeft.map((t, i) => (
-//                   <li key={`tL-${i}`}>{t}</li>
-//                 ))}
-//               </ul>
-//             </div>
-//             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-//               <ul className="list-disc pl-5 space-y-2 text-[#333]">
-//                 {tipsRight.map((t, i) => (
-//                   <li key={`tR-${i}`}>{t}</li>
-//                 ))}
-//               </ul>
-//             </div>
-//           </div>
-
-//           <p className="mt-8 text-[#555]">{footer}</p>
-
-//           <div className="mt-8">
-//             <button
-//               type="button"
-//               onClick={() => setResult(null)}
-//               className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
-//             >
-//               {backText}
-//             </button>
-//           </div>
-//         </div>
-//       </section>
-//     );
-//   }
+          <div className="mt-8">
+            <button
+              type="button"
+              onClick={() => setResult(null)}
+              className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
+            >
+              {backText}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section {...attrs} className="w-full">
@@ -281,16 +360,12 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
             />
           </Field>
 
-          <Field
-            label={cfg.DateOfBirthLabel || 'Date of Birth'}
-            tooltip={cfg.DateOfBirthPopup}
-            right
-          >
+          <Field label={cfg.DateOfBirthLabel || 'Date of Birth'} tooltip={cfg.DateOfBirthPopup}>
             <input
               type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
-              placeholder={cfg.DateOfBirthPlaceholder || 'DD/MM/YYYY'}
+              placeholder={cfg.DateOfBirthPlaceholder || 'Day/Month/Year'}
               className="sf-input"
             />
           </Field>
@@ -310,7 +385,6 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
           <Field
             label={cfg.MonthlySalaryLabel || 'Monthly Salary'}
             tooltip={cfg.MonthlySalaryPopup}
-            right
           >
             <CurrencyInput
               value={salary}
@@ -352,10 +426,9 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
           <Field
             label={cfg.NumberOfInstallmentsLabel || 'Number of Installments'}
             tooltip={cfg.NumberOfInstallmentsPopup}
-            right
           >
             <div className="space-y-2">
-              <div className="sf-input cursor-default">
+              <div className="sf-input cursor-default flex  items-center">
                 {installments} {cfg.NumberOfInstallmentsPlaceholder || 'Months'}
               </div>
               <div className="text-xs text-gray-500">
@@ -390,7 +463,6 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
           <Field
             label={cfg.MortgageLiabilitiesLabel || 'Mortgage Liabilities'}
             tooltip={cfg.MortgageLiabilitiesPopup}
-            right
           >
             <CurrencyInput
               value={mortgageLiabilities}
@@ -466,17 +538,15 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
 function Field({
   label,
   tooltip,
-  right,
   children,
 }: {
   label: string;
   tooltip?: string;
-  right?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div>
-      <div className={`mb-2 flex items-center ${right ? 'justify-between' : 'gap-2'}`}>
+      <div className={`mb-2 flex items-center gap-2`}>
         <label className="text-[13px] font-medium text-gray-700">{label}</label>
         {!!tooltip && (
           <Tooltip content={tooltip}>
@@ -550,7 +620,7 @@ function Tooltip({ content, children }: { content: string; children: React.React
   return (
     <span className="group relative inline-flex items-center">
       {children}
-      <span className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black px-2 py-1 text-xs text-white opacity-0 group-hover:block group-hover:opacity-100">
+      <span className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100">
         {content}
       </span>
     </span>
@@ -559,17 +629,11 @@ function Tooltip({ content, children }: { content: string; children: React.React
 
 function InfoIcon({ className = '' }: { className?: string }) {
   return (
-    <svg
-      aria-hidden
-      className={`h-4 w-4 ${className}`}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" x2="12" y1="8" y2="12" />
-      <circle cx="12" cy="16" r="1" fill="currentColor" />
+    <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="12" r="12" fill="#0052CC" />
+      <rect x="11" y="10" width="2" height="6" fill="white" />
+      <circle cx="12" cy="7" r="1.2" fill="white" />
     </svg>
   );
 }
+
