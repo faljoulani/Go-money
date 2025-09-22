@@ -1,4 +1,5 @@
 'use client';
+
 import * as React from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
@@ -8,35 +9,45 @@ type Data = {
   subTitle?: string;
   ctaText?: string;
   ctaHref?: string;
+
   firstNameLabel?: string;
   firstNamePlaceholder?: string;
   lastNameLabel?: string;
   lastNamePlaceholder?: string;
+
   phoneNumberLabel?: string;
   phoneNumberPlaceholder?: string;
+
   emailLabel?: string;
   emailPlaceholder?: string;
+
   requestTypeLabel?: string;
   requestTypeChoices?: Option[];
+
   topicLabel?: string;
   topicPlaceholder?: string;
+
   notesLabel?: string;
   notesPlaceholder?: string;
 };
 
-type Props = { postUrl?: string; data: Data; dir?: 'ltr' | 'rtl' | 'auto' };
+type Props = {
+  postUrl?: string;
+  data: Data;
+  dir?: 'ltr' | 'rtl' | 'auto';
+};
 
 export default function ContactFormClient({
-  postUrl = '/api/default/ContactUsLists',
+  postUrl = 'api/default/customer-ticket/create',
   data,
   dir = 'auto',
 }: Props) {
   const FIELD =
     'w-[326.5px] h-[48px] px-3 py-3 rounded-[18px] border border-[#BDBDBD] ' +
     'bg-white text-14px leading-6 outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
-
   const LABEL = 'mb-2 block text-14px font-medium text-[#2B2B2B]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
+
   const requestType = data.requestTypeChoices ?? [];
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -50,25 +61,37 @@ export default function ContactFormClient({
 
     try {
       const fd = new FormData(e.currentTarget);
-      const payload = {
-        title: data.title ?? 'New inquiry',
-        firstName: String(fd.get('firstName') || '').trim(),
-        lastName: String(fd.get('lastName') || '').trim(),
-        mobileNumber: `+966${String(fd.get('phone') || '').trim()}`,
-        email: String(fd.get('email') || '').trim(),
-        topic: String(fd.get('topic') || '').trim(),
-        requestType: String(fd.get('requestType') || ''),
-        notes: String(fd.get('notes') || '').trim(),
+
+      const firstName = String(fd.get('firstName') || '').trim();
+      const lastName = String(fd.get('lastName') || '').trim();
+      const fullName = [firstName, lastName].filter(Boolean).join(' ') || firstName || lastName;
+
+      const phone = String(fd.get('phone') || '').trim(); // "mobileNumber is phone" => send as API "phone" (no +966 prefix added)
+      const email = String(fd.get('email') || '').trim();
+      const topic = String(fd.get('topic') || '').trim();
+      const reqType =
+        String(fd.get('requestType') || '')
+          .trim()
+          .toUpperCase() || 'COMPLAINT';
+      const notes = String(fd.get('notes') || '').trim();
+
+      const apiPayload = {
+        customerName: fullName,
+        phone,
+        email,
+        requestType: reqType,
+        complaintCategory: topic || 'OTHERS',
+        description: notes || `Request from ${fullName || email}`,
+        channel: 'MOBILE.APPLICATION',
       };
 
       const res = await fetch(postUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(apiPayload),
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
       setResStatus('success');
       formRef.current?.reset();
     } catch (err) {
@@ -82,6 +105,7 @@ export default function ContactFormClient({
   return (
     <>
       {isLoading && <FullPageLoader />}
+
       <form ref={formRef} onSubmit={handleSubmit} dir={dir} className="space-y-5">
         <div className="grid grid-cols-2 gap-5">
           {/* First Name */}
@@ -123,14 +147,12 @@ export default function ContactFormClient({
               {reqStar}
             </label>
             <div className="w-[326.5px] flex items-stretch gap-1">
-              {/* Prefix chip */}
               <div className="h-[48px] rounded-[18px] border border-[#BDBDBD] bg-white px-3 flex items-center gap-2">
                 <span aria-hidden className="inline-flex h-6 min-w-6 items-center justify-center">
                   🇸🇦
                 </span>
                 <span className="text-sm font-medium text-[#2B2B2B]">+966</span>
               </div>
-              {/* Phone input */}
               <input
                 name="phone"
                 placeholder={data.phoneNumberPlaceholder ?? ''}
@@ -161,29 +183,36 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Request type */}
+          {/* Request type (optional) */}
           <div>
-            <label className={LABEL}>
-              {data.requestTypeLabel ?? 'Request type'}
-              {/* removed {reqStar} */}
-            </label>
+            <label className={LABEL}>{data.requestTypeLabel ?? 'Request type'}</label>
             <div className="relative">
               <select
                 name="requestType"
                 className={`${FIELD} appearance-none pr-10`}
                 disabled={isLoading}
+                defaultValue=""
               >
                 <option value="" hidden>
                   Select item
                 </option>
-
-                {/* ✅ Static option */}
-                <option value="staticValue">Static Value</option>
+                {requestType.length > 0 ? (
+                  requestType.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="COMPLAINT">Complaint</option>
+                    <option value="INQUIRY">Inquiry</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
 
-          {/* Topic */}
+          {/* Topic -> complaintCategory */}
           <div>
             <label className={LABEL}>
               {data.topicLabel ?? 'Topic'}
@@ -199,7 +228,7 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Notes */}
+          {/* Notes -> description */}
           <div className="col-span-2">
             <label className={LABEL}>
               {data.notesLabel ?? 'Notes'}
