@@ -138,20 +138,20 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
 
     console.log('FinanceCalculator payload:', payload);
 
-    // try {
-    //   const res = await post(payload);
-    //   console.log('FinanceCalculator response:', res);
+    try {
+      const res = await post(payload);
+      console.log('FinanceCalculator response:', res);
 
-    //   if (res?.Data?.IsEligible) {
-    //     setResult('success');
-    //   } else {
-    //     setResult('fail');
-    //   }
-    // } catch (err) {
-    //   console.error('FinanceCalculator error:', err);
-    // } finally {
-    //   setSubmitting(false);
-    // }
+      if (res?.Data?.IsEligible) {
+        setResult('success');
+      } else {
+        setResult('fail');
+      }
+    } catch (err) {
+      console.error('FinanceCalculator error:', err);
+    } finally {
+      setSubmitting(false);
+    }
 
     setTimeout(() => {
       setSubmitting(false);
