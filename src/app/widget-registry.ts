@@ -15,9 +15,6 @@ import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 // import DownloadApp from '../components/widgets/downloadApp/downloadApp';
 // import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
 
-import DownloadApp from '../components/widgets/downloadApp/downloadApp';
-import { DownloadAppEntity } from '../components/widgets/downloadApp/downloadApp.entity';
-
 import Download from '../components/widgets/downloadApp/download';
 import { DownloadEntity } from '../components/widgets/downloadApp/download.entity';
 
@@ -61,7 +58,7 @@ import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanne
 import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
 import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
 
-import Careers from '../components/widgets/careers/ApplyForJob';
+import Careers from '../components/widgets/careers/applyForJob';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -141,18 +138,14 @@ const customWidgetRegistry: WidgetRegistry = {
         Default: { Title: 'Default', ViewFunction: BoardReport },
       },
     },
-    DownloadApp: {
-      componentType: DownloadApp,
-      entity: DownloadAppEntity,
-      ssr: true,
-      editorMetadata: { Title: 'DownloadApp' },
-    },
+
     Download: {
       componentType: Download,
       entity: DownloadEntity,
       ssr: true,
       editorMetadata: { Title: 'Download' },
     },
+
     FinanceBanner: {
       componentType: FinanceBanner,
       entity: FinanceBannerEntity,
