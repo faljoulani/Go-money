@@ -87,11 +87,24 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
   const foregroundImage = pickOneMedia(item.ForegroundImage);
   const floatImage = pickOneMedia(item.FloatImage);
 
+  let ctaHref: string | undefined = undefined;
+
+  if (item?.CTA) {
+    try {
+      const parsed = JSON.parse(item.CTA);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        ctaHref = extractHref(parsed[0]?.href);
+      }
+    } catch (e) {
+      console.error('Invalid CtaUrl JSON:', item.CTA, e);
+    }
+  }
+
   const financeRepaymentBanner: FinanceBannerUI = {
     id: item.Id,
     title: item.Title ?? '',
     ctaLabel: item.LabelButton || item.CTA?.Text || item.CTA?.Title || 'Learn more →',
-    ctaHref: extractHref(JSON.parse(item.CTA)[0]?.href),
+    ctaHref,
     images: {
       backgroundUrl: {
         url: pickImageUrl(backgroundImage),
@@ -114,7 +127,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     },
   };
 
-  console.log("cta ------",financeRepaymentBanner.ctaHref )
+  console.log('cta ------', financeRepaymentBanner.ctaHref);
   const viewName = props.model?.Properties?.ViewName || 'Default';
 
   return (
@@ -197,7 +210,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
           {/* Phone image on the right (foregroundUrl → phone) */}
 
           {financeRepaymentBanner.images.foregroundUrl.url && (
-            <div className="absolute z-20 fadeRightFinanch ltr:right-0 ltr:left-auto rtl:left-0 rtl:right-auto">
+            <div className="absolute z-20 fadeRightFinance ltr:right-0 ltr:left-auto rtl:left-0 rtl:right-auto">
               <Image
                 src={financeRepaymentBanner.images.foregroundUrl.url}
                 alt={financeRepaymentBanner.images.foregroundUrl.alt}

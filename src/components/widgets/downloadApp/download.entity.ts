@@ -22,7 +22,7 @@ export class DownloadEntity {
   @DisplayName('Download App item')
   @Content({
     Type: 'Telerik.Sitefinity.DynamicTypes.Model.DownloadApp.Downloadapp',
-    AllowMultipleItemsSelection: false,
+    AllowMultipleItemsSelection: true,
   })
   DownloadApp?: any;
 
@@ -36,4 +36,5 @@ export class DownloadEntity {
       { Title: 'Minimized DownloadApp', Value: 'MinimizedDownloadApp' },
     ])
   ViewName?: string;
+
 }
