@@ -46,7 +46,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
       console.error('Error fetching BoardReport item:', e);
     }
   }
-
+let lang = props.requestContext.culture || 'en';
   if (!item) {
     if (props.requestContext.isEdit) {
       return (
@@ -90,6 +90,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
       className="bg-white  px-20 rounded-[32px]"
     >
       <ReportGridClient
+      lang={lang}
         title={view.Title}
         description={view.Description}
         files={view.Files}

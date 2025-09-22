@@ -7,15 +7,23 @@ type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
 type SfList<T> = { value: T[] };
 
-export default function QuestionsClient({ categories }: { categories: Category[] }) {
+export default function QuestionsClient({
+  categories,
+  lang,
+}: {
+  categories: Category[];
+  lang?: string;
+}) {
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
-
-  const { data, error, isLoading, mutate } = useSf<SfList<Question>>(
-    'api/default/faqquestions',
+  let endpoint = `api/default/faqquestions`;
+ 
+  const { data, error, isLoading } = useSf<SfList<Question>>(
+    endpoint,
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
+      ...(lang === 'ar' ? { sf_culture: 'ar' } : {}), 
     },
     { revalidateOnFocus: true },
   );
@@ -87,7 +95,11 @@ export default function QuestionsClient({ categories }: { categories: Category[]
           {questions.map((q) => {
             const isOpen = openId === q.Id;
             return (
-              <details key={q.Id} className="group p-6 border rounded-md mb-4 bg-white border-[#E0E0E0]" open={isOpen}>
+              <details
+                key={q.Id}
+                className="group p-6 border rounded-md mb-4 bg-white border-[#E0E0E0]"
+                open={isOpen}
+              >
                 <summary
                   className="flex list-none items-center justify-between cursor-pointer "
                   onClick={(e) => {

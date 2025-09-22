@@ -14,6 +14,7 @@ type ODataList<T> = {
 };
 
 export default function ReportGridClient({
+  lang,
   files, 
   pageSize,
   initialOffset,
@@ -22,6 +23,7 @@ export default function ReportGridClient({
   years,
   description,
 }: {
+  lang?: string;
   files: Array<{ Id: string; Title: string; UrlName?: string }>; 
   pageSize: number;
   initialOffset: number;
@@ -49,7 +51,9 @@ export default function ReportGridClient({
 
   const { data, error, isLoading } = useSf<ODataList<ReportedFile>>(
      'api/default/reportedfiles',
-    params || undefined,
+   {
+          ...(lang === 'ar' ? { sf_culture: 'ar' } : {}), 
+   },
     {
       revalidateOnFocus: false,
       keepPreviousData: true, 
