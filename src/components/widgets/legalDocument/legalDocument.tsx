@@ -7,7 +7,7 @@ import {
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import type { LegalDocumentEntity, LegalSection } from './legalDocument.entity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
-
+import ScriptForLegalDocument from './legalDoc.client';
 const LEGAL_DOC_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.LegalDocument.Legaldocument';
 const SECTIONS_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.LegalDocument.Sections';
 
@@ -96,7 +96,6 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
         culture,
         traceContext,
         fields: ['Id', 'SectionHeader', 'Description', 'Order', 'ParentId'],
-    
       });
       sections = normalizeItems(res);
     }
@@ -135,7 +134,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
                   return (
-                    <li key={s.Id}>
+                    <li key={s.Id} className="border-b transition last:border-b-0 border-white/10">
                       <a
                         className={`sf-ldoc__link flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
@@ -150,7 +149,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="w-[24px] h-[24px]"
+                          className="w-[24px] h-[24px] rtl:rotate-180"
                         >
                           <line x1="0" y1="12" x2="15" y2="12" />
                           <polyline points="12 5 19 12 12 19" />
@@ -191,70 +190,68 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   );
 }
 
-function ScriptForLegalDocument({ offset }: { offset: number }) {
-  return (
-    <Suspense>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){
-  const OFFSET = ${offset} || 0;
-  document.documentElement.style.setProperty('--ldoc-offset', OFFSET + 'px');
+// function ScriptForLegalDocument({ offset }: { offset: number }) {
+//   return (
+//     <Suspense>
+//       <script
+//         dangerouslySetInnerHTML={{
+//           __html: `(function(){
 
-  const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
-  const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
+//   const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
+//   const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
 
-  // Smooth scroll
-  links.forEach(a=>{
-    a.addEventListener('click', function(e){
-      const id = this.getAttribute('data-target');
-      const el = document.getElementById(id);
-      if(!el) return;
-      e.preventDefault();
-      const y = el.getBoundingClientRect().top + window.scrollY - OFFSET;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-      history.replaceState(null,'','#'+id);
-    });
-  });
+//   // Smooth scroll
+//   links.forEach(a=>{
+//     a.addEventListener('click', function(e){
+//       const id = this.getAttribute('data-target');
+//       const el = document.getElementById(id);
+//       if(!el) return;
+//       e.preventDefault();
+//       const y = el.getBoundingClientRect().top + window.scrollY - OFFSET;
+//       window.scrollTo({ top: y, behavior: 'smooth' });
+//       history.replaceState(null,'','#'+id);
+//     });
+//   });
 
-  function setActive(id){
-    // remove Tailwind utility classes first
-    links.forEach(l=>{
-      l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
-    });
-    const to = links.find(l=>l.getAttribute('data-target')===id);
-    if(to){
-      // add Tailwind classes only
-      to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
-    }
-  }
+//   function setActive(id){
+//     // remove Tailwind utility classes first
+//     links.forEach(l=>{
+//       l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+//     });
+//     const to = links.find(l=>l.getAttribute('data-target')===id);
+//     if(to){
+//       // add Tailwind classes only
+//       to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+//     }
+//   }
 
-  if(location.hash){
-    const id = location.hash.replace('#','');
-    setActive(id);
-  }
+//   if(location.hash){
+//     const id = location.hash.replace('#','');
+//     setActive(id);
+//   }
 
-  let ticking = false;
-  function onScroll(){
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(()=>{
-      const topEdge = OFFSET + 1;
-      let currentId = sections[0]?.id;
-      for(const sec of sections){
-        const rect = sec.getBoundingClientRect();
-        if(rect.top <= topEdge) currentId = sec.id; else break;
-      }
-      if(currentId) setActive(currentId);
-      ticking = false;
-    });
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  onScroll();
-})();`,
-        }}
-      />
-    </Suspense>
-  );
-}
+//   let ticking = false;
+//   function onScroll(){
+//     if(ticking) return;
+//     ticking = true;
+//     requestAnimationFrame(()=>{
+//       const topEdge = OFFSET + 1;
+//       let currentId = sections[0]?.id;
+//       for(const sec of sections){
+//         const rect = sec.getBoundingClientRect();
+//         if(rect.top <= topEdge) currentId = sec.id; else break;
+//       }
+//       if(currentId) setActive(currentId);
+//       ticking = false;
+//     });
+//   }
+//   window.addEventListener('scroll', onScroll, { passive: true });
+//   window.addEventListener('resize', onScroll);
+//   onScroll();
+// })();`,
+//         }}
+//       />
+//     </Suspense>
+//   );
+// }
 
