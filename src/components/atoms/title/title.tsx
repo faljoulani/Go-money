@@ -6,13 +6,13 @@ type Props = {
   color?: string;
 };
 
-export default function Title({
-  children,
-  className = 'text-5xl',
-  color = 'text-primary',
-}: Props) {
-  const combinedClassName = ['font-lufga', color, className].filter(Boolean).join(' ');
+export default function Title({ children, className = 'text-5xl', color = 'text-primary' }: Props) {
+  const combinedClassName = [color, className].filter(Boolean).join(' ');
 
-  return <h2 className={combinedClassName}>{children}</h2>;
+  return (
+    <h2 className={combinedClassName} style={{ color: 'red-500' }}>
+      {children}
+    </h2>
+  );
 }
 

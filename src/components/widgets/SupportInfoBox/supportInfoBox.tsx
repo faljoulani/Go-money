@@ -62,7 +62,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   return (
     <section
       {...attrs}
-      className="relative flex flex-col items-start justify-between overflow-hidden rounded-[28px] h-full bg-white p-12 shadow-sm"
+      className="relative flex flex-col items-start justify-between overflow-hidden rounded-[20px] h-full bg-white p-10 shadow-sm"
     >
       <div className="space-y-4">
         <Title color="text-primary" className="text-28px font-bold">
@@ -114,17 +114,17 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 aria-label={social.Title || 'social link'}
                 target={social.Url ? '_blank' : undefined}
                 rel={social.Url ? 'noopener noreferrer' : undefined}
-                className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-[#0B2A8E] transition-colors hover:border-[#0B2A8E]/80 overflow-hidden"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-[#0B2A8E] transition-colors hover:border-[#0B2A8E]/80 overflow-hidden"
                 title={social.Title}
               >
                 {sSrc && (
                   <Image
                     src={sSrc}
                     alt={sImg?.AlternativeText || social.Title || 'social'}
-                    width={28}
-                    height={28}
+                    width={20}
+                    height={20}
                     sizes="28px"
-                    className="h-7 w-7 object-contain"
+                    className="object-contain"
                     unoptimized
                   />
                 )}
@@ -135,8 +135,8 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       )}
 
       {item.HasLabel && (
-        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-32 h-32 bg-primary ltr:rounded-tl-[60px] rtl:rounded-tr-[60px] ">
-          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-16 h-16 bg-white"></div>
+        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-[124px] h-44 bg-primary ltr:rounded-tl-[60px] rtl:rounded-tr-[60px] ">
+          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-[78px] h-[115px] bg-white"></div>
         </div>
       )}
     </section>
