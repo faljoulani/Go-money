@@ -73,15 +73,15 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const ctaText = item.CtaText || 'Learn more';
   let rawCtaUrl = item.CtaUrl;
 
-try {
-  if (typeof rawCtaUrl === 'string') {
-    rawCtaUrl = JSON.parse(rawCtaUrl);
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
+    }
+  } catch {
+    // If parsing fails, leave it as-is
   }
-} catch {
-  // If parsing fails, leave it as-is
-}
 
-const ctaUrl = linkToHref(rawCtaUrl);
+  const ctaUrl = linkToHref(rawCtaUrl);
   let bgMedia = pickOneMedia(item.BackgroundImage);
   if (bgMedia && !getImageSrc(bgMedia) && bgMedia.Id) {
     try {
@@ -198,7 +198,6 @@ const ctaUrl = linkToHref(rawCtaUrl);
               <CTA
                 variant="outline"
                 colorText="text-white"
-                fontText="font-lufga"
                 fontWeight="font-semibold"
                 borderColor="border-white"
                 icon="slot"

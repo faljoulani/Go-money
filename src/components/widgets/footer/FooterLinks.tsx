@@ -19,10 +19,10 @@ export default function FooterLinks({ groups, className = '' }: Props) {
   const current = routeMatchKey(cleanHref(pathname || '/'));
 
   return (
-    <div className={`grid grid-cols-3 gap-8 h-[153px] ${className} rtl:grid-col-reverse`}>
+    <div className={`grid grid-cols-3 gap-8 h-[153px] ml-auto ${className} rtl:grid-col-reverse`}>
       {groups.map((group) => (
         <nav key={group.id} aria-label={group.title} className="flex flex-col w-[215px]">
-          <h3 className="text-white text-lg font-semibold font-lufga">{group.title}</h3>
+          <h3 className="text-white text-lg font-semibold ">{group.title}</h3>
           <ul className="mt-4 space-y-3">
             {group.links.map((link) => {
               const hrefNorm = routeMatchKey(cleanHref(link.href));
@@ -31,9 +31,7 @@ export default function FooterLinks({ groups, className = '' }: Props) {
                 <li key={link.id}>
                   <Link
                     href={link.href}
-                    className={`font-lufga font-normal text-base leading-[100%] no-underline transition-colors align-middle ${
-                      'text-[#E0E0E0]'
-                    }`}
+                    className={` font-normal text-base leading-[100%] no-underline transition-colors align-middle ${'text-[#E0E0E0]'}`}
                   >
                     {link.title}
                   </Link>

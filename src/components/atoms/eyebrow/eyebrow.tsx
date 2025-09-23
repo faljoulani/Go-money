@@ -17,14 +17,7 @@ export default function Eyebrow({
   fontWeight = 'font-normal',
   lineHeight = 'leading-[100%]',
 }: Props) {
-  const combinedClassName = [
-    'font-lufga tracking-normal',
-    color,
-    fontSize,
-    fontWeight,
-    lineHeight,
-    className,
-  ]
+  const combinedClassName = ['tracking-normal', color, fontSize, fontWeight, lineHeight, className]
     .filter(Boolean)
     .join(' ');
 

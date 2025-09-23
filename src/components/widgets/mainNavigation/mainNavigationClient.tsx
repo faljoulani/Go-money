@@ -70,7 +70,7 @@ export default function ClientNavbar({
                 aria-haspopup="menu"
                 aria-expanded={openIdx === i}
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
+                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
               >
                 {displayTitle(item.title)}
                 <svg
@@ -87,7 +87,7 @@ export default function ClientNavbar({
             ) : (
               <Link
                 href={itemHref}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline font-["Lufga"] text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
+                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
               >
                 {displayTitle(item.title)}
               </Link>
@@ -106,7 +106,7 @@ export default function ClientNavbar({
                       href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className="block rounded-lg px-3 py-2 no-underline font-['Lufga'] tracking-normal text-14px font-normal leading-5 text-default hover:bg-[#E6E8FF]"
+                      className="block rounded-lg px-3 py-2 no-underline tracking-normal text-14px font-normal leading-5 text-default hover:bg-[#E6E8FF]"
                     >
                       {displayTitle(child.title)}
                     </Link>

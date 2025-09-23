@@ -246,7 +246,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             <CTA
               variant="outline"
               colorText="text-primary"
-              fontText="font-lufga"
               fontWeight="font-semibold"
               borderColor="border-primary"
               align="center"

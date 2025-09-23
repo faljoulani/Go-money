@@ -202,7 +202,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             <CTA
               variant="outline"
               colorText="text-primary"
-              fontText="font-lufga"
               fontWeight="font-semibold"
               borderColor="border-primary"
               align="center"

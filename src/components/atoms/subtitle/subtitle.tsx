@@ -43,12 +43,7 @@ export default function Subtitle<T extends React.ElementType = 'h3'>({
 
   return (
     <Tag
-      className={clsx(
-        'font-lufga align-middle',
-        alignClass,
-        align === 'center' && 'mx-auto',
-        className,
-      )}
+      className={clsx('align-middle', alignClass, align === 'center' && 'mx-auto', className)}
       style={style}
       {...rest}
     >

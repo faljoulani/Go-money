@@ -74,7 +74,7 @@ export default function MainNavigationClientShell({
 
           {/* Center: Nav */}
           <ClientNavbar
-            className="text-14px font-normal leading-5 font-lufga"
+            className="text-14px font-normal leading-5"
             items={navItems}
             currentPath={currentPath}
             scrolled={scrolled}
@@ -83,7 +83,7 @@ export default function MainNavigationClientShell({
           {/* Right: Language switcher + Store badges */}
           <div className="flex items-center gap-4">
             <div
-              className={`flex items-center gap-3 font-lufga text-14px font-normal leading-5 tracking-[0] ${
+              className={`flex items-center gap-3 text-14px font-normal leading-5 tracking-[0] ${
                 scrolled ? 'text-primary' : 'text-white'
               }`}
             >

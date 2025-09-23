@@ -135,7 +135,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
   return (
     <section {...attrs} className="relative [perspective:1000px] overflow-x-clip">
-      <footer className=" text-gray-300 h-[769px] flip">
+      <footer className=" text-gray-300 h-auto flip">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         <img
@@ -147,7 +147,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
-              className="text-40px max-w-[400px] leading-[60px] tracking-[-0.02em]"
+              className="text-40px max-w-[500px] leading-[60px] tracking-[-0.02em]"
             >
               {footerData.Title || footerData.SubTitle}
             </Title>
@@ -158,8 +158,8 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {/* container */}
           <div className="mx-auto w-full">
             <div className="flex w-auto">
-              <div className="col-span-1">
-                <div className=" h-[423px] ltr:border-r ltr:border-white/15 rtl:border-l rtl:border-white/15 flex flex-col gap-8 ltr:pr-14 rtl:pl-14">
+              <div className="col-span-1 mr-16">
+                <div className=" h-[423px] max-w-[400px] ltr:border-r ltr:border-white/15 rtl:border-l rtl:border-white/15 flex flex-col gap-8 ltr:pr-14 rtl:pl-14">
                   <div className="flex items-center gap-3">
                     <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                       {logoSrc && (
@@ -181,7 +181,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                   </div>
 
                   {footerData.Description && (
-                    <p className="max-w-[400px] font-lufga font-normal text-[14px] leading-[18px] text-gray-300/90">
+                    <p className="max-w-[400px] font-normal text-[14px] leading-[18px] text-gray-300/90">
                       {String(footerData.Description).replace(/\s+/g, ' ').trim()}
                     </p>
                   )}
@@ -223,10 +223,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks
-                groups={linkGroups}
-                className="pl-16 justify-start mt-8 z-20 rtl:pr-16"
-              />
+              <FooterLinks groups={linkGroups} className=" justify-start mt-8 z-20 rtl:pr-16" />
             </div>
           </div>
 
@@ -261,12 +258,12 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                     />
                     <div className="flex flex-col gap-2 leading-[100%] justify-start">
                       {info.Title && (
-                        <div className="font-lufga font-bold text-[14px] leading-[100%] text-white">
+                        <div className="font-bold text-[14px] leading-[100%] text-white">
                           {info.Title}
                         </div>
                       )}
                       {text && (
-                        <div className="font-lufga font-normal text-[12px] leading-[100%] text-white">
+                        <div className="font-normal text-[12px] leading-[100%] text-white">
                           {text}
                         </div>
                       )}
@@ -278,7 +275,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
             {/* Copyright */}
             <div className="text-center">
-              <p className="font-[Lufga] font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
+              <p className="font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
                 {footerData.CopyrightText}
               </p>
             </div>
@@ -286,7 +283,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
             {/* Right side (extra note) */}
             <div className="md:justify-self-end">
               {footerData.ExtraNote && (
-                <div className="font-[Lufga] font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
+                <div className="font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
                   {String(footerData.ExtraNote).replace(/"+$/, '')}
                 </div>
               )}
