@@ -57,6 +57,8 @@ import FinanceBanner from '../components/widgets/financeRepaymentBanner/financeB
 import { FinanceBannerEntity } from '../components/widgets/financeRepaymentBanner/financeBanner.entity';
 import FinanceCalculator from '../components/widgets/financeCalculator/financeCalculator';
 import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator/financeCalculator.entity';
+import LegalDocument from '../components/widgets/legalDocument/legalDocument';
+import { LegalDocumentEntity } from '../components/widgets/legalDocument/legalDocument.entity';
 
 import Careers from '../components/widgets/careers/applyForJob';
 
@@ -234,9 +236,14 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Careers' },
     },
+    LegalDocument: {
+      componentType: LegalDocument,
+      entity: LegalDocumentEntity,
+      ssr: true,
+      editorMetadata: { Title: 'Legal Document' },
+    },
   },
 };
-// (customWidgetRegistry.widgets as any).StackLayout.isLayout = true;
 
 addWidgetViews(defaultWidgetRegistry, 'SitefinityBreadcrumb', {
   Custom: { Title: 'Custom', ViewFunction: BreadcrumbCustomView },
