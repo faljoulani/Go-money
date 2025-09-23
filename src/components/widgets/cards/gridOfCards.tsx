@@ -149,11 +149,10 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         : [];
   }
 
+  //console.log('cardItems ======= >>>>>> ' + JSON.stringify(cardItems));
+
   const childCardData = cardItems.map((card) => {
-    const img =
-      (Array.isArray(card?.Image) ? card.Image[0] : card?.Image) ||
-      (Array.isArray(card?.Icon) ? card.Icon[0] : card?.Icon) ||
-      (Array.isArray(card?.Logo) ? card.Logo[0] : card?.Logo);
+    const img = Array.isArray(card?.Image) ? card.Image[0] : card?.Image;
 
     const iconUrl = resolveAbsoluteUrl(pickImageUrl(img), props.requestContext);
     const altText = img?.AlternativeText || img?.Title || card?.Title || 'Icon';
@@ -176,6 +175,9 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
       icon: iconEl,
     };
   });
+
+  //console.log('childCardData ======= >>>>>> ' + JSON.stringify(childCardData));
+
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
@@ -206,7 +208,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 </div>
                 <div className="mr-7">
                   <h3 className="text-xl font-bold text-primary">{item.title}</h3>
-                  {/* <p className="mt-2 text-default text-base">{item.description}</p> */}
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
@@ -229,7 +230,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 </div>
                 <div className="mr-7">
                   <h3 className="text-xl font-bold text-primary">{item.title}</h3>
-                  {/* <p className="mt-2 text-default text-base">{item.description}</p> */}
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
