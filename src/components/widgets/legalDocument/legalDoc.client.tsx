@@ -23,21 +23,17 @@ export default function LegalDocClient({
 
   const ids = useMemo(() => sections.map((s) => s.slug), [sections]);
 
-  // Smooth scroll to anchor
   const scrollTo = (slug: string) => {
     const el = document.getElementById(slug);
     if (!el) return;
-    // Account for any sticky headers on the site; adjust offset if you have a global navbar
     const y = el.getBoundingClientRect().top + window.scrollY - 16; // 16px breathing room
     window.history.replaceState(null, '', `#${slug}`);
     window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
-  // IntersectionObserver to update active TOC item
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the first heading crossing the threshold at the top
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -47,7 +43,6 @@ export default function LegalDocClient({
         }
       },
       {
-        // Trigger a bit before the true top so the highlight feels natural
         rootMargin: '-20% 0px -70% 0px',
         threshold: [0, 0.25, 0.5, 0.75, 1],
       }
