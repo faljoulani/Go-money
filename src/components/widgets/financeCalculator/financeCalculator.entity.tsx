@@ -199,19 +199,19 @@ export class FinanceCalculatorEntity {
   @DataType('enumerable', 'string')
   LengthOfServicesChoices?: string[];
 
-  @ContentSection('Messages', 0)
-  @DisplayName('Success message (eligible)')
-  @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message',
-  })
-  SuccessMessage?: any;
+  // @ContentSection('Messages', 0)
+  // @DisplayName('Success message (eligible)')
+  // @Content({
+  //   Type: 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message',
+  // })
+  // SuccessMessage?: any;
 
-  @ContentSection('Messages', 1)
-  @DisplayName('Not eligible message')
-  @Content({
-    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message',
-  })
-  FailMessage?: any;
+  // @ContentSection('Messages', 1)
+  // @DisplayName('Not eligible message')
+  // @Content({
+  //   Type: 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message',
+  // })
+  // FailMessage?: any;
     
   @WidgetLabel()
   SfWidgetLabel = 'Finance Calculator';
