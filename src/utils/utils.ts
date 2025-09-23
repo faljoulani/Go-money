@@ -40,12 +40,11 @@ export function linkToHref(link: CmsLink | CmsLink[]): string | undefined {
   if (typeof first === 'string') return first;
 
   // If the first item is an object with href, return href
-  if (first && typeof first === 'object' && 'href' in first) return (first as { href: string }).href;
+  if (first && typeof first === 'object' && 'href' in first)
+    return (first as { href: string }).href;
 
   return undefined;
 }
-
-
 
 export function computeBaseUrl(ctx: WidgetContext<any>['requestContext']): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL;

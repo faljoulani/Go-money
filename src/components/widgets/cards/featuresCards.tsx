@@ -107,6 +107,8 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
     };
   });
 
+  console.log('items in feature cards ==== >>>> ' + JSON.stringify(items));
+
   if (!items.length) {
     return props.requestContext.isEdit ? (
       <section
@@ -149,8 +151,9 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
           <div className="relative grid gap-8 grid-cols-3">
             {items.map((item) => (
               <div key={item.id} className="group">
-                <div className='rounded-[32px]' >
-                  <div className="
+                <div className="rounded-[32px]">
+                  <div
+                    className="
                       rounded-[32px]                    
                     bg-white/10 
                       px-12 py-14

@@ -127,9 +127,6 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     },
   };
 
-  console.log('cta ------', financeRepaymentBanner.ctaHref);
-  const viewName = props.model?.Properties?.ViewName || 'Default';
-
   return (
     <section
       {...(attrs as any)}

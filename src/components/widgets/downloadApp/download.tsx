@@ -1,22 +1,18 @@
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { fetchData, extractSelectionId, pickImageUrl } from '../../../utils/sitefinity';
+import {
+  fetchData,
+  extractSelectionId,
+  pickImageUrl,
+  pickOneMedia,
+} from '../../../utils/sitefinity';
 import type { DownloadEntity } from './download.entity';
 import MinimizedDownloadApp from './minimizedDownloadApp';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
-import { log } from 'console';
 
-// -------------------- helpers --------------------
-const mediaUrl = (im?: any | null): string =>
-  im?.MediaUrl || im?.Url || im?.ThumbnailUrl || im?.EmbedUrl || '';
-
-const pickOneMedia = (img: any | any[] | null | undefined) =>
-  (Array.isArray(img) ? img[0] : img) || null;
-
-// -------------------- types ----------------------
 interface DownloadAppItem {
   Id: string;
   Title?: string;
@@ -48,7 +44,6 @@ export default async function Download(props: WidgetContext<DownloadEntity>) {
     (props.model?.Properties as any)?.ViewName ||
     (props as any)?.viewName ||
     'Default';
-    
 
   return (
     <section {...attrs} data-view={selectedView}>
@@ -61,18 +56,14 @@ export default async function Download(props: WidgetContext<DownloadEntity>) {
       </div>
     </section>
   );
-  console.log("seeelected",selectedView )
 }
-  
+
 async function DownloadApp(props: WidgetContext<DownloadEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
   const selection = resolveSitefinitySelection((props.model?.Properties as any)?.DownloadApp);
   const id = extractSelectionId(selection);
-
-  //console.log("------>id", id)
-  console.log("MAIN COMPONENT")
 
   if (!id) {
     return isEdit ? (
@@ -108,9 +99,6 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
     },
   )) as DownloadAppItem | null;
 
-  console.log('Stores', JSON.stringify(item?.stores));
-  console.log('Certifications', JSON.stringify(item?.Certifications));
-
   if (!item) {
     return isEdit ? (
       <section
@@ -124,10 +112,9 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
 
   const title = item.Title || 'Download Go Money App Today';
   const description = item.description || '';
-  console.log('DESCRIPTION ' + description);
 
   const phoneIm = pickOneMedia(item.ForegroundImage);
-  const phoneUrl = mediaUrl(phoneIm);
+  const phoneUrl = pickImageUrl(phoneIm);
   const phoneAlt = (phoneIm?.AlternativeText as string) || phoneIm?.Title || 'App screenshot';
 
   const infoCards = item.Certifications.map((card) => {

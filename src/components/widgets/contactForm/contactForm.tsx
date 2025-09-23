@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 import type { FormEntity } from './contactForm.entity';
-import ContactFormClient from './contactFormClient';
+import ContactFormClient from './ContactFormClient';
 
 type Option = { id: string; label: string };
 
@@ -42,30 +42,22 @@ type FormItem = {
   Provider?: string;
   UrlName?: string;
 };
-const getCulture = (ctx: any) =>
-  ctx?.requestContext?.sfContext?.culture || ctx?.requestContext?.culture || 'en';
 
-const toOptions = (arr: any): Option[] => {
+const toOptions = (arr: unknown): Option[] => {
   if (!arr) return [];
   const list = Array.isArray(arr) ? arr : [arr];
   return list
     .filter(Boolean)
-    .map((c: any) => ({ id: c?.Id, label: c?.Title || c?.Name || '' }))
-    .filter((o: Option) => !!o.id && !!o.label);
+    .map((option: any) => ({ id: option?.Id, label: option?.Title || option?.Name || '' }))
+    .filter((option: Option) => !!option.id && !!option.label);
 };
 
-function pickSingle<T>(r: T | T[] | null | undefined): T | null {
-  if (!r) return null;
-  return Array.isArray(r) ? (r[0] ?? null) : r;
-}
-
-export default async function ContactFormView(ctx: WidgetContext<FormEntity>) {
-  const attrs = htmlAttributes(ctx);
-  const { isEdit } = ctx.requestContext;
-  const culture = getCulture(ctx);
+export default async function ContactFormView(props: WidgetContext<FormEntity>) {
+  const attrs = htmlAttributes(props);
+  const { culture, isEdit } = props.requestContext;
 
   const selection = resolveSitefinitySelection(
-    (ctx.model as any)?.Form ?? (ctx.model?.Properties as any)?.Form,
+    (props.model as any)?.Form ?? (props.model?.Properties as any)?.Form,
   );
   const id = extractSelectionId(selection);
 
@@ -75,7 +67,8 @@ export default async function ContactFormView(ctx: WidgetContext<FormEntity>) {
         {...attrs}
         className={mergeClasses(
           'p-6 border border-dashed rounded-2xl text-center text-slate-500 bg-white/70',
-          (ctx.model as any)?.CssClass,
+          (props.model as any)?.CssClass,
+          attrs.className,
         )}
       >
         <strong>Select a Contact Form item</strong>
@@ -114,29 +107,44 @@ export default async function ContactFormView(ctx: WidgetContext<FormEntity>) {
     'UrlName',
   ];
 
-  const raw = await fetchData([id], null, culture, fields, { itemType, single: true });
-  const item = pickSingle<FormItem>(raw);
+  let item: FormItem | null = null;
+  try {
+    item = (await fetchData([id], null, culture, fields, {
+      itemType,
+      single: true,
+    })) as FormItem | null;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!item) {
     return isEdit ? (
       <section
         {...attrs}
-        className="p-6 border border-dashed rounded-2xl text-center text-slate-500"
+        className={mergeClasses(
+          'p-6 border border-dashed rounded-2xl text-center text-slate-500',
+          (props.model as any)?.CssClass,
+          attrs.className,
+        )}
       >
         Couldn’t load the selected form item.
       </section>
     ) : null;
   }
 
+  const ctaHref =
+    typeof item.CtaUrl === 'string'
+      ? item.CtaUrl
+      : (item.CtaUrl as any)?.Href ||
+        (Array.isArray(item.CtaUrl) ? (item.CtaUrl as any)[0]?.Href : '') ||
+        '';
+
   const data = {
     title: item.Title ?? '',
     subTitle: item.SubTitle ?? '',
 
     ctaText: item.CtaText ?? 'Send Message',
-    ctaHref:
-      typeof item.CtaUrl === 'string'
-        ? item.CtaUrl
-        : (item.CtaUrl as any)?.Href || (item.CtaUrl as any)?.[0]?.Href || '',
+    ctaHref,
 
     firstNameLabel: item.FirstNameLabel ?? 'First Name',
     firstNamePlaceholder: item.FirstNamePlaceholder ?? '',
@@ -164,17 +172,15 @@ export default async function ContactFormView(ctx: WidgetContext<FormEntity>) {
     resumeFileNote: item.ResumeFileNote ?? '',
   };
 
-  const postUrl = '/api/default/ContactUsLists';
-
   return (
     <section
       {...attrs}
-      id={`sf-widget-${(ctx.model as any)?.Id ?? 'contact-form'}`}
-      className={'w-full'}
+      id={`sf-widget-${(props.model as any)?.Id ?? 'contact-form'}`}
+      className={mergeClasses('w-full', (props.model as any)?.CssClass, attrs.className)}
       data-sf-enhance
     >
       <div className="w-full rounded-[24px] bg-white/95 p-6 shadow-sm ring-1 ring-black/5">
-        <ContactFormClient postUrl={postUrl} data={data} />
+        <ContactFormClient data={data} />
       </div>
     </section>
   );
