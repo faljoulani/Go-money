@@ -103,6 +103,8 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         : [];
   }
 
+  console.log('cardItems ' + JSON.stringify(cardItems));
+
   const childCardData = cardItems.map((card: any) => {
     const rawHref = card?.LinkUrl ?? '';
     const href = rawHref?.trim() || '#';

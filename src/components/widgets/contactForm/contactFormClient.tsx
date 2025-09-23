@@ -60,20 +60,20 @@ export default function ContactFormClient({
     setIsLoading(true);
 
     try {
-      const fd = new FormData(e.currentTarget);
+      const formData = new FormData(e.currentTarget);
 
-      const firstName = String(fd.get('firstName') || '').trim();
-      const lastName = String(fd.get('lastName') || '').trim();
+      const firstName = String(formData.get('firstName') || '').trim();
+      const lastName = String(formData.get('lastName') || '').trim();
       const fullName = [firstName, lastName].filter(Boolean).join(' ') || firstName || lastName;
 
-      const phone = String(fd.get('phone') || '').trim(); // "mobileNumber is phone" => send as API "phone" (no +966 prefix added)
-      const email = String(fd.get('email') || '').trim();
-      const topic = String(fd.get('topic') || '').trim();
+      const phone = String(formData.get('phone') || '').trim();
+      const email = String(formData.get('email') || '').trim();
+      const topic = String(formData.get('topic') || '').trim();
       const reqType =
-        String(fd.get('requestType') || '')
+        String(formData.get('requestType') || '')
           .trim()
           .toUpperCase() || 'COMPLAINT';
-      const notes = String(fd.get('notes') || '').trim();
+      const notes = String(formData.get('notes') || '').trim();
 
       const apiPayload = {
         customerName: fullName,
@@ -85,13 +85,13 @@ export default function ContactFormClient({
         channel: 'MOBILE.APPLICATION',
       };
 
-      const res = await fetch(postUrl, {
+      const response = await fetch(postUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(apiPayload),
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setResStatus('success');
       formRef.current?.reset();
     } catch (err) {

@@ -119,24 +119,55 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
 
   const amountFill = useRangeFill(requestedFinanceAmount, AMIN, AMAX, '#0B2A8E', '#C9CDD6');
   const instFill = useRangeFill(installments, IMIN, IMAX, '#0B2A8E', '#C9CDD6');
+function calcAge(dob: string) {
+  if (!dob) return '';
+  const d = new Date(dob);
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+  return String(age);
+}
 
+function calcAgeAtMaturity(dob: string, tenureMonths: number) {
+  if (!dob) return '';
+  const d = new Date(dob);
+  const maturity = new Date(d);
+  maturity.setMonth(maturity.getMonth() + Number(tenureMonths || 0));
+  return calcAge(maturity.toISOString().slice(0,10));
+}
+
+function mapLenOfService(choice: string) {
+  const m = /(\d+)/.exec(choice || '');
+  return m ? m[1] : '';
+}
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setMsg('');
 
-    const payload = {
-      nationality,
-      employerType: employer || null,
-      lengthOfServices: serviceLength,
-      dateOfBirth: dob || null,
-      monthlySalary: parseNum(salary),
-      requestedAmount: requestedFinanceAmount,
-      installments,
-      totalMonthlyExpenses: parseNum(expenses),
-      mortgageLiabilities: parseNum(mortgageLiabilities),
-      monthlyFinancialLiabilities: parseNum(monthlyFinancialLiabilities),
-    };
+   const payload = {
+    EmployerType: employer || 'GML',
+    Nationality: nationality,
+    Gender: 'Male', 
+    FinanceAmt: String(requestedFinanceAmount),
+    Tenure: String(installments),
+    MonthlyIncome: String(parseNum(salary)),
+    lenOfService: mapLenOfService(serviceLength),
+    ageAtApplication: calcAge(dob),
+    AgeAtMaturity: calcAgeAtMaturity(dob, installments),
+  };
+    // const payload = {
+    //   EmployerType: 'GML',
+    //   Nationality: 'Saudi',
+    //   Gender: 'Male',
+    //   FinanceAmt: 0,
+    //   Tenure: '12',
+    //   MonthlyIncome: 0,
+    //   lenOfService: 0,
+    //   ageAtApplication: 0,
+    //   AgeAtMaturity: 0,
+    // };
 
     console.log('FinanceCalculator payload:', payload);
 
@@ -155,10 +186,10 @@ export default function FinanceCalculator(props: WidgetContext<FinanceCalculator
       setSubmitting(false);
     }
 
-    setTimeout(() => {
-      setSubmitting(false);
-      setResult(requestedFinanceAmount >= 15000 ? 'success' : 'fail');
-    }, 400);
+    // setTimeout(() => {
+    //   setSubmitting(false);
+    //   setResult(requestedFinanceAmount >= 15000 ? 'success' : 'fail');
+    // }, 400);
   }
 
   const nationalityOptions = cfg.NationalityChoices?.length
