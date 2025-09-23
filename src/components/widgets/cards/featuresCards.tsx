@@ -149,8 +149,9 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
           <div className="relative grid gap-8 grid-cols-3">
             {items.map((item) => (
               <div key={item.id} className="group">
-                <div className='rounded-[32px]' >
-                  <div className="
+                <div className="rounded-[32px]">
+                  <div
+                    className="
                       rounded-[32px]                    
                     bg-white/10 
                       px-12 py-14
@@ -170,9 +171,7 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
                       </div>
                     )}
 
-                    <h3 className="font-lufga text-white text-[24px] leading-tight">
-                      {item.title}
-                    </h3>
+                    <h3 className=" text-white text-[24px] leading-tight">{item.title}</h3>
 
                     {item.description && (
                       <p className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] leading-7">

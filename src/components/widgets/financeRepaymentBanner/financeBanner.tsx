@@ -192,7 +192,6 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                   <CTA
                     variant="outline"
                     colorText="text-white"
-                    fontText="font-lufga"
                     fontWeight="font-light"
                     borderColor="border-white"
                     align="left"

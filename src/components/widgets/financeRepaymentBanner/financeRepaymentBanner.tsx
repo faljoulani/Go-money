@@ -143,7 +143,6 @@ export default async function FinanceRepaymentBanner(
                   <CTA
                     variant="outline"
                     colorText="text-white"
-                    fontText="font-lufga"
                     fontWeight="font-light"
                     borderColor="border-white"
                     align="left"

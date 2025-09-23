@@ -78,47 +78,62 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   const subtitle = item?.SubTitle || 'Our dedicated Support team is here to help';
 
   const primaryLabel = item?.EmailLabel || item?.CallUsLabel || item?.ButtonLabel || 'Contact Us';
-  const primaryHref = linkHref(item?.CTAURL) || '#';
+  let primaryHref = item?.CTAURL;
+
+  try {
+    if (typeof primaryHref === 'string') {
+      primaryHref = JSON.parse(primaryHref);
+    }
+  } catch {
+    // If parsing fails, leave it as-is
+  }
 
   // Secondary CTA: FAQs
   const secondaryLabel = item?.FaqsLabel || 'FAQs';
-  const secondaryHref = linkHref(item?.FaqsURL) || '#';
+  let secondaryHref = item?.FaqsURL;
+
+  try {
+    if (typeof secondaryHref === 'string') {
+      secondaryHref = JSON.parse(secondaryHref);
+    }
+  } catch {
+    // If parsing fails, leave it as-is
+  }
 
   const showCorner =
     typeof item?.hasLabelCorner === 'boolean'
       ? item!.hasLabelCorner
       : String(item?.hasLabelCorner || '').toLowerCase() === 'true';
-  console.log('SELECTED VIEWWWWW', selectedView);
   if (selectedView === 'EmailAndPhone') {
     return <ContactBoxInfo {...props} />;
   }
   return (
     <section
       {...attrs}
-      className="relative w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-black/5 mx-20 my-16"
+      className="relative w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-black/5 mx-20 mt-16"
     >
-      {showCorner && (
-        <div className="absolute right-0 top-0">
-          <div className="h-24 w-24 rounded-bl-[40px] bg-[#0A43FF]" />
+      <div className="absolute right-0 top-0 rtl:left-0 rtl:right-auto">
+        <div className="h-24 w-24 rounded-bl-[40px] bg-[#0023F5] rtl:rounded-br-[40px] rtl:rounded-bl-none" />
 
-          <div className="absolute right-0 top-0 h-12 w-12 bg-white" />
-        </div>
-      )}
+        <div className="absolute right-0 top-0 rtl:left-0 rtl:right-auto h-12 w-12 bg-white" />
+      </div>
 
       <div className="mx-auto max-w-2xl">
-        <h2 className="text-[40px] font-extrabold leading-tight tracking-[-0.02em] text-[#01115A]">
+        <h2 className="text-[48px] font-bold leading-tight tracking-[-0.02em] text-primary">
           {title}
         </h2>
 
-        {subtitle && <p className="mt-3 text-base leading-relaxed text-[#0a1b2e]/70">{subtitle}</p>}
+        {subtitle && (
+          <p className="mt-3 text-base leading-relaxed text-[#9E9E9E] font-medium">{subtitle}</p>
+        )}
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <a
             href={primaryHref}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#01115A] px-6 py-3 text-[#01115A] transition hover:bg-[#01115A] hover:text-white"
+            className="inline-flex w-[189px] rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 rounded-[20px] border-2 border-primary px-6 py-3 text-primary font-medium transition hover:bg-primary hover:text-white"
           >
             <span>{primaryLabel}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className='cta-arrow'>
               <path
                 d="M9 18l6-6-6-6"
                 stroke="currentColor"
@@ -131,10 +146,10 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
           <a
             href={secondaryHref}
-            className="inline-flex items-center gap-2 rounded-full border-2 border-[#01115A] px-6 py-3 font-light transition hover:bg-[#01115A] hover:text-white"
+            className="inline-flex text-lg tracking-tight w-[189px] rtl:w-[200px] text-primary items-center justify-center gap-2 rounded-[20px] border-2 border-primary px-6 py-3 font-medium transition hover:bg-primary hover:text-white"
           >
             <span>{secondaryLabel}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className='cta-arrow'>
               <path
                 d="M9 18l6-6-6-6"
                 stroke="currentColor"

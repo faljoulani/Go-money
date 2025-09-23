@@ -35,7 +35,6 @@ export default function CTA({
   target = '_self',
   onClick,
   colorText = 'text-primary',
-  fontText = 'font-lufga',
   fontWeight = 'font-normal',
   borderColor = 'border-primary',
   bgColor = 'bg-primary',
@@ -67,7 +66,7 @@ export default function CTA({
 
   const disabledCls = disabled ? 'opacity-60 cursor-not-allowed pointer-events-none' : '';
 
-  const classes = [base, fontText, fontWeight, alignClass, widthClass, look, disabledCls, className]
+  const classes = [base, fontWeight, alignClass, widthClass, look, disabledCls, className]
     .filter(Boolean)
     .join(' ');
 

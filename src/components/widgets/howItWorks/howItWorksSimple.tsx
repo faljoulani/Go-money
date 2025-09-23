@@ -114,37 +114,38 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
   // ---------- render ----------
   return (
-    <section {...attrs} className="relative ">
+    <section {...attrs} className="relative">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6">
+      <div className="mx-auto max-w-4xl text-center px-6">
         {view.SubTitle && (
-          <p className="text-[11px] md:text-xs uppercase font-semibold tracking-[0.25em] text-[#0B1C5A]/80">
+          <p className="text-sm  uppercase tracking-0 text-primary">
             {view.SubTitle}
           </p>
         )}
         {view.Title && (
-          <h1 className="mt-3 text-[28px] md:text-5xl font-extrabold leading-tight text-[#0B1C5A]">
+          <h1 className="mt-3 text-[48px] font-bold tracking-[-0.02em] text-primary">
             {view.Title}
           </h1>
         )}
         {view.HeaderText && (
-          <p className="mt-3 text-sm md:text-base text-slate-500">{view.HeaderText}</p>
+          <p className="mt-3 text-base text-default max-w-[750px] mx-auto justify-center">{view.HeaderText}</p>
         )}
       </div>
 
-      <section className="relative w-[80%] mx-auto  mb-10">
+      <section className="relative mx-auto max-w-[1240px] mb-10">
         <div
           className="flex flex-col items-center relative rounded-3xl mt-10"
           style={{
-            backgroundImage: `url('assets/NavyBackground.webp')`,
+            backgroundImage: "url('/assets/NavyBackground.webp')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+        
           }}
         >
           {/* Content */}
-          <div className="relative z-[70] mx-auto max-w-7xl p-16">
+          <div className="relative z-[70] p-16">
             {view.IntroLead && (
-              <h2 className="text-center text-white font-light text-[28px] md:text-[40px]">
+              <h2 className="text-center text-white text-[36px]">
                 {view.IntroLead}
               </h2>
             )}
@@ -159,16 +160,15 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                 return (
                   <div
                     key={s.Id || `${s.Title}-${i}`}
-                    className="relative rounded-[28px] p-10 text-white
+                    className="relative rounded-[32px] p-12 rtl:p-14 text-white h-[273px]
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
-                                 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_80px_rgba(0,0,0,0.35)]
                                  before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"
                   >
-                    <div className="mx-auto mb-6 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 ring-1 ring-white/15">
+                    <div className="mx-auto mb-6 grid h-16 w-16 place-items-center">
                       {logoSrc ? (
-                        <img src={logoSrc} alt={logoAlt} className="h-12 w-12" />
+                        <img src={logoSrc} alt={logoAlt} className="h-16 w-16" />
                       ) : (
                         <span className="text-2xl" aria-hidden>
                           🖼️
@@ -176,12 +176,12 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                       )}
                     </div>
 
-                    <h3 className="text-center text-2xl font-semibold">{s.Title}</h3>
+                    <h3 className="text-center text-2xl">{s.Title}</h3>
                     {s.Description && (
-                      <p className="mt-3 text-center text-white/75 leading-6">{s.Description}</p>
+                      <p className="mt-3 text-center text-[16px] text-[#E0E0E0]">{s.Description}</p>
                     )}
 
-                    <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid h-12 w-12 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm font-bold ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                    <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 text-primary text-[16px] ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                       {stepNo}
                     </div>
                   </div>
@@ -191,7 +191,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
             {/* CTA */}
             {view.CTALabel && (
-              <div className="mt-12 flex justify-center">
+              <div className="mt-[68px] flex justify-center">
                 <a
                   href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
                   className="group inline-flex items-center gap-2 rounded-full px-6 py-3
@@ -202,7 +202,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                   <span>{view.CTALabel}</span>
                   <svg
                     viewBox="0 0 20 20"
-                    className="size-4 translate-x-0 transition-transform group-hover:translate-x-0.5"
+                    className="cta-arrow size-4 translate-x-0 transition-transform group-hover:translate-x-0.5"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.5"

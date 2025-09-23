@@ -1,6 +1,6 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
-import { fetchData, extractSelectionId} from '../../../utils/sitefinity';
+import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { extractHref } from '../../../utils/utils';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
@@ -57,18 +57,16 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
   const ctaText = parentCardData?.CtaText ?? '';
   let ctaHref = undefined;
-if (parentCardData?.CtaUrl) {
-  try {
-    const parsed = JSON.parse(parentCardData.CtaUrl);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      ctaHref = extractHref(parsed[0]?.href);
+  if (parentCardData?.CtaUrl) {
+    try {
+      const parsed = JSON.parse(parentCardData.CtaUrl);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        ctaHref = extractHref(parsed[0]?.href);
+      }
+    } catch (e) {
+      console.error('Invalid CtaUrl JSON:', parentCardData.CtaUrl, e);
     }
-  } catch (e) {
-    console.error('Invalid CtaUrl JSON:', parentCardData.CtaUrl, e);
   }
-}
-
-    
 
   const selectedIds: string[] =
     (selection?.Cards?.ItemIdsOrdered as string[]) ??
@@ -138,7 +136,7 @@ if (parentCardData?.CtaUrl) {
           <div className="sticky top-20 flex flex-col gap-2 text-center fadeup bg-white  h-[600px]">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
             <Title className="text-5xl font-bold tracking-tight leading-[100%]">{title}</Title>
-            {subtitle && <Description className='mx-auto'>{subtitle}</Description>}
+            {subtitle && <Description className="mx-auto">{subtitle}</Description>}
           </div>
 
           <div className="mt-10 px-[205px]">
@@ -202,7 +200,6 @@ if (parentCardData?.CtaUrl) {
             <CTA
               variant="outline"
               colorText="text-primary"
-              fontText="font-lufga"
               fontWeight="font-semibold"
               borderColor="border-primary"
               align="center"
