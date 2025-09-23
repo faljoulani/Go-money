@@ -116,7 +116,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative ">
       {/* Top headline block */}
-      <div className="mx-auto max-w-3xl text-center px-6 ">
+      <div className="mx-auto max-w-3xl text-center px-6">
         {view.SubTitle && (
           <p className="text-[11px] md:text-xs uppercase font-semibold tracking-[0.25em] text-[#0B1C5A]/80">
             {view.SubTitle}
@@ -142,7 +142,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           }}
         >
           {/* Content */}
-          <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-14 pb-28 ">
+          <div className="relative z-[70] mx-auto max-w-7xl p-16">
             {view.IntroLead && (
               <h2 className="text-center text-white font-light text-[28px] md:text-[40px]">
                 {view.IntroLead}
@@ -150,7 +150,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
             )}
 
             {/* Steps */}
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid gap-8 grid-cols-3">
               {view.Steps.map((s, i) => {
                 const logoSrc = mediaSrc(s.Logo);
                 const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
