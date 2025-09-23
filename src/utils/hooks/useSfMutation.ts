@@ -6,10 +6,10 @@ type Params = Record<string, string|number|boolean|undefined>;
 type Json = Record<string,any>|any[];
 
 function buildUrl(path: string, params?: Params) {
-//   const clean = path.replace(/^\/+/, '');
-//   const withNs = clean.startsWith('api/')
-//     ? clean
-//     : clean.includes('/') ? `api/${clean}` : `api/default/${clean}`;
+  // const clean = path.replace(/^\/+/, '');
+  // const withNs = clean.startsWith('api/')
+  //   ? clean
+  //   : clean.includes('/') ? `api/${clean}` : `api/default/${clean}`;
   const qs = new URLSearchParams();
   Object.entries(params||{}).forEach(([k,v]) => v!=null && qs.set(k, String(v)));
   return `/${path}${qs.size ? `?${qs.toString()}` : ''}`;

@@ -4,7 +4,7 @@ import { DisplayName } from '@progress/sitefinity-widget-designers-sdk/decorator
 import { DataType } from '@progress/sitefinity-widget-designers-sdk/decorators/data-type';
 import { Placeholder } from '@progress/sitefinity-widget-designers-sdk/decorators/placeholder';
 import { WidgetLabel } from '@progress/sitefinity-widget-designers-sdk/decorators/widget-label';
-
+import { Content } from '@progress/sitefinity-widget-designers-sdk/decorators/content';
 
 @WidgetEntity('FinanceCalculator', 'Finance Calculator')
 export class FinanceCalculatorEntity {
@@ -199,6 +199,20 @@ export class FinanceCalculatorEntity {
   @DataType('enumerable', 'string')
   LengthOfServicesChoices?: string[];
 
+  @ContentSection('Messages', 0)
+  @DisplayName('Success message (eligible)')
+  @Content({
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message',
+  })
+  SuccessMessage?: any;
+
+  @ContentSection('Messages', 1)
+  @DisplayName('Not eligible message')
+  @Content({
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message',
+  })
+  FailMessage?: any;
+    
   @WidgetLabel()
   SfWidgetLabel = 'Finance Calculator';
 }
