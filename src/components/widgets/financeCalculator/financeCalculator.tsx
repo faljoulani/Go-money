@@ -24,7 +24,6 @@ export default async function FinanceCalculator(
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
 
-  // Resolve selection (works for both .model and .model.Properties)
   const selection = resolveSitefinitySelection(
     (props.model as any)?.FinanceDetails ??
       (props.model?.Properties as any)?.FinanceDetails
@@ -47,7 +46,6 @@ export default async function FinanceCalculator(
     ) : null;
   }
 
-  // 1) Fetch the FinanceDetails base item (labels, popups, + only IDs of related data)
   const finance: any = await fetchData(
     [id],
     null,
@@ -55,7 +53,6 @@ export default async function FinanceCalculator(
     [
       'Id',
       'Title',
-      // labels / placeholders / popups / cta / validations
       'DateOfBirthPopup',
       'MonthlySalaryPopup',
       'RequestedFinanceAmountPopup',
@@ -89,7 +86,6 @@ export default async function FinanceCalculator(
       'CtaText',
       'CtaUrl',
 
-      // ONLY IDs of related data — we'll fetch them separately below
       'EmployerChoices/Id',
       'LengthOfServicesChoices/Id',
       'NationalityChoices/Id',
@@ -98,7 +94,6 @@ export default async function FinanceCalculator(
     { itemType: FINANCE_DETAILS_TYPE, single: true }
   );
 
-  // If nothing came back, bail quietly in runtime; show helper in edit
   if (!finance) {
     return isEdit ? (
       <section
@@ -115,13 +110,11 @@ export default async function FinanceCalculator(
     ) : null;
   }
 
-  // 2) Extract IDs of related items from FinanceDetails
   const employerIds: string[] = (finance.EmployerChoices || []).map((x: any) => x.Id);
   const lenServIds: string[] = (finance.LengthOfServicesChoices || []).map((x: any) => x.Id);
   const nationalityIds: string[] = (finance.NationalityChoices || []).map((x: any) => x.Id);
   const messageIds: string[] = (finance.RelatedMessage || []).map((x: any) => x.Id);
 
-  // 3) Fetch each related collection with your helper (separate REST calls)
   const [employers, lengthOfServices, nationalities, messages] = await Promise.all([
     fetchData(employerIds, null, culture, ['Id', 'Title', 'Name', 'Value'], {
       itemType: EMPLOYER_TYPE,
@@ -156,14 +149,12 @@ export default async function FinanceCalculator(
     ),
   ]);
 
-  // 4) Normalize choice items → {id,title,value}
   const toChoice = (x: any) => ({
     id: String(x?.Id ?? ''),
     title: String(x?.Title ?? x?.Name ?? x?.Value ?? ''),
     value: String(x?.Value ?? x?.Name ?? x?.Title ?? ''),
   });
 
-  // 5) Normalize messages for the client
   const toMessage = (m: any) => ({
     id: String(m?.Id ?? ''),
     title: String(m?.Title ?? ''),
@@ -185,7 +176,6 @@ export default async function FinanceCalculator(
     imageAlt: String(m?.Image?.AlternativeText ?? ''),
   });
 
-  // 6) Build the cfg passed to the client
   const cfg = {
     title: asString(finance?.Title),
     labels: {
