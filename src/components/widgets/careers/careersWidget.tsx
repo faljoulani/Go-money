@@ -1,11 +1,11 @@
 'use client';
 
-import * as React from 'react';
+import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import CareersBoards from './careerBoards';
+import CareersBoard from './careerBoards';
 import JobDetails from './JobDetails';
 
-export default function CareersPage({
+export default function CareersWidget({
   language = 'en',
   dir = 'ltr',
 }: {
@@ -18,26 +18,27 @@ export default function CareersPage({
 
   const jobId = search.get('job');
 
-  const openJob = React.useCallback(
+  const openJob = useCallback(
     (id: string) => {
+      if (jobId === id) return;
       const params = new URLSearchParams(search.toString());
       params.set('job', id);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [router, pathname, search],
+    [router, pathname, jobId, search],
   );
 
-  const backToList = React.useCallback(() => {
+  const backToList = useCallback(() => {
+    if (!jobId) return;
     const params = new URLSearchParams(search.toString());
     params.delete('job');
-    const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [router, pathname, search]);
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+  }, [router, pathname, jobId, search]);
 
   if (jobId) {
     return (
       <section dir={dir} className="w-full">
-        {/* Optional back button */}
         <div className="mx-20 my-4">
           <button
             onClick={backToList}
@@ -53,7 +54,7 @@ export default function CareersPage({
 
   return (
     <section dir={dir} className="w-full">
-      <CareersBoards dir={dir} onOpenJob={openJob} />
+      <CareersBoard dir={dir} onOpenJob={openJob} />
     </section>
   );
 }
