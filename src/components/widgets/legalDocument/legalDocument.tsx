@@ -4,11 +4,22 @@ import {
   htmlAttributes,
   RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
+import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import type { LegalDocumentEntity, LegalSection } from './legalDocument.entity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
-
+import ScriptForLegalDocument from './legalDoc.client';
 const LEGAL_DOC_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.LegalDocument.Legaldocument';
 const SECTIONS_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.LegalDocument.Sections';
+
+function normalizeItems(res: any) {
+  return Array.isArray(res?.Items)
+    ? res.Items
+    : Array.isArray(res?.value)
+      ? res.value
+      : Array.isArray(res)
+        ? res
+        : [];
+}
 
 function slugify(s: string) {
   return (s ?? '')
@@ -31,66 +42,99 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   }
 
   const model = props.model!.Properties as any;
+  const culture = props.requestContext?.culture;
+  const traceContext = props.traceContext;
+
   const legalDocSel = resolveSitefinitySelection(model?.LegalDocRoot);
   const sectionsSel = resolveSitefinitySelection(model?.SectionsSelection);
 
+  console.log('legalDocSel', legalDocSel);
+  console.log('sectionsSel', sectionsSel);
   if (!legalDocSel?.Content?.length) {
     return (
       <div {...attrs}>
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+        <div className="rounded-xl border  bg-amber-50 p-4 text-sm ">
           Pick a Legal document (root).
         </div>
       </div>
     );
   }
 
-  const doc = await RestClientForContext.getItem(legalDocSel, {
-    type: LEGAL_DOC_TYPE,
-    ...(props.requestContext?.culture ? { culture: props.requestContext.culture } : {}),
-    ...(props.traceContext ? { traceContext: props.traceContext } : {}),
-  });
-
+  let doc: { Id: string; Title: string } | null = null;
   let sections: LegalSection[] = [];
-  if (sectionsSel?.Content?.length) {
-    const res = await RestClientForContext.getItems(sectionsSel, {
-      type: SECTIONS_TYPE,
-      ...(props.requestContext?.culture ? { culture: props.requestContext.culture } : {}),
-      ...(props.traceContext ? { traceContext: props.traceContext } : {}),
-      fields: ['Id', 'SectionHeader', 'Description', 'Order', 'ParentId'],
-    });
-    sections = (res?.Items ?? []).map((item) => ({
-      Id: item.Id,
-      SectionHeader: item.SectionHeader,
-      Description: item.Description,
-      Order: item.Order,
-      ParentId: item.ParentId,
-    })) as LegalSection[];
-  }
 
-  if (!doc) {
+  try {
+    let id = legalDocSel?.ItemIdsOrdered?.[0]?.toString();
+    let provider = legalDocSel?.Content?.[0]?.Variations?.[0]?.Source?.toString();
+    const docRes = await RestClient.getItem({
+      id,
+      provider,
+      type: LEGAL_DOC_TYPE,
+      culture,
+      traceContext,
+      fields: ['Id', 'Title'],
+    });
+    doc = {
+      Id: docRes.Id,
+      Title: docRes.Title ?? '',
+    };
+
+    console.log('sfdasdafdasdf', doc?.Id);
+    if (sectionsSel?.Content?.length) {
+      const res = await RestClient.getItems({
+        type: SECTIONS_TYPE,
+        culture,
+        traceContext,
+        fields: ['Id', 'SectionHeader', 'Description', 'Order', 'ParentId'],
+      });
+      sections = normalizeItems(res)
+        .filter((s: any) => s.ParentId === doc.Id)
+        .sort((a: any, b: any) => (a.Order ?? 0) - (b.Order ?? 0));
+    } else {
+      const res = await RestClient.getItems({
+        type: SECTIONS_TYPE,
+        culture,
+        traceContext,
+        fields: ['Id', 'SectionHeader', 'Description', 'Order', 'ParentId'],
+      });
+      sections = normalizeItems(res);
+    }
+  } catch (e: any) {
+    console.error('LegalDocument fetch failed:', {
+      message: e?.message,
+      code: e?.code,
+      status: e?.response?.status,
+      statusText: e?.response?.statusText,
+      data: e?.response?.data,
+    });
     return (
-      <div {...attrs}>
-        <div className="rounded-xl border p-4 text-sm ">
-          Select a LegalDocument item in the designer.
-        </div>
+      <div {...attrs} className="rounded-xl border  p-4 text-sm">
+        Failed to load Legal Document.{' '}
+        {e?.response?.status ? `(${e.response.status} ${e.response.statusText})` : e?.message}
       </div>
     );
   }
 
+  if (!doc) {
+    return (
+      <div {...attrs} className="rounded-xl border p-4 text-sm">
+        Select a LegalDocument item in the designer.
+      </div>
+    );
+  }
   const offset = 0;
 
   return (
     <div {...attrs}>
-      <div className="sf-ldoc">
+      <div className="sf-ldoc mt-20">
         <div className="mx-auto grid gap-6 md:grid-cols-[320px_1fr]">
-          <aside className="self-start md:sticky md:top-6">
-            <nav className="rounded-2xl bg-[#010663] shadow-lg">
-              <ul className="rounded-2xl overflow-hidden bg-[#010663] ">
+          <aside className="self-start md:sticky md:top-6 bg-white rounded-3xl">
+            <nav className="rounded-3xl  shadow-lg">
+              <ul className="rounded-3xl overflow-hidden  ">
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
-                  //   const isActive = (props.activeSectionId === s.Id);
                   return (
-                    <li key={s.Id}>
+                    <li key={s.Id} className="border-b transition last:border-b-0 border-white/10">
                       <a
                         className={`sf-ldoc__link flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
@@ -99,12 +143,16 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                       >
                         <span className="truncate">{s.SectionHeader}</span>
                         <svg
-                          className={`h-4 w-4 shrink-0 transition-transform text-blue-700 rotate-90`}
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="w-[24px] h-[24px] rtl:rotate-180"
                         >
-                          <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                          <line x1="0" y1="12" x2="15" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
                         </svg>
                       </a>
                     </li>
@@ -123,7 +171,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                   className="sf-ldoc__section scroll-mt-[var(--ldoc-offset,0px)] py-4"
                   data-index={i + 1}
                 >
-                  <h4 className="mb-3 text-[20px] font-extrabold leading-snug text-slate-900">
+                  <h4 className="mb-3 text-[20px] font-extrabold leading-snug text-[#010663]">
                     {s.SectionHeader}
                   </h4>
                   <div
@@ -142,70 +190,68 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   );
 }
 
-function ScriptForLegalDocument({ offset }: { offset: number }) {
-  return (
-    <Suspense>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){
-  const OFFSET = ${offset} || 0;
-  document.documentElement.style.setProperty('--ldoc-offset', OFFSET + 'px');
+// function ScriptForLegalDocument({ offset }: { offset: number }) {
+//   return (
+//     <Suspense>
+//       <script
+//         dangerouslySetInnerHTML={{
+//           __html: `(function(){
 
-  const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
-  const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
+//   const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
+//   const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
 
-  // Smooth scroll
-  links.forEach(a=>{
-    a.addEventListener('click', function(e){
-      const id = this.getAttribute('data-target');
-      const el = document.getElementById(id);
-      if(!el) return;
-      e.preventDefault();
-      const y = el.getBoundingClientRect().top + window.scrollY - OFFSET;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-      history.replaceState(null,'','#'+id);
-    });
-  });
+//   // Smooth scroll
+//   links.forEach(a=>{
+//     a.addEventListener('click', function(e){
+//       const id = this.getAttribute('data-target');
+//       const el = document.getElementById(id);
+//       if(!el) return;
+//       e.preventDefault();
+//       const y = el.getBoundingClientRect().top + window.scrollY - OFFSET;
+//       window.scrollTo({ top: y, behavior: 'smooth' });
+//       history.replaceState(null,'','#'+id);
+//     });
+//   });
 
-  function setActive(id){
-    // remove Tailwind utility classes first
-    links.forEach(l=>{
-      l.classList.remove('active','bg-slate-900','text-white','ring-1','ring-slate-900');
-    });
-    const to = links.find(l=>l.getAttribute('data-target')===id);
-    if(to){
-      // add Tailwind classes only
-      to.classList.add('active','bg-slate-900','text-white','ring-1','ring-slate-900');
-    }
-  }
+//   function setActive(id){
+//     // remove Tailwind utility classes first
+//     links.forEach(l=>{
+//       l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+//     });
+//     const to = links.find(l=>l.getAttribute('data-target')===id);
+//     if(to){
+//       // add Tailwind classes only
+//       to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+//     }
+//   }
 
-  if(location.hash){
-    const id = location.hash.replace('#','');
-    setActive(id);
-  }
+//   if(location.hash){
+//     const id = location.hash.replace('#','');
+//     setActive(id);
+//   }
 
-  let ticking = false;
-  function onScroll(){
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(()=>{
-      const topEdge = OFFSET + 1;
-      let currentId = sections[0]?.id;
-      for(const sec of sections){
-        const rect = sec.getBoundingClientRect();
-        if(rect.top <= topEdge) currentId = sec.id; else break;
-      }
-      if(currentId) setActive(currentId);
-      ticking = false;
-    });
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  onScroll();
-})();`,
-        }}
-      />
-    </Suspense>
-  );
-}
+//   let ticking = false;
+//   function onScroll(){
+//     if(ticking) return;
+//     ticking = true;
+//     requestAnimationFrame(()=>{
+//       const topEdge = OFFSET + 1;
+//       let currentId = sections[0]?.id;
+//       for(const sec of sections){
+//         const rect = sec.getBoundingClientRect();
+//         if(rect.top <= topEdge) currentId = sec.id; else break;
+//       }
+//       if(currentId) setActive(currentId);
+//       ticking = false;
+//     });
+//   }
+//   window.addEventListener('scroll', onScroll, { passive: true });
+//   window.addEventListener('resize', onScroll);
+//   onScroll();
+// })();`,
+//         }}
+//       />
+//     </Suspense>
+//   );
+// }
 

@@ -59,7 +59,7 @@ export default function QuestionsClient({
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
                 <span
-                  className={`grid place-items-center w-8 h-8 rounded-lg ${
+                  className={`grid place-items-center w-8 h-8 rounded-lg rtl:rotate-180 ${
                     isActive ? 'text-white' : 'text-black'
                   }`}
                   aria-hidden
