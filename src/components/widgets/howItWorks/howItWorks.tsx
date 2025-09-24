@@ -128,7 +128,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative mx-20 bg-white">
       {/* Top headline block */}
-      <div className="flex flex-col items-center text-center gap-2 fadeup">
+      <div className="flex flex-col items-center text-center gap-1 fadeup">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title
@@ -136,7 +136,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               text-5xl
               font-bold     
               tracking-tight
-              leading-[100%]
+              leading-[63px]
             "
           >
             {view.Title}
@@ -157,7 +157,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       >
         <div className="pointer-events-none h-[70%] absolute inset-0 z-40 mt-36 left-[170px]">
           <div className="sticky top-[12vh] flex justify-center">
-            <img src={phoneSrc} alt={phoneAlt} />
+            <img src={phoneSrc} alt={phoneAlt} className='h-[565px] w-[460px]' />
           </div>
         </div>
         <div className="h-[120vh]" />
@@ -215,9 +215,9 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                         )}
                       </div>
 
-                      <h3 className="text-center text-2xl font-semibold">{s.Title}</h3>
+                      <h3 className="text-center text-2xl">{s.Title}</h3>
                       {s.Description && (
-                        <p className="mt-3 text-center text-white/75 leading-6">{s.Description}</p>
+                        <p className="mt-3 text-center text-[#E0E0E0] text-base w-[253px]">{s.Description}</p>
                       )}
 
                       <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid h-12 w-12 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm font-bold ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
@@ -233,21 +233,13 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                 <div className="mt-12 flex justify-center fadeup">
                   <a
                     href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
-                    className="group inline-flex items-center gap-2 rounded-full px-6 py-3
-                               text-white/95 font-medium
+                    className="group inline-flex items-center gap-2 rounded-[20px] px-6 py-3
+                               text-[#F7FAFC] font-medium w-[250px] h-14 text-center justify-center
                                shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
                                backdrop-blur-[2px] hover:bg-white/10 transition"
                   >
                     <span>{view.CTALabel}</span>
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="size-4 translate-x-0 transition-transform group-hover:translate-x-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    >
-                      <path d="M7 4l6 6-6 6M12 10H3" />
-                    </svg>
+                    <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
                   </a>
                 </div>
               )}

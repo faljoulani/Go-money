@@ -133,7 +133,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
 
   return (
     <section {...attributes} className="w-full bg-white">
-      <div className="mx-auto max-w-7xl px-8">
+      <div className="mx-auto max-w-[1240px]">
         <div className="relative">
           <div className="sticky top-20 flex flex-col gap-2 text-center fadeup bg-white  h-[600px]">
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -162,7 +162,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                       <div className="relative">
                         <div className="relative overflow-hidden rounded-xl w-[330px] h-[250px]">
                           {card.imgUrl && (
-                            <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
+                            <CardImage img={card.imgUrl} alt={card.title || 'card image'} sizes='w-[330px] h-[250px]' />
                           )}
                         </div>
 
@@ -181,12 +181,12 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                     </div>
 
                     <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
-                      <div className="max-w-[38rem]">
-                        <h3 className="text-32px leading-tight font-medium text-primary">
+                      <div className="w-[468px]">
+                        <h3 className="text-32px tracking-[-0.02em] leading-10 font-medium text-primary">
                           {card.title}
                         </h3>
                         {card.description && (
-                          <p className="mt-3 leading-7 text-default">{card.description}</p>
+                          <p className="mt-3 leading-5 text-default">{card.description}</p>
                         )}
                       </div>
                     </div>
@@ -198,11 +198,12 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         </div>
 
         {ctaText && (
-          <div className="mt-12 text-center">
+          <div className="mt-12 mx-auto text-center justify-center">
             <CTA
+              className='w-[248px] h-14'
               variant="outline"
               colorText="text-primary"
-              fontWeight="font-semibold"
+              fontWeight="font-medium"
               borderColor="border-primary"
               align="center"
               icon="arrow"
