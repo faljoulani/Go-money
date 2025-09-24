@@ -176,9 +176,11 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
                     <h3 className=" text-white text-[24px] leading-tight">{item.title}</h3>
 
                     {item.description && (
-                      <p className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] leading-7">
-                        {item.description}
-                      </p>
+                      <Description
+                        color="#E0E0E0"
+                        className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] leading-7"
+                        html={item.description}
+                      />
                     )}
                   </div>
                 </div>
