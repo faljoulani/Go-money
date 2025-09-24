@@ -166,12 +166,13 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                         <Image
                           src={footerData.Logo?.Urls?.[0] || logoSrc}
                           alt={footerData.Logo?.Title || 'Footer logo'}
-                          width={506}
-                          height={527}
+                          width={100}
+                          height={45}
                           className="
-                            max-w-[506px] 
-                            max-h-[527px] 
+                            max-w-[100px] 
+                            max-h-[45px] 
                             object-contain
+                            invert brightness-0
                           "
                           priority
                           unoptimized
