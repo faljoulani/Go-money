@@ -106,7 +106,7 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
               {title}
             </Title>
           )}
-          {subtitle && <p className='font-semibold text-lg'>{subtitle}</p>}
+          {subtitle && <Description className='font-semibold text-lg' html={subtitle} />}
           {description && <Description html={description} />}
         </div>
       </div>

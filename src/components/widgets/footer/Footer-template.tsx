@@ -143,7 +143,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           alt=""
           className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
         />
-        <div className="ltr:px-20 ltr:py-16 rtl:px-16 rtl:py-16">
+        <div className="ltr:px-20 ltr:py-16 rtl:px-20 rtl:py-16">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
@@ -158,8 +158,8 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {/* container */}
           <div className="mx-auto w-full">
             <div className="flex w-auto">
-              <div className="col-span-1 mr-16">
-                <div className=" h-[423px] max-w-[400px] ltr:border-r ltr:border-white/15 rtl:border-l rtl:border-white/15 flex flex-col gap-8 ltr:pr-14 rtl:pl-14">
+              <div className="col-span-1 mr-16 rtl:mr-0">
+                <div className="rtl:right-0 h-[423px] max-w-[400px] ltr:border-r ltr:border-white/15 rtl:border-l rtl:border-white/15 flex flex-col gap-8 ltr:pr-14 rtl:pl-14">
                   <div className="flex items-center gap-3">
                     <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                       {logoSrc && (
@@ -224,7 +224,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className=" justify-start mt-8 z-20 rtl:pr-16" />
+              <FooterLinks groups={linkGroups} className=" justify-start mt-8 z-20 rtl:pr-16 left-0" />
             </div>
           </div>
 
