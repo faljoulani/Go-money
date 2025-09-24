@@ -221,7 +221,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               src={heroImgUrl}
               alt={bgAlt || 'Hero image'}
               fill
-              className="object-contain"
+              className="h-[660px] w-[690px] object-contain"
               quality={90}
               priority
             />

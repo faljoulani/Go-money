@@ -139,7 +139,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
         {/* Layer 1: gradient + main background image */}
         <div className="absolute inset-0 z-0 rtl:scale-x-[-1]">
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 "
             style={{
               backgroundImage:
                 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000 100%), linear-gradient(97.8deg, #010663 0%, #6BE5BF 100%)',
@@ -152,7 +152,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               alt={financeRepaymentBanner.images.backgroundUrl.alt}
               fill
               priority
-              className="object-cover"
+              className="w-[1240px] h-[550px] object-cover"
             />
           )}
         </div>
@@ -171,6 +171,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                     alt={financeRepaymentBanner.images.floatUrl.alt}
                     fill
                     priority
+                    className='w-[527px] h-[97px]'
                   />
                 </div>
               )}
@@ -213,7 +214,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                 width={550}
                 height={900}
                 priority
-                className="pointer-events-none select-none animate-float"
+                className="w-[550px] h-[500px] pointer-events-none select-none animate-float"
               />
             </div>
           )}

@@ -28,7 +28,7 @@ export default function Description({
 }: Props) {
   const Tag = as;
 
-  const combinedClassName = ['text-description', 'tracking-normal', color, className]
+  const combinedClassName = ['text-base', 'tracking-normal', color, className]
     .filter(Boolean)
     .join(' ');
 

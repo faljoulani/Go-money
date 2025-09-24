@@ -15,6 +15,7 @@ export default function CardImage({
   alt,
   sizes = '100vw',
   priority = false,
+
 }: {
   img: CmsImg;
   alt?: string;

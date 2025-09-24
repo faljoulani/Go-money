@@ -172,9 +172,9 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
 
             {/* Info chips from Certifications (max 2) */}
             {infoCards.length > 0 && (
-              <div className="mt-6 flex divide-x divide-[#7B80FF]">
+              <div className="mt-6 flex divide-x divide-[#7B80FF] rtl:divide-x-reverse">
                 {infoCards.map((card, index) => (
-                  <div key={index} className="flex-1 flex items-start gap-4">
+                  <div key={index} className={` flex items-start gap-3 ${index == 1 ? 'pl-6 rtl:pr-6 rtl:pl-0' : 'rtl:pl-6 pr-6'}`}>
                     {/* Logo */}
                     <div className="rounded-2xl bg-white/20 flex items-center justify-center">
                       {card.logoUrl && (
@@ -188,7 +188,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                       )}
                     </div>
                     {/* Text */}
-                    <div className="min-w-0">
+                    <div className="min-w-0 space-y-2">
                       <div className="text-[16px] font-bold text-[#212121]">{card.title}</div>
                       {!!card.desc && (
                         <div
@@ -214,7 +214,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                         width={173}
                         height={52}
                         priority
-                        className="object-contain"
+                        className="w-[173px] h-[52px] object-contain"
                       />
                     </a>
                   ) : (

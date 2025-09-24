@@ -204,7 +204,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
               >
                 <div className="gap-4">
-                  <div className="icon-wrapper">{item.icon}</div>
+                  <div>{item.icon}</div>
                 </div>
                 <div className="mr-7">
                   <h3 className="text-xl font-bold text-primary">{item.title}</h3>
@@ -226,7 +226,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
               >
                 <div className="gap-4">
-                  <div className="icon-wrapper">{item.icon}</div>
+                  <div>{item.icon}</div>
                 </div>
                 <div className="mr-7">
                   <h3 className="text-xl font-bold text-primary">{item.title}</h3>
