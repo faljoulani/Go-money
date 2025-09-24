@@ -13,6 +13,7 @@ type ContentWithImageItem = {
   Id: string;
   Eyebrow?: string;
   Title?: string;
+  Subtitle?: string;
   Description?: string;
   CtaText?: string;
   CtaUrl?: any;
@@ -41,6 +42,7 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
     'Id',
     'Eyebrow',
     'Title',
+    'Subtitle',
     'Description',
     'CtaText',
     'CtaUrl',
@@ -63,15 +65,14 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
       <div />
     );
 
-    
   const eyebrow: string | undefined = data.Eyebrow;
   const title: string | undefined = data.Title;
+  const subtitle: string | undefined = data.Subtitle;
   const description: string | undefined = data.Description;
 
   const img = Array.isArray(data.Image) ? data.Image[0] : data.Image;
   const imgSrc: string | undefined = pickImageUrl(img);
   const imgAlt: string = img?.AlternativeText || title || 'illustration';
-
 
   return (
     <section className="mx-auto max-w-[1400px] h-[488px] px-[150px] py-7xl ">
@@ -98,15 +99,15 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
 
         {/* Right: Text */}
         <div className="text-left space-y-3 rtl:text-right">
-          {eyebrow && <Eyebrow className='h-6'>{eyebrow}</Eyebrow>}
+          {eyebrow && <Eyebrow className="h-6">{eyebrow}</Eyebrow>}
 
           {title && (
             <Title className="font-bold text-[40px] leading-tight tracking-tight align-middle">
               {title}
             </Title>
           )}
-
-          {description && <Description html={description}/>}
+          {subtitle && <Description className='font-semibold text-lg' html={subtitle} />}
+          {description && <Description html={description} />}
         </div>
       </div>
     </section>

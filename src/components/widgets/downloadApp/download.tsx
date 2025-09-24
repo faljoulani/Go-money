@@ -157,7 +157,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
               width={507}
               height={525}
               priority
-              className="pointer-events-none select-none object-contain absolute -top-2 animate-float"
+              className="w-[507px] h-[525px] pointer-events-none select-none object-contain absolute -top-2 animate-float"
             />
           )}
         </div>
@@ -172,27 +172,27 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
 
             {/* Info chips from Certifications (max 2) */}
             {infoCards.length > 0 && (
-              <div className="mt-6 flex divide-x divide-[#7B80FF]">
+              <div className="mt-6 flex divide-x divide-[#7B80FF] rtl:divide-x-reverse">
                 {infoCards.map((card, index) => (
-                  <div key={index} className="flex-1 flex items-start gap-4 px-6">
+                  <div key={index} className={` flex items-start gap-3 ${index == 1 ? 'pl-6 rtl:pr-6 rtl:pl-0' : 'rtl:pl-6 pr-6'}`}>
                     {/* Logo */}
-                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                    <div className="rounded-2xl bg-white/20 flex items-center justify-center">
                       {card.logoUrl && (
                         <Image
                           src={card.logoUrl}
                           alt={card.logoAlt}
                           width={48}
                           height={48}
-                          className="object-contain"
+                          className="h-12 w-12 object-contain"
                         />
                       )}
                     </div>
                     {/* Text */}
-                    <div className="min-w-0">
-                      <div className="text-lg font-semibold">{card.title}</div>
+                    <div className="min-w-0 space-y-2">
+                      <div className="text-[16px] font-bold text-[#212121]">{card.title}</div>
                       {!!card.desc && (
                         <div
-                          className="text-sm text-[#0a1b2e]/80"
+                          className="text-sm text-default"
                           dangerouslySetInnerHTML={{ __html: card.desc }}
                         />
                       )}
@@ -214,7 +214,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                         width={173}
                         height={52}
                         priority
-                        className="object-contain"
+                        className="w-[173px] h-[52px] object-contain"
                       />
                     </a>
                   ) : (

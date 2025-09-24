@@ -97,7 +97,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
       <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 
       {/* Content above the background */}
-      <div className="relative grid grid-cols-2 items-center gap-10 py-24 pl-16 pr-20">
+      <div className="relative grid grid-cols-2 items-center py-24 pl-16 align-middle h-[580px]">
         {/* Left: copy */}
         <div className="flex flex-col items- gap-5 max-w-xl fadeLeft duration-1000">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -111,9 +111,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           >
             {title}
           </Title>
-          {description && (
-            <Description className="font-extralight leading-[24px]" html={description} />
-          )}
+          {description && <Description className=" text-base" html={description} />}
 
           {ctaText && (
             <div>
@@ -124,7 +122,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
                 bgColor="transparent"
                 variant="outline"
                 icon="arrow"
-                align="left"
+                className="w-[248px] h-14"
               >
                 {ctaText}
               </CTA>
@@ -133,13 +131,13 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
         </div>
 
         {/* Right: artwork / image panel */}
-        <div className="relative h-[392px] w-[490px] fadeRight duration-1000">
-          <div className="relative mx-auto h-[392px] w-[490px] rounded-[20px] overflow-hidden">
+        <div className="absolute h-[392px] w-[490px] fadeRight duration-1000 right-0 mr-[87px] rtl:left-0 rtl:right-auto">
+          <div className="absolute h-[392px] w-[490px] rounded-[20px] overflow-hidden ">
             {imgSrc ? (
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="h-[392px] w-[490px] object-contain rounded-[20px]"
+                className="h-[392px] w-[490px] object-contain rounded-[20px] "
                 draggable={false}
               />
             ) : (

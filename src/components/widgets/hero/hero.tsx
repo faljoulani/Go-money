@@ -30,6 +30,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const heroFields = [
     'Id',
     'Title',
+    'Subtitle',
     'Description',
     'Eyebrow',
     'CtaText',
@@ -69,6 +70,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
+  const subtitle = item.Subtitle || '';
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
   let rawCtaUrl = item.CtaUrl;
@@ -144,6 +146,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               <h1 className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</h1>
             </Title>
           )}
+          {subtitle && (
+            <Description html={subtitle} className="text-white w-[485px] mx-auto text-center font-bold" />
+          )}
           {description && (
             <Description html={description} className="text-white w-[485px] mx-auto text-center" />
           )}
@@ -216,7 +221,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               src={heroImgUrl}
               alt={bgAlt || 'Hero image'}
               fill
-              className="object-contain"
+              className="h-[660px] w-[690px] object-contain"
               quality={90}
               priority
             />
