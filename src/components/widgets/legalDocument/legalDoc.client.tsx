@@ -40,7 +40,7 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     const id = location.hash.replace('#','');
     setActive(id);
   }
-
+s
   let ticking = false;
   function onScroll(){
     if(ticking) return;
