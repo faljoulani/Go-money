@@ -82,7 +82,15 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
   const title: string | undefined = data.Title;
   const description: string | undefined = data.Description;
   const ctaText: string | undefined = data.CtaText || 'More details';
-  const ctaHref: string | undefined = linkToHref(data.CtaUrl);
+  let rawCtaUrl = data.CtaUrl;
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
+    }
+  } catch {
+  }
+  const ctaHref = linkToHref(rawCtaUrl);
+
   const imgSrc: string | undefined = pickImageUrl(
     Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );
