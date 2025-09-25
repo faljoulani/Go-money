@@ -1,3 +1,4 @@
+import '../../sitefinity/fetch-logger';
 import { Metadata } from 'next';
 import { RenderPage, pageMetadata } from '@progress/sitefinity-nextjs-sdk/pages';
 import { templateRegistry } from '../template-registry';
