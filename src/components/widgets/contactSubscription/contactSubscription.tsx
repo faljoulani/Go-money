@@ -106,7 +106,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
         </div>
       ) : (
         <div className="flex flex-col items-center text-center mt-7">
-          <div className="grid grid-cols-2 mb-8 w-full max-w-[520px]">
+          <div className="grid grid-cols-2 mb-8 w-full max-w-[520px] gap-3">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
                 <Image src="/icons/phone.svg" alt="phone" width={17} height={17} />
