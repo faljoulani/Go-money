@@ -297,7 +297,6 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     );
   }
 
-  // ---- main form ----
   return (
     <section className="w-full">
       <form onSubmit={onSubmit} className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 shadow-sm">

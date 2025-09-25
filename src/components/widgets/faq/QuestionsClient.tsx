@@ -37,10 +37,9 @@ export default function QuestionsClient({
     return filtered;
   }, [data, active]);
 
-  // One-open-at-a-time accordion
   const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null); // first question opens on category change / first load
+    setOpenId(questions[0]?.Id ?? null); 
   }, [active, questions]);
 
   return (
@@ -84,7 +83,6 @@ export default function QuestionsClient({
         </ul>
       </aside>
 
-      {/* Questions */}
       <div className="flex-1 fadeRight">
         <div className=" rounded-xl">
           {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
@@ -117,10 +115,8 @@ export default function QuestionsClient({
                       strokeWidth="2"
                     >
                       {isOpen ? (
-                        // Horizontal line (-)
                         <line x1="0" y1="7" x2="15" y2="7" />
                       ) : (
-                        // Plus (+)
                         <>
                           <line x1="7" y1="0" x2="7" y2="15" />
                           <line x1="0" y1="7" x2="15" y2="7" />

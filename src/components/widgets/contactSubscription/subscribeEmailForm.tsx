@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import CTA from '../../atoms/cta/cta';
-import { useSf } from '../../../utils/hooks/useSf';
+import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 export default function SubscribeEmailForm({
   placeholder = 'Enter your email address',
   label = 'Email',
@@ -16,6 +16,7 @@ export default function SubscribeEmailForm({
   endpoint?: string;
   className?: string;
 }) {
+  const { post } = useSfMutation(endpoint);
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle');
   const [msg, setMsg] = useState<string>('');
@@ -30,12 +31,8 @@ export default function SubscribeEmailForm({
     setState('loading');
     setMsg('');
     try {
-      const res = await fetch(`${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Email: email }),
-      });
-      if (!res.ok) throw new Error(await res.text());
+      const res = await post({ Email: email });
+      if (!(res?.Email)) throw new Error(await res.text());
       setState('ok');
       setMsg('Subscribed! Check your inbox.');
       setEmail('');

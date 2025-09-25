@@ -1,7 +1,6 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-
 import Card from '../../atoms/card/card';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -149,7 +148,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             className="rounded-[20px] w-[417px] h-[506px] object-cover"
           />
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
-            {items[0]?.description && <Description className='text-[18px]'>{items[0]?.description}</Description>}
+            {items[0]?.description && <Description className='text-[18px]' html={items[0]?.description}></Description>}
             {items[0]?.title && <Title className='text-2xl font-medium'>{items[0]?.title}</Title>}
           </div>
         </div>
@@ -159,7 +158,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
             {title && <Title className='font-bold text-5xl tracking-[-0.02em] leading-[63px]' >{title}</Title>}
           </div>
-          <div>{subtitle && <Description>{subtitle}</Description>}</div>
+          <div>{subtitle && <Description html={subtitle}></Description>}</div>
         </div>
       </div>
     </section>
