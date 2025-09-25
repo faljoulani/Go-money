@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSf } from '../../../utils/hooks/useSf';
-
+import Description from '../../atoms/description/description';
 type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
 type SfList<T> = { value: T[] };
@@ -36,10 +36,9 @@ export default function QuestionsClient({
     return filtered;
   }, [data, active]);
 
-  // One-open-at-a-time accordion
   const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null); // first question opens on category change / first load
+    setOpenId(questions[0]?.Id ?? null); 
   }, [active, questions]);
 
   return (
@@ -83,7 +82,6 @@ export default function QuestionsClient({
         </ul>
       </aside>
 
-      {/* Questions */}
       <div className="flex-1 fadeRight">
         <div className=" rounded-xl">
           {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
@@ -116,10 +114,8 @@ export default function QuestionsClient({
                       strokeWidth="2"
                     >
                       {isOpen ? (
-                        // Horizontal line (-)
                         <line x1="0" y1="7" x2="15" y2="7" />
                       ) : (
-                        // Plus (+)
                         <>
                           <line x1="7" y1="0" x2="7" y2="15" />
                           <line x1="0" y1="7" x2="15" y2="7" />
@@ -128,7 +124,7 @@ export default function QuestionsClient({
                     </svg>
                   </span>
                 </summary>
-                {q.Answer && <div className="mt-6 text-slate-600 leading-6">{q.Answer}</div>}
+                {q.Answer && <div className="mt-6 text-slate-600 leading-6"><Description html={q.Answer}></Description></div>}
               </details>
             );
           })}

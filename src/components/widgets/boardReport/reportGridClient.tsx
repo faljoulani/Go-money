@@ -70,7 +70,7 @@ export default function ReportGridClient({
   const canNext = hasPaging && offset + size < total;
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-16">
       {(title || description) && (
         <header className="mb-6">
           {title && <h2 className="text-5xl font-bold text-primary">{title}</h2>}

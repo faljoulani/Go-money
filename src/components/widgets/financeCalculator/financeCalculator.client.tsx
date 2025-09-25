@@ -175,7 +175,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     const iconUrl = successMsg?.imageUrl || '/assets/success.png';
 
     return (
-      <section className="w-full">
+      <section className="w-full mt-16">
         <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
             <img src={iconUrl} alt={successMsg?.imageAlt || 'success'} className="h-24 w-24 object-contain" />
@@ -236,7 +236,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     const iconUrl = failMsg?.imageUrl || '/assets/failed.png';
 
     return (
-      <section className="w-full">
+      <section className="w-full mt-16">
         <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
             <img src={iconUrl} alt={failMsg?.imageAlt || 'not-eligible'} className="h-24 w-24 object-contain" />
@@ -297,9 +297,8 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     );
   }
 
-  // ---- main form ----
   return (
-    <section className="w-full">
+    <section className="w-full mt-16">
       <form onSubmit={onSubmit} className="mx-auto max-w-[1120px] rounded-3xl bg-white p-6 shadow-sm">
         <h2 className="text-[28px] font-semibold text-[#0B2A8E]">
           {C.title || 'Enter your Finance details'}
