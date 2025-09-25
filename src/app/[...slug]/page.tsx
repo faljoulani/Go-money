@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { RenderPage, pageMetadata } from '@progress/sitefinity-nextjs-sdk/pages';
 import { templateRegistry } from '../template-registry';
-import ComingSoon from '../coming-soon/page';
+
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -21,5 +22,5 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string }>;
 }) {
   return RenderPage({ params, searchParams, templates: templateRegistry });
- 
+
 }

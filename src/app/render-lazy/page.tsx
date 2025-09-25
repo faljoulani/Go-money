@@ -1,5 +1,7 @@
 import { RenderLazyWidgets } from '@progress/sitefinity-nextjs-sdk/pages';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Render({
   searchParams,
 }: {

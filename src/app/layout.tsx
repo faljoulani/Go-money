@@ -1,6 +1,7 @@
 // import 'bootstrap/dist/css/bootstrap.css';
 import './../index.css';
 import RtlDirection from '../components/customComponents/rtlDirection/rtlDirection';
+import { ThemeProvider } from 'next-themes';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // let bootstrapScript = '';
@@ -11,12 +12,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // }
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="container-fluid">
-        <RtlDirection />
-        <div className="px-5">{children}</div>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <RtlDirection />
+          <div className="px-5">{children}</div>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
