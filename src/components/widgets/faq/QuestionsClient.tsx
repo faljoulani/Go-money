@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSf } from '../../../utils/hooks/useSf';
+import Description from '../../atoms/description/description';
 
 type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
@@ -17,13 +18,13 @@ export default function QuestionsClient({
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
   let endpoint = `api/default/faqquestions`;
- 
+
   const { data, error, isLoading } = useSf<SfList<Question>>(
     endpoint,
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
-      ...(lang === 'ar' ? { sf_culture: 'ar' } : {}), 
+      ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
     },
     { revalidateOnFocus: true },
   );
@@ -128,7 +129,9 @@ export default function QuestionsClient({
                     </svg>
                   </span>
                 </summary>
-                {q.Answer && <div className="mt-6 text-slate-600 leading-6">{q.Answer}</div>}
+                {q.Answer && (
+                  <Description className="mt-6 text-slate-600 leading-6" html={q.Answer} />
+                )}
               </details>
             );
           })}

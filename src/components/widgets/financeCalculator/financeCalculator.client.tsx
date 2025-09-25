@@ -176,7 +176,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
 
     return (
       <section className="w-full">
-        <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+        <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
             <img src={iconUrl} alt={successMsg?.imageAlt || 'success'} className="h-24 w-24 object-contain" />
           </div>
@@ -237,7 +237,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
 
     return (
       <section className="w-full">
-        <div className="mx-auto max-w-[1120px] rounded-3xl bg-white p-8 md:p-12 text-center">
+        <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
             <img src={iconUrl} alt={failMsg?.imageAlt || 'not-eligible'} className="h-24 w-24 object-contain" />
           </div>
@@ -300,7 +300,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
   // ---- main form ----
   return (
     <section className="w-full">
-      <form onSubmit={onSubmit} className="mx-auto max-w-[1120px] rounded-3xl bg-white p-6 shadow-sm">
+      <form onSubmit={onSubmit} className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 shadow-sm">
         <h2 className="text-[28px] font-semibold text-[#0B2A8E]">
           {C.title || 'Enter your Finance details'}
         </h2>

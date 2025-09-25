@@ -189,7 +189,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
                   {/* Social icons */}
                   {socials?.length > 0 && (
-                    <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-8 relative z-10">
                       {socials.map((social, i) => {
                         const sImg = selectPrimaryImage(social.Logo);
                         const sRaw = getImageSrc(sImg);

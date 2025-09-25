@@ -51,7 +51,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
   } catch {
-    // If parsing fails, leave it as-is
+    // If parsing fails, leave it as-is.
   }
 
   const ctaHref = linkToHref(rawCtaUrl);
@@ -78,7 +78,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primary" className="text-40px font-bold">
+            <Title color="text-primary" className="text-[28px] font-bold tracking-[-0.02em]">
               {box.Title}
             </Title>
           )}
