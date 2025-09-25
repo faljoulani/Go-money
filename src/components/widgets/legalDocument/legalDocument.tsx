@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import {
   WidgetContext,
   htmlAttributes,
-  RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import type { LegalDocumentEntity, LegalSection } from './legalDocument.entity';
@@ -54,7 +53,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
     return (
       <div {...attrs}>
         <div className="rounded-xl border  bg-amber-50 p-4 text-sm ">
-          Pick a Legal document (root).
+          Pick a Legal document.
         </div>
       </div>
     );
@@ -79,7 +78,6 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
       Title: docRes.Title ?? '',
     };
 
-    console.log('sfdasdafdasdf', doc?.Id);
     if (sectionsSel?.Content?.length) {
       const res = await RestClient.getItems({
         type: SECTIONS_TYPE,
@@ -128,13 +126,13 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
     <div {...attrs}>
       <div className="sf-ldoc mt-20">
         <div className="mx-auto grid gap-6 md:grid-cols-[320px_1fr]">
-          <aside className="self-start md:sticky md:top-6 bg-white rounded-3xl">
-            <nav className="rounded-3xl  shadow-lg">
-              <ul className="rounded-3xl overflow-hidden  ">
+          <aside className="self-start sticky top-6 bg-white rounded-3xl">
+            <nav className="rounded-3xl shadow-lg">
+              <ul className="rounded-3xl overflow-hidden">
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
                   return (
-                    <li key={s.Id} className="border-b transition last:border-b-0 border-white/10">
+                    <li key={s.Id} className="border-b transition  border-white/10">
                       <a
                         className={`sf-ldoc__link flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
