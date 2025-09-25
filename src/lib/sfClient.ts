@@ -120,9 +120,7 @@ export async function sfFetch<T>(
     }
 
     const text = await res.text();
-    console.log('TEXT:', text);
-    console.log('Parsed Text:', JSON.parse(text));
-
+ 
     if (!res.ok) {
       throw new Error(`sfFetch ${res.status} ${res.statusText} ${u}\n${text.slice(0, 500)}`);
     }
