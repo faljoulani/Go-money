@@ -20,5 +20,6 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string }>;
 }) {
-  return <ComingSoon />;
+  return RenderPage({ params, searchParams, templates: templateRegistry });
+ 
 }
