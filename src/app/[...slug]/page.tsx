@@ -21,5 +21,4 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string }>;
 }) {
   return RenderPage({ params, searchParams, templates: templateRegistry });
- 
 }
