@@ -60,7 +60,7 @@ import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator
 import LegalDocument from '../components/widgets/legalDocument/legalDocument';
 import { LegalDocumentEntity } from '../components/widgets/legalDocument/legalDocument.entity';
 
-import Careers from '../components/widgets/careers/applyForJob';
+import Careers from '../components/widgets/careers/career';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
