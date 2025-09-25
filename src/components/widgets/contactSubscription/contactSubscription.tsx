@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { ContactSubscriptionEntity } from './contactSubscription.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { resolveSitefinitySelection, extractHref } from '../../../utils/utils';
+import { resolveSitefinitySelection, extractHref, linkToHref } from '../../../utils/utils';
 
 import SubscribeEmailForm from './subscribeEmailForm';
 import CTA from '../../atoms/cta/cta';
@@ -44,8 +44,17 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
   const variant = getVariant(box);
   const isSubscribe = variant === 'subscribe';
   const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+  let rawCtaUrl = box.CTAURL;
 
-  const ctaHref = extractHref(box.CTAURL) || '#';
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
+    }
+  } catch {
+    // If parsing fails, leave it as-is
+  }
+
+  const ctaHref = linkToHref(rawCtaUrl);
   const ctaText = box.ButtonLabel || box.CTAURL?.Text || box.CTAURL?.text || 'Contact Us';
   const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
 

@@ -1,223 +1,260 @@
-import Image from 'next/image';
-import JobCard from '../../atoms/jobCard/jobCard';
+'use client';
 
-export type Job = {
-  id: string;
-  title: string;
-  location: string;
-  department: string;
-  workType: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
-  postedDaysAgo: number;
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
+import { useSfMutation } from '../../../utils/hooks/useSfMutation';
+import SimilarJobs from './SimilarJobs';
+
+type DetailsResponse = {
+  Success: boolean;
+  Error: string | null;
+  Data: {
+    Id: string;
+    Title: string;
+    DepartmentId?: string;
+    DepartmentName: string;
+    LocationName: string;
+    EmploymentType: string;
+    PostedAtUtc: string;
+    PostedAgoDays: number;
+    ApplyUrl: string;
+    ShortMessage?: string;
+    ButtonLabel?: string;
+    Sections: {
+      OverviewLabel?: string;
+      OverviewHtml?: string;
+      KeyResponsibilitiesLabel?: string;
+      KeyResponsibilitiesHtml?: string;
+      QualificationsLabel?: string;
+      QualificationsHtml?: string;
+      SkillsLabel?: string;
+    };
+    Skills: string[];
+    ContactInfo: Array<{ Title: string; Info: string }>;
+  };
 };
 
-type Props = {
+export type JobDetailsProps = {
+  id: string;
+  language?: string;
   dir?: 'rtl' | 'ltr' | 'auto';
   className?: string;
+  onOpenJob?: (id: string) => void;
 };
-const jobLocation = 'Riyadh, Saudi Arabia';
 
-const overview =
-  'We are seeking a creative and detail-oriented Senior UI/UX Designer to join our growing product team. You will be responsible for creating intuitive, user-centered designs that enhance the overall user experience across our web and mobile platforms.';
+export default function JobDetails({
+  id,
+  language = 'en',
+  dir = 'ltr',
+  className,
+  onOpenJob,
+}: JobDetailsProps) {
+  const { post: postDetails } = useSfMutation('api/default/careers/details');
+  const postDetailsRef = useRef(postDetails);
 
-const responsibilities = [
-  'Conduct user research and translate findings into wireframes and prototypes.',
-  'Design user interfaces for web and mobile applications with attention to usability and visual appeal.',
-  'Collaborate with product managers, developers, and stakeholders.',
-  'Maintain and improve the design system.',
-  'Test and validate designs through usability testing and feedback.',
-  'Stay updated with UI/UX trends and technologies.',
-];
+  useEffect(() => {
+    postDetailsRef.current = postDetails;
+  }, [postDetails]);
 
-const qualifications = [
-  "Bachelor's degree in Design, HCI, Computer Science, or related field (preferred but not always required).",
-  '5+ years of UI/UX design experience.',
-  'Proficiency in Figma, Adobe XD, Sketch, or similar tools.',
-  'Understanding of user-centered design principles.',
-  'Strong knowledge of HTML/CSS is a plus.',
-  'Experience designing responsive and accessible interfaces.',
-  'Familiar with design systems and component libraries.',
-  'Good communication and teamwork skills.',
-];
+  const [data, setData] = useState<DetailsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const skills = ['Figma', 'HTML', 'CSS', 'Design system', 'Responsive design'];
+  const key = useMemo(() => `${id}::${language}`, [id, language]);
+  const lastKeyRef = useRef<string | null>(null);
 
-const similarJobs: Job[] = [
-  {
-    id: '1',
-    title: 'UX/UI Designer',
-    location: 'Riyadh, Saudi Arabia',
-    department: 'Design',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '2',
-    title: 'Backend Developer',
-    location: 'Riyadh, Saudi Arabia',
-    department: 'Engineering',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '3',
-    title: 'Backend Developer',
-    location: 'Riyadh, Saudi Arabia',
-    department: 'Engineering',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '4',
-    title: 'Marketing Specialist',
-    location: 'Cairo, Egypt',
-    department: 'Marketing',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '5',
-    title: 'Software Engineer',
-    location: 'Riyadh, Saudi Arabia',
-    department: 'Engineering',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '6',
-    title: 'Business Analyst',
-    location: 'Riyadh, Saudi Arabia',
-    department: 'Product Management',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '7',
-    title: 'Marketing Specialist',
-    location: 'Cairo, Egypt',
-    department: 'Marketing',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-  {
-    id: '8',
-    title: 'Business Analyst',
-    location: 'Riyadh, Saudi Arabia',
-    department: 'Product Management',
-    workType: 'Full-time',
-    postedDaysAgo: 5,
-  },
-];
+  useEffect(() => {
+    if (lastKeyRef.current === key) return;
+    let cancelled = false;
 
-export default function JobDetails({ dir = 'ltr', className }: Props) {
+    const fetchDetails = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res: DetailsResponse = await postDetailsRef.current({ id, language });
+        if (!cancelled) {
+          setData(res);
+          lastKeyRef.current = key;
+        }
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message || 'Failed to load job details.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchDetails();
+    return () => {
+      cancelled = true;
+    };
+  }, [key, id, language]);
+
+  const job = data?.Data;
+
+  if (loading) {
+    return (
+      <section dir={dir} className="w-full mx-20 py-10">
+        Loading…
+      </section>
+    );
+  }
+
+  if (error || !job) {
+    return (
+      <section dir={dir} className="w-full mx-20 py-10">
+        <div className="rounded-3xl border bg-white p-6 text-red-700">
+          {error || 'No details found'}
+        </div>
+      </section>
+    );
+  }
+
+  const responsibilitiesHtml = job.Sections?.KeyResponsibilitiesHtml;
+  const qualificationsHtml = job.Sections?.QualificationsHtml;
+  const overviewHtml = job.Sections?.OverviewHtml || '';
+
   return (
-    <section dir={dir} className="w-full mx-20">
+    <section dir={dir} className={`w-full mx-20 ${className ?? ''}`}>
       <div className="grid grid-cols-[2fr,1fr] gap-8">
         {/* Left column */}
-        <div className="space-y-4 bg-white border rounded-3xl w-full px-8">
-          <Box>
-            <H3>Overview</H3>
-            <p className="text-gray-700 leading-relaxed">{overview}</p>
-          </Box>
+        <div className="w-full rounded-3xl border bg-white px-8 space-y-4">
+          {/* Overview */}
+          <div className="my-6 p-5">
+            <h3 className="mb-1 text-2xl font-semibold text-primary">
+              {job.Sections?.OverviewLabel || 'Overview'}
+            </h3>
+            <div
+              className="leading-relaxed text-gray-700"
+              dangerouslySetInnerHTML={{ __html: overviewHtml }}
+            />
+          </div>
 
-          <Box>
-            <H3>Key Responsibilities</H3>
-            <ul className="mt-3 list-disc pl-5 space-y-2 text-gray-700">
-              {responsibilities.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </Box>
-
-          <Box>
-            <H3>Qualifications</H3>
-            <ul className="mt-3 list-disc pl-5 space-y-2 text-gray-700">
-              {qualifications.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </Box>
-
-          <Box>
-            <H3>Skills</H3>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="inline-flex items-center rounded-full bg-[#E1F3F9] px-3 py-1 text-sm text-gray-700"
-                >
-                  {skill}
-                </span>
-              ))}
+          {/* Responsibilities */}
+          {responsibilitiesHtml && (
+            <div className="my-6 p-5">
+              <h3 className="mb-1 text-2xl font-semibold text-primary">
+                {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
+              </h3>
+              <div
+                className="mt-3 text-gray-700"
+                dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }}
+              />
             </div>
-          </Box>
+          )}
+
+          {/* Qualifications */}
+          {qualificationsHtml && (
+            <div className="my-6 p-5">
+              <h3 className="mb-1 text-2xl font-semibold text-primary">
+                {job.Sections?.QualificationsLabel || 'Qualifications'}
+              </h3>
+              <div
+                className="mt-3 text-gray-700"
+                dangerouslySetInnerHTML={{ __html: qualificationsHtml }}
+              />
+            </div>
+          )}
+
+          {/* Skills */}
+          {Array.isArray(job.Skills) && job.Skills.length > 0 && (
+            <div className="my-6 p-5">
+              <h3 className="mb-1 text-2xl font-semibold text-primary">
+                {job.Sections?.SkillsLabel || 'Skills'}
+              </h3>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {job.Skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="inline-flex items-center rounded-full bg-[#E1F3F9] px-3 py-1 text-sm text-gray-700"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Right column: sticky info card */}
+        {/* Right column */}
         <aside className="max-w-sm">
-          <div className="flex flex-col gap-6 border rounded-3xl bg-white p-8 top-4">
-            <div className="flex items-center gap-3 text-gray-700">
-              <Icon src="/icons/map-pin.png" alt="Location" />
-              <span>{jobLocation}</span>
+          <div className="top-4 flex flex-col gap-6 rounded-3xl border bg-white p-8">
+            {/* Location row (inlined Icon + InfoRow) */}
+            <div className="flex items-start gap-3">
+              <Image
+                src="/icons/map-pin.png"
+                alt="Location"
+                width={48}
+                height={48}
+                className="opacity-80"
+              />
+              <div>
+                <div className="text-[18px] font-bold">Location</div>
+                <div>{job.LocationName}</div>
+              </div>
             </div>
-            <div>Please send us your detailed CV to apply for this job or click on apply now</div>
+
+            <div>
+              {job.ShortMessage ||
+                'Please send us your detailed CV to apply for this job or click on apply now'}
+            </div>
 
             <div className="mt-6 space-y-5">
-              <InfoRow
-                icon="/icons/phone_job_icon.png"
-                label="Contact email"
-                value="careers@gomoney.com"
-              />
-              <InfoRow
-                icon="/icons/industry_icon.png"
-                label="Industry"
-                value="Information Technology & Services"
-              />
-              <InfoRow icon="/icons/job_icon.png" label="Job type" value="Full time" />
-              <InfoRow icon="/icons/o'clock_job_icon.png" label="Posted" value="24, July, 2025" />
+              {(job.ContactInfo?.length
+                ? job.ContactInfo
+                : [
+                    { Title: 'Contact email', Info: 'careers@gomoney.com' },
+                    { Title: 'Industry', Info: 'Information Technology & Services' },
+                    { Title: 'Job type', Info: job.EmploymentType || 'Full time' },
+                    { Title: 'Posted', Info: '' },
+                  ]
+              ).map((row, idx) => {
+                const iconSrc = iconFor(row.Title);
+                return (
+                  <div key={`${row.Title}-${idx}`} className="flex items-start gap-3">
+                    <Image
+                      src={iconSrc}
+                      alt={row.Title}
+                      width={48}
+                      height={48}
+                      className="opacity-80"
+                    />
+                    <div>
+                      <div className="text-[18px] font-bold">{row.Title}</div>
+                      <div>{row.Info}</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <button className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 font-medium text-white hover:opacity-90">
-              Apply for this job
-            </button>
+            <a
+              href={job.ApplyUrl || '#'}
+              className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
+            >
+              {job.ButtonLabel || 'Apply for this job'}
+            </a>
           </div>
         </aside>
       </div>
 
       {/* Similar jobs */}
-      <div className="mt-12">
-        <h3 className="text-2xl font-bold text-primary text-center">
-          Similar jobs you may be interested in
-        </h3>
-        <div className="mt-6 grid grid-cols-4 gap-4">
-          {similarJobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-      </div>
+      <SimilarJobs
+        jobId={id}
+        departmentId={job.DepartmentId}
+        language={language}
+        dir={dir}
+        onOpenJob={onOpenJob}
+      />
     </section>
   );
 }
-function Box({ children }: { children: React.ReactNode }) {
-  return <div className="p-5 my-6">{children}</div>;
-}
 
-function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-primary text-2xl font-semibold mb-1">{children}</h3>;
-}
-
-function InfoRow({ icon, label, value }: { icon: string; label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-3">
-      <Icon src={icon} alt={label} />
-      <div>
-        <div className="text-18px font-bold">{label}</div>
-        <div>{value}</div>
-      </div>
-    </div>
-  );
-}
-
-function Icon({ src, alt }: { src: string; alt: string }) {
-  return <Image src={src} alt={alt} width={48} height={48} className="opacity-80" />;
+function iconFor(title: string) {
+  const key = (title || '').toLowerCase();
+  if (key.includes('contact')) return '/icons/phone_job_icon.png';
+  if (key.includes('industry')) return '/icons/industry_icon.png';
+  if (key.includes('job type')) return '/icons/job_icon.png';
+  if (key.includes('posted')) return "/icons/o'clock_job_icon.png";
+  return '/icons/job_icon.png';
 }
 
