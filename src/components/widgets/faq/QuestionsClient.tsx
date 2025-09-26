@@ -106,7 +106,7 @@ export default function QuestionsClient({
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
-                  <span className="text-slate-900">{q.Title}</span>
+                  <span className="text-default font-semibold">{q.Title}</span>
                   <span className="ml-6 grid size-9 place-items-center rounded-lg bg-primary text-white">
                     <svg
                       viewBox="0 0 14 14"
@@ -126,7 +126,7 @@ export default function QuestionsClient({
                   </span>
                 </summary>
                 {q.Answer && (
-                  <Description className="mt-6 text-slate-600 leading-6" html={q.Answer} />
+                  <Description className="mt-6 text-default leading-5 text-14px" html={q.Answer} />
                 )}
               </details>
             );
