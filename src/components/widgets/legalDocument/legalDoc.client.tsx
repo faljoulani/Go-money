@@ -1,11 +1,9 @@
 'use client';
-import { Suspense } from "react";
 export default function ScriptForLegalDocument({ offset }: { offset: number }) {
   return (
-    <Suspense>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `(function(){
  
 
   const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
@@ -40,7 +38,6 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     const id = location.hash.replace('#','');
     setActive(id);
   }
-s
   let ticking = false;
   function onScroll(){
     if(ticking) return;
@@ -60,8 +57,7 @@ s
   window.addEventListener('resize', onScroll);
   onScroll();
 })();`,
-        }}
-      />
-    </Suspense>
+      }}
+    />
   );
 }
