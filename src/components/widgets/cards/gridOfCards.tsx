@@ -188,7 +188,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
               text-5xl
               font-bold     
               tracking-tight
-              leading-[100%]
+              leading-[63px]
             "
           >
             {title}
@@ -206,8 +206,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 <div className="gap-4">
                   <div>{item.icon}</div>
                 </div>
-                <div className="mr-7">
-                  <h3 className="text-xl font-bold text-primary">{item.title}</h3>
+                <div className="">
+                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">{item.title}</h3>
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
@@ -228,8 +228,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                 <div className="gap-4">
                   <div>{item.icon}</div>
                 </div>
-                <div className="mr-7">
-                  <h3 className="text-xl font-bold text-primary">{item.title}</h3>
+                <div className="">
+                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">{item.title}</h3>
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />

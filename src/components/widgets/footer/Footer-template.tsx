@@ -137,7 +137,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
     <section {...attrs} className="relative [perspective:1000px] overflow-x-clip">
       <footer className=" text-gray-300 h-auto flip">
         {/* Background gradient */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
+        <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         <img
           src="/assets/footer.png"
           alt=""
@@ -189,7 +189,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
                   {/* Social icons */}
                   {socials?.length > 0 && (
-                    <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-8 relative z-10">
                       {socials.map((social, i) => {
                         const sImg = selectPrimaryImage(social.Logo);
                         const sRaw = getImageSrc(sImg);
@@ -224,7 +224,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className=" justify-start mt-8 z-20 rtl:pr-16 left-0" />
+              <FooterLinks groups={linkGroups} className=" justify-start my-8 z-30 rtl:pr-16 left-0" />
             </div>
           </div>
 

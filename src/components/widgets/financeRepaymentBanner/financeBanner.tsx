@@ -171,14 +171,14 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                     alt={financeRepaymentBanner.images.floatUrl.alt}
                     fill
                     priority
-                    className='w-[527px] h-[97px]'
+                    className="w-[527px] h-[97px]"
                   />
                 </div>
               )}
 
               {!!financeRepaymentBanner.title && (
                 <Title
-                  className="text-5xl font-bold tracking-tight leading-[100%] max-w-[100%]"
+                  className="text-5xl font-bold tracking-[-0.02em] leading-[90px] max-w-[100%]"
                   color="text-white"
                 >
                   {financeRepaymentBanner.title}

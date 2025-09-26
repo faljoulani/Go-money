@@ -133,10 +133,10 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         {view.Title && (
           <Title
             className="
-              text-5xl
+              text-[40px]
               font-bold     
-              tracking-tight
-              leading-[63px]
+              tracking-[-0.02em]
+              leading-[75px]
             "
           >
             {view.Title}
