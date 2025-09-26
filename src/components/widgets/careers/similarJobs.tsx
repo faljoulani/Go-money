@@ -42,16 +42,12 @@ type SimilarResponse = {
 export type SimilarJobsProps = {
   jobId: string;
   departmentId?: string;
-  language: string;
-  dir?: 'rtl' | 'ltr' | 'auto';
   onOpenJob?: (id: string) => void;
 };
 
 export default function SimilarJobs({
   jobId,
   departmentId: departmentIdProp,
-  language,
-  dir = 'ltr',
   onOpenJob,
 }: SimilarJobsProps) {
   const { post: postSimilar } = useSfMutation('api/default/careers/similar');
@@ -87,7 +83,7 @@ export default function SimilarJobs({
         const response = await fetch('/api/default/careers/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page: 1, pageSize: 25, language }),
+          body: JSON.stringify({ page: 1, pageSize: 25 }),
         });
 
         if (!response.ok) throw new Error(`Search failed (${response.status})`);
@@ -114,12 +110,9 @@ export default function SimilarJobs({
     return () => {
       cancelled = true;
     };
-  }, [jobId, language, departmentIdProp, departmentId]);
+  }, [jobId, departmentIdProp, departmentId]);
 
-  const key = useMemo(
-    () => (departmentId ? `${departmentId}::${language}` : ''),
-    [departmentId, language],
-  );
+  const key = useMemo(() => (departmentId ? `${departmentId}` : ''), [departmentId]);
   const lastKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -134,7 +127,6 @@ export default function SimilarJobs({
       try {
         const response: SimilarResponse = await postSimilarRef.current({
           id: departmentId,
-          language,
         });
 
         if (!cancelled) {
@@ -152,16 +144,13 @@ export default function SimilarJobs({
     return () => {
       cancelled = true;
     };
-  }, [key, departmentId, language]);
+  }, [key, departmentId]);
 
   const items = data?.Data?.Items ?? [];
   const filteredItems = useMemo(() => items.filter((job) => job.Id !== jobId), [items, jobId]);
 
   return (
-    <section
-      dir={dir}
-      className="mt-12 w-[1240px] max-w-[1240px] h-[536px] opacity-100 flex flex-col gap-8 overflow-hidden"
-    >
+    <section className="mt-12 w-[1240px] max-w-[1240px] h-[536px] opacity-100 flex flex-col gap-8 overflow-hidden">
       <h3 className="text-2xl font-bold text-primary text-center">
         Similar jobs you may be interested in
       </h3>

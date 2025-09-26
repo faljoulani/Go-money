@@ -36,31 +36,23 @@ type DetailsResponse = {
 
 export type JobDetailsProps = {
   id: string;
-  language?: string;
-  dir?: 'rtl' | 'ltr' | 'auto';
   className?: string;
   onOpenJob?: (id: string) => void;
 };
 
-export default function JobDetails({
-  id,
-  language = 'en',
-  dir = 'ltr',
-  className,
-  onOpenJob,
-}: JobDetailsProps) {
-  const { post: postDetails } = useSfMutation('api/default/careers/details');
-  const postDetailsRef = useRef(postDetails);
+export default function JobDetails({ id, className, onOpenJob }: JobDetailsProps) {
+  const { post: details } = useSfMutation('api/default/careers/details');
+  const postDetailsRef = useRef(details);
 
   useEffect(() => {
-    postDetailsRef.current = postDetails;
-  }, [postDetails]);
+    postDetailsRef.current = details;
+  }, [details]);
 
   const [data, setData] = useState<DetailsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const key = useMemo(() => `${id}::${language}`, [id, language]);
+  const key = useMemo(() => `${id}`, [id]);
   const lastKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -71,13 +63,13 @@ export default function JobDetails({
       try {
         setLoading(true);
         setError(null);
-        const res: DetailsResponse = await postDetailsRef.current({ id, language });
+        const res: DetailsResponse = await postDetailsRef.current({ id });
         if (!cancelled) {
           setData(res);
           lastKeyRef.current = key;
         }
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message || 'Failed to load job details.');
+      } catch (err: any) {
+        if (!cancelled) setError(err?.message || 'Failed to load job details.');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -87,21 +79,17 @@ export default function JobDetails({
     return () => {
       cancelled = true;
     };
-  }, [key, id, language]);
+  }, [key, id]);
 
   const job = data?.Data;
 
   if (loading) {
-    return (
-      <section dir={dir} className="w-full mx-20 py-10">
-        Loading…
-      </section>
-    );
+    return <section className="w-full mx-20 py-10">Loading…</section>;
   }
 
   if (error || !job) {
     return (
-      <section dir={dir} className="w-full mx-20 py-10">
+      <section className="w-full mx-20 py-10">
         <div className="rounded-3xl border bg-white p-6 text-red-700">
           {error || 'No details found'}
         </div>
@@ -114,7 +102,7 @@ export default function JobDetails({
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
   return (
-    <section dir={dir} className={`w-full mx-20 ${className ?? ''}`}>
+    <section className={`w-full mx-20 ${className ?? ''}`}>
       <div className="grid grid-cols-[2fr,1fr] gap-8">
         {/* Left column */}
         <div className="w-full rounded-3xl border bg-white px-8 space-y-4">
@@ -238,13 +226,7 @@ export default function JobDetails({
       </div>
 
       {/* Similar jobs */}
-      <SimilarJobs
-        jobId={id}
-        departmentId={job.DepartmentId}
-        language={language}
-        dir={dir}
-        onOpenJob={onOpenJob}
-      />
+      <SimilarJobs jobId={id} departmentId={job.DepartmentId} onOpenJob={onOpenJob} />
     </section>
   );
 }

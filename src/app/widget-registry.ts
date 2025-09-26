@@ -60,7 +60,10 @@ import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator
 import LegalDocument from '../components/widgets/legalDocument/legalDocument';
 import { LegalDocumentEntity } from '../components/widgets/legalDocument/legalDocument.entity';
 
-import Careers from '../components/widgets/careers/career';
+import Careers from '../components/widgets/careers/careersView';
+
+import CareerBoardView from '../components/widgets/careers/careersView';
+import { CareersModuleEntity } from '../components/widgets/careers/careers.entity';
 
 const customWidgetRegistry: WidgetRegistry = {
   widgets: {
@@ -241,6 +244,12 @@ const customWidgetRegistry: WidgetRegistry = {
       entity: LegalDocumentEntity,
       ssr: true,
       editorMetadata: { Title: 'Legal Document' },
+    },
+    CareersView: {
+      componentType: CareerBoardView,
+      entity: CareersModuleEntity,
+      ssr: true,
+      editorMetadata: { Title: 'CareersView' },
     },
   },
 };
