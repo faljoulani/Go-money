@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
-import SimilarJobs from './SimilarJobs';
+import SimilarJobs from './similarJobs';
 
 type DetailsResponse = {
   Success: boolean;

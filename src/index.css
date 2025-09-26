@@ -96,6 +96,12 @@
 
 :root {
   --Background-background-neutral-200: #eeeeee;
+  --color-primary: #010663;
+  --color-secondary: #0b2a8e;
+}
+html.dark {
+  --color-primary: 'white';
+  --color-secondary: 'red';
 }
 
 body {
@@ -107,6 +113,18 @@ body {
 }
 .defaultBgColor {
   background-color: var(--Background-background-neutral-200);
+}
+
+/* Dark mode base overrides (next-themes adds `dark` class to <html>) */
+html.dark {
+  color-scheme: dark;
+}
+html.dark body {
+  background-color: #0a0a0a;
+  color: #e5e5e5;
+}
+html.dark .defaultBgColor {
+  background-color: #0a0a0a;
 }
 
 [dir='rtl'] .cta-arrow {

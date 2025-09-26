@@ -52,7 +52,8 @@ export default function ReportGridClient({
   const { data, error, isLoading } = useSf<ODataList<ReportedFile>>(
      'api/default/reportedfiles',
    {
-          ...(lang === 'ar' ? { sf_culture: 'ar' } : {}), 
+          ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
+          ...(params ? params : {}), 
    },
     {
       revalidateOnFocus: false,
