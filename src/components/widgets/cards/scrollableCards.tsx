@@ -186,7 +186,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                           {card.title}
                         </h3>
                         {card.description && (
-                          <p className="mt-3 leading-5 text-default">{card.description}</p>
+                          <p className="mt-3 leading-5 text-default"><Description html={card.description}/></p>
                         )}
                       </div>
                     </div>

@@ -1,13 +1,10 @@
-import React, { Suspense } from 'react';
-import {
-  WidgetContext,
-  htmlAttributes,
-  RestClientForContext,
-} from '@progress/sitefinity-nextjs-sdk';
+import React from 'react';
+import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
 import type { LegalDocumentEntity, LegalSection } from './legalDocument.entity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 import ScriptForLegalDocument from './legalDoc.client';
+
 const LEGAL_DOC_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.LegalDocument.Legaldocument';
 const SECTIONS_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.LegalDocument.Sections';
 
@@ -50,12 +47,11 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
 
   console.log('legalDocSel', legalDocSel);
   console.log('sectionsSel', sectionsSel);
+
   if (!legalDocSel?.Content?.length) {
     return (
       <div {...attrs}>
-        <div className="rounded-xl border  bg-amber-50 p-4 text-sm ">
-          Pick a Legal document (root).
-        </div>
+        <div className="rounded-xl border  bg-amber-50 p-4 text-sm ">Pick a Legal document.</div>
       </div>
     );
   }
@@ -79,7 +75,6 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
       Title: docRes.Title ?? '',
     };
 
-    console.log('sfdasdafdasdf', doc?.Id);
     if (sectionsSel?.Content?.length) {
       const res = await RestClient.getItems({
         type: SECTIONS_TYPE,
@@ -126,15 +121,15 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
 
   return (
     <div {...attrs}>
-      <div className="sf-ldoc mt-20">
+      <div className="sf-ldoc mt-20 ">
         <div className="mx-auto grid gap-6 md:grid-cols-[320px_1fr]">
-          <aside className="self-start md:sticky md:top-6 bg-white rounded-3xl">
-            <nav className="rounded-3xl  shadow-lg">
-              <ul className="rounded-3xl overflow-hidden  ">
+          <aside className="self-start sticky top-24 bg-white rounded-3xl">
+            <nav className="rounded-3xl shadow-lg">
+              <ul className="rounded-3xl overflow-hidden">
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
                   return (
-                    <li key={s.Id} className="border-b transition last:border-b-0 border-white/10">
+                    <li key={s.Id} className="border-b transition  border-white/10">
                       <a
                         className={`sf-ldoc__link flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
@@ -174,10 +169,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                   <h4 className="mb-3 text-[20px] font-extrabold leading-snug text-[#010663]">
                     {s.SectionHeader}
                   </h4>
-                  <div
-                    className="prose prose-slate max-w-none prose-p:my-3 prose-li:my-1 prose-h2:my-3 prose-h3:my-2"
-                    dangerouslySetInnerHTML={{ __html: s.Description ?? '' }}
-                  />
+                  <div className="" dangerouslySetInnerHTML={{ __html: s.Description ?? '' }} />
                 </section>
               );
             })}
@@ -190,68 +182,5 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   );
 }
 
-// function ScriptForLegalDocument({ offset }: { offset: number }) {
-//   return (
-//     <Suspense>
-//       <script
-//         dangerouslySetInnerHTML={{
-//           __html: `(function(){
 
-//   const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
-//   const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
-
-//   // Smooth scroll
-//   links.forEach(a=>{
-//     a.addEventListener('click', function(e){
-//       const id = this.getAttribute('data-target');
-//       const el = document.getElementById(id);
-//       if(!el) return;
-//       e.preventDefault();
-//       const y = el.getBoundingClientRect().top + window.scrollY - OFFSET;
-//       window.scrollTo({ top: y, behavior: 'smooth' });
-//       history.replaceState(null,'','#'+id);
-//     });
-//   });
-
-//   function setActive(id){
-//     // remove Tailwind utility classes first
-//     links.forEach(l=>{
-//       l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
-//     });
-//     const to = links.find(l=>l.getAttribute('data-target')===id);
-//     if(to){
-//       // add Tailwind classes only
-//       to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
-//     }
-//   }
-
-//   if(location.hash){
-//     const id = location.hash.replace('#','');
-//     setActive(id);
-//   }
-
-//   let ticking = false;
-//   function onScroll(){
-//     if(ticking) return;
-//     ticking = true;
-//     requestAnimationFrame(()=>{
-//       const topEdge = OFFSET + 1;
-//       let currentId = sections[0]?.id;
-//       for(const sec of sections){
-//         const rect = sec.getBoundingClientRect();
-//         if(rect.top <= topEdge) currentId = sec.id; else break;
-//       }
-//       if(currentId) setActive(currentId);
-//       ticking = false;
-//     });
-//   }
-//   window.addEventListener('scroll', onScroll, { passive: true });
-//   window.addEventListener('resize', onScroll);
-//   onScroll();
-// })();`,
-//         }}
-//       />
-//     </Suspense>
-//   );
-// }
 

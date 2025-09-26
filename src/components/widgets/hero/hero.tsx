@@ -143,7 +143,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           </div>
           {title && (
             <Title>
-              <h1 className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</h1>
+              <p className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</p>
             </Title>
           )}
           {subtitle && (
