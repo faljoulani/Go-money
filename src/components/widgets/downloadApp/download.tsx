@@ -142,7 +142,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
     <section
       {...(attrs as any)}
       className={mergeClasses(
-        'relative h-auto w-auto rounded-3xl mx-20 my-16 px-16 fadeup',
+        'relative h-auto w-[63%] rounded-3xl mx-auto my-16 px-16 fadeup',
         (attrs as any)?.className || '',
       )}
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}

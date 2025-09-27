@@ -64,14 +64,14 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8 ${className}`}
+      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] flex flex-col h-full bg-white p-6 md:p-8 ${className}`}
     >
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
         <div
           className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[60px] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] h-[110px] w-[110px] bg-secondary`}
         >
-          <div className={`absolute top-0 h-[52px] w-[52px] bg-white`} />
+          <div className={`absolute h-[52px] w-[52px] bg-white`} />
         </div>
       )}
 
@@ -102,11 +102,12 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             label={box.EmailLabel || 'Email'}
             button={box.ButtonLabel || 'Subscribe Now'}
             endpoint="api/default/SubscriptionEmails"
+            className="flex flex-col h-full [&>button[type=submit]]:mt-auto"
           />
         </div>
       ) : (
-        <div className="flex flex-col items-center text-center mt-7">
-          <div className="grid grid-cols-2 mb-8 w-full max-w-[520px] gap-3">
+        <div className="flex flex-col items-center text-center mt-8">
+          <div className="grid grid-cols-2 mb-8 w-full  max-w-[520px] h-[50%] gap-3">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
                 <Image src="/icons/phone.svg" alt="phone" width={17} height={17} />
@@ -128,17 +129,18 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
               </div>
             </div>
           </div>
-
-          <CTA
-            href={ctaHref}
-            target={ctaTarget}
-            borderColor="border-primary"
-            variant="outline"
-            icon="arrow"
-            className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] px-6 py-[18px]"
-          >
-            {ctaText}
-          </CTA>
+          <div className=" w-full max-w-[525px]">
+            <CTA
+              href={ctaHref}
+              target={ctaTarget}
+              borderColor="border-primary"
+              variant="outline"
+              icon="arrow"
+              className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] mt-auto px-6 py-[18px]"
+            >
+              {ctaText}
+            </CTA>
+          </div>
         </div>
       )}
     </div>

@@ -181,7 +181,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   return (
     <section {...attributes} className="w-full py-16 px-20">
       <div>
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-2 text-center fadeupText">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title
             className="
@@ -196,8 +196,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           {subtitle && <Description html={subtitle} />}
         </div>
 
-        <div className="mt-12 fadeup">
-          <div className="grid grid-cols-3 gap-8">
+        <div className="mt-12">
+          <div className="grid grid-cols-3 gap-8 fadeup">
             {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
@@ -218,8 +218,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             ))}
           </div>
         </div>
-        <div className="mt-12 fadeup">
-          <div className="grid grid-cols-3 gap-8">
+        <div className="mt-12 ">
+          <div className="grid grid-cols-3 gap-8 fadeup">
             {childCardData.slice(3, 6).map((item) => (
               <div
                 key={item.id}
@@ -242,7 +242,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         </div>
 
         {ctaText && (
-          <div className="mt-12 text-center fadeup">
+          <div className="mt-12 text-center fadeupButton">
             <CTA
               variant="outline"
               colorText="text-primary"

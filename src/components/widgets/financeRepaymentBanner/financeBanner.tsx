@@ -165,7 +165,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               {/* Cards strip (maps from floatUrl → cards) under the title area */}
 
               {financeRepaymentBanner.images.floatUrl.url && (
-                <div className="relative -left-8 -mb-12 rtl:-right-12 rtl:-mb-12 h-[180px] w-[590px] rounded-lg">
+                <div className="relative -left-8 -mb-12 rtl:-right-12 rtl:-mb-12 h-[180px] w-[590px] rounded-lg fadeRightFinanceDetails">
                   <Image
                     src={financeRepaymentBanner.images.floatUrl.url}
                     alt={financeRepaymentBanner.images.floatUrl.alt}
@@ -175,7 +175,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                   />
                 </div>
               )}
-
+              <div className="fadeRightFinanceDetails">
               {!!financeRepaymentBanner.title && (
                 <Title
                   className="text-5xl font-bold tracking-tight leading-[100%] max-w-[100%]"
@@ -184,9 +184,10 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                   {financeRepaymentBanner.title}
                 </Title>
               )}
+              </div>
 
               {!!financeRepaymentBanner.ctaLabel && (
-                <div>
+                <div >
                   <CTA
                     variant="outline"
                     colorText="text-white"
@@ -196,6 +197,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                     icon="slot"
                     bgColor="transparent"
                     href={financeRepaymentBanner.ctaHref}
+                    className="fadeRightFinanceButton"
                   >
                     {financeRepaymentBanner.ctaLabel}
                   </CTA>
