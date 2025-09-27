@@ -125,7 +125,7 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
       <div className="mx-auto px-20">
         {/* Section header */}
         <div className="mb-8 text-center">
-          <Title className="text-[48px] leading-tight tracking-tight text-center align-middle font-bold">
+          <Title className="text-[48px] leading-[90px] tracking-[-0.02em] text-center align-middle font-bold">
             {sectionTitle}
           </Title>
           {sectionSubtitle && (

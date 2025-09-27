@@ -48,7 +48,7 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
       <div className="mx-auto max-w-[1400px] h-[266px] px-[24px] pt-16 flex flex-col items-center justify-center text-center space-y-4">
         {/* Title */}
         {title ? (
-          <h2 className="font-semibold text-[52px]  leading-[62px] tracking-wide text-[#010663] inline-flex items-center gap-2">
+          <h2 className="font-bold text-[40px]  leading-[75px] tracking-[-0.02em] text-primary inline-flex items-center gap-2">
             {title}
           </h2>
         ) : null}
