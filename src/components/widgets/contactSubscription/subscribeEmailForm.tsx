@@ -44,9 +44,10 @@ export default function SubscribeEmailForm({
   }
 
   return (
+    <div className='flex flex-col justify-end h-full'>
     <form onSubmit={onSubmit} className={className} noValidate>
       <label className="sr-only">{label}</label>
-      <div className="mb-4 flex h-[56px] items-center rounded-2xl border border-[#DFE3EA] px-4 bg-white">
+      <div className="mb-4 flex h-[56px] items-center rounded-[20px] border border-[#DFE3EA] px-4 bg-white ">
         <input
           type="email"
           inputMode="email"
@@ -75,6 +76,7 @@ export default function SubscribeEmailForm({
         </p>
       )}
     </form>
+    </div>
   );
 }
 

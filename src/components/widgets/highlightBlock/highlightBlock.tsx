@@ -90,7 +90,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
   } catch {
   }
   const ctaHref = linkToHref(rawCtaUrl);
-
+ console.log('---------->', ctaHref)
   const imgSrc: string | undefined = pickImageUrl(
     Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );
@@ -105,7 +105,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
       <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 
       {/* Content above the background */}
-      <div className="relative grid grid-cols-2 items-center py-24 pl-16 align-middle h-[580px]">
+      <div className="relative grid grid-cols-2 items-center py-24 pl-16 rtl:pr-16 align-middle h-[580px]">
         {/* Left: copy */}
         <div className="flex flex-col items- gap-5 max-w-xl ">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}

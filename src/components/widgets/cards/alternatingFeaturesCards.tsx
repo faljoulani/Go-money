@@ -9,6 +9,7 @@ import Subtitle from '../../atoms/subtitle/subtitle';
 import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import CardImage from '../../atoms/cardImage/cardImage';
+import { linkToHref } from '../../../utils/utils';
 
 type CardItem = {
   Id: string;
@@ -114,7 +115,19 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
     const imgUrl =
       img?.Url || img?.MediaUrl || img?.ThumbnailUrl || (Array.isArray(img?.Urls) && img.Urls[0]);
 
-    const href = (card?.LinkUrl || '').trim();
+    let rawCtaUrl = card.CtaUrl;
+
+    try {
+      if (typeof rawCtaUrl === 'string') {
+        rawCtaUrl = JSON.parse(rawCtaUrl);
+      }
+    } catch {
+      // If parsing fails, leave it as-is
+    }
+
+    const href = linkToHref(rawCtaUrl);
+
+    // const href = (card?.CtaUrl || '').trim();
 
     return {
       id: card?.Id,
@@ -162,17 +175,17 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                       {card.eyebrow && <Eyebrow>{card.eyebrow}</Eyebrow>}
 
                       {card.title && (
-                        <Title className="text-[40px] leading-[52px] font-bold tracking-[-0.02em]">
+                        <Title className="text-[40px] leading-[75px] font-bold tracking-[-0.02em]">
                           {card.title}
                         </Title>
                       )}
 
-                      {card.subtitle && <Subtitle align='left'>{card.subtitle}</Subtitle>}
+                      {card.subtitle && <Subtitle align="left" className='font-semibold leading-6 text-lg'>{card.subtitle}</Subtitle>}
 
                       {card.description && (
                         <Description
                           maxWidth={597}
-                          className="text-[18px] rtl:max-w-[760px]"
+                          className=" rtl:max-w-[760px]"
                           html={card.description}
                         />
                       )}

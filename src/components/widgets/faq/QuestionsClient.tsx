@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSf } from '../../../utils/hooks/useSf';
 import Description from '../../atoms/description/description';
+
 type Category = { Id: string; Title: string };
 type Question = { Id: string; Title: string; Answer?: string; Order?: number; ParentId?: string };
 type SfList<T> = { value: T[] };
@@ -17,13 +18,13 @@ export default function QuestionsClient({
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
   let endpoint = `api/default/faqquestions`;
- 
+
   const { data, error, isLoading } = useSf<SfList<Question>>(
     endpoint,
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
-      ...(lang === 'ar' ? { sf_culture: 'ar' } : {}), 
+      ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
     },
     { revalidateOnFocus: true },
   );
@@ -105,7 +106,7 @@ export default function QuestionsClient({
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
-                  <span className="text-slate-900">{q.Title}</span>
+                  <span className="text-default font-semibold">{q.Title}</span>
                   <span className="ml-6 grid size-9 place-items-center rounded-lg bg-primary text-white">
                     <svg
                       viewBox="0 0 14 14"
@@ -124,7 +125,9 @@ export default function QuestionsClient({
                     </svg>
                   </span>
                 </summary>
-                {q.Answer && <div className="mt-6 text-slate-600 leading-6"><Description html={q.Answer}></Description></div>}
+                {q.Answer && (
+                  <Description className="mt-6 text-default leading-5 text-14px" html={q.Answer} />
+                )}
               </details>
             );
           })}

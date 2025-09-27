@@ -133,10 +133,10 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         {view.Title && (
           <Title
             className="
-              text-5xl
+              text-[40px]
               font-bold     
-              tracking-tight
-              leading-[63px]
+              tracking-[-0.02em]
+              leading-[75px]
             "
           >
             {view.Title}
@@ -157,7 +157,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       >
         <div className="pointer-events-none h-[70%] absolute inset-0 z-40 mt-36 left-[170px]">
           <div className="sticky top-[12vh] flex justify-center">
-            <img src={phoneSrc} alt={phoneAlt} className='h-[565px] w-[460px]' />
+            <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[460px]" />
           </div>
         </div>
         <div className="h-[120vh]" />
@@ -202,7 +202,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                       key={s.Id || `${s.Title}-${i}`}
                       className="relative rounded-[28px] p-10 text-white
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
-                                 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_30px_80px_rgba(0,0,0,0.35)]
+                                 border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]
                                  before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"
@@ -217,7 +217,9 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
                       <h3 className="text-center text-2xl">{s.Title}</h3>
                       {s.Description && (
-                        <p className="mt-3 text-center text-[#E0E0E0] text-base w-[253px]">{s.Description}</p>
+                        <p className="mt-3 text-center text-[#E0E0E0] text-base w-[253px]">
+                          {s.Description}
+                        </p>
                       )}
 
                       <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid h-12 w-12 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm font-bold ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">

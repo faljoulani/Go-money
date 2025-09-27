@@ -51,7 +51,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
   } catch {
-    // If parsing fails, leave it as-is
+    // If parsing fails, leave it as-is.
   }
 
   const ctaHref = linkToHref(rawCtaUrl);
@@ -64,7 +64,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] flex flex-col h-full bg-white p-6 md:p-8 ${className}`}
+      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8 flex flex-col justify-between ${className}`}
     >
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
@@ -78,7 +78,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primary" className="text-40px font-bold">
+            <Title color="text-primary" className="text-[28px] font-bold tracking-[-0.02em]">
               {box.Title}
             </Title>
           )}
@@ -88,7 +88,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
                 {box.SubTitle}
               </Description>
             ) : (
-              <Description maxWidth="none" className="mt-0 w-72 text-lg leading-6">
+              <Description maxWidth="none" className="mt-0 w-72 text-lg leading-6 mb-8">
                 {box.SubTitle}
               </Description>
             ))}
@@ -96,7 +96,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       )}
 
       {isSubscribe ? (
-        <div className="mt-8">
+        <div>
           <SubscribeEmailForm
             placeholder={box.EmailPlaceholder || 'Enter your email address'}
             label={box.EmailLabel || 'Email'}
@@ -106,8 +106,8 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
           />
         </div>
       ) : (
-        <div className="flex flex-col items-center text-center mt-8">
-          <div className="grid grid-cols-2 mb-8 w-full  max-w-[520px] h-[50%] gap-3">
+        <div className="flex flex-col justify-end items-center text-center h-full">
+          <div className="grid grid-cols-2 mb-8 w-full max-w-[520px] gap-3">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
                 <Image src="/icons/phone.svg" alt="phone" width={17} height={17} />
@@ -193,7 +193,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
           <div className="mb-10">
             <Title
               color="text-primary"
-              className="font-normal text-40px tracking-[-0.02em] max-w-[720px]"
+              className="text-40px tracking-[-0.02em] max-w-[720px] leading-[75px]"
             >
               {parent.Title}
             </Title>
