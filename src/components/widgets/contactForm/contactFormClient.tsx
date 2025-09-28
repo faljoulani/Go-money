@@ -43,9 +43,9 @@ export default function ContactFormClient({
   dir = 'auto',
 }: Props) {
   const FIELD =
-    'w-[326.5px] h-[48px] px-3 py-3 rounded-[18px] border border-[#BDBDBD] ' +
-    'bg-white text-14px leading-6 outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
-  const LABEL = 'mb-2 block text-14px font-medium text-[#2B2B2B]';
+    'w-full mx-auto h-[48px] px-3 py-3 rounded-[18px] text-[#BDBDBD] border border-[#BDBDBD] ' +
+    'bg-white text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
+  const LABEL = 'mb-1 block text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
 
   const requestType = data.requestTypeChoices ?? [];
@@ -185,17 +185,13 @@ export default function ContactFormClient({
 
           {/* Request type (optional) */}
           <div>
-            <label className={LABEL}>{data.requestTypeLabel ?? 'Request type'}</label>
-            <div className="relative">
-              <select
-                name="requestType"
-                className={`${FIELD} appearance-none pr-10`}
-                disabled={isLoading}
-                defaultValue=""
-              >
-                <option value="" hidden>
-                  Select item
-                </option>
+            <label className={LABEL}>
+              {data.requestTypeLabel ?? 'Request type'} {reqStar}
+            </label>
+
+            <div className="relative rtl">
+              <select className={`${FIELD} appearance-none`} disabled={isLoading} defaultValue="">
+                <option value="" hidden></option>
                 {requestType.length > 0 ? (
                   requestType.map((opt) => (
                     <option key={opt.id} value={opt.id}>
@@ -209,6 +205,22 @@ export default function ContactFormClient({
                   </>
                 )}
               </select>
+              <svg
+                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#9E9E9E] rtl:left-3 rtl:right-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                width="20"
+                height="20"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </div>
           </div>
 
