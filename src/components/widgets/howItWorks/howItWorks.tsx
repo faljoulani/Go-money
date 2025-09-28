@@ -128,7 +128,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative mx-20 bg-white">
       {/* Top headline block */}
-      <div className="flex flex-col items-center text-center gap-1 fadeup">
+      <div className="flex flex-col items-center text-center gap-1 fadeupText">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title
@@ -147,7 +147,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative h-[1390px] flex flex-col justify-center items-center"
+        className="relative mt-10 h-[1390px] flex flex-col justify-center items-center"
         style={{
           backgroundImage: `url('/assets/Shape.png')`,
           backgroundSize: '1380px',
@@ -155,8 +155,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none h-[70%] absolute inset-0 z-40 mt-36 left-[170px]">
-          <div className="sticky top-[12vh] flex justify-center">
+        <div className="pointer-events-none h-[70%] absolute inset-0 z-40 mt-36 left-[170px] ">
+          <div className=" translatePhone  sticky  flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[460px]" />
           </div>
         </div>
@@ -176,7 +176,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none select-none absolute w-[1400px] left-0 z-50"
+              className="pointer-events-none select-none absolute object-cover left-0 z-50"
             />
             <img
               src="/assets/Vector.png"
@@ -186,7 +186,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px] fadeup">
+                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px] fadeupText">
                   {view.IntroLead}
                 </h2>
               )}
@@ -232,7 +232,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
               {/* CTA */}
               {view.CTALabel && (
-                <div className="mt-12 flex justify-center fadeup">
+                <div className="mt-12 flex justify-center fadeupButton">
                   <a
                     href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
                     className="group inline-flex items-center gap-2 rounded-[20px] px-6 py-3

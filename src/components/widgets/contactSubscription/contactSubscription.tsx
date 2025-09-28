@@ -71,7 +71,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
         <div
           className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[60px] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] h-[110px] w-[110px] bg-secondary`}
         >
-          <div className={`absolute top-0 h-[52px] w-[52px] bg-white`} />
+          <div className={`absolute h-[52px] w-[52px] bg-white`} />
         </div>
       )}
 
@@ -102,6 +102,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             label={box.EmailLabel || 'Email'}
             button={box.ButtonLabel || 'Subscribe Now'}
             endpoint="api/default/SubscriptionEmails"
+            className="flex flex-col h-full [&>button[type=submit]]:mt-auto"
           />
         </div>
       ) : (
@@ -128,17 +129,18 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
               </div>
             </div>
           </div>
-
-          <CTA
-            href={ctaHref}
-            target={ctaTarget}
-            borderColor="border-primary"
-            variant="outline"
-            icon="arrow"
-            className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] px-6 py-[18px]"
-          >
-            {ctaText}
-          </CTA>
+          <div className=" w-full max-w-[525px]">
+            <CTA
+              href={ctaHref}
+              target={ctaTarget}
+              borderColor="border-primary"
+              variant="outline"
+              icon="arrow"
+              className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] mt-auto px-6 py-[18px]"
+            >
+              {ctaText}
+            </CTA>
+          </div>
         </div>
       )}
     </div>

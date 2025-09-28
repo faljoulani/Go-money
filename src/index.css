@@ -162,21 +162,38 @@ html.dark .defaultBgColor {
   }
 }
 
+@keyframes fadeupButton {
+  from {
+    transform: translateY(100px);
+  }
+  to {
+
+    transform: translateY(0);
+  }
+}
+
+.fadeupButton {
+  animation: fadeupButton 2s ease-out;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
+}
+
+
 @keyframes fadeup {
   from {
     transform: translateY(150px);
   }
   to {
+
     transform: translateY(0);
   }
 }
 
 .fadeup {
-  animation: fadeup 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation: fadeup 2s linear both;
   animation-timeline: view();
-  animation-range: entry 50% cover 100vh;
+  animation-range: entry 0% cover 20%;
 }
-
 @keyframes fadeupHero {
   from {
     transform: translateY(150px);
@@ -204,7 +221,7 @@ html.dark .defaultBgColor {
 @keyframes fadeRightFinance {
   from {
     opacity: 0;
-    transform: translate(400px);
+    transform: translate(100px);
   }
   to {
     opacity: 1;
@@ -214,10 +231,9 @@ html.dark .defaultBgColor {
 
 .fadeLeftFinance,
 .fadeRightFinance {
-  animation-delay: 250ms;
-  animation: 3.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation: 3.5s linear both;
   animation-timeline: view();
-  animation-range: entry 50% cover 50%;
+  animation-range: entry 50% cover 20%;
 }
 
 .fadeRightFinance {
@@ -238,31 +254,75 @@ html.dark .defaultBgColor {
 @keyframes fadeRight {
   from {
     opacity: 0;
-    transform: translate(400px);
+    transform: translate(200px);
   }
   to {
     opacity: 1;
-    transform: translate(0);
+    transform: translate(0px);
   }
 }
 
 @keyframes fadeLeft {
   from {
     opacity: 0;
-    transform: translate(-400px);
+    transform: translate(-75px);
   }
   to {
     opacity: 1;
     transform: translate(0);
   }
 }
-.fadeRight,
+@keyframes fadeRightFinanceDetails {
+  from {
+    opacity: 0.5;
+    transform: translateX(250px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.fadeRightFinanceDetails{
+  animation:fadeRightFinanceDetails ease-in-out both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 30%;
+}
+
 .fadeLeft {
-  animation-duration: 2s;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation-timing-function: ease-out;
   animation-fill-mode: both;
   animation-timeline: view();
-  animation-range: entry 50% cover 50%;
+  animation-range: entry 0% cover 20%;
+}
+.fadeRight {
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 30%;
+}
+@keyframes fadeRightFinanceButton {
+  from {
+    opacity: 0.5;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.fadeRightFinanceButton{
+  animation: 3.5s ease-in-out both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 10%;
+}
+.fadeRightFinanceButton {
+  animation-name: fadeRightFinanceButton;
+}
+.fadeLeft {
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
 }
 
 /* LTR defaults */
@@ -284,7 +344,7 @@ html.dark .defaultBgColor {
 @keyframes fadeRightDownload {
   from {
     opacity: 0;
-    transform: translate(-50px);
+    transform: translate(-75px);
   }
   to {
     opacity: 1;
@@ -294,12 +354,11 @@ html.dark .defaultBgColor {
 
 @keyframes fadeLeftDownload {
   from {
-    opacity: 0;
-    transform: translate(50px);
+    transform: translateX(0px) translateY(100px);
+
   }
   to {
-    opacity: 1;
-    transform: translate(0);
+      transform: translate(0) translateY(0px);
   }
 }
 
@@ -309,10 +368,9 @@ html.dark .defaultBgColor {
   animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
   animation-fill-mode: both;
   animation-timeline: view();
-  animation-range: entry 50% cover 100%;
+  animation-range: entry 0% cover 80%;
 }
 
-/* LTR defaults */
 .fadeRightDownload {
   animation-name: fadeRightDownload;
 }
@@ -320,7 +378,6 @@ html.dark .defaultBgColor {
   animation-name: fadeLeftDownload;
 }
 
-/* Flip in RTL */
 [dir='rtl'] .fadeRightDownload {
   animation-name: fadeLeftDownload;
 }
@@ -372,7 +429,7 @@ html.dark .defaultBgColor {
 
 @keyframes fadeRightSubscribe {
   from {
-    transform: translate(200px);
+    transform: translate(75px);
   }
   to {
     transform: translate(0);
@@ -381,7 +438,7 @@ html.dark .defaultBgColor {
 
 @keyframes fadeLeftSubscribe {
   from {
-    transform: translate(-200px);
+    transform: translate(-75px);
   }
   to {
     transform: translate(0);
@@ -390,11 +447,11 @@ html.dark .defaultBgColor {
 
 .fadeRightSubscribe,
 .fadeLeftSubscribe {
-  animation-duration: 2s;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation-duration: 3s;
+  animation-timing-function: cubic-bezier(0.1, -0.6, 0.2, 0);
   animation-fill-mode: both;
   animation-timeline: view();
-  animation-range: entry 20% cover 100%;
+  animation-range: entry 0% cover 30%;
 }
 
 /* LTR defaults */
@@ -467,10 +524,9 @@ html.dark .defaultBgColor {
 }
 
 .flip {
-  transform: rotateX(60deg);
   transform-style: preserve-3d;
 
-  animation: flip 1s linear both;
+  animation: flip linear both;
   animation-timeline: view();
   animation-range: entry 0% cover 40%;
   will-change: transform;
@@ -478,10 +534,42 @@ html.dark .defaultBgColor {
 
 @keyframes flip {
   from {
-    transform: rotateX(60deg);
+    transform: rotateX(20deg);
   }
   to {
     transform: rotateX(0deg);
   }
 }
 
+@keyframes fadeupText {
+  from {
+    opacity:0.5;
+    transform: translateY(100px);
+  }
+  to {
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupText {
+  animation: fadeupText 2s ease-out;
+  animation-timeline: view();
+  animation-range: entry 0% cover 40%;
+}
+
+@keyframes translatePhone {
+  from {
+    transform: translateY(-100px);
+  }
+  to {
+
+    transform: translateY(400px);
+  }
+}
+
+.translatePhone {
+  animation: translatePhone 2s linear both;
+  animation-timeline: view();
+  animation-range: entry 150% cover 90%;
+}

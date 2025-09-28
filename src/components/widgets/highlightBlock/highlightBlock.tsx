@@ -100,14 +100,14 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section className="mx-20 relative scaleC">
+    <section className="mx-20 relative">
       {/* Background div that scales */}
       <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 
       {/* Content above the background */}
       <div className="relative grid grid-cols-2 items-center py-24 pl-16 rtl:pr-16 align-middle h-[580px]">
         {/* Left: copy */}
-        <div className="flex flex-col items- gap-5 max-w-xl fadeLeft duration-1000">
+        <div className="flex flex-col items- gap-5 max-w-xl ">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title
             className="
