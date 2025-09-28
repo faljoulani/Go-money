@@ -191,7 +191,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
           <div className="mb-10">
             <Title
               color="text-primary"
-              className="text-40px tracking-[-0.02em] max-w-[720px] leading-[75px]"
+              className="text-40px tracking-[-0.02em] max-w-[720px] leading-[52px]"
             >
               {parent.Title}
             </Title>
