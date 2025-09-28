@@ -138,11 +138,21 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
       <footer className=" text-gray-300 h-auto flip">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
-        <img
+        {/* <img
           src="/assets/footer.png"
           alt=""
           className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
-        />
+        /> */}
+        <video
+          className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px]"
+          src="assets/footerAnimation.mp4"
+          autoPlay
+          playsInline
+          loop
+        >
+          <source src="assets/footerAnimation.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         <div className="ltr:px-20 ltr:py-16 rtl:px-20 rtl:py-16">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
@@ -224,7 +234,10 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className=" justify-start my-8 z-30 rtl:pr-16 left-0" />
+              <FooterLinks
+                groups={linkGroups}
+                className=" justify-start my-8 z-30 rtl:pr-16 left-0"
+              />
             </div>
           </div>
 
