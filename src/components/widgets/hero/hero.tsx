@@ -147,10 +147,10 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
             </Title>
           )}
           {subtitle && (
-            <Description html={subtitle} className="text-white w-[485px] mx-auto text-center font-bold" />
+            <Description html={subtitle} className="text-white w-[485px] mx-auto text-center font-semibold leading-7" />
           )}
           {description && (
-            <Description html={description} className="text-white w-[485px] mx-auto text-center" />
+            <Description html={description} className="text-white w-[485px] mx-auto text-center leading-7" />
           )}
         </div>
       </section>
