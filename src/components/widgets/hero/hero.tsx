@@ -190,7 +190,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 max-w-[500px] font-bold text-[48px] leading-[90px] tracking-[-0.02em] mb-4"
+              className="mt-1 mx-0 max-w-[500px] font-bold text-[48px] leading-[63px] tracking-[-0.02em] mb-4"
             >
               {title}
             </Title>
