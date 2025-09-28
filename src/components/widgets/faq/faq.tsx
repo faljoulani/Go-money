@@ -76,7 +76,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   }
   return (
     <section {...attrs}>
-      <div className="mx-auto w-full flex flex-col gap-2 text-center justify-center items-center px-6 pt-12 pb-4 fadeup">
+      <div className="mx-auto w-full flex flex-col gap-2 text-center justify-center items-center px-6 pt-12 pb-4 fadeupText">
         {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && (
           <Title
@@ -96,7 +96,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
         )}
       </div>
 
-      {categories.length > 0 && <QuestionsClient lang={lang} categories={categories}/>}
+      {categories.length > 0 && <QuestionsClient lang={lang} categories={categories} />}
     </section>
   );
 }

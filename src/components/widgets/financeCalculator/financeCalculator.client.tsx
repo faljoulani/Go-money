@@ -315,6 +315,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
               return (
                 <label key={label} className="inline-flex items-center gap-2">
                   <input
+                  required
                     type="radio"
                     name="nationality"
                     value={val}
@@ -331,7 +332,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
 
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <Field label={C.labels?.employerType || 'Employer Type'}>
-            <Select
+            <Select 
               value={employer}
               onChange={setEmployer}
               placeholder={C.labels?.employerPlaceholder || 'Select Employer Type'}
@@ -342,6 +343,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
             <input
               type="date"
+              required
               value={dob}
               onChange={(e) => setDob(e.target.value)}
               placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
@@ -384,6 +386,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
               </div>
 
               <input
+                required
                 type="range"
                 min={AMIN}
                 max={AMAX}
@@ -409,6 +412,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
                 {C.validation?.installments || `Maximum eligible installments is ${IMAX} months`}
               </div>
               <input
+              required
                 type="range"
                 min={IMIN}
                 max={IMAX}
@@ -423,6 +427,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
           </Field>
 
           <Field
+        
             label={C.labels?.totalMonthlyExpenses || 'Total Monthly Expenses'}
             tooltip={C.popups?.totalMonthlyExpenses}
           >
@@ -546,6 +551,7 @@ function Select({
   return (
     <div className="relative">
       <select
+      required
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="sf-input appearance-none pr-10"
@@ -577,6 +583,7 @@ function CurrencyInput({
 }) {
   return (
     <input
+      required
       inputMode="decimal"
       value={value === '' ? '' : String(value)}
       onChange={(e) => {
