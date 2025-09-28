@@ -564,12 +564,12 @@ html.dark .defaultBgColor {
   }
   to {
 
-    transform: translateY(400px);
+    transform: translateY(500px);
   }
 }
 
 .translatePhone {
   animation: translatePhone 2s linear both;
   animation-timeline: view();
-  animation-range: entry 150% cover 90%;
+  animation-range: entry 148% cover 95%;
 }
