@@ -155,9 +155,9 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none h-[70%] absolute inset-0 z-40 mt-36 left-[170px] ">
+        <div className="pointer-events-none h-[80%] absolute inset-0 z-40 mt-36 left-[170px] ">
           <div className=" translatePhone  sticky  flex justify-center">
-            <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[460px]" />
+            <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
           </div>
         </div>
         <div className="h-[120vh]" />
