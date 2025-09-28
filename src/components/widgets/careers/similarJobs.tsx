@@ -150,7 +150,7 @@ export default function SimilarJobs({
   const filteredItems = useMemo(() => items.filter((job) => job.Id !== jobId), [items, jobId]);
 
   return (
-    <section className="mt-12 w-[1240px] max-w-[1240px] h-[536px] opacity-100 flex flex-col gap-8 overflow-hidden">
+    <section className="mt-12 mb-20 opacity-100 flex flex-col gap-8 overflow-hidden">
       <h3 className="text-2xl font-bold text-primary text-center">
         Similar jobs you may be interested in
       </h3>

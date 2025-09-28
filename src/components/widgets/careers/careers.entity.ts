@@ -28,5 +28,18 @@ export class CareersModuleEntity {
     AllowMultipleItemsSelection: true,
   })
   Departments?: any[];
+
+  @ContentSection('Apply Form', 4)
+  @Content({
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.CareersFormLabel.CareersFormLabel',
+  })
+  ApplyForm?: any;
+
+  @ContentSection('City Choices', 5)
+  @Content({
+    Type: 'Telerik.Sitefinity.DynamicTypes.Model.CityDropList.Citydroplist',
+    AllowMultipleItemsSelection: true,
+  })
+  CityChoices?: any[];
 }
 
