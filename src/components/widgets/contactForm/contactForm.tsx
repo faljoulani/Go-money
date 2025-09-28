@@ -27,6 +27,7 @@ type FormItem = {
 
   RequestTypeLabel?: string;
   RequestTypeChoices?: Array<{ Id?: string; Title?: string; Name?: string }>;
+  RequestTypePlacholder?: string;
 
   TopicLabel?: string;
   TopicPlaceholder?: string;
@@ -48,7 +49,10 @@ const toOptions = (arr: unknown): Option[] => {
   const list = Array.isArray(arr) ? arr : [arr];
   return list
     .filter(Boolean)
-    .map((option: any) => ({ id: option?.Id, label: option?.Title || option?.Name || '' }))
+    .map((option: any) => ({ 
+      id: option?.Id || '', 
+      label: option?.Key || option?.Value || '' 
+    }))
     .filter((option: Option) => !!option.id && !!option.label);
 };
 
@@ -94,7 +98,8 @@ export default async function ContactFormView(props: WidgetContext<FormEntity>) 
     'EmailLabel',
     'EmailPlaceholder',
     'RequestTypeLabel',
-    'RequestTypeChoices()',
+    'RequestTypeChoices',
+    'RequestTypePlacholder',
     'TopicLabel',
     'TopicPlaceholder',
     'NotesLabel',
@@ -160,6 +165,7 @@ export default async function ContactFormView(props: WidgetContext<FormEntity>) 
 
     requestTypeLabel: item.RequestTypeLabel ?? 'Request type',
     requestTypeChoices: toOptions(item.RequestTypeChoices),
+    requestTypePlacholder: item.RequestTypePlacholder ?? 'select item',
 
     topicLabel: item.TopicLabel ?? 'Topic',
     topicPlaceholder: item.TopicPlaceholder ?? '',

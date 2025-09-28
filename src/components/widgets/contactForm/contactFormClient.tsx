@@ -3,6 +3,20 @@
 import * as React from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
+// Import the types and function from your existing file
+type ApiNavItem = {
+  children?: any[];
+  [key: string]: any;
+};
+
+type ApiNavDropdown = ApiNavItem & {
+  children: any[];
+};
+
+function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
+  return Array.isArray((item as any)?.children);
+}
+
 type Option = { id: string; label: string };
 type Data = {
   title?: string;
@@ -23,6 +37,7 @@ type Data = {
 
   requestTypeLabel?: string;
   requestTypeChoices?: Option[];
+  requestTypePlacholder?: string;
 
   topicLabel?: string;
   topicPlaceholder?: string;
@@ -52,7 +67,21 @@ export default function ContactFormClient({
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [resStatus, setResStatus] = React.useState<null | 'success' | 'error'>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const formRef = React.useRef<HTMLFormElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside (similar to your navbar implementation)
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,6 +129,78 @@ export default function ContactFormClient({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const CustomDropdown = () => {
+    const [selectedOption, setSelectedOption] = React.useState<Option | null>(null);
+
+    const dropdownItem: ApiNavItem = {
+      children: requestType.map((opt) => ({
+        id: opt.id,
+        label: opt.label,
+        url: `#${opt.id}`,
+      })),
+    };
+
+    if (isDropdown(dropdownItem)) {
+      return (
+        <div ref={dropdownRef} className="relative">
+          <button
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded={isDropdownOpen}
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            disabled={isLoading}
+            className={`${FIELD} appearance-none text-left flex items-center justify-between ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            <span className={selectedOption ? 'text-default' : 'text-[#BDBDBD]'}>
+              {selectedOption
+                ? selectedOption.label
+                : (data.requestTypePlacholder ?? 'Select request type')}
+            </span>
+            <svg
+              className={`h-4 w-4 opacity-70 transition-transform ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+
+          {isDropdownOpen && (
+            <div
+              role="listbox"
+              className="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
+            >
+              {dropdownItem.children.map((child) => (
+                <button
+                  key={child.id}
+                  type="button"
+                  role="option"
+                  aria-selected={selectedOption?.id === child.id}
+                  onClick={() => {
+                    setSelectedOption({ id: child.id, label: child.label });
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+                >
+                  {child.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -183,48 +284,16 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Request type (optional) */}
           <div>
             <label className={LABEL}>
               {data.requestTypeLabel ?? 'Request type'} {reqStar}
             </label>
 
-            <div className="relative rtl">
-              <select className={`${FIELD} appearance-none`} disabled={isLoading} defaultValue="">
-                <option value="" hidden></option>
-                {requestType.length > 0 ? (
-                  requestType.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.label}
-                    </option>
-                  ))
-                ) : (
-                  <>
-                    <option value="COMPLAINT">Complaint</option>
-                    <option value="INQUIRY">Inquiry</option>
-                  </>
-                )}
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#9E9E9E] rtl:left-3 rtl:right-auto"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                width="20"
-                height="20"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
+            <CustomDropdown />
+
+            <input type="hidden" name="requestType" />
           </div>
 
-          {/* Topic -> complaintCategory */}
           <div>
             <label className={LABEL}>
               {data.topicLabel ?? 'Topic'}
@@ -269,7 +338,7 @@ export default function ContactFormClient({
           <button
             type="submit"
             disabled={isLoading}
-            className="rounded-[16px] px-6 py-3 text-white shadow-sm bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
+            className="rounded-[18px] px-6 py-3 text-white bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
           >
             {isLoading ? 'Sending…' : (data.ctaText ?? 'Send Message')}
           </button>
@@ -278,4 +347,3 @@ export default function ContactFormClient({
     </>
   );
 }
-

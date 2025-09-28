@@ -246,12 +246,13 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             <CTA
               variant="outline"
               colorText="text-primary"
-              fontWeight="font-semibold"
+              fontWeight="font-medium"
               borderColor="border-primary"
               align="center"
               icon="arrow"
               bgColor="transparent"
               href={ctaHref || '#'}
+              className='text-lg'
             >
               {ctaText}
             </CTA>

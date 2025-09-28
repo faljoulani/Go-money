@@ -162,7 +162,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative overflow-hidden text-white rounded-[32px] h-[700px]"
+      className="relative overflow-hidden text-white rounded-[32px] h-[700px] "
       style={{
         backgroundImage: `url('/assets/HeroBackground.jpg')`,
         backgroundSize: 'cover',
@@ -190,7 +190,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 max-w-[500px] font-bold text-[48px] leading-[90px] tracking-[-0.02em] mb-4"
+              className="mt-1 mx-0 max-w-[500px] font-bold text-[48px] leading-[63px] tracking-[-0.02em] mb-4"
             >
               {title}
             </Title>
