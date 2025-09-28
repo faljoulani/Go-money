@@ -139,7 +139,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
         </div>
 
         {/* Right: artwork / image panel */}
-        <div className="absolute h-[392px] w-[490px]   right-0 mr-[87px] rtl:left-0 rtl:right-auto">
+        <div className="absolute h-[392px] w-[490px] fadeRight duration-1000 right-0 mr-[87px] rtl:ml-[87px] rtl:left-0 rtl:right-auto">
           <div className="absolute h-[392px] w-[490px] rounded-[20px] overflow-hidden ">
             {imgSrc ? (
               <img

@@ -87,7 +87,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 <img
                   src={imgUrl(media)}
                   alt={media?.AlternativeText || media?.Title || social.Title}
-                  className="h-10 w-10 object-contain"
+                  className="h-8 w-8 object-contain"
                   draggable={false}
                 />
               )}
