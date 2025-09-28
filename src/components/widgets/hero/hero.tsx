@@ -180,9 +180,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       />
 
       <div className="relative grid grid-cols-2 gap-16 max-w-7xl px-20 py-24 ">
-        <div className="flex flex-col items-start justify-center gap-3 mb-44 fadeLeftHero ">
+        <div className="flex flex-col items-start justify-center mb-44 fadeLeftHero ">
           {eyebrow && (
-            <Eyebrow className="" color="white">
+            <Eyebrow className="font-medium text-lg leading-6" color="white">
               {eyebrow}
             </Eyebrow>
           )}
@@ -190,14 +190,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 max-w-[500px] font-bold text-[60px] leading-[80px] tracking-[-0.02em] "
+              className="mt-1 mx-0 max-w-[500px] font-bold text-[48px] leading-[90px] tracking-[-0.02em] mb-4"
             >
               {title}
             </Title>
           )}
 
           {description && (
-            <Description html={description} className="text-white font-extralight " />
+            <Description html={description} className="text-white mb-4 " />
           )}
 
           {ctaText && (
