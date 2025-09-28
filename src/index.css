@@ -553,3 +553,18 @@ html.dark .defaultBgColor {
   animation-range: entry 0% cover 40%;
 }
 
+@keyframes translatePhone {
+  from {
+    transform: translateY(-100px);
+  }
+  to {
+
+    transform: translateY(400px);
+  }
+}
+
+.translatePhone {
+  animation: translatePhone 2s linear both;
+  animation-timeline: view();
+  animation-range: entry 150% cover 90%;
+}
