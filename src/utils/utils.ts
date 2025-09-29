@@ -1,6 +1,6 @@
 import type { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
 
-import { CmsLink } from '../types/Type';
+import { CmsLink } from '../types/typee';
 
 export const DAY_MS = 86_400_000;
 

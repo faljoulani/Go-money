@@ -10,7 +10,7 @@ import LeadershipCards from './leadershipCards';
 import CEOMessageCard from './ceoMessageCard';
 import ChairmanMessageCard from './chairmanMessageCard';
 
-import { CmsImage } from '../../../types/Type';
+import { CmsImage } from '../../../types/typee';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -207,7 +207,9 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                   <div>{item.icon}</div>
                 </div>
                 <div className="">
-                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">{item.title}</h3>
+                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">
+                    {item.title}
+                  </h3>
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
@@ -229,7 +231,9 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                   <div>{item.icon}</div>
                 </div>
                 <div className="">
-                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">{item.title}</h3>
+                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">
+                    {item.title}
+                  </h3>
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
@@ -252,7 +256,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
               icon="arrow"
               bgColor="transparent"
               href={ctaHref || '#'}
-              className='text-lg'
+              className="text-lg"
             >
               {ctaText}
             </CTA>

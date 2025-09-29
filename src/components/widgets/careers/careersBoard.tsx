@@ -13,7 +13,7 @@ import type {
   CareersFiltration,
   CareersItem,
   CareersSearchBody,
-} from '../../../types/Type';
+} from '../../../types/typee';
 
 const EMPLOYMENT_TYPE_LABEL: Record<string, string> = {
   '1': 'Full-time',
