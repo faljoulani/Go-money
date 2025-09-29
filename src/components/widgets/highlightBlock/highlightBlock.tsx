@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { HighlightBlockEntity } from './highlightBlock.entity';
 import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
 import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
-import { CmsImage } from '../../../types/Type';
+import { CmsImage } from '../../../types/typee';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -87,8 +87,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     if (typeof rawCtaUrl === 'string') {
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
-  } catch {
-  }
+  } catch {}
   const ctaHref = linkToHref(rawCtaUrl);
   console.log('---------->', ctaHref)
   const imgSrc: string | undefined = pickImageUrl(

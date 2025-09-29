@@ -2,10 +2,10 @@
 
 import { useCallback, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import JobDetails from './details/JobDetails';
+import JobDetails from './details/jobDetailss';
 import ApplyForJob from './applyForJob/applyForJob';
 import CareersBoard from './careersDashboard/careersBoard';
-import { type CareersSearchBody, type ModuleCareer } from '../../../types/Type';
+import { type CareersSearchBody, type ModuleCareer } from '../../../types/typee';
 type Labels = { vacanciesLabel?: string; locationLabel?: string; departmentLabel?: string };
 
 type EntityLike = {
@@ -97,4 +97,5 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
 
   return <section className="w-full">{content}</section>;
 }
+
 

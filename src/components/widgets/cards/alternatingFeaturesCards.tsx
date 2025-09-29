@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { ImgUrl } from '../../../types/Type';
+import { ImgUrl } from '../../../types/typee';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -180,7 +180,11 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                         </Title>
                       )}
 
-                      {card.subtitle && <Subtitle align="left" className='font-semibold leading-6 text-lg'>{card.subtitle}</Subtitle>}
+                      {card.subtitle && (
+                        <Subtitle align="left" className="font-semibold leading-6 text-lg">
+                          {card.subtitle}
+                        </Subtitle>
+                      )}
 
                       {card.description && (
                         <Description

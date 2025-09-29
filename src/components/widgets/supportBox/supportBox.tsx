@@ -1,10 +1,10 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import type { SupportInfoBoxEntity } from './supportInfoBox.entity';
+import type { SupportInfoBoxEntity } from './supportBox.entity';
 import { fetchData } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
 import Description from '../../atoms/description/description';
 import Title from '../../atoms/title/title';
-import { CmsImage, ImgUrl as imgUrl } from '../../../types/Type';
+import { CmsImage, ImgUrl as imgUrl } from '../../../types/typee';
 
 import Link from 'next/link';
 import Image from 'next/image';

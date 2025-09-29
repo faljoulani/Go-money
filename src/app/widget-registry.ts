@@ -20,8 +20,8 @@ import { DownloadEntity } from '../components/widgets/downloadApp/download.entit
 
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 
-import Footer from '../components/widgets/footer/Footer-template';
-import { FooterEntity } from '../components/widgets/footer/Footer.entity';
+import Footer from '../components/widgets/footer/footer-temp';
+import { FooterEntity } from '../components/widgets/footer/footerr.entity';
 
 import HowItWorks from '../components/widgets/howItWorks/howItWorks';
 import { HowItWorkEntity } from '../components/widgets/howItWorks/howItWorks.entity';
@@ -35,13 +35,13 @@ import { BoardReportEntity } from '../components/widgets/boardReport/boardReport
 import ContactBox from '../components/widgets/gotQuestions/contactBox';
 import { ContactBoxEntity } from '../components/widgets/gotQuestions/contactBox.entity';
 
-import BreadcrumbCustomView from '../components/widgets/breadcrumb/BreadcrumbCustom';
+import BreadcrumbCustomView from '../components/widgets/breadcrumb/breadcrumbCustomm';
 
 import HighlightBlockDefault from '../components/widgets/highlightBlock/highlightBlock';
 import { HighlightBlockEntity } from '../components/widgets/highlightBlock/highlightBlock.entity';
 
-import SupportInfoBox from '../components/widgets/SupportInfoBox/supportInfoBox';
-import { SupportInfoBoxEntity } from '../components/widgets/SupportInfoBox/supportInfoBox.entity';
+import SupportInfoBox from '../components/widgets/supportBox/supportBox';
+import { SupportInfoBoxEntity } from '../components/widgets/supportBox/supportBox.entity';
 
 import ContactForm from '../components/widgets/contactForm/contactForm';
 import { FormEntity } from '../components/widgets/contactForm/contactForm.entity';

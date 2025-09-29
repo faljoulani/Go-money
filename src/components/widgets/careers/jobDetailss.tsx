@@ -3,53 +3,36 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import SimilarJobs from './similarJobs';
 
-import type { DetailsResponse, JobDetailsProps } from '../../../../types/Type';
-import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
+import type { DetailsResponse, JobDetailsProps } from '../../../types/typee';
+import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
 export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {
-  console.log('JOB DETAILS COMPONENT');
-  const { post: postDetails } = useSfMutation('api/default/careers/details');
-  const postDetailsRef = useRef(postDetails);
-  useEffect(() => {
-    postDetailsRef.current = postDetails;
-  }, [postDetails]);
-
-  const [language, setLanguage] = useState<'en' | 'ar' | null>(null);
+  const { post: details } = useSfMutation('api/default/careers/details');
+  const postDetailsRef = useRef(details);
 
   useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const computeLang = () => (document.documentElement.dir === 'rtl' ? 'ar' : 'en') as 'en' | 'ar';
-    setLanguage(computeLang());
-
-    const obs = new MutationObserver(() => setLanguage(computeLang()));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
-    return () => obs.disconnect();
-  }, []);
+    postDetailsRef.current = details;
+  }, [details]);
 
   const [data, setData] = useState<DetailsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const key = useMemo(() => (language ? `${id}:${language}` : ''), [id, language]);
+  const key = useMemo(() => `${id}`, [id]);
   const lastKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!id || !language) return;
     if (lastKeyRef.current === key) return;
-
     let cancelled = false;
 
-    (async () => {
+    const fetchDetails = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const res: DetailsResponse = await postDetailsRef.current({ id, language });
-
+        const res: DetailsResponse = await postDetailsRef.current({ id });
         if (!cancelled) {
           setData(res);
           lastKeyRef.current = key;
@@ -59,17 +42,20 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    };
 
+    fetchDetails();
     return () => {
       cancelled = true;
     };
-  }, [key, id, language]);
-
-  if (loading || !language) return <FullPageLoader />;
+  }, [key, id]);
 
   const job = data?.Data;
-  console.log('JOB ' + JSON.stringify(job));
+
+  if (loading) {
+    return <FullPageLoader />;
+  }
+
   if (error || !job) {
     return (
       <section className="w-full mx-20 py-10">
@@ -203,7 +189,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                 href={job.ApplyUrl}
                 className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
               >
-                {job.ButtonLabel}
+                {job.ButtonLabel || 'Apply for this job'}
               </Link>
             ) : (
               <button
@@ -218,7 +204,6 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
         </aside>
       </div>
 
-      {/* Note: If SimilarJobs also calls an API, consider applying the same language logic there. */}
       <SimilarJobs jobId={id} departmentId={job.DepartmentId} onOpenJob={onOpenJob} />
     </section>
   );
