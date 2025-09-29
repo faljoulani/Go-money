@@ -50,6 +50,7 @@ export default function SimilarJobs({
   departmentId: departmentIdProp,
   onOpenJob,
 }: SimilarJobsProps) {
+  console.log('Similar Jobs COMPONENT');
   const [language, setLanguage] = useState<'en' | 'ar' | null>(null);
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import type { DetailsResponse, JobDetailsProps } from '../../../../types/Type';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
 
 export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {
+  console.log('JOB DETAILS COMPONENT');
   const { post: postDetails } = useSfMutation('api/default/careers/details');
   const postDetailsRef = useRef(postDetails);
   useEffect(() => {
