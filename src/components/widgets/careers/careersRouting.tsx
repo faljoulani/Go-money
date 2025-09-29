@@ -1,87 +1,99 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import CareersBoard, { type CareersSearchBody } from './careersBoard';
 import JobDetails from './JobDetails';
+import ApplyForJob from './applyForJob';
+import CareersBoard from './careersBoard';
+import { type CareersSearchBody, type ModuleCareer } from '../../../types/Type';
+type Labels = { vacanciesLabel?: string; locationLabel?: string; departmentLabel?: string };
 
-type Labels = {
-  vacanciesLabel?: string;
-  locationLabel?: string;
-  departmentLabel?: string;
+type EntityLike = {
+  ApplyForm?: any;
+  CityChoices?: any[];
 };
 
-type ModuleCareer = {
-  Id: string;
-  Title?: string;
-  EmploymentType?: string;
-  Date?: string;
-  Department?: { Id?: string; Title?: string } | { Id?: string; Title?: string }[] | null;
-  Location?: { Title?: string } | { Title?: string }[] | null;
-  DetailUrl?: string;
-  ApplyUrl?: string;
-};
-
-export default function CareersRouting({
-  labels,
-  careers,
-  initialBody,
-}: {
+type Props = {
   language?: string;
   dir?: 'rtl' | 'ltr' | 'auto';
   labels: Labels;
   careers: ModuleCareer[];
   initialBody?: Partial<CareersSearchBody>;
-}) {
+  entity?: EntityLike;
+};
+
+export default function CareersRouting({ labels, careers, entity, language }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
 
-  const jobId = search.get('job');
+  const jobId = search.get('job') ?? '';
+  const isApplying = search.get('apply') === '1';
+
+  const buildUrl = useCallback(
+    (mutate: (p: URLSearchParams) => void) => {
+      const params = new URLSearchParams(search);
+      mutate(params);
+      const qs = params.toString();
+      return qs ? `${pathname}?${qs}` : pathname;
+    },
+    [pathname, search],
+  );
 
   const openJob = useCallback(
     (id: string) => {
-      if (jobId === id) return;
-      const params = new URLSearchParams(search.toString());
-      params.set('job', id);
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      if (jobId === id && !isApplying) return;
+      router.push(
+        buildUrl((page) => {
+          page.set('job', id);
+          page.delete('apply');
+        }),
+        { scroll: false },
+      );
     },
-    [router, pathname, jobId, search],
+    [router, buildUrl, jobId, isApplying],
   );
 
-  const backToList = useCallback(() => {
-    if (!jobId) return;
-    const params = new URLSearchParams(search.toString());
-    params.delete('job');
-    const queryString = params.toString();
-    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
-  }, [router, pathname, jobId, search]);
-
-  if (jobId) {
-    return (
-      <section className="w-full">
-        <div className="mx-20 my-4">
-          <button
-            onClick={backToList}
-            className="rounded-2xl bg-[#010663] px-4 py-2 font-medium text-white hover:opacity-90"
-          >
-            ← Back to careers
-          </button>
-        </div>
-        <JobDetails id={jobId} />
-      </section>
-    );
-  }
-
-  return (
-    <section className="w-full">
-      <CareersBoard
-        labels={labels}
-        careers={careers}
-        onOpenJob={openJob}
-        initialBody={initialBody}
-      />
-    </section>
+  const goToApply = useCallback(
+    (id: string) => {
+      router.push(
+        buildUrl((p) => {
+          p.set('job', id);
+          p.set('apply', '1');
+        }),
+        { scroll: false },
+      );
+    },
+    [router, buildUrl],
   );
+
+  const content = useMemo(() => {
+    if (jobId && isApplying) {
+      return (
+        <ApplyForJob
+          className="mb-12"
+          backHref={buildUrl((page) => {
+            page.set('job', jobId);
+            page.delete('apply');
+          })}
+          form={entity?.ApplyForm}
+          cities={entity?.CityChoices}
+          jobId={jobId}
+          language={language}
+        />
+      );
+    }
+
+    if (jobId) {
+      return (
+        <>
+          <JobDetails id={jobId} onApply={() => goToApply(jobId)} onOpenJob={openJob} />
+        </>
+      );
+    }
+
+    return <CareersBoard labels={labels} careers={careers} onOpenJob={openJob} />;
+  }, [jobId, isApplying, labels, careers, entity, language, buildUrl, goToApply, openJob]);
+
+  return <section className="w-full">{content}</section>;
 }
-

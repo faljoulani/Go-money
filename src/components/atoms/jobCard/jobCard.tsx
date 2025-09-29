@@ -20,7 +20,7 @@ type Props = {
   onOpen?: (id: string) => void;
 };
 
-export default function JobCard({ job, className, dir = 'ltr', onOpen }: Props) {
+export default function JobCard({ job, onOpen }: Props) {
   const router = useRouter();
   const { post } = useSfMutation('api/default/careers/details');
   const [loading, setLoading] = React.useState(false);
@@ -49,7 +49,6 @@ export default function JobCard({ job, className, dir = 'ltr', onOpen }: Props) 
 
   return (
     <article
-      dir={dir}
       role="button"
       tabIndex={0}
       onClick={goToDetails}
