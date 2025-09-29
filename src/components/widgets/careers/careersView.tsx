@@ -134,11 +134,7 @@ export default async function Careers(props: WidgetContext<any>) {
     citiesTask,
   ]);
 
-  console.log('settingsRaw ' + JSON.stringify(settingsRaw));
-
   const pageData = getFirstItem<any>(settingsRaw);
-
-  console.log('pageData ' + JSON.stringify(pageData));
 
   const careers = isArray<any>(careersRaw).filter(Boolean);
   const applyForm = getFirstItem<any>(applyFormRaw);

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import JobCard from '../../atoms/jobCard/jobCard';
-import { useSfMutation } from '../../../utils/hooks/useSfMutation';
+import JobCard from '../../../atoms/jobCard/jobCard';
+import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 
 type SearchResponse = {
   Success: boolean;
@@ -50,9 +50,21 @@ export default function SimilarJobs({
   departmentId: departmentIdProp,
   onOpenJob,
 }: SimilarJobsProps) {
+  const [language, setLanguage] = useState<'en' | 'ar' | null>(null);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    const computeLang = () => (document.documentElement.dir === 'rtl' ? 'ar' : 'en') as 'en' | 'ar';
+    setLanguage(computeLang());
+
+    const obs = new MutationObserver(() => setLanguage(computeLang()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+    return () => obs.disconnect();
+  }, []);
+
   const { post: postSimilar } = useSfMutation('api/default/careers/similar');
   const postSimilarRef = useRef(postSimilar);
-
   useEffect(() => {
     postSimilarRef.current = postSimilar;
   }, [postSimilar]);
@@ -71,6 +83,7 @@ export default function SimilarJobs({
   }, [departmentIdProp, departmentId]);
 
   useEffect(() => {
+    if (!language) return;
     if (departmentIdProp) return;
 
     let cancelled = false;
@@ -83,14 +96,14 @@ export default function SimilarJobs({
         const response = await fetch('/api/default/careers/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page: 1, pageSize: 25 }),
+          body: JSON.stringify({ page: 1, pageSize: 25, language }),
         });
 
         if (!response.ok) throw new Error(`Search failed (${response.status})`);
 
         const json: SearchResponse = await response.json();
         const items = json?.Data?.Items ?? [];
-        const match = items.find((it) => it.Id === jobId);
+        const match = items.find((item) => item.Id === jobId);
 
         if (!match?.DepartmentId) {
           throw new Error('Could not resolve DepartmentId for this job.');
@@ -110,23 +123,26 @@ export default function SimilarJobs({
     return () => {
       cancelled = true;
     };
-  }, [jobId, departmentIdProp, departmentId]);
-
-  const key = useMemo(() => (departmentId ? `${departmentId}` : ''), [departmentId]);
+  }, [jobId, departmentIdProp, departmentId, language]);
+  const key = useMemo(
+    () => (departmentId && language ? `${departmentId}:${language}` : ''),
+    [departmentId, language],
+  );
   const lastKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!departmentId) return;
+    if (!departmentId || !language) return;
     if (lastKeyRef.current === key) return;
 
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    const fetchSimilarJobs = async () => {
+    (async () => {
       try {
         const response: SimilarResponse = await postSimilarRef.current({
           id: departmentId,
+          language,
         });
 
         if (!cancelled) {
@@ -138,22 +154,21 @@ export default function SimilarJobs({
       } finally {
         if (!cancelled) setLoading(false);
       }
-    };
+    })();
 
-    fetchSimilarJobs();
     return () => {
       cancelled = true;
     };
-  }, [key, departmentId]);
+  }, [key, departmentId, language]);
 
   const items = data?.Data?.Items ?? [];
   const filteredItems = useMemo(() => items.filter((job) => job.Id !== jobId), [items, jobId]);
+  const headingText =
+    language === 'ar' ? 'وظائف مماثلة قد تكون مهتمًا بها' : 'Similar jobs you may be interested in';
 
   return (
     <section className="mt-12 mb-20 opacity-100 flex flex-col gap-8 overflow-hidden">
-      <h3 className="text-2xl font-bold text-primary text-center">
-        Similar jobs you may be interested in
-      </h3>
+      <h3 className="text-2xl font-bold text-primary text-center">{headingText}</h3>
 
       {loading && <div className="py-8 text-gray-500">Loading…</div>}
       {error && <div className="rounded-xl border bg-white p-4 text-red-700">{error}</div>}

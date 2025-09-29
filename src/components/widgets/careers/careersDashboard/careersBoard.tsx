@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import Image from 'next/image';
-import JobCard from '../../atoms/jobCard/jobCard';
+import EmptyState from './noCareers';
+import JobCard from '../../../atoms/jobCard/jobCard';
 import Pagination from './pagination';
-import { daysSinceUtc } from '../../../utils/utils';
+import { daysSinceUtc } from '../../../../utils/utils';
 
 import type {
   Labels,
@@ -13,7 +13,7 @@ import type {
   CareersFiltration,
   CareersItem,
   CareersSearchBody,
-} from '../../../types/Type';
+} from '../../../../types/Type';
 
 const EMPLOYMENT_TYPE_LABEL: Record<string, string> = {
   '1': 'Full-time',
@@ -127,38 +127,16 @@ function filterSortPaginate(items: CareersItem[], query: CareersSearchBody) {
   return { pageItems: filtered.slice(start, start + pageSize), totalResults, totalPages, page };
 }
 
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center text-gray-600">
-      <Image
-        src="/icons/file-search.png"
-        alt="No jobs available"
-        width={64}
-        height={64}
-        className="mb-6 opacity-70"
-      />
-      <h2 className="text-xl font-semibold text-default">Currently No Open Positions</h2>
-      <p className="mt-2 max-w-md text-sm text-default">
-        We&apos;ll update this page as soon as new vacancies become available
-      </p>
-    </div>
-  );
-}
-
 function FilterSection({
   title,
   isOpen,
   onToggle,
-  onClear,
-  hasActive,
   bodyId,
   children,
 }: {
   title: string;
   isOpen: boolean;
   onToggle: () => void;
-  onClear?: () => void;
-  hasActive?: boolean;
   bodyId: string;
   children: React.ReactNode;
 }) {
@@ -245,7 +223,7 @@ export default function CareersBoard({
   );
 
   const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
-
+  //const jobs = [];
   const [isLocationOpen, setIsLocationOpen] = useState(true);
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(true);
 
@@ -253,10 +231,6 @@ export default function CareersBoard({
 
   const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
     setQuery((query) => ({ ...query, page: 1, [key]: query[key][0] === name ? [] : [name] }));
-  }, []);
-
-  const clearFacetGroup = useCallback((key: QueryKey) => {
-    setQuery((query) => ({ ...query, page: 1, [key]: [] }));
   }, []);
 
   const handlePage = useCallback(
@@ -270,6 +244,10 @@ export default function CareersBoard({
     [],
   );
 
+  if (jobs.length === 0) {
+    return <EmptyState />;
+  }
+
   return (
     <section className={`mx-auto py-16 px-20 ${className ?? ''}`}>
       <div className="grid grid-cols-[16rem_minmax(0,1fr)] gap-8">
@@ -279,8 +257,6 @@ export default function CareersBoard({
             title={locationLabel}
             isOpen={isLocationOpen}
             onToggle={() => setIsLocationOpen((v) => !v)}
-            hasActive={query.locationNames.length > 0}
-            onClear={() => clearFacetGroup('locationNames')}
             bodyId="filter-body-locations"
           >
             <ul className="max-h-80 space-y-2 overflow-auto pr-1">
@@ -298,8 +274,6 @@ export default function CareersBoard({
             title={departmentLabel}
             isOpen={isDepartmentOpen}
             onToggle={() => setIsDepartmentOpen((v) => !v)}
-            hasActive={query.departmentNames.length > 0}
-            onClear={() => clearFacetGroup('departmentNames')}
             bodyId="filter-body-departments"
           >
             <ul className="max-h-80 space-y-2 overflow-auto pr-1">
@@ -323,17 +297,13 @@ export default function CareersBoard({
 
           {/* Cards */}
           <div>
-            {jobs.length === 0 ? (
-              <EmptyState />
-            ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {jobs.map((job) => (
-                  <div key={job.id} className="h-[218px]">
-                    <JobCard job={job} onOpen={() => onOpenJob?.(job.id, job.departmentId)} />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {jobs.map((job) => (
+                <div key={job.id} className="h-[218px]">
+                  <JobCard job={job} onOpen={() => onOpenJob?.(job.id, job.departmentId)} />
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Spacer to keep pagination pinned to bottom */}
