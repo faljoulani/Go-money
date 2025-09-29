@@ -2,10 +2,11 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useSfMutation } from '../../../utils/hooks/useSfMutation';
-import InputField from '../../atoms/inputField/inputField';
-import SpinnerLoader from '../../atoms/spinnerLoader/spinnerLoader';
+import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+import InputField from '../../../atoms/inputField/inputField';
+import SpinnerLoader from '../../../atoms/spinnerLoader/spinnerLoader';
+import CustomDropdown, { DropdownOption } from '../../../atoms/dropdown/dropdown';
+import ApplicationSuccess from './applicationSuccess';
 
 type CareerDetails = {
   Title?: string;
@@ -51,57 +52,6 @@ const citiesFrom = (form?: any, overrideCities?: any[]): CityItem[] => {
   return src.map((c: any) => ({ Key: c?.Key ?? c?.key, Value: c?.Value ?? c?.value }));
 };
 
-function ApplicationSuccess({
-  backHref = '/careers',
-  ctaText = 'Back to career',
-}: {
-  backHref?: string;
-  ctaText?: string;
-}) {
-  return (
-    <div className="rounded-3xl border bg-white px-16 py-16 text-center">
-      <div className="mx-auto flex items-center justify-center">
-        <span
-          className="block h-[83px] w-[83px] bg-[#56D38C]"
-          style={{
-            WebkitMaskImage: 'url(/icons/circle-check-filled.png)',
-            WebkitMaskRepeat: 'no-repeat',
-            WebkitMaskPosition: 'center',
-            WebkitMaskSize: 'contain',
-            maskImage: 'url(/icons/circle-check-filled.png)',
-            maskRepeat: 'no-repeat',
-            maskPosition: 'center',
-            maskSize: 'contain',
-          }}
-          aria-hidden
-        />
-      </div>
-
-      <h2 className="mb-6 text-4xl font-extrabold text-primary">
-        Your application has been submitted successfully.
-      </h2>
-
-      <p className="mb-6 text-14px text-default">
-        We’ll review your application and get back to you soon.
-      </p>
-
-      <Link
-        href={backHref}
-        className="inline-flex items-center gap-3 rounded-3xl bg-primary px-6 py-3 font-medium text-white hover:opacity-90"
-      >
-        {ctaText}
-        <Image
-          src="/icons/chevron-right.svg"
-          alt=""
-          width={24}
-          height={24}
-          className="h-5 w-5 shrink-0 invert"
-        />
-      </Link>
-    </div>
-  );
-}
-
 export default function ApplyForJob({
   className,
   backHref = '/careers',
@@ -111,6 +61,7 @@ export default function ApplyForJob({
   jobId,
   language = 'en',
 }: Props) {
+  console.log('FORM ' + JSON.stringify(form));
   const { post: submitApplication } = useSfMutation('api/default/applyjob');
   const { post: fetchJobDetails } = useSfMutation('api/default/careers/details');
 
@@ -132,13 +83,16 @@ export default function ApplyForJob({
     resume: null,
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const ctaUrl = linkHref(form?.CtaUrl, backHref);
   const cityChoices = citiesFrom(form, cities);
 
   const applyFieldChange = <K extends keyof FormDataState>(key: K, value: FormDataState[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
   };
+
+  const cityOptions: DropdownOption[] = cityChoices.map((c, i) => {
+    const label = c.Value ?? '';
+    return { id: label || `city-${i}`, label, value: label };
+  });
 
   const handleResume = (file?: File | null) => {
     if (!file) return;
@@ -191,6 +145,9 @@ export default function ApplyForJob({
   const employmentType = jobDetails?.EmploymentType ?? '';
   const overviewHtml = jobDetails?.Sections?.OverviewHtml ?? '';
   const submissionTitle = title || 'Job Application';
+
+  const normalizedLanguage = (language || '').toLowerCase();
+  const isRtl = form?.Direction === 'rtl' || normalizedLanguage.startsWith('ar');
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -292,7 +249,7 @@ export default function ApplyForJob({
 
         {submitted ? (
           <section aria-live="polite">
-            <ApplicationSuccess backHref={ctaUrl} ctaText={form?.CtaText} />
+            <ApplicationSuccess />
           </section>
         ) : (
           <form
@@ -303,9 +260,7 @@ export default function ApplyForJob({
             <h2 className="mt-1 text-2xl font-bold leading-tight text-primary">
               {form?.Title ?? 'Application form'}
             </h2>
-            <p className="mt-2 mb-6 text-sm text-gray-600">
-              Fill out the form below to submit your application
-            </p>
+            <p className="mt-2 mb-6 text-sm text-gray-600">{form?.SubTitle}</p>
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField label={form?.FirstNameLabel} required>
@@ -351,36 +306,30 @@ export default function ApplyForJob({
               </InputField>
 
               <InputField label={form?.CityLabel} required className="col-span-2">
-                <div className="relative">
-                  <select
-                    className="h-12 w-full appearance-none rounded-2xl border px-4 pr-10 outline-none focus:border-primary"
-                    value={data.city}
-                    onChange={(e) => applyFieldChange('city', e.target.value)}
-                    required
-                  >
-                    <option value="" hidden>
-                      {form?.CityPlaceholder}
-                    </option>
-                    {cityChoices.map((city, idx) => {
-                      const val = city.Value ?? '';
-                      const key = city.Key ?? (val || `city-${idx}`);
-                      return (
-                        <option key={key} value={val}>
-                          {val}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-                    ▾
-                  </span>
-                </div>
+                <CustomDropdown
+                  name="City"
+                  dir={isRtl ? 'rtl' : 'ltr'}
+                  options={cityOptions}
+                  placeholder={form?.CityPlaceholder ?? 'Select your city'}
+                  valueId={data.city || null}
+                  onChange={(opt) => applyFieldChange('city', opt.value ?? opt.id)}
+                  className="relative w-full"
+                  buttonClassName={[
+                    'group flex h-12 w-full items-center justify-between overflow-hidden rounded-2xl',
+                    'border border-gray-200 bg-white text-sm text-gray-800',
+                    'transition-colors duration-150 hover:border-gray-300 hover:bg-gray-100',
+                    'focus:ring-2 focus:ring-primary/20 px-4',
+                    isRtl ? 'text-right' : 'text-left',
+                  ].join(' ')}
+                  listClassName="absolute top-full left-0 right-0 mt-1 rounded-2xl bg-white shadow-xl z-50 max-h-60 overflow-auto p-2"
+                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-sm text-gray-800 hover:bg-gray-100 rounded-xl"
+                />
               </InputField>
 
               <div className="col-span-full">
                 <InputField label={form?.CoverLetterLabel}>
                   <textarea
-                    className="min-h-[120px] w-full rounded-2xl border-2 border-dashed border-[#7B80FF] p-4 outline-none focus:border-[#5F66FF]"
+                    className="min-h-[120px] w-full rounded-2xl border-2 p-4 outline-none focus:border-[#5F66FF]"
                     placeholder={form?.CoverLetterPlaceholder}
                     value={data.coverLetter}
                     onChange={(e) => applyFieldChange('coverLetter', e.target.value)}
@@ -447,7 +396,7 @@ export default function ApplyForJob({
                 disabled={submitting}
                 className="rounded-2xl bg-primary px-6 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-60"
               >
-                {submitting ? 'Submitting…' : 'Submit Application'}
+                {isRtl ? 'إرسال الطلب' : submitting ? 'Submitting…' : 'Submit Application'}
               </button>
             </div>
           </form>
