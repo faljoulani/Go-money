@@ -2,45 +2,14 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import SimilarJobs from './similarJobs';
 
-type DetailsResponse = {
-  Success: boolean;
-  Error: string | null;
-  Data: {
-    Id: string;
-    Title: string;
-    DepartmentId?: string;
-    DepartmentName: string;
-    LocationName: string;
-    EmploymentType: string;
-    PostedAtUtc: string;
-    PostedAgoDays: number;
-    ApplyUrl: string;
-    ShortMessage?: string;
-    ButtonLabel?: string;
-    Sections: {
-      OverviewLabel?: string;
-      OverviewHtml?: string;
-      KeyResponsibilitiesLabel?: string;
-      KeyResponsibilitiesHtml?: string;
-      QualificationsLabel?: string;
-      QualificationsHtml?: string;
-      SkillsLabel?: string;
-    };
-    Skills: string[];
-    ContactInfo: Array<{ Title: string; Info: string }>;
-  };
-};
+import type { DetailsResponse, JobDetailsProps } from '../../../types/Type';
+import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
-export type JobDetailsProps = {
-  id: string;
-  className?: string;
-  onOpenJob?: (id: string) => void;
-};
-
-export default function JobDetails({ id, className, onOpenJob }: JobDetailsProps) {
+export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {
   const { post: details } = useSfMutation('api/default/careers/details');
   const postDetailsRef = useRef(details);
 
@@ -84,7 +53,7 @@ export default function JobDetails({ id, className, onOpenJob }: JobDetailsProps
   const job = data?.Data;
 
   if (loading) {
-    return <section className="w-full mx-20 py-10">Loading…</section>;
+    return <FullPageLoader />;
   }
 
   if (error || !job) {
@@ -102,7 +71,7 @@ export default function JobDetails({ id, className, onOpenJob }: JobDetailsProps
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
   return (
-    <section className={`w-full mx-20 ${className ?? ''}`}>
+    <section className={`w-full py-16 px-20 ${className ?? ''}`}>
       <div className="grid grid-cols-[2fr,1fr] gap-8">
         {/* Left column */}
         <div className="w-full rounded-3xl border bg-white px-8 space-y-4">
@@ -166,7 +135,7 @@ export default function JobDetails({ id, className, onOpenJob }: JobDetailsProps
         {/* Right column */}
         <aside className="max-w-sm">
           <div className="top-4 flex flex-col gap-6 rounded-3xl border bg-white p-8">
-            {/* Location row (inlined Icon + InfoRow) */}
+            {/* Location row */}
             <div className="flex items-start gap-3">
               <Image
                 src="/icons/map-pin.png"
@@ -215,17 +184,26 @@ export default function JobDetails({ id, className, onOpenJob }: JobDetailsProps
               })}
             </div>
 
-            <a
-              href={job.ApplyUrl || '#'}
-              className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
-            >
-              {job.ButtonLabel || 'Apply for this job'}
-            </a>
+            {job.ApplyUrl && !onApply ? (
+              <Link
+                href={job.ApplyUrl}
+                className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
+              >
+                {job.ButtonLabel || 'Apply for this job'}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onApply?.(id)}
+                className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
+              >
+                {job.ButtonLabel || 'Apply for this job'}
+              </button>
+            )}
           </div>
         </aside>
       </div>
 
-      {/* Similar jobs */}
       <SimilarJobs jobId={id} departmentId={job.DepartmentId} onOpenJob={onOpenJob} />
     </section>
   );

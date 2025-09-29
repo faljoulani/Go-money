@@ -1,4 +1,3 @@
-// utils/hooks/useSf.ts
 'use client';
 
 import { useMemo } from 'react';
@@ -16,11 +15,7 @@ function stripCulturePrefix(p: string) {
   return p.replace(/^\/?ar\//i, '');
 }
 
-export function useSf<T = any>(
-  path: string | null,
-  params?: Params,
-  config?: SWRConfiguration,
-) {
+export function useSf<T = any>(path: string | null, params?: Params, config?: SWRConfiguration) {
   const url = useMemo(() => {
     if (!path) return null;
 
@@ -41,3 +36,4 @@ export function useSf<T = any>(
 
   return { data, error, isLoading, mutate };
 }
+

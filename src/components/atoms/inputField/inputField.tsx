@@ -10,8 +10,8 @@ export default function InputField({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2">
-      <label className={`text-14px text-[#424242] ${className}`}>
+    <div className="text-14px space-y-2">
+      <label className={` text-[#424242] ${className}`}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
