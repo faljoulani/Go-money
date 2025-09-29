@@ -98,3 +98,4 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
   return <section className="w-full">{content}</section>;
 }
 
+

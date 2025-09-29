@@ -60,8 +60,6 @@ import { FinanceCalculatorEntity } from '../components/widgets/financeCalculator
 import LegalDocument from '../components/widgets/legalDocument/legalDocument';
 import { LegalDocumentEntity } from '../components/widgets/legalDocument/legalDocument.entity';
 
-import Careers from '../components/widgets/careers/careersView';
-
 import CareerBoardView from '../components/widgets/careers/careersView';
 import { CareersModuleEntity } from '../components/widgets/careers/careers.entity';
 
@@ -234,22 +232,17 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Finance Calculator' },
     },
-    Careers: {
-      componentType: Careers,
-      ssr: true,
-      editorMetadata: { Title: 'Careers' },
-    },
     LegalDocument: {
       componentType: LegalDocument,
       entity: LegalDocumentEntity,
       ssr: true,
       editorMetadata: { Title: 'Legal Document' },
     },
-    CareersView: {
+    Careers: {
       componentType: CareerBoardView,
       entity: CareersModuleEntity,
       ssr: true,
-      editorMetadata: { Title: 'CareersView' },
+      editorMetadata: { Title: 'Careers' },
     },
   },
 };

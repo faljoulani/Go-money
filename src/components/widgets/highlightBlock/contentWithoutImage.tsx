@@ -41,8 +41,16 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
   const title: string | undefined = data.Title;
   const description: string | undefined = data.Description;
   const ctaText: string | undefined = data.CtaText || '';
-  const ctaHref: string | undefined = linkToHref(data.CtaUrl);
-
+  let rawCtaUrl = data.CtaUrl;
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
+    }
+  } catch {
+  }
+  
+  const ctaHref: string | undefined = linkToHref(rawCtaUrl);
+  console.log('------------>', ctaHref )
   return (
     <div className="mx-auto w-full bg-[#EEEEEE]">
       <div className="mx-auto max-w-[1400px] h-[266px] px-[24px] pt-16 flex flex-col items-center justify-center text-center space-y-4">
@@ -67,7 +75,7 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
         {/* CTA */}
         {ctaText ? (
           <div>
-            <CTA href={ctaHref} variant="solid" className="bg-primary text-white font-medium leading-snug px-[76px] rounded-[18px]">
+            <CTA href={(ctaHref || '').trim() || '#'} variant="solid" className="bg-primary text-white font-medium leading-snug px-[76px] rounded-[18px]">
               {ctaText}
             </CTA>
           </div>
