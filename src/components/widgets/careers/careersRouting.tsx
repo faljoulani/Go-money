@@ -2,9 +2,9 @@
 
 import { useCallback, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import JobDetails from './jobDetailss';
-import ApplyForJob from './applyForJob';
-import CareersBoard from './careersBoard';
+import JobDetails from './details/jobDetailss';
+import ApplyForJob from './applyForJob/applyForJob';
+import CareersBoard from './careersDashboard/careersBoard';
 import { type CareersSearchBody, type ModuleCareer } from '../../../types/typee';
 type Labels = { vacanciesLabel?: string; locationLabel?: string; departmentLabel?: string };
 
