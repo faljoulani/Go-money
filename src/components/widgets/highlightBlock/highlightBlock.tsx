@@ -90,7 +90,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
   } catch {
   }
   const ctaHref = linkToHref(rawCtaUrl);
- console.log('---------->', ctaHref)
+  console.log('---------->', ctaHref)
   const imgSrc: string | undefined = pickImageUrl(
     Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );
