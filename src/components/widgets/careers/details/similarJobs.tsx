@@ -24,10 +24,11 @@ type SearchResponse = {
 
 type SimilarResponse = {
   Success: boolean;
-  Error: string | null;
-  Data: {
-    SourceJobId: string;
-    Language: string;
+  Error: { Code?: string; Message?: string } | string | null;
+  TraceId?: string;
+  Data?: {
+    SourceJobId?: string;
+    Language?: string;
     Items: Array<{
       Id: string;
       Title: string;
@@ -50,15 +51,12 @@ export default function SimilarJobs({
   departmentId: departmentIdProp,
   onOpenJob,
 }: SimilarJobsProps) {
-  console.log('Similar Jobs COMPONENT');
   const [language, setLanguage] = useState<'en' | 'ar' | null>(null);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
-
     const computeLang = () => (document.documentElement.dir === 'rtl' ? 'ar' : 'en') as 'en' | 'ar';
     setLanguage(computeLang());
-
     const obs = new MutationObserver(() => setLanguage(computeLang()));
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
     return () => obs.disconnect();
@@ -75,6 +73,7 @@ export default function SimilarJobs({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // sync prop -> state
   useEffect(() => {
     if (departmentIdProp && departmentIdProp !== departmentId) {
       setDepartmentId(departmentIdProp);
@@ -91,7 +90,7 @@ export default function SimilarJobs({
     setError(null);
     setData(null);
 
-    const fetchDepartmentId = async () => {
+    (async () => {
       try {
         setLoading(true);
         const response = await fetch('/api/default/careers/search', {
@@ -99,7 +98,6 @@ export default function SimilarJobs({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ page: 1, pageSize: 25, language }),
         });
-
         if (!response.ok) throw new Error(`Search failed (${response.status})`);
 
         const json: SearchResponse = await response.json();
@@ -110,21 +108,19 @@ export default function SimilarJobs({
           throw new Error('Could not resolve DepartmentId for this job.');
         }
 
-        if (!cancelled && match.DepartmentId !== departmentId) {
-          setDepartmentId(match.DepartmentId);
-        }
+        if (!cancelled) setDepartmentId(match.DepartmentId);
       } catch (err: any) {
         if (!cancelled) setError(err?.message || 'Failed to resolve department.');
       } finally {
         if (!cancelled) setLoading(false);
       }
-    };
+    })();
 
-    fetchDepartmentId();
     return () => {
       cancelled = true;
     };
-  }, [jobId, departmentIdProp, departmentId, language]);
+  }, [jobId, departmentIdProp, language]);
+
   const key = useMemo(
     () => (departmentId && language ? `${departmentId}:${language}` : ''),
     [departmentId, language],
@@ -141,17 +137,29 @@ export default function SimilarJobs({
 
     (async () => {
       try {
-        const response: SimilarResponse = await postSimilarRef.current({
+        const res: SimilarResponse = await postSimilarRef.current({
           id: departmentId,
           language,
         });
 
-        if (!cancelled) {
-          setData(response);
-          lastKeyRef.current = key;
+        if (cancelled) return;
+        lastKeyRef.current = key;
+
+        if (res?.Success === false) {
+          const msg =
+            (typeof res.Error === 'string' ? res.Error : res?.Error?.Message) ||
+            'An unexpected error occurred. Please try again later.';
+          const trace = res?.TraceId ? ` (TraceId: ${res.TraceId})` : '';
+          setError(`${msg}${trace}`);
+          setData(null);
+          return;
         }
+
+        setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load similar jobs.');
+        if (cancelled) return;
+        setError(err?.message || 'Failed to load similar jobs.');
+        setData(null);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -164,6 +172,7 @@ export default function SimilarJobs({
 
   const items = data?.Data?.Items ?? [];
   const filteredItems = useMemo(() => items.filter((job) => job.Id !== jobId), [items, jobId]);
+
   const headingText =
     language === 'ar' ? 'وظائف مماثلة قد تكون مهتمًا بها' : 'Similar jobs you may be interested in';
 
@@ -175,7 +184,9 @@ export default function SimilarJobs({
       {error && <div className="rounded-xl border bg-white p-4 text-red-700">{error}</div>}
 
       {!loading && !error && departmentId && filteredItems.length === 0 && (
-        <div className="text-gray-600">No similar jobs found.</div>
+        <div className="text-gray-600">
+          {language === 'ar' ? 'لا توجد وظائف مشابهة.' : 'No similar jobs found.'}
+        </div>
       )}
 
       {!loading && !error && filteredItems.length > 0 && (
