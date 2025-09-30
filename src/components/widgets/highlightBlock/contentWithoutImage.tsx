@@ -52,22 +52,22 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
   const ctaHref: string | undefined = linkToHref(rawCtaUrl);
   console.log('------------>', ctaHref )
   return (
-    <div className="mx-auto w-full bg-[#EEEEEE]">
-      <div className="mx-auto max-w-[1400px] h-[266px] px-[24px] pt-16 flex flex-col items-center justify-center text-center space-y-4">
+    <div className="mx-auto w-full h-auto bg-[#EEEEEE]">
+      <div className="mx-auto max-w-[1400px] md:h-[266px] xs:h-[241px] md:px-6 xs:px-4 md:pt-16 xs:pt-10 flex flex-col items-center justify-center text-center space-y-4">
         {/* Title */}
         {title ? (
-          <h2 className="font-bold text-[40px]  leading-[75px] tracking-[-0.02em] text-primary inline-flex items-center gap-2">
+          <h2 className="font-bold md:text-[40px] xs:text-2xl md:leading-[75px] xs:leading-8 tracking-[-0.02em] text-primary inline-flex items-center gap-2">
             {title}
           </h2>
         ) : null}
 
         {/* Description */}
-        <div className="max-w-[720px] text-[#424242]">
+        <div className="md:max-w-[720px] text-[#424242]">
           {description ? (
             <Description
               html={description}
               className="text-[18px] leading-[30px] tracking-[0px] text-center
-               text-default w-[400px] h-[60px] mx-auto"
+               text-default md:w-[400px] mx-auto"
             />
           ) : null}
         </div>

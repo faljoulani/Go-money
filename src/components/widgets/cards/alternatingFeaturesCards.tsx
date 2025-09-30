@@ -143,25 +143,25 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
 
   return (
     <section {...attributes} className="w-full bg-white">
-      <div className="mx-auto px-20">
+      <div className="mx-auto md:px-20 xs:px-4">
         {/* rows */}
         <div className="">
           {childCardData.map((card, i) => {
             const isRight = i % 2 === 0;
             const gridCols = isRight
-              ? 'grid-cols-[minmax(0,1fr)_460px]'
-              : 'grid-cols-[460px_minmax(0,1fr)]';
+              ? 'md:grid-cols-[minmax(0,1fr)_460px]'
+              : 'md:grid-cols-[460px_minmax(0,1fr)]';
 
             return (
               <div
                 key={card.id ?? i}
-                className={`grid items-center min-h-[588px] ${gridCols} gap-x-10 gap-y-8`}
+                className={`grid xs:grid-cols-1 items-center min-h-[588px] ${gridCols} gap-x-10 md:gap-y-8 xs:gap-y-6 `}
               >
                 {/* image column */}
                 <div
-                  className={isRight ? 'order-2 justify-self-end' : 'order-1 justify-self-start'}
+                  className={isRight ? 'md:order-2 justify-self-end' : 'md:order-1 justify-self-start'}
                 >
-                  <div className="relative w-[460px] h-[460px] overflow-hidden rounded-2xl">
+                  <div className="relative md:w-[460px] md:h-[460px] xs:size-[311px] overflow-hidden rounded-2xl">
                     {card.imgUrl && (
                       <CardImage img={card.imgUrl} alt={card.title || 'card image'} />
                     )}
@@ -172,20 +172,20 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                 <div className={`${isRight ? 'order-1 ' : 'order-2 '} text-left rtl:text-right`}>
                   <div className="max-w-[760px]">
                     <div className="flex flex-col items-start space-y-3">
-                      {card.eyebrow && <Eyebrow>{card.eyebrow}</Eyebrow>}
+                      {card.eyebrow && <Eyebrow className='text-14px leading-[18px]'>{card.eyebrow}</Eyebrow>}
 
                       {card.title && (
-                        <Title className="text-[40px] leading-[75px] font-bold tracking-[-0.02em]">
+                        <Title className="md:text-[40px] md:leading-[75px] xs:text-2xl xs:leading-8 font-bold tracking-[-0.02em]">
                           {card.title}
                         </Title>
                       )}
 
-                      {card.subtitle && <Subtitle align="left" className='font-semibold leading-6 text-lg'>{card.subtitle}</Subtitle>}
+                      {card.subtitle && <Subtitle align="left" className='font-semibold md:leading-6 xs:leading-5 md:text-lg xs:text-base'>{card.subtitle}</Subtitle>}
 
                       {card.description && (
                         <Description
                           maxWidth={597}
-                          className=" rtl:max-w-[760px]"
+                          className="rtl:max-w-[760px] xs:leading-5"
                           html={card.description}
                         />
                       )}

@@ -20,7 +20,6 @@ export default function Subtitle<T extends React.ElementType = 'h3'>({
   className,
   align = 'center',
   color = 'text-default',
-  fontSize = 18,
   fontWeight = 600,
   lineHeight = '100%',
   letterSpacing = '0%',
@@ -34,7 +33,6 @@ export default function Subtitle<T extends React.ElementType = 'h3'>({
 
   const style: React.CSSProperties = {
     color,
-    fontSize: typeof fontSize === 'number' ? `${fontSize}px` : fontSize,
     fontWeight,
     lineHeight: typeof lineHeight === 'number' ? `${lineHeight}` : lineHeight,
     letterSpacing: typeof letterSpacing === 'number' ? `${letterSpacing}px` : letterSpacing,
