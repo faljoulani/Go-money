@@ -118,20 +118,19 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
     );
   }
   const offset = 0;
-
   return (
     <div {...attrs}>
-      <div className="sf-ldoc mt-20 ">
-        <div className="mx-auto grid gap-6 md:grid-cols-[320px_1fr]">
-          <aside className="self-start sticky top-24 bg-white rounded-3xl">
-            <nav className="rounded-3xl shadow-lg">
-              <ul className="rounded-3xl overflow-hidden">
+      <div className="sf-ldoc md:mt-16 xs:mt-10">
+        <div className="mx-auto md:grid md:gap-8 md:grid-cols-[360px_1fr]">
+          <aside className="self-start sticky top-24 bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0">
+            <nav className="md:rounded-[15px] xs:rounded-xl">
+              <ul className="md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto snap-x snap-mandatory no-scrollbar">
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
                   return (
-                    <li key={s.Id} className="border-b transition  border-white/10">
+                    <li key={s.Id} className="border-b transition border-white/10 snap-center flex-shrink-0">
                       <a
-                        className={`sf-ldoc__link flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
+                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
                         data-target={slug}
                         data-index={i + 1}
@@ -144,7 +143,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="w-[24px] h-[24px] rtl:rotate-180"
+                          className="w-[24px] h-[24px] rtl:rotate-180 xs:hidden md:block"
                         >
                           <line x1="0" y1="12" x2="15" y2="12" />
                           <polyline points="12 5 19 12 12 19" />
@@ -156,7 +155,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
               </ul>
             </nav>
           </aside>
-          <main className="min-h-[320px] rounded-2xl bg-white p-6 md:p-7 ring-1 ring-slate-200 shadow-sm">
+          <main className="md:min-h-[320px] rounded-2xl bg-white p-4 md:p-7 ring-1 ring-slate-200">
             {sections.map((s, i) => {
               const slug = slugify(s.SectionHeader || `section-${i + 1}`);
               return (
@@ -166,7 +165,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                   className="sf-ldoc__section scroll-mt-[var(--ldoc-offset,0px)] py-4"
                   data-index={i + 1}
                 >
-                  <h4 className="mb-3 text-[20px] font-extrabold leading-snug text-[#010663]">
+                  <h4 className="mb-3 text-xl font-bold leading-6 text-primary">
                     {s.SectionHeader}
                   </h4>
                   <div className="" dangerouslySetInnerHTML={{ __html: s.Description ?? '' }} />
