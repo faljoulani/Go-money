@@ -170,21 +170,16 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
             <img 
               src="/assets/transparentN.png"
               alt=""
-              className="absolute  inset-0 w-[150%] object-fill h-full left-0 z-40  object-top"
+              className="absolute inset-0 w-full xs:object-fill md:object-cover h-full left-0 z-40  object-top"
             />
-            {/* <img src='assets/responsivePocket.png'
-              className="absolute inset-0 left-0 z-50" /> */}
-            {/* <div
-  className="absolute xs:hidden md:block inset-0 w-[400px] h-[725px] left-0 z-50
-             bg-gradient-to-b from-[#000000] via-[#010552] to-[#0F148C]"
-/> */}
+      
 
             {/* pocket lip */}
             <img
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none  xs:w-[400px] xs:h-[650px] select-none absolute md:object- xs:object-fit left-0 z-50"
+              className="pointer-events-none  xs:w-[400px] xs:h-[700px] md:w-full md:h-full select-none absolute  xs:object-fit left-0 z-50"
             />
             <img
               src="/assets/Vector.png"
