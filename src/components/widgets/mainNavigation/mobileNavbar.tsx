@@ -178,7 +178,7 @@ export default function MobileNavbar({
 
             <div className="mt-4 border-t border-[#EEF2F6] pt-3">
               <div className="flex items-center justify-between px-2 py-3">
-                <span className="text-sm text-black">Theme</span>
+                <span className="text-sm xs:text-black">Theme</span>
                 <ModeSwitcher />
               </div>
               {/* <div className="flex items-center justify-between px-2 py-3">
