@@ -15,12 +15,13 @@ export default function CardImage({
   alt,
   sizes = '100vw',
   priority = false,
-
+  className = '',
 }: {
   img: CmsImg;
   alt?: string;
   sizes?: string;
   priority?: boolean;
+  className?: string;
 }) {
   const src = typeof img === 'string' ? img : img?.MediaUrl || img?.Url || img?.ThumbnailUrl || '';
 

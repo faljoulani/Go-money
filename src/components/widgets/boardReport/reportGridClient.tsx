@@ -71,11 +71,11 @@ export default function ReportGridClient({
   const canNext = hasPaging && offset + size < total;
 
   return (
-    <div className="w-full mt-16">
+    <div className="w-full md:mt-16">
       {(title || description) && (
         <header className="mb-6">
-          {title && <h2 className="text-5xl font-bold text-primary">{title}</h2>}
-          {description && <p className="mt-4 text-slate-600">{description}</p>}
+          {title && <h2 className="md:text-5xl xs:text-2xl font-bold text-primary">{title}</h2>}
+          {description && <p className="mt-4 text-default">{description}</p>}
         </header>
       )}
 

@@ -130,21 +130,21 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
   });
 
   return (
-    <section {...attributes} className="w-full px-20 pt-10 pb-14 bg-[#EEEEEE]">
-      <div className="mb-10">
-        <Title className="text-start h-[63px] w-[650px] ml-0 text-5xl font-bold">
+    <section {...attributes} className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5 bg-[#EEEEEE]">
+      <div className="mb-8">
+        <Title className="text-start md:leading-[63px] md:w-[650px] md:text-5xl xs:text-2xl xs:leading-8 font-bold">
           {title}
         </Title>
         {subtitle && (
-          <Description className="text-start ml-0 mt-1.5 text-[16px] tracking-wider">{subtitle}</Description>
+          <Description className="text-start mt-1.5 tracking-[-0.02em] xs:leading-5">{subtitle}</Description>
         )}
       </div>
 
-      <div className="bg-gradient-to-br from-[#10CEBB] to-[#0357AD] rounded-[30px] p-16 h-auto">
-        <div className="grid grid-cols-3 gap-x-10">
+      <div className="bg-gradient-to-br from-[#10CEBB] to-[#0357AD] rounded-[30px] md:p-16 xs:py-16 xs:px-10 h-auto">
+        <div className="grid md:grid-cols-3 xs:grid-cols-1 md:gap-x-10 xs:gap-y-4">
           {/* First 3 items */}
           {items.slice(0, 3).map((item: any, i: number) => (
-            <div key={i} className="flex flex-col items-center">
+            <div key={i} className="md:flex md:flex-col  items-center">
               {item.iconUrl && (
                 <img
                   src={item.iconUrl}
@@ -153,16 +153,16 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                 />
               )}
               <div className="text-center mt-6">
-                <h1 className="text-white text-[26px] whitespace-nowrap font-bold">{item.title}</h1>
-                <p className="text-white text-[20px] font-medium">{item.description}</p>
+                <h1 className="text-white md:text-[26px] xs:text-lg whitespace-nowrap md:font-bold xs:font-semibold">{item.title}</h1>
+                <p className="text-white md:text-[20px] xs:text-base md:font-medium">{item.description}</p>
               </div>
             </div>
           ))}
 
           {/* Last 2 items */}
-          <div className="col-span-3 flex justify-center gap-x-10 mt-14">
+          <div className="md:col-span-3 md:flex justify-center md:gap-x-10 xs:space-y-4 md:mt-14">
             {items.slice(3, 5).map((item: any, i: number) => (
-              <div key={i} className="flex flex-col items-center">
+              <div key={i} className="md:flex md:flex-col items-center">
                 {item.iconUrl && (
                   <img
                     src={item.iconUrl}
@@ -171,10 +171,10 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                   />
                 )}
                 <div className="text-center mt-6">
-                  <h1 className="text-white text-[26px] whitespace-nowrap font-bold">
+                  <h1 className="text-white md:text-[26px] xs:text-lg whitespace-nowrap md:font-bold xs:font-semibold">
                     {item.title}
                   </h1>
-                  <p className="text-white text-lg">{item.description}</p>
+                  <p className="text-white md:text-[20px] xs:text-base md:font-medium xs:font-normal">{item.description}</p>
                 </div>
               </div>
             ))}

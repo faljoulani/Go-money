@@ -75,20 +75,20 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
   const imgAlt: string = img?.AlternativeText || title || 'illustration';
 
   return (
-    <section className="mx-auto max-w-[1400px] h-[488px] px-[150px] py-7xl ">
-      <div className="grid grid-cols-2 items-center gap-5 h-full">
+    <section className="mx-auto md:w-[1400px] h-auto md:px-[150px] xs:px-0 md:py-16 xs:py-10 xs:w-[343px]">
+      <div className="grid md:grid-cols-2 items-center gap-5 h-full xs:grid-cols-1">
         {/* Left: Image */}
         <div className="flex justify-center">
-          <div className="relative h-[360px] w-[540px] overflow-hidden rounded-2xl">
+          <div className="relative md:h-[360px] xs:h-[228px] md:w-[540px] xs:w-[343px] overflow-hidden rounded-2xl">
             <div
-              className="pointer-events-none absolute -top-6 -right-6 h-[120%] w-[120%]
+              className="pointer-events-none absolute -top-6 -right-6 xs:h-[228px] md:h-[360px] w-[540px]
                      rounded-[30px] blur-2xl opacity-30"
             />
             {imgSrc ? (
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="h-full w-full object-cover rounded-2xl"
+                className="object-cover rounded-2xl xs:w-[333px] md:w-[540px]"
                 draggable={false}
               />
             ) : (
@@ -99,15 +99,15 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
 
         {/* Right: Text */}
         <div className="text-left space-y-3 rtl:text-right">
-          {eyebrow && <Eyebrow className="text-lg font-medium leading-6">{eyebrow}</Eyebrow>}
+          {eyebrow && <Eyebrow className="md:text-lg xs:text-14px md:font-medium xs:font-normal md:leading-6 xs:leading-[18px]">{eyebrow}</Eyebrow>}
 
           {title && (
-            <Title className="font-bold text-[40px] leading-[75px] tracking-[-0.02em] align-middle">
+            <Title className="font-bold md:text-[40px] xs:text-[24px] md:leading-[75px] xs:leading-8 tracking-[-0.02em] align-middle">
               {title}
             </Title>
           )}
-          {subtitle && <Description className="font-semibold text-lg leading-6" html={subtitle} />}
-          {description && <Description html={description} />}
+          {subtitle && <Description className='md:font-semibold xs:font-bold md:leading-6 xs:leading-5' html={subtitle} />}
+          {description && <Description className='leading-5' html={description} />}
         </div>
       </div>
     </section>

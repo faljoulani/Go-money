@@ -87,7 +87,7 @@ let lang = props.requestContext.culture || 'en';
   return (
     <section
       {...attrs}
-      className="bg-white  px-20 rounded-[32px]"
+      className="bg-white md:px-20 xs:px-4 rounded-[32px]"
     >
       <ReportGridClient
       lang={lang}
