@@ -114,7 +114,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
   // ---------- render ----------
   return (
-    <section {...attrs} className="relative">
+    <section {...attrs} className="relative xs:flex:flex-col ">
       {/* Top headline block */}
       <div className="mx-auto max-w-4xl text-center px-6">
         {view.SubTitle && (
@@ -132,7 +132,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
         )}
       </div>
 
-      <section className="relative mx-auto max-w-[1240px] mb-10">
+      <section className="relative mx-auto w-full mb-10 xs:px-4">
         <div
           className="flex flex-col items-center relative rounded-3xl mt-10"
           style={{
@@ -151,7 +151,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
             )}
 
             {/* Steps */}
-            <div className="mt-12 grid gap-8 grid-cols-3">
+            <div className="mt-12 grid gap-8 md:grid-cols-3 xs:grid-cols-1">
               {view.Steps.map((s, i) => {
                 const logoSrc = mediaSrc(s.Logo);
                 const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';

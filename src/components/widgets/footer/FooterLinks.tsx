@@ -19,7 +19,7 @@ export default function FooterLinks({ groups, className = '' }: Props) {
   const current = routeMatchKey(cleanHref(pathname || '/'));
 
   return (
-    <div className={`grid grid-cols-3 gap-8 ${className} rtl:grid-col-reverse`}>
+    <div className={`grid md:grid-cols-3 xs:grid-cols-2 gap-8 ${className} rtl:grid-col-reverse`}>
       {groups.map((group) => (
         <nav key={group.id} aria-label={group.title} className="flex flex-col w-[215px]">
           <h3 className="text-white text-lg font-semibold ">{group.title}</h3>

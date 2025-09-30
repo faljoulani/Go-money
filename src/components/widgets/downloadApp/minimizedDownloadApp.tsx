@@ -97,12 +97,12 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
   return (
     <section {...attrs}>
       <div
-        className="relative h-[184px] w-[1240px] rounded-3xl mx-20 mb-16 mt-[164px]"
+        className="md:relative md:h-[184px] md:w-[1240px] rounded-3xl md:mx-20 md:mb-16 md:mt-[164px] xs:flex xs:flex-col xs:w-[full] xs:m-4 "
         style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
       >
-        <div className="relative flex h-full w-full gap-6  px-16">
+        <div className="relative flex md:flex-row xs:flex-col h-full w-full gap-6  px-16">
           {/* LEFT: phone image */}
-          <div className="relative z-30 w-[279px] h-[282px]">
+          <div className="relative xs:order-last md:order-1 z-30 w-[279px] h-[282px]">
             {phoneUrl && (
               <img
                 src={phoneUrl}
@@ -115,7 +115,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
           </div>
 
           {/* RIGHT: text + logos */}
-          <div className="flex h-full w-[75%] items-center justify-between">
+          <div className="flex md:flex-row xs:flex-col xs:order-1 md:order-99 md:h-full md:w-[75%] xs:items-start md:items-center justify-between">
             <div className="w-full max-w-[440px] text-[#0A1B2E]">
               <h2 className="text-[36px] font-bold leading-[67px] tracking-[-0.02em] text-primary">
                 {title}
@@ -131,7 +131,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
             {/* round store logos */}
 
             {orderedStores.length > 0 && (
-              <div className="relative my-16 flex items-end rtl:ml-24">
+              <div className="relative my-16 flex xs:items-start md:items-end rtl:ml-24">
                 {orderedStores.slice(0, 3).map((item: any, index: number) => (
                   <a key={index} href={item.href} rel="" className="flex flex-col items-end">
                     {item.iconUrl && (
