@@ -122,7 +122,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
     <div {...attrs}>
       <div className="sf-ldoc md:mt-16 xs:mt-10">
         <div className="mx-auto md:grid md:gap-8 md:grid-cols-[360px_1fr]">
-          <aside className="self-start sticky top-24 bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0">
+          <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0">
             <nav className="md:rounded-[15px] xs:rounded-xl">
               <ul className="md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto snap-x snap-mandatory no-scrollbar">
                 {sections.map((s, i) => {
