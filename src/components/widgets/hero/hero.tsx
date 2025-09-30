@@ -114,45 +114,52 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className="relative isolate overflow-hidden  h-[450px] text-white flex items-center justify-center flex-col rounded-2xl"
+        className="relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
+             min-h-[320px] h-[450px] px-4" // add padding + avoid hard height on mobile
         style={{
           backgroundImage: `url('/assets/HeroBackground.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-
-  
         <img
           src="/assets/BoxRight.png"
           alt="BoxRight"
           className="absolute top-[107px] right-[166px] z-0"
         />
+
+        {/* center container: fluid on mobile, capped on larger */}
         <div
-          className="text-center w-[1040px] h-[370px] "
+          className="text-center w-full max-w-[1040px] mx-auto h-auto md:h-[370px] min-w-0"
           style={{
             backgroundImage: `url('/assets/cyrcls.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          <div className="mx-auto px-6 mt-[145px]">
+          <div className="mx-auto px-6 mt-[96px] md:mt-[145px]">
             <div className="mb-5" data-sfcontainer="Breadcrumb">
               {breadcrumbs.map((y) =>
                 RenderWidgetService.createComponent(y.model, props.requestContext),
               )}
             </div>
           </div>
+
           {title && (
             <Title>
-              <p className="text-[40px] font-bold mb-3 text-white tracking-tight h-14">{title}</p>
+              <p className="text-2xl md:text-40px font-bold mb-3 text-white tracking-tight">
+                {title}
+              </p>
             </Title>
           )}
-          {subtitle && (
-            <Description html={subtitle} className="text-white w-[485px] mx-auto text-center font-semibold leading-7" />
-          )}
+
           {description && (
-            <Description html={description} className="text-white w-[485px] mx-auto text-center leading-7" />
+            <Description
+              html={description}
+              className="text-white mx-auto text-center leading-7
+                   w-full max-w-[485px] px-2
+                   whitespace-normal break-words hyphens-auto"
+            />
           )}
         </div>
       </section>
@@ -196,9 +203,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
             </Title>
           )}
 
-          {description && (
-            <Description html={description} className="text-white mb-4 " />
-          )}
+          {description && <Description html={description} className="text-white mb-4 " />}
 
           {ctaText && (
             <div>

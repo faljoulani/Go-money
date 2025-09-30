@@ -13,9 +13,7 @@ type CareerDetails = {
   DepartmentName?: string;
   LocationName?: string;
   EmploymentType?: string;
-  Sections?: {
-    OverviewHtml?: string;
-  };
+  Sections?: { OverviewHtml?: string };
 };
 
 type Props = {
@@ -42,9 +40,6 @@ type FormDataState = {
 const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
 const maxBytes = 2 * 1024 * 1024;
 
-const linkHref = (v: any, fb = '/careers'): string =>
-  typeof v === 'string' ? v : (v?.Href ?? v?.Url ?? fb);
-
 const citiesFrom = (form?: any, overrideCities?: any[]): CityItem[] => {
   const a: CityItem[] = Array.isArray(form?.CityChoices) ? form.CityChoices : [];
   const b: CityItem[] = Array.isArray(overrideCities) ? overrideCities : [];
@@ -61,7 +56,6 @@ export default function ApplyForJob({
   jobId,
   language = 'en',
 }: Props) {
-  console.log('FORM ' + JSON.stringify(form));
   const { post: submitApplication } = useSfMutation('api/default/applyjob');
   const { post: fetchJobDetails } = useSfMutation('api/default/careers/details');
 
@@ -71,7 +65,7 @@ export default function ApplyForJob({
 
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<FormDataState>({
     firstName: '',
@@ -102,38 +96,27 @@ export default function ApplyForJob({
         ? 'Maximum file size is 2MB.'
         : null;
     setError(err);
-    if (!err) {
-      applyFieldChange('resume', file);
-    }
+    if (!err) applyFieldChange('resume', file);
   };
 
   useEffect(() => {
     setJobError(null);
     setJobDetails(null);
-
     if (!jobId) return;
-
     let cancelled = false;
-    async function load() {
+    (async () => {
       try {
         const response: any = await fetchJobDetails({ id: jobId, language });
         if (cancelled) return;
-
         if (!response?.Success || !response?.Data) {
           setJobError(response?.Error || 'Failed to load job details.');
           return;
         }
-
         setJobDetails(response.Data as CareerDetails);
       } catch (e) {
-        if (!cancelled) {
-          console.error('Failed to load job details:', e);
-          setJobError('Failed to load job details. Please try again.');
-        }
+        if (!cancelled) setJobError('Failed to load job details. Please try again.');
       }
-    }
-
-    load();
+    })();
     return () => {
       cancelled = true;
     };
@@ -148,6 +131,9 @@ export default function ApplyForJob({
 
   const normalizedLanguage = (language || '').toLowerCase();
   const isRtl = form?.Direction === 'rtl' || normalizedLanguage.startsWith('ar');
+
+  // NEW: phone prefix like Figma (fallback +966)
+  const phoneCode = form?.PhoneCountryCode || '+966';
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -176,11 +162,9 @@ export default function ApplyForJob({
       payload.append('CoverLetter', data.coverLetter);
       payload.append('Language', language || 'en');
       if (data.resume) payload.append('Resume', data.resume, data.resume.name);
-
       await submitApplication(payload);
       setSubmitted(true);
-    } catch (err: any) {
-      console.error('ApplyJob error:', err);
+    } catch {
       setServerError('Something went wrong while submitting your application. Please try again.');
     } finally {
       setSubmitting(false);
@@ -189,36 +173,30 @@ export default function ApplyForJob({
 
   return (
     <SpinnerLoader show={loading} message="Loading job details...">
-      <section className={`w-full space-y-6 mx-auto px-6 py-10 md:px-20 ${className ?? ''}`}>
+      {/* PAGE WRAP — mobile first */}
+      <section className={`mx-auto w-full max-w-[760px] py-10 md:px-6 md:py-10 ${className ?? ''}`}>
         {jobError && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {jobError}
           </div>
         )}
 
+        {/* JOB HEADER CARD */}
         {jobDetails && (
-          <div
-            className={[
-              'w-full rounded-2xl bg-white p-6 shadow-sm',
-              'border border-neutral-200/70',
-              className,
-            ].join(' ')}
-          >
-            <h1 className="text-2xl font-bold tracking-tight leading-[100%] text-primary">
-              {title}
-            </h1>
+          <div className="w-full rounded-2xl border border-neutral-200/70 bg-white p-5 shadow-sm md:p-6">
+            <h1 className="text-2xl font-bold leading-[100%] md:text-primary">{title}</h1>
 
             {(department || location || employmentType) && (
-              <div className="mt-3 flex flex-wrap items-center gap-5 text-sm text-neutral-600">
+              <div className="mt-3 flex flex-col justify-start md:flex-wrap md:items-center gap-4 text-sm text-neutral-600">
                 {department && (
                   <div className="flex items-center gap-2">
-                    <Image src="/icons/industry_icon.png" alt="industry" width={24} height={24} />
+                    <Image src="/icons/industry_icon.png" alt="industry" width={20} height={20} />
                     <span className="font-medium">{department}</span>
                   </div>
                 )}
                 {location && (
                   <div className="flex items-center gap-2">
-                    <Image src="/icons/map-pin.png" alt="Location" width={24} height={24} />
+                    <Image src="/icons/map-pin.png" alt="Location" width={20} height={20} />
                     <span>{location}</span>
                   </div>
                 )}
@@ -227,8 +205,8 @@ export default function ApplyForJob({
                     <Image
                       src="/icons/o'clock_job_icon.png"
                       alt="Employment Type"
-                      width={24}
-                      height={24}
+                      width={20}
+                      height={20}
                     />
                     <span>{employmentType}</span>
                   </div>
@@ -237,9 +215,9 @@ export default function ApplyForJob({
             )}
 
             {overviewHtml && (
-              <div className="mt-6">
+              <div className="mt-5">
                 <div
-                  className="prose max-w-none text-neutral-700"
+                  className="prose max-w-none text-[14px] leading-6 text-neutral-700 md:text-base"
                   dangerouslySetInnerHTML={{ __html: overviewHtml }}
                 />
               </div>
@@ -247,25 +225,30 @@ export default function ApplyForJob({
           </div>
         )}
 
+        {/* FORM CARD */}
         {submitted ? (
-          <section aria-live="polite">
+          <section aria-live="polite" className="mt-6">
             <ApplicationSuccess />
           </section>
         ) : (
           <form
             noValidate
             onSubmit={onSubmit}
-            className="rounded-2xl border bg-white p-7 shadow-sm"
+            className="mt-6 rounded-2xl border bg-white p-5 shadow-sm md:p-7"
           >
-            <h2 className="mt-1 text-2xl font-bold leading-tight text-primary">
+            {/* Title + subtitle like Figma */}
+            <h2 className="text-2xl font-bold leading-tight md:text-primary">
               {form?.Title ?? 'Application form'}
             </h2>
-            <p className="mt-2 mb-6 text-sm text-gray-600">{form?.SubTitle}</p>
+            <p className="mt-2 mb-5 text-sm leading-6 text-gray-600">
+              {form?.SubTitle ?? 'Fill out the form below to submit your application'}
+            </p>
 
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Fields — single column on mobile */}
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
               <InputField label={form?.FirstNameLabel} required>
                 <input
-                  className="h-12 w-full rounded-2xl border px-4 outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
                   placeholder={form?.FirstNamePlaceholder}
                   value={data.firstName}
                   onChange={(e) => applyFieldChange('firstName', e.target.value)}
@@ -275,7 +258,7 @@ export default function ApplyForJob({
 
               <InputField label={form?.LastNameLabel} required>
                 <input
-                  className="h-12 w-full rounded-2xl border px-4 outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
                   placeholder={form?.LastNamePlaceholder}
                   value={data.lastName}
                   onChange={(e) => applyFieldChange('lastName', e.target.value)}
@@ -283,20 +266,26 @@ export default function ApplyForJob({
                 />
               </InputField>
 
+              {/* Phone with prefix chip like Figma */}
               <InputField label={form?.PhoneNumberLabel} required>
-                <input
-                  className="h-12 w-full rounded-2xl border px-4 outline-none focus:border-primary"
-                  placeholder={form?.PhoneNumberPlaceholder}
-                  value={data.phone}
-                  onChange={(e) => applyFieldChange('phone', e.target.value)}
-                  required
-                  inputMode="tel"
-                />
+                <div className="flex h-12 w-full items-center gap-3">
+                  <div className="flex h-full min-w-[88px] items-center justify-center rounded-2xl border border-gray-200 bg-white text-14px font-semibold text-gray-800">
+                    {phoneCode}
+                  </div>
+                  <input
+                    className="h-full w-full flex-1 rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
+                    placeholder={form?.PhoneNumberPlaceholder}
+                    value={data.phone}
+                    onChange={(e) => applyFieldChange('phone', e.target.value)}
+                    required
+                    inputMode="tel"
+                  />
+                </div>
               </InputField>
 
               <InputField label={form?.EmailLabel} required>
                 <input
-                  className="h-12 w-full rounded-2xl border px-4 outline-none focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
                   placeholder={form?.EmailPlaceholder}
                   type="email"
                   value={data.email}
@@ -305,7 +294,8 @@ export default function ApplyForJob({
                 />
               </InputField>
 
-              <InputField label={form?.CityLabel} required className="col-span-2">
+              {/* City full width on mobile (matches screenshot) */}
+              <InputField label={form?.CityLabel} required className="md:col-span-2">
                 <CustomDropdown
                   name="City"
                   dir={isRtl ? 'rtl' : 'ltr'}
@@ -316,20 +306,20 @@ export default function ApplyForJob({
                   className="relative w-full"
                   buttonClassName={[
                     'group flex h-12 w-full items-center justify-between overflow-hidden rounded-2xl',
-                    'border border-gray-200 bg-white text-sm text-gray-800',
+                    'border border-gray-200 bg-white text-14px text-gray-800',
                     'transition-colors duration-150 hover:border-gray-300 hover:bg-gray-100',
                     'focus:ring-2 focus:ring-primary/20 px-4',
                     isRtl ? 'text-right' : 'text-left',
                   ].join(' ')}
-                  listClassName="absolute top-full left-0 right-0 mt-1 rounded-2xl bg-white shadow-xl z-50 max-h-60 overflow-auto p-2"
-                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-sm text-gray-800 hover:bg-gray-100 rounded-xl"
+                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 overflow-auto rounded-2xl bg-white p-2 shadow-xl"
+                  optionClassName="mt-1 w-full rounded-xl p-2 text-left text-sm text-gray-800 hover:bg-gray-100 rtl:text-right"
                 />
               </InputField>
 
-              <div className="col-span-full">
+              <div className="md:col-span-2">
                 <InputField label={form?.CoverLetterLabel}>
                   <textarea
-                    className="min-h-[120px] w-full rounded-2xl border-2 p-4 outline-none focus:border-[#5F66FF]"
+                    className="min-h-[120px] w-full rounded-2xl border-2 border-gray-200 p-4 text-14px outline-none transition focus:border-[#5F66FF]"
                     placeholder={form?.CoverLetterPlaceholder}
                     value={data.coverLetter}
                     onChange={(e) => applyFieldChange('coverLetter', e.target.value)}
@@ -337,13 +327,15 @@ export default function ApplyForJob({
                 </InputField>
               </div>
 
-              <div className="col-span-2">
+              {/* Resume uploader */}
+              <div className="col-span-1 md:col-span-2 py-6">
                 {form?.ResumeInstructions && (
-                  <div className="mb-2 text-sm text-gray-600 text-center">
+                  <div className="mb-2 text-center text-sm text-gray-600">
                     {form?.ResumeInstructions}
                   </div>
                 )}
 
+                {/* Upload box */}
                 <label
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -354,47 +346,57 @@ export default function ApplyForJob({
                     e.stopPropagation();
                     handleResume(e.dataTransfer.files?.[0]);
                   }}
-                  className="flex flex-col items-center gap-3 cursor-pointer rounded-2xl border-2 border-dashed border-[#7B80FF] bg-[#F7FAFF] p-6 text-center"
+                  className="block cursor-pointer rounded-2xl border-2 border-dashed border-[#7B80FF] bg-[#F7FAFF] p-5 text-center md:p-6"
                 >
-                  <Image src="/icons/upload_icon.png" alt="upload photo" width={24} height={24} />
-
-                  <div className="flex flex-col items-center justify-center gap-3">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".pdf,.png,.jpg,.jpeg"
-                      className="hidden"
-                      onChange={(e) => {
-                        handleResume(e.target.files?.[0] ?? null);
-                      }}
-                    />
-
-                    <div className="font-medium text-[#212121]">{form?.ResumeSectionTitle}</div>
-                    <div className="text-xs text-[#424242]">{form?.ResumeFileNote}</div>
+                  <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center">
+                    <Image src="/icons/upload_icon.png" alt="upload" width={24} height={24} />
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="text-14px font-medium py-6 text-primary"
-                  >
-                    Browse Files
-                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    className="hidden"
+                    onChange={(e) => handleResume(e.target.files?.[0] ?? null)}
+                  />
 
-                  {data.resume && !error && (
-                    <div className="text-sm text-gray-700">Selected: {data.resume.name}</div>
-                  )}
-                  {error && <div className="text-sm text-red-600">{error}</div>}
+                  <div className="text-sm font-semibold text-[#212121]">
+                    {form?.ResumeSectionTitle ?? 'Drag and drop files here to upload'}
+                  </div>
+                  <div className="mt-2 text-xs leading-5 text-[#424242]">
+                    {form?.ResumeFileNote ??
+                      'Maximum file size allowed is 2MB, supported file formats include .jpg, .png, and .pdf.'}
+                  </div>
+                  <div className="mt-4 text-center">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-sm font-semibold text-primary underline decoration-transparent hover:decoration-primary"
+                    >
+                      {form?.CtaText || 'Browse Files'}
+                    </button>
+                  </div>
                 </label>
+
+                {/* File info + error */}
+                {data.resume && !error && (
+                  <div className="mt-2 text-sm text-gray-700 text-center">
+                    Selected: {data.resume.name}
+                  </div>
+                )}
+                {error && <div className="mt-2 text-sm text-red-600 text-center">{error}</div>}
               </div>
             </div>
 
-            <div className="mt-6 flex items-center justify-end gap-3">
-              {serverError && <span className="text-sm text-red-600">{serverError}</span>}
+            {/* Submit row — full-width pill on mobile like Figma */}
+            <div className="mt-6">
+              {serverError && (
+                <div className="mb-3 text-center text-sm text-red-600">{serverError}</div>
+              )}
               <button
                 type="submit"
                 disabled={submitting}
-                className="rounded-2xl bg-primary px-6 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-60"
+                className="flex h-12 w-full items-center justify-center rounded-2xl bg-[#010663] text-base font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-60 md:w-auto md:px-6 md:rounded-2xl"
               >
                 {isRtl ? 'إرسال الطلب' : submitting ? 'Submitting…' : 'Submit Application'}
               </button>

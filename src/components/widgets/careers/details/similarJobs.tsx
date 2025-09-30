@@ -82,6 +82,7 @@ export default function SimilarJobs({
     }
   }, [departmentIdProp, departmentId]);
 
+  // resolve department when not provided
   useEffect(() => {
     if (!language) return;
     if (departmentIdProp) return;
@@ -171,40 +172,48 @@ export default function SimilarJobs({
   }, [key, departmentId, language]);
 
   const items = data?.Data?.Items ?? [];
-  const filteredItems = useMemo(() => items.filter((job) => job.Id !== jobId), [items, jobId]);
+  const filteredItems = useMemo(() => items.filter((j) => j.Id !== jobId), [items, jobId]);
 
   const headingText =
     language === 'ar' ? 'وظائف مماثلة قد تكون مهتمًا بها' : 'Similar jobs you may be interested in';
 
   return (
-    <section className="mt-12 mb-20 opacity-100 flex flex-col gap-8 overflow-hidden">
-      <h3 className="text-2xl font-bold text-primary text-center">{headingText}</h3>
+    <section className="mt-10 mb-16 md:px-0">
+      <h3 className="text-center text-2xl md:text-4xl font-bold md:text-primary">{headingText}</h3>
 
-      {loading && <div className="py-8 text-gray-500">Loading…</div>}
-      {error && <div className="rounded-xl border bg-white p-4 text-red-700">{error}</div>}
+      {loading && <div className="py-8 text-center text-gray-500">Loading…</div>}
+
+      {error && (
+        <div className="mt-6 rounded-2xl border border-neutral-200/70 bg-white p-4 text-red-700">
+          {error}
+        </div>
+      )}
 
       {!loading && !error && departmentId && filteredItems.length === 0 && (
-        <div className="text-gray-600">
+        <div className="mt-6 text-center text-gray-600">
           {language === 'ar' ? 'لا توجد وظائف مشابهة.' : 'No similar jobs found.'}
         </div>
       )}
 
       {!loading && !error && filteredItems.length > 0 && (
-        <div className="grid grid-cols-4 gap-8 self-start">
-          {filteredItems.slice(0, 8).map((job) => (
-            <div key={job.Id} className="h-[218px]">
-              <JobCard
-                job={{
-                  id: job.Id,
-                  title: job.Title,
-                  location: job.LocationName,
-                  workType: job.EmploymentType,
-                  postedDaysAgo: job.PostedAgoDays ?? 0,
-                }}
-                onOpen={onOpenJob}
-              />
-            </div>
-          ))}
+        <div className="mt-6 rounded-3xl bg-neutral-50 md:p-6">
+          {/* Mobile: 1 col, then 2/3/4 as viewport grows */}
+          <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6">
+            {filteredItems.slice(0, 8).map((job) => (
+              <div key={job.Id} className="mx-auto w-full max-w-[560px]">
+                <JobCard
+                  job={{
+                    id: job.Id,
+                    title: job.Title,
+                    location: job.LocationName,
+                    workType: job.EmploymentType,
+                    postedDaysAgo: job.PostedAgoDays ?? 0,
+                  }}
+                  onOpen={onOpenJob}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </section>

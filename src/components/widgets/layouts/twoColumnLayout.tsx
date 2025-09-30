@@ -1,5 +1,4 @@
 import {
-  WidgetContext,
   htmlAttributes,
   RenderWidgetService,
   getMinimumMetadata,
@@ -42,25 +41,25 @@ export default async function TwoColumnLayout(props) {
   return (
     <>
       <section {...attrs}>
-        <div className="flex flex-row gap-8 w-[90%] mx-auto my-16">
+        <div className="w-full md:mx-auto md:my-16 flex flex-col-reverse gap-8 md:flex-row">
           <div
-            className="basis-[40%] bg-white rounded-3xl"
+            className="w-full md:basis-[40%] bg-white rounded-3xl min-w-0"
             {...(props.requestContext.isEdit
               ? { 'data-sfcontainer': LEFT, 'data-sfplaceholderlabel': 'Left' }
               : {})}
           >
-            {leftChildren.map((y, i) =>
+            {leftChildren.map((y) =>
               RenderWidgetService.createComponent(y.model, props.requestContext, ctx),
             )}
           </div>
 
           <div
-            className="basis-[60%] bg-white rounded-3xl"
+            className="w-full md:basis=[60%] md:basis-[60%] bg-white rounded-3xl min-w-0"
             {...(props.requestContext.isEdit
               ? { 'data-sfcontainer': RIGHT, 'data-sfplaceholderlabel': 'Right' }
               : {})}
           >
-            {rightChildren.map((y, i) =>
+            {rightChildren.map((y) =>
               RenderWidgetService.createComponent(y.model, props.requestContext, ctx),
             )}
           </div>

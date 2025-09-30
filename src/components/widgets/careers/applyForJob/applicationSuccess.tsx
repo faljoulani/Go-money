@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 export default function ApplicationSuccess({ backHref = '/careers' }: { backHref?: string }) {
   return (
-    <div className="rounded-3xl border bg-white px-16 py-16 text-center">
-      <div className="mx-auto flex items-center justify-center">
+    <div className="rounded-3xl border bg-white px-6 md:px-16 py-16 text-center">
+      <div className="flex items-center justify-center">
         <span
           className="block h-[83px] w-[83px] bg-[#56D38C]"
           style={{
@@ -22,7 +22,7 @@ export default function ApplicationSuccess({ backHref = '/careers' }: { backHref
       </div>
 
       {/* Heading */}
-      <h2 className="mb-6 text-4xl font-extrabold text-primary">
+      <h2 className="mb-6 text-2xl md:text-4xl font-extrabold text-primary">
         <span className="ltr:inline rtl:hidden">
           Your application has been submitted successfully.
         </span>
@@ -40,7 +40,7 @@ export default function ApplicationSuccess({ backHref = '/careers' }: { backHref
       {/* CTA Button */}
       <Link
         href={backHref}
-        className="inline-flex items-center gap-3 rounded-3xl bg-primary px-6 py-3 font-medium text-white hover:opacity-90"
+        className="inline-flex items-center gap-3 rounded-2xl bg-primary px-6 py-3 font-medium text-white hover:opacity-90"
       >
         <span className="ltr:inline rtl:hidden">Back to career</span>
         <span className="rtl:inline ltr:hidden">العودة الي الوظائف</span>

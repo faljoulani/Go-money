@@ -62,15 +62,15 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   return (
     <section
       {...attrs}
-      className="relative flex flex-col items-start justify-between overflow-hidden rounded-[20px] h-full bg-white p-10 shadow-sm"
+      className="relative flex flex-col items-start justify-between overflow-hidden rounded-[20px] h-full bg-white p-4 md:p-10 shadow-sm"
     >
       <div className="space-y-4">
-        <Title color="text-primary" className="text-28px font-bold">
+        <Title color="text-primary" className="text-2xl font-bold  md:text-28px">
           {item.Title}
         </Title>
         <Description
           color="text-neutral"
-          className="text-18px font-semibold leading-[100%] tracking-[0]"
+          className="text-18px md:font-semibold leading-[100%] tracking-[0]"
           html={item.Description}
         />
       </div>
@@ -135,8 +135,8 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       )}
 
       {item.HasLabel && (
-        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-[124px] h-44 bg-primary ltr:rounded-tl-[60px] rtl:rounded-tr-[60px] ">
-          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 w-[78px] h-[115px] bg-white"></div>
+        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primary rounded-tl-[20px] rtl:rounded-tr-[200px] md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px]">
+          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-white"></div>
         </div>
       )}
     </section>
