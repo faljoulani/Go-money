@@ -15,8 +15,12 @@ module.exports = {
         skyTint: '#CFE8F1',
         lineMuted: '#EAEDF3',
       },
+      spacing: {
+        1.5: '6px', // now you can use p-1.5, px-1.5, py-1.5
+      },
       safelist: [{ pattern: /text-(28|32|40)px/ }],
       fontSize: {
+        '11px': ['11px', { lineHeight: '100%' }], // enables text-11px
         '14px': ['14px', { lineHeight: '100%' }], //text-14px
         '28px': ['28px', { lineHeight: '100%' }], //text-28px
         '32px': ['32px', { lineHeight: '100%' }], //text-28px
@@ -26,13 +30,13 @@ module.exports = {
         lufga: ['Lufga', 'sans-serif'],
         cairo: ['Cairo', 'sans-serif'],
       },
-      screens:{
-        'xs': '375px',
-        'md': '768px',
-        'lg': '1024px',
-        'xl': '1280px',
+      screens: {
+        xs: '375px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
         '2xl': '1536px',
-      }
+      },
     },
   },
   plugins: [],
