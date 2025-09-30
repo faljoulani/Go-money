@@ -179,7 +179,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   //console.log('childCardData ======= >>>>>> ' + JSON.stringify(childCardData));
 
   return (
-    <section {...attributes} className="w-full py-16 px-20">
+    <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12">
       <div>
         <div className="flex flex-col items-center gap-2 text-center fadeupText">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -197,7 +197,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         </div>
 
         <div className="mt-12">
-          <div className="grid grid-cols-3 gap-8 fadeup">
+          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 md:fadeup">
             {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
@@ -221,7 +221,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           </div>
         </div>
         <div className="mt-12 ">
-          <div className="grid grid-cols-3 gap-8 fadeup">
+          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 md:fadeup">
             {childCardData.slice(3, 6).map((item) => (
               <div
                 key={item.id}

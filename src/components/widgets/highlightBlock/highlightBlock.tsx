@@ -99,14 +99,14 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section className="mx-20 relative">
+    <section className="md:mx-20 relative xs:flex xs:flex-col xs:mx-2">
       {/* Background div that scales */}
       <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 
       {/* Content above the background */}
-      <div className="relative grid grid-cols-2 items-center py-24 pl-16 rtl:pr-16 align-middle h-[580px]">
+      <div className="relative md:grid md:grid-cols-2 md:items-center md:py-24 md:pl-16 md:rtl:pr-16 md:align-middle md:h-[580px] xs:h-[700px]  xs:mr-14 xs:py-16 xs:px-6 xs:flex xs:flex-col-reverse">
         {/* Left: copy */}
-        <div className="flex flex-col items- gap-5 max-w-xl ">
+        <div className="flex flex-col gap-5 max-w-xl ">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title
             className="
@@ -118,7 +118,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           >
             {title}
           </Title>
-          {description && <Description className=" text-base" html={description} />}
+          {description && <Description className="text-base" html={description} />}
 
           {ctaText && (
             <div>
@@ -138,17 +138,17 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
         </div>
 
         {/* Right: artwork / image panel */}
-        <div className="absolute h-[392px] w-[490px]  duration-1000 right-0 mr-[87px] rtl:ml-[87px] rtl:left-0 rtl:right-auto">
-          <div className="absolute h-[392px] w-[490px] rounded-[20px] overflow-hidden ">
+        <div className="md:absolute md:h-[392px] md:w-[490px] md:fadeRight duration-1000 md:right-0 md:mr-[87px] md:rtl:ml-[87px] md:rtl:left-0 md:rtl:right-auto">
+          <div className="md:absolute md:h-[392px]  md:w-[490px] xs:right-10  rounded-[20px] overflow-hidden">
             {imgSrc ? (
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="h-[392px] w-[490px] object-contain rounded-[20px] "
+                className="md:h-[392px] md:w-[490px] object-contain rounded-[20px] xs:h-[250px] xs:w-[250px] xs:mx-auto"
                 draggable={false}
               />
             ) : (
-              <div className="h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100" />
+              <div className="h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100"/>
             )}
           </div>
         </div>

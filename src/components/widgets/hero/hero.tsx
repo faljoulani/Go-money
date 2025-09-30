@@ -162,7 +162,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative overflow-hidden text-white rounded-[32px] h-[700px] "
+      className="md:relative md:overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
       style={{
         backgroundImage: `url('/assets/HeroBackground.jpg')`,
         backgroundSize: 'cover',
@@ -179,10 +179,10 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
-      <div className="relative grid grid-cols-2 gap-16 max-w-7xl px-20 py-24 ">
-        <div className="flex flex-col items-start justify-center mb-44 fadeLeftHero ">
+      <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24  xs:flex xs:flex-col xs:px-8 xs:py-20 ">
+        <div className="flex flex-col items-start justify-center md:mb-44 md:fadeLeftHero xs:mb-4">
           {eyebrow && (
-            <Eyebrow className="font-medium text-lg leading-6" color="white">
+            <Eyebrow className="md:font-medium xs:font-light md:text-lg xs:text-md leading-6" color="white">
               {eyebrow}
             </Eyebrow>
           )}
@@ -190,7 +190,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 max-w-[500px] font-bold text-[48px] leading-[63px] tracking-[-0.02em] mb-4"
+              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-[2rem] md:leading-[90px] md:tracking-[-0.02em] xs:tracking-[-0.01em] mb-4"
             >
               {title}
             </Title>
@@ -217,7 +217,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
         </div>
 
-        <div className="relative h-[660px] w-[690px] bottom-8 fadeupHero">
+        <div className="relative md:h-[660px] md:w-[690px] xs:h-[330px] xs:w-[375px] xs:bottom-5  md:bottom-8 xs:right-12 fadeupHero">
           {heroImgUrl ? (
             <Image
               src={heroImgUrl}

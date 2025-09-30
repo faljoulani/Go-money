@@ -1,7 +1,6 @@
 import Page from './[...slug]/page';
 import { Metadata } from 'next';
 import { pageMetadata } from '@progress/sitefinity-nextjs-sdk/pages';
-
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ searchParams }: any): Promise<Metadata> {
