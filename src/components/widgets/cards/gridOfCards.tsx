@@ -10,7 +10,7 @@ import LeadershipCards from './leadershipCards';
 import CEOMessageCard from './ceoMessageCard';
 import ChairmanMessageCard from './chairmanMessageCard';
 
-import { CmsImage } from '../../../types/Type';
+import { CmsImage } from '../../../types/typee';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -179,7 +179,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   //console.log('childCardData ======= >>>>>> ' + JSON.stringify(childCardData));
 
   return (
-    <section {...attributes} className="w-full py-16 px-20">
+    <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12">
       <div>
         <div className="flex flex-col items-center gap-2 text-center fadeupText">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -197,7 +197,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         </div>
 
         <div className="mt-12">
-          <div className="grid grid-cols-3 gap-8 fadeup">
+          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 md:fadeup">
             {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
@@ -207,7 +207,9 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                   <div>{item.icon}</div>
                 </div>
                 <div className="">
-                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">{item.title}</h3>
+                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">
+                    {item.title}
+                  </h3>
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
@@ -219,7 +221,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           </div>
         </div>
         <div className="mt-12 ">
-          <div className="grid grid-cols-3 gap-8 fadeup">
+          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 md:fadeup">
             {childCardData.slice(3, 6).map((item) => (
               <div
                 key={item.id}
@@ -229,7 +231,9 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
                   <div>{item.icon}</div>
                 </div>
                 <div className="">
-                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">{item.title}</h3>
+                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">
+                    {item.title}
+                  </h3>
                   {item.description ? (
                     <div className="mt-2 text-default text-base">
                       <Description html={item.description} />
@@ -252,7 +256,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
               icon="arrow"
               bgColor="transparent"
               href={ctaHref || '#'}
-              className='text-lg'
+              className="text-lg"
             >
               {ctaText}
             </CTA>

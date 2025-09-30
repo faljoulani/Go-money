@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { FooterEntity } from './Footer.entity';
-import FooterLinks, { FooterLinksGroup } from './FooterLinks';
+import { FooterEntity } from './footerr.entity';
+import FooterLinks, { FooterLinksGroup } from './footerLinkss';
 import { resolveAbsoluteUrl, sortByOrder, resolveSitefinitySelection } from '../../../utils/utils';
 import {
   selectPrimaryImage,
@@ -134,14 +134,18 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
   }));
 
   return (
-    <section {...attrs} className="relative [perspective:1000px] overflow-x-clip">
-      <footer className=" text-gray-300 h-auto flip">
+    <section {...attrs} className="relative [perspective:1000px] overflow-x-clip  ">
+
+      <footer className=" text-gray-300 h-auto md:flip">
+
         {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         {/* <img
           src="/assets/footer.png"
           alt=""
           className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
+        />
+        <div className="md:ltr:px-20 md:ltr:py-16 md:rtl:px-20 md:rtl:py-16 xs:px-6 xs:ltr:py-6 xs:rtl:px-6 xs:rtl:py-6">
         /> */}
         <video
           className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px]"
@@ -157,7 +161,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
-              className="text-40px max-w-[500px] leading-[60px] tracking-[-0.02em]"
+              className="text-40px max-w-[500px] leading-[60px] tracking-[-0.02em] xs:text-32px xs:leading-[40px]  mb-4"
             >
               {footerData.Title || footerData.SubTitle}
             </Title>
@@ -166,11 +170,11 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <hr className="border-[#FFFFFF40] mt-8" />
 
           {/* container */}
-          <div className="mx-auto w-full">
-            <div className="flex w-auto">
+          <div className="mx-auto w-full ">
+            <div className="md:flex md:flex-row xs:flex-col  w-auto">
               <div className="col-span-1 mr-16 rtl:mr-0">
-                <div className="rtl:right-0 h-[423px] max-w-[400px] ltr:border-r ltr:border-white/15 rtl:border-l rtl:border-white/15 flex flex-col gap-8 ltr:pr-14 rtl:pl-14">
-                  <div className="flex items-center gap-3">
+                <div className="md:rtl:right-0 md:h-[759px] md:max-w-[400px]  md:ltr:border-r md:ltr:border-white/15 md:rtl:border-l md:rtl:border-white/15 flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
+                  <div className="flex items-center gap-3 ">
                     <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                       {logoSrc && (
                         <Image
@@ -192,7 +196,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                   </div>
 
                   {footerData.Description && (
-                    <p className="max-w-[400px] font-normal text-[14px] leading-[18px] text-gray-300/90">
+                    <p className="md:max-w-[400px] xs:w-full font-normal text-[14px] leading-[18px] text-gray-300/90">
                       {String(footerData.Description).replace(/\s+/g, ' ').trim()}
                     </p>
                   )}
@@ -210,7 +214,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                             key={social.Id ?? `social-${i}-${social.Title ?? 'x'}`}
                             href={social.Url || '#'}
                             aria-label={social.Title || 'social link'}
-                            className="inline-flex h-5 w-5 items-center justify-center text-gray-300 hover:border-primary/40 transition-colors overflow-hidden"
+                            className="inline-flex h-5 w-5  items-center justify-center text-gray-300 hover:border-primary/40 transition-colors overflow-hidden"
                           >
                             {sSrc ? (
                               <Image
@@ -244,9 +248,9 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <hr className="mb-8 border-white/10" />
 
           {/* Bottom row: certifications | copyright | extra */}
-          <div className="relative flex flex-col gap-6 md:grid md:grid-cols-3 md:items-center">
+          <div className="relative  gap-6 md:grid md:grid-cols-3 md:items-center xs:grid-cols-2">
             {/* Certifications */}
-            <div className="flex items-center gap-6 md:w-[614px] flex-wrap">
+            <div className="flex items-center gap-6 md:w-[614px] md:flex-wrap">
               {certifications.map((info, i) => {
                 const img = selectPrimaryImage(info.Logo);
                 const rawSrc = getImageSrc(img);
@@ -288,7 +292,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
             </div>
 
             {/* Copyright */}
-            <div className="text-center">
+            <div className="md:text-center xs:m-2">
               <p className="font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
                 {footerData.CopyrightText}
               </p>

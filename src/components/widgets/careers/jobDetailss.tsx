@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import SimilarJobs from './similarJobs';
 
-import type { DetailsResponse, JobDetailsProps } from '../../../types/Type';
+import type { DetailsResponse, JobDetailsProps } from '../../../types/typee';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 
 export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {

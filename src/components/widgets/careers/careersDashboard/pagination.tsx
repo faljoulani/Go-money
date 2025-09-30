@@ -24,7 +24,10 @@ export default function Pagination({
   const atEnd = page >= Math.max(1, totalPages);
 
   return (
-    <div className="flex w-full items-center justify-between rounded-2xl bg-white py-2 px-6">
+    <div
+      dir="ltr"
+      className="flex w-full items-center justify-between rounded-2xl bg-white py-2 px-6"
+    >
       <div className="flex items-center gap-3">
         <label className="flex items-center gap-2 text-sm">
           Display

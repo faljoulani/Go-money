@@ -3,7 +3,7 @@ import {
   htmlAttributes,
   RestClientForContext,
 } from '@progress/sitefinity-nextjs-sdk';
-import QuestionsClient from './QuestionsClient';
+import QuestionsClient from './faqClient';
 import { FaqSectionEntity } from './faq.entity';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';

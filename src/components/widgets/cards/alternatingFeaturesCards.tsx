@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { ImgUrl } from '../../../types/Type';
+import { ImgUrl } from '../../../types/typee';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';

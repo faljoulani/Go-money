@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cleanHref, routeMatchKey, displayTitle } from '../../../utils/utils';
-import { ApiNavItem, ApiNavDropdown } from '../../../types/Type';
+import { ApiNavItem, ApiNavDropdown } from '../../../types/typee';
 import { useDismissable } from '../../../utils/hooks/useDismissable';
 
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {

@@ -126,17 +126,18 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return <HowItWorksSimple {...props} />;
   }
   return (
-    <section {...attrs} className="relative mx-20 bg-white">
+    <section {...attrs} className="relative md:mx-20 bg-white">
       {/* Top headline block */}
-      <div className="flex flex-col items-center text-center gap-1 fadeupText">
+      <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
         {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title
             className="
-              text-[40px]
+              md:text-[40px]
+              xs:text-[1.6rem]
               font-bold     
               tracking-[-0.02em]
-              leading-[75px]
+              md:leading-[75px]
             "
           >
             {view.Title}
@@ -147,7 +148,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative mt-10 h-[1390px] flex flex-col justify-center items-center"
+        className="relative md:mt-10 md:h-[1390px] xs:mt-36 xs:h-[1400px] flex flex-col justify-center items-center"
         style={{
           backgroundImage: `url('/assets/Shape.png')`,
           backgroundSize: '1380px',
@@ -155,28 +156,30 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none h-[80%] absolute inset-0 z-40 mt-36 left-[170px] ">
+        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-36 md:left-[170px] xs:left-[6.5rem] ">
           <div className=" translatePhone  sticky  flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
           </div>
         </div>
-        <div className="h-[120vh]" />
+        <div className="h-[140vh]" />
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black h-[725px]">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
-            <img
+            <img 
               src="/assets/transparentN.png"
               alt=""
-              className="absolute inset-0 w-full h-[725px] left-0 z-40 object-cover object-top"
+              className="absolute inset-0 w-full xs:object-fill md:object-cover h-full left-0 z-40  object-top"
             />
+      
+
             {/* pocket lip */}
             <img
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none select-none absolute object-cover left-0 z-50"
+              className="pointer-events-none  xs:w-[400px] xs:h-[700px] md:w-full md:h-full select-none absolute  xs:object-fit left-0 z-50"
             />
             <img
               src="/assets/Vector.png"
@@ -184,14 +187,14 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               className="absolute object-cover z-[60] bottom-0 left-0"
             />
 
-            <div className="relative z-[70] mx-auto max-w-6xl px-6 pt-28 pb-28 md:pt-32 md:pb-32">
+            <div className="relative z-[70] mx-auto max-w-6xl px-6 xs:pt-24 xs:pb-20 md:pb-28 md:pt-32 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light pt-10 text-[28px] md:text-[40px] fadeupText">
+                <h2 className="text-center text-white font-light md:pt-10 xs:pt-28 xs:pb-5 xs:text-[22px] md:text-[28px] md:fadeupText">
                   {view.IntroLead}
                 </h2>
               )}
 
-              <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 fadeup">
+              <div className="md:mt-12  grid gap-8 xs:grid-cols-1 md:grid-cols-3 md:fadeup">
                 {view.Steps.map((s, i) => {
                   const logoSrc = mediaSrc(s.Logo);
                   const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
