@@ -20,7 +20,7 @@ type Props = {
   onOpen?: (id: string) => void;
 };
 
-export default function JobCard({ job, className, dir = 'ltr', onOpen }: Props) {
+export default function JobCard({ job, onOpen }: Props) {
   const router = useRouter();
   const { post } = useSfMutation('api/default/careers/details');
   const [loading, setLoading] = React.useState(false);
@@ -49,7 +49,6 @@ export default function JobCard({ job, className, dir = 'ltr', onOpen }: Props) 
 
   return (
     <article
-      dir={dir}
       role="button"
       tabIndex={0}
       onClick={goToDetails}
@@ -75,7 +74,16 @@ export default function JobCard({ job, className, dir = 'ltr', onOpen }: Props) 
 
       <div className="flex flex-col items-center justify-center ">
         <h3 className="text-xl font-bold leading-tight">{job.title}</h3>
-        <div className="mt-1 font-semibold text-gray-600">{job.location}</div>
+        <div className="mt-1 flex w-full items-center justify-start gap-2 font-semibold text-gray-600">
+          <Image
+            src="/icons/map-pin.png"
+            alt=""
+            width={16}
+            height={16}
+            className="h-4 w-4 object-contain"
+          />
+          <span className="flex-1 truncate">{job.location}</span>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 text-14px">
@@ -85,4 +93,3 @@ export default function JobCard({ job, className, dir = 'ltr', onOpen }: Props) 
     </article>
   );
 }
-

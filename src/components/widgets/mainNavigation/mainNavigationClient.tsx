@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cleanHref, routeMatchKey, displayTitle } from '../../../utils/utils';
-import { ApiNavItem, ApiNavDropdown } from '../../../types/Type';
+import { ApiNavItem, ApiNavDropdown } from '../../../types/typee';
 import { useDismissable } from '../../../utils/hooks/useDismissable';
 
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
@@ -106,7 +106,7 @@ export default function ClientNavbar({
                       href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className="block rounded-lg px-3 py-2 no-underline tracking-normal text-14px font-normal leading-5 text-default hover:bg-[#E6E8FF]"
+                      className="block rounded-lg px-3 py-2 no-underline text-14px leading-5 text-default hover:bg-[#E6E8FF]"
                     >
                       {displayTitle(child.title)}
                     </Link>

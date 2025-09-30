@@ -1,5 +1,4 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-
 import {
   fetchData,
   extractSelectionId,
@@ -8,52 +7,147 @@ import {
 import { resolveSitefinitySelection } from '../../../utils/utils';
 import CareersRouting from './careersRouting';
 
-const CAREERSMODULE = 'Telerik.Sitefinity.DynamicTypes.Model.CareersModule.Careersmodule';
-const CAREER = 'Telerik.Sitefinity.DynamicTypes.Model.Careers.Career';
+const T_FORM_LABEL = 'Telerik.Sitefinity.DynamicTypes.Model.CareersFormLabel.CareersFormLabel';
+
+const SELECT_CAREERS_PAGE = {
+  Id: 'Id',
+  Title: 'Title',
+  VacanciesLabel: 'VacanciesLabel',
+  LocationLabel: 'LocationLabel',
+  DepartmentLabel: 'DepartmentLabel',
+} as const;
+
+const SELECT_CAREER_CARDS = {
+  Id: 'Id',
+  Title: 'Title',
+  EmploymentType: 'EmploymentType',
+  Date: 'Date',
+  Department: 'Department($select=Id,Title)',
+  Location: 'Location($select=Id,Title)',
+} as const;
+
+const SELECT_FORM = {
+  Title: 'Title',
+  SubTitle: 'SubTitle',
+  FirstNameLabel: 'FirstNameLabel',
+  FirstNamePlaceholder: 'FirstNamePlaceholder',
+  LastNameLabel: 'LastNameLabel',
+  LastNamePlaceholder: 'LastNamePlaceholder',
+  PhoneNumberLabel: 'PhoneNumberLabel',
+  PhoneNumberPlaceholder: 'PhoneNumberPlaceholder',
+  EmailLabel: 'EmailLabel',
+  EmailPlaceholder: 'EmailPlaceholder',
+  CityLabel: 'CityLabel',
+  CityPlaceholder: 'CityPlaceholder',
+  ResumeSectionTitle: 'ResumeSectionTitle',
+  ResumeFileNote: 'ResumeFileNote',
+  CoverLetterLabel: 'CoverLetterLabel',
+  CoverLetterPlaceholder: 'CoverLetterPlaceholder',
+  ResumeInstructions: 'ResumeInstructions',
+  CtaText: 'CtaText',
+  CtaUrl: 'CtaUrl',
+  CityChoices: 'CityChoices($select=Key,Value)',
+} as const;
+
+const SELECT_CITY = { Key: 'Key', Value: 'Value' } as const;
+
+const SELECTS = {
+  careersPage: Object.values(SELECT_CAREERS_PAGE),
+  careerCards: Object.values(SELECT_CAREER_CARDS),
+  form: Object.values(SELECT_FORM),
+  city: Object.values(SELECT_CITY),
+} as const;
+
+const isArray = <T,>(value: T | T[] | null | undefined): T[] =>
+  value == null ? [] : Array.isArray(value) ? value : [value];
+
+const getFirstItem = <T,>(value: any): T | null => {
+  const arr = isArray<T>(value?.Items ?? value?.items ?? value?.value ?? value);
+  return arr.length ? arr[0] : null;
+};
+
+function mapCities(list: any[]): { Key: string; Value: string }[] {
+  return (list || [])
+    .map((city) => ({
+      Key: city?.Key,
+      Value: city?.Value,
+    }))
+    .filter((city) => city.Value);
+}
 
 export default async function Careers(props: WidgetContext<any>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
   const modelProps = (props.model?.Properties as any) || {};
 
-  const selectionCareersModule = resolveSitefinitySelection(modelProps?.CareersModule);
-  const selectionCareers = resolveSitefinitySelection(modelProps?.Careers);
+  const selModule = resolveSitefinitySelection(modelProps?.CareersModule);
+  const selCareers = resolveSitefinitySelection(modelProps?.Careers);
+  const selApplyForm = resolveSitefinitySelection(modelProps?.CareersFormLabel);
+  const selCityChoices = resolveSitefinitySelection(modelProps?.CityChoices);
 
-  const moduleId = extractSelectionId(selectionCareersModule);
-  const careerIds = extractItemIdsFromSelection(selectionCareers);
+  const moduleId = extractSelectionId(selModule);
+  const careerIds = extractItemIdsFromSelection(selCareers);
+  const applyFormId = extractSelectionId(selApplyForm);
+  const cityChoiceIds = extractItemIdsFromSelection(selCityChoices);
 
-  const careersPage = ['Id', 'Title', 'VacanciesLabel', 'LocationLabel', 'DepartmentLabel'];
-  const careerCards = [
-    'Id',
-    'Title',
-    'EmploymentType',
-    'Date',
-    'Department($select=Id,Title)',
-    'Location($select=Id,Title)',
-  ];
+  const settingsTask = fetchData(
+    [moduleId],
+    undefined as any,
+    culture as any,
+    SELECTS.careersPage as any,
+    {
+      itemType: selModule?.Content?.[0]?.Type,
+      take: 1,
+    },
+  );
 
-  const settingsRaw = moduleId
-    ? await fetchData([moduleId], undefined as any, culture as any, careersPage, {
-        itemType: CAREERSMODULE,
-        single: true,
-      })
-    : await fetchData([], undefined as any, culture as any, careerCards, {
-        itemType: CAREERSMODULE,
-        take: 1,
-      });
+  const careersTask = fetchData(
+    careerIds,
+    undefined as any,
+    culture as any,
+    SELECTS.careerCards as any,
+    {
+      itemType: selCareers?.Content?.[0]?.Type,
+      take: 100,
+    },
+  );
 
-  const pageData = (Array.isArray(settingsRaw) ? settingsRaw[0] : settingsRaw) || null;
+  const formTask = fetchData([applyFormId], selApplyForm, culture as any, SELECTS.form as any, {
+    itemType: selApplyForm?.Content?.Type || T_FORM_LABEL,
+    take: 1,
+  });
 
-  const careersData = careerIds.length
-    ? await fetchData(careerIds, undefined as any, culture as any, careerCards, {
-        itemType: CAREER,
-      })
-    : await fetchData([], undefined as any, culture as any, careerCards, {
-        itemType: CAREER,
-        take: 100,
-      });
+  const citiesTask = fetchData(
+    cityChoiceIds,
+    undefined as any,
+    culture as any,
+    SELECTS.city as any,
+    {
+      itemType: selCityChoices?.Content?.[0]?.Type,
+    },
+  );
 
-  const careers = (Array.isArray(careersData) ? careersData : [careersData]).filter(Boolean);
+  const [settingsRaw, careersRaw, applyFormRaw, explicitCitiesRaw] = await Promise.all([
+    settingsTask,
+    careersTask,
+    formTask,
+    citiesTask,
+  ]);
+
+  const pageData = getFirstItem<any>(settingsRaw);
+
+  const careers = isArray<any>(careersRaw).filter(Boolean);
+  const applyForm = getFirstItem<any>(applyFormRaw);
+
+  const embeddedCityChoices = mapCities(isArray((applyForm as any)?.CityChoices));
+  const explicitCityChoices = mapCities(isArray(explicitCitiesRaw));
+  const effectiveCityChoices =
+    embeddedCityChoices.length > 0 ? embeddedCityChoices : explicitCityChoices;
+
+  const toPlain = <T,>(value: T): T => JSON.parse(JSON.stringify(value ?? null));
+  const applyFormPlain = toPlain(applyForm);
+  const cityChoicesPlain = toPlain(effectiveCityChoices);
+  const careersPlain = toPlain(careers);
 
   const labels = {
     vacanciesLabel: pageData?.VacanciesLabel ?? 'Available vacancies',
@@ -74,8 +168,16 @@ export default async function Careers(props: WidgetContext<any>) {
   }
 
   return (
-    <section {...attrs}>
-      <CareersRouting language={culture || 'en'} labels={labels} careers={careers as any[]} />
+    <section {...attrs} className="mx-auto">
+      <CareersRouting
+        language={culture || 'en'}
+        labels={labels}
+        careers={careersPlain as any[]}
+        entity={{
+          ApplyForm: applyFormPlain || {},
+          CityChoices: cityChoicesPlain || [],
+        }}
+      />
     </section>
   );
 }

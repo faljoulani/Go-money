@@ -221,7 +221,7 @@ html.dark .defaultBgColor {
 @keyframes fadeRightFinance {
   from {
     opacity: 0;
-    transform: translate(100px);
+    transform: translate(200px);
   }
   to {
     opacity: 1;
@@ -231,9 +231,9 @@ html.dark .defaultBgColor {
 
 .fadeLeftFinance,
 .fadeRightFinance {
-  animation: 3.5s linear both;
+  animation: 3.5s ease-out both;
   animation-timeline: view();
-  animation-range: entry 50% cover 20%;
+  animation-range: entry 40% cover 40%;
 }
 
 .fadeRightFinance {
@@ -274,8 +274,8 @@ html.dark .defaultBgColor {
 }
 @keyframes fadeRightFinanceDetails {
   from {
-    opacity: 0.5;
-    transform: translateX(250px);
+    opacity: 0;
+    transform: translateX(400px);
   }
   to {
     opacity: 1;

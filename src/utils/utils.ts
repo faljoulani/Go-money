@@ -1,6 +1,8 @@
 import type { WidgetContext } from '@progress/sitefinity-nextjs-sdk';
 
-import { CmsLink } from '../types/Type';
+import { CmsLink } from '../types/typee';
+
+export const DAY_MS = 86_400_000;
 
 export function mergeClasses(...xs: Array<string | undefined | false | null>) {
   return xs.filter(Boolean).join(' ');
@@ -123,4 +125,7 @@ export function displayTitle(raw: string): string {
 
 export const sortByOrder = <T extends { Order?: number }>(arr: T[] = []) =>
   arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
+
+export const daysSinceUtc = (utc?: string) =>
+  !utc ? 0 : Math.max(0, Math.floor((Date.now() - new Date(utc).getTime()) / DAY_MS));
 

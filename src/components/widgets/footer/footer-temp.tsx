@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
-import { FooterEntity } from './Footer.entity';
-import FooterLinks, { FooterLinksGroup } from './FooterLinks';
+import { FooterEntity } from './footerr.entity';
+import FooterLinks, { FooterLinksGroup } from './footerLinkss';
 import { resolveAbsoluteUrl, sortByOrder, resolveSitefinitySelection } from '../../../utils/utils';
 import {
   selectPrimaryImage,
@@ -140,12 +140,24 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
         {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
-        <img
+        {/* <img
           src="/assets/footer.png"
           alt=""
           className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
         />
         <div className="md:ltr:px-20 md:ltr:py-16 md:rtl:px-20 md:rtl:py-16 xs:px-6 xs:ltr:py-6 xs:rtl:px-6 xs:rtl:py-6">
+        /> */}
+        <video
+          className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px]"
+          src="assets/footerAnimation.mp4"
+          autoPlay
+          playsInline
+          loop
+        >
+          <source src="assets/footerAnimation.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="ltr:px-20 ltr:py-16 rtl:px-20 rtl:py-16">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
@@ -226,7 +238,10 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks groups={linkGroups} className="justify-start my-8 z-30 rtl:pr-16 left-0" />
+              <FooterLinks
+                groups={linkGroups}
+                className=" justify-start my-8 z-30 rtl:pr-16 left-0"
+              />
             </div>
           </div>
 

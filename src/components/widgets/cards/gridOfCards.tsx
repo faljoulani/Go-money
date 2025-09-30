@@ -10,7 +10,7 @@ import LeadershipCards from './leadershipCards';
 import CEOMessageCard from './ceoMessageCard';
 import ChairmanMessageCard from './chairmanMessageCard';
 
-import { CmsImage } from '../../../types/Type';
+import { CmsImage } from '../../../types/typee';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -250,12 +250,13 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             <CTA
               variant="outline"
               colorText="text-primary"
-              fontWeight="font-semibold"
+              fontWeight="font-medium"
               borderColor="border-primary"
               align="center"
               icon="arrow"
               bgColor="transparent"
               href={ctaHref || '#'}
+              className="text-lg"
             >
               {ctaText}
             </CTA>

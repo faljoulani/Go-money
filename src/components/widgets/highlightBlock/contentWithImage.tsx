@@ -7,7 +7,7 @@ import Description from '../../atoms/description/description';
 
 import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
-import { CmsImage } from '../../../types/Type';
+import { CmsImage } from '../../../types/typee';
 
 type ContentWithImageItem = {
   Id: string;
@@ -106,7 +106,7 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
               {title}
             </Title>
           )}
-          {subtitle && <Description className='font-semibold text-lg leading-6' html={subtitle} />}
+          {subtitle && <Description className="font-semibold text-lg leading-6" html={subtitle} />}
           {description && <Description html={description} />}
         </div>
       </div>

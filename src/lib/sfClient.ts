@@ -85,6 +85,24 @@ export async function sfFetch<T>(
     if (v !== undefined && v !== null) u.searchParams.set(k, String(v));
   }
 
+  const isFormDataLike = (val: unknown): val is FormData => {
+    if (!val || typeof val !== 'object') return false;
+    const ctor = typeof FormData !== 'undefined' ? FormData : undefined;
+    return !!(ctor && val instanceof ctor);
+  };
+
+  const isBlobLike = (val: unknown): val is Blob => {
+    if (!val || typeof val !== 'object') return false;
+    const ctor = typeof Blob !== 'undefined' ? Blob : undefined;
+    return !!(ctor && val instanceof ctor);
+  };
+
+  const isReadableStreamLike = (val: unknown): val is ReadableStream => {
+    if (!val || typeof val !== 'object') return false;
+    const ctor = typeof ReadableStream !== 'undefined' ? ReadableStream : undefined;
+    return !!(ctor && val instanceof ctor);
+  };
+
   async function call(fresh = false): Promise<T> {
     if (fresh) cachedToken = null;
     const token = await getSfToken();
@@ -100,14 +118,44 @@ export async function sfFetch<T>(
     ) {
       headers['X-SF-Service-Request'] = 'true';
     }
+    const body = opts.body;
+    let preparedBody: BodyInit | undefined;
+    const isFormData = isFormDataLike(body);
+
+    if (body !== undefined && body !== null) {
+      const isBuffer = typeof Buffer !== 'undefined' && Buffer.isBuffer(body);
+      const isArrayBuffer = body instanceof ArrayBuffer;
+      const isView = ArrayBuffer.isView(body as any);
+      if (isFormData) {
+        preparedBody = body as FormData;
+        delete headers['Content-Type'];
+      } else if (body instanceof URLSearchParams) {
+        preparedBody = body;
+        if (!headers['Content-Type']) {
+          headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
+      } else if (
+        isBlobLike(body) ||
+        isBuffer ||
+        isArrayBuffer ||
+        isView ||
+        isReadableStreamLike(body)
+      ) {
+        preparedBody = body as BodyInit;
+      } else if (typeof body === 'string') {
+        preparedBody = body;
+      } else {
+        if (!headers['Content-Type']) {
+          headers['Content-Type'] = 'application/json';
+        }
+        preparedBody = JSON.stringify(body);
+      }
+    }
+
     const res = await fetch(u.toString(), {
       method: opts.method || 'GET',
       headers,
-      body: opts.body
-        ? typeof opts.body === 'string'
-          ? opts.body
-          : JSON.stringify(opts.body)
-        : undefined,
+      body: preparedBody,
       cache: 'no-store',
       redirect: 'manual',
     });
@@ -120,10 +168,10 @@ export async function sfFetch<T>(
     }
 
     const text = await res.text();
- 
     if (!res.ok) {
       throw new Error(`sfFetch ${res.status} ${res.statusText} ${u}\n${text.slice(0, 500)}`);
     }
+    if (!text) return null as T;
     try {
       return JSON.parse(text) as T;
     } catch {

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
+import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
 
 type Option = { id: string; label: string };
 type Data = {
@@ -23,6 +24,7 @@ type Data = {
 
   requestTypeLabel?: string;
   requestTypeChoices?: Option[];
+  requestTypePlacholder?: string;
 
   topicLabel?: string;
   topicPlaceholder?: string;
@@ -48,11 +50,15 @@ export default function ContactFormClient({
   const LABEL = 'mb-1 block text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
 
-  const requestType = data.requestTypeChoices ?? [];
-
   const [isLoading, setIsLoading] = React.useState(false);
   const [resStatus, setResStatus] = React.useState<null | 'success' | 'error'>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
+
+  const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
+    id: o.id,
+    label: o.label,
+    value: (o.id ?? '').toString().toUpperCase(), // normalize for API if needed
+  }));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -183,48 +189,28 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Request type (optional) */}
+          {/* Request Type (CustomDropdown) */}
           <div>
             <label className={LABEL}>
               {data.requestTypeLabel ?? 'Request type'} {reqStar}
             </label>
 
-            <div className="relative rtl">
-              <select className={`${FIELD} appearance-none`} disabled={isLoading} defaultValue="">
-                <option value="" hidden></option>
-                {requestType.length > 0 ? (
-                  requestType.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.label}
-                    </option>
-                  ))
-                ) : (
-                  <>
-                    <option value="COMPLAINT">Complaint</option>
-                    <option value="INQUIRY">Inquiry</option>
-                  </>
-                )}
-              </select>
-              <svg
-                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#9E9E9E] rtl:left-3 rtl:right-auto"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                width="20"
-                height="20"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
+            <CustomDropdown
+              name="requestType"
+              options={dropdownOptions}
+              placeholder={data.requestTypePlacholder ?? 'Select request type'}
+              dir={dir}
+              disabled={isLoading}
+              className="relative max-w-[326.5px]"
+              buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
+              optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+            />
           </div>
 
-          {/* Topic -> complaintCategory */}
+          {/* Topic */}
           <div>
             <label className={LABEL}>
               {data.topicLabel ?? 'Topic'}
@@ -240,7 +226,7 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Notes -> description */}
+          {/* Notes */}
           <div className="col-span-2">
             <label className={LABEL}>
               {data.notesLabel ?? 'Notes'}
@@ -269,7 +255,7 @@ export default function ContactFormClient({
           <button
             type="submit"
             disabled={isLoading}
-            className="rounded-[16px] px-6 py-3 text-white shadow-sm bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
+            className="rounded-[18px] px-6 py-3 text-white bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
           >
             {isLoading ? 'Sending…' : (data.ctaText ?? 'Send Message')}
           </button>
