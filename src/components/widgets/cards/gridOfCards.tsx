@@ -2,6 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId, pickImageUrl } from '../../../utils/sitefinity';
 import { resolveAbsoluteUrl, extractHref } from '../../../utils/utils';
+import {MobileCardsCarousel} from './mobileCards'
 
 import ScrollableCards from './scrollableCards';
 import FeatureCards from './featuresCards';
@@ -180,7 +181,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
 
   return (
     <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12">
-      <div>
+          <MobileCardsCarousel items={childCardData} />
+      <div className="xs:hidden md:block">
         <div className="flex flex-col items-center gap-2 text-center fadeupText">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
           <Title
@@ -197,7 +199,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         </div>
 
         <div className="mt-12">
-          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 md:fadeup">
+          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 fadeup">
             {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
@@ -221,7 +223,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           </div>
         </div>
         <div className="mt-12 ">
-          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 md:fadeup">
+          <div className="grid md:grid-cols-3 xs:grid-cols-1 gap-8 fadeup">
             {childCardData.slice(3, 6).map((item) => (
               <div
                 key={item.id}
@@ -244,8 +246,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             ))}
           </div>
         </div>
-
-        {ctaText && (
+      </div>
+       {ctaText && (
           <div className="mt-12 text-center fadeupButton">
             <CTA
               variant="outline"
@@ -262,7 +264,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             </CTA>
           </div>
         )}
-      </div>
     </section>
   );
 }

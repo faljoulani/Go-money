@@ -84,7 +84,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
           )}
           {box.SubTitle &&
             (isSubscribe ? (
-              <Description maxWidth="none" className="mt-0 text-lg leading-6">
+              <Description maxWidth="none" className="mt-0 md:text-lg xs:text-[1rem] xs:mb-2 leading-6">
                 {box.SubTitle}
               </Description>
             ) : (
@@ -107,7 +107,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
         </div>
       ) : (
         <div className="flex flex-col justify-end items-center text-center h-full">
-          <div className="grid grid-cols-2 mb-8 w-full max-w-[520px] gap-3">
+          <div className="grid md:grid-cols-2 xs:grid-cols-1 mb-8 w-full max-w-[520px] gap-3">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
                 <Image src="/icons/phone.svg" alt="phone" width={17} height={17} />
@@ -193,14 +193,14 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
           <div className="mb-10">
             <Title
               color="text-primary"
-              className="text-40px tracking-[-0.02em] max-w-[720px] leading-[52px]"
+              className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px]"
             >
               {parent.Title}
             </Title>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-8 items-stretch">
+        <div className="grid md:grid-cols-2 xs:grid-cols-1 gap-8 items-stretch">
           {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
           {right && <Card box={right} className="fadeRightSubscribe h-full" />}
         </div>

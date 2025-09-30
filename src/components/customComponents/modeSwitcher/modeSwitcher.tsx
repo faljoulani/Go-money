@@ -15,12 +15,12 @@ export default function ModeSwitcher() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="flex items-center justify-center p-2 transition dark:hover:bg-neutral-700"
+      className="flex items-center justify-center p-2 transition  dark:hover:bg-neutral-700"
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
       <svg
         viewBox="0 0 24 24"
-        className="h-6 w-6 stroke-current fill-transparent"
+        className="h-6 w-6 stroke-current fill-transparent xs:text-black"
         strokeWidth={1.5}
         aria-hidden
       >
