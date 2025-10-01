@@ -184,7 +184,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
+        className=" xs:hidden pointer-events-none md:absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
       <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24  xs:flex xs:flex-col xs:px-8 xs:py-20 ">
