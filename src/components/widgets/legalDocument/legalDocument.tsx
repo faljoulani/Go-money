@@ -120,9 +120,9 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   const offset = 0;
   return (
     <div {...attrs}>
-      <div className="sf-ldoc md:mt-16 xs:mt-10">
+      <div className="sf-ldoc md:mt-16 xs:my-10">
         <div className="mx-auto md:grid md:gap-8 md:grid-cols-[360px_1fr]">
-          <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0">
+          <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0 xs:h-16 md:h-auto">
             <nav className="md:rounded-[15px] xs:rounded-xl">
               <ul className="md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto snap-x snap-mandatory no-scrollbar">
                 {sections.map((s, i) => {
@@ -130,7 +130,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                   return (
                     <li key={s.Id} className="border-b transition border-white/10 snap-center flex-shrink-0">
                       <a
-                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 text-[15px] border-b transition last:border-b-0 border-white/10`}
+                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 h-12 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
                         data-target={slug}
                         data-index={i + 1}

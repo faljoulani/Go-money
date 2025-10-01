@@ -22,17 +22,37 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     });
   });
 
-  function setActive(id){
-    // remove Tailwind utility classes first
-    links.forEach(l=>{
-      l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
-    });
-    const to = links.find(l=>l.getAttribute('data-target')===id);
-    if(to){
-      // add Tailwind classes only
-      to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+  let lastActiveId = null; // track the last active section
+
+function setActive(id){
+  if(lastActiveId === id) return; // do nothing if the same section is still active
+  lastActiveId = id;
+
+  // remove Tailwind utility classes first
+  links.forEach(l=>{
+    l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+  });
+
+  const to = links.find(l=>l.getAttribute('data-target')===id);
+  if(to){
+    // add Tailwind classes only
+    to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+
+    // Only for horizontal mobile scroll
+    const container = to.closest('ul');
+    if(container && window.innerWidth < 768){
+      const containerRect = container.getBoundingClientRect();
+      const linkRect = to.getBoundingClientRect();
+      const offset = linkRect.left - containerRect.left - containerRect.width/2 + linkRect.width/2;
+
+      container.scrollBy({
+        left: offset,
+        behavior: 'smooth'
+      });
     }
   }
+}
+
 
   if(location.hash){
     const id = location.hash.replace('#','');
@@ -61,3 +81,4 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     />
   );
 }
+
