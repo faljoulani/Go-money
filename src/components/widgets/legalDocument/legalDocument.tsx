@@ -128,9 +128,12 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
                   return (
-                    <li key={s.Id} className="border-b transition border-white/10 snap-center flex-shrink-0">
+                    <li
+                      key={s.Id}
+                      className="border-b transition border-white/10 snap-center flex-shrink-0"
+                    >
                       <a
-                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 h-12 text-[15px] border-b transition last:border-b-0 border-white/10`}
+                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 xs:h-12 md:h-16 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
                         data-target={slug}
                         data-index={i + 1}
@@ -180,6 +183,4 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
     </div>
   );
 }
-
-
 

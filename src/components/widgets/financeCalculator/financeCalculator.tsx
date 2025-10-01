@@ -64,6 +64,7 @@ export default async function FinanceCalculator(
       'NationalityLabelChoices',
       'EmployerTypeLabel',
       'EmployerPlaceholder',
+      'EmployerChoices',
       'DateOfBirthLabel',
       'DateOfBirthPlaceholder',
       'LengthOfServicesLabel',
