@@ -16,7 +16,6 @@ type Job = {
 type Props = {
   job: Job;
   className?: string;
-  dir?: 'rtl' | 'ltr' | 'auto';
   onOpen?: (id: string) => void;
 };
 
@@ -54,7 +53,7 @@ export default function JobCard({ job, onOpen }: Props) {
       onClick={goToDetails}
       onKeyDown={onKey}
       className="
-        w-[274px] h-[218px] p-6 rounded-xl bg-white 
+        mx-auto w-full md:w-[274px] md:h-[218px] p-6 rounded-xl bg-white 
         shadow-sm hover:shadow-md transition overflow-hidden
         flex flex-col items-center justify-between gap-4"
       aria-busy={loading}
@@ -82,7 +81,7 @@ export default function JobCard({ job, onOpen }: Props) {
             height={16}
             className="h-4 w-4 object-contain"
           />
-          <span className="flex-1 truncate">{job.location}</span>
+          <span className="flex-1">{job.location}</span>
         </div>
       </div>
 
@@ -93,3 +92,4 @@ export default function JobCard({ job, onOpen }: Props) {
     </article>
   );
 }
+

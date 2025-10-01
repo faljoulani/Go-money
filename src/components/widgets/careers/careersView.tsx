@@ -168,7 +168,7 @@ export default async function Careers(props: WidgetContext<any>) {
   }
 
   return (
-    <section {...attrs} className="mx-auto">
+    <section {...attrs} className="m-auto">
       <CareersRouting
         language={culture || 'en'}
         labels={labels}

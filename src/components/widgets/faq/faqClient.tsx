@@ -43,8 +43,8 @@ export default function QuestionsClient({
   }, [active, questions]);
 
   return (
-    <section className="flex gap-8 px-20 pt-[58px] pb-16 overflow-clip mx-auto">
-      <aside className="w-1/4 fadeLeft">
+    <section className="flex md:gap-8 xs:gap-2 md:px-20 md:pt-[58px] xs:pt-[30px] md:pb-16 overflow-clip mx-auto xs:w-[90%] xs:flex-col md:flex-row">
+      <aside className="w-1/4 xs:hidden md:block fadeLeft">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {
             const isActive = active === cat.Id;
@@ -71,7 +71,7 @@ export default function QuestionsClient({
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-[24px] h-[24px]"
+                    className="w-[24px] h-[24px] xs:hidden md:block"
                   >
                     <line x1="0" y1="12" x2="15" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
@@ -82,6 +82,37 @@ export default function QuestionsClient({
           })}
         </ul>
       </aside>
+<div className="md:hidden xs:block">
+  <ul
+    className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory
+               [scrollbar-width:none] [-ms-overflow-style:none]"
+  >
+    <style>{`
+      ul::-webkit-scrollbar { display: none; }
+    `}</style>
+
+    {categories.map((cat) => {
+      const isActive = active === cat.Id;
+      return (
+        <li key={cat.Id} className="snap-start shrink-0">
+          <button
+            onClick={() => setActive(cat.Id)}
+            className={[
+              "px-5 py-2.5 rounded-xl text-sm whitespace-nowrap",
+              "transition-colors",
+              isActive
+                ? "bg-[#0B1C5A] text-white border-[#0B1C5A] shadow-sm"
+                : "bg-white text-slate-900 border-slate-200"
+            ].join(" ")}
+            aria-current={isActive ? "true" : undefined}
+          >
+            {cat.Title}
+          </button>
+        </li>
+      );
+    })}
+  </ul>
+</div>
 
       <div className="flex-1 fadeRight">
         <div className=" rounded-xl">

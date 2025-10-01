@@ -114,7 +114,8 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className="relative isolate overflow-hidden  h-[450px] text-white flex items-center justify-center flex-col rounded-2xl"
+        className="relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
+             min-h-[320px] h-[450px] px-4" // add padding + avoid hard height on mobile
         style={{
           backgroundImage: `url('/assets/HeroBackground.png')`,
           backgroundSize: 'cover',
@@ -141,6 +142,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               )}
             </div>
           </div>
+
           {title && (
             <Title>
               <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
@@ -182,7 +184,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
+        className=" xs:hidden pointer-events-none md:absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
       <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24  xs:flex xs:flex-col xs:px-8 xs:py-20 ">

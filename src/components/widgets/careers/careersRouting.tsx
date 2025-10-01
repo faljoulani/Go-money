@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import JobDetails from './details/jobDetailss';
+import JobDetails from './details/jobDetails';
 import ApplyForJob from './applyForJob/applyForJob';
 import CareersBoard from './careersDashboard/careersBoard';
 import { type CareersSearchBody, type ModuleCareer } from '../../../types/typee';
@@ -95,7 +95,6 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
     return <CareersBoard labels={labels} careers={careers} onOpenJob={openJob} />;
   }, [jobId, isApplying, labels, careers, entity, language, buildUrl, goToApply, openJob]);
 
-  return <section className="w-full">{content}</section>;
+  return <section className="mx-auto w-full">{content}</section>;
 }
-
 

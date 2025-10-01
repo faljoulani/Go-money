@@ -5,8 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { resolveAbsoluteUrl } from '../../../utils/utils';
 import { pickOneMedia } from '../../../utils/sitefinity';
-import type { ApiNavItem as ClientNavItem } from '../../../types/Type';
+import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 
+import type { ApiNavItem as ClientNavItem } from '../../../types/typee';
+function isDropdown(item: ClientNavItem): item is import('../../../types/typee').ApiNavDropdown {
+  return Array.isArray((item as any).children);
+}
 type StoreLink = {
   title?: string;
   order?: number;
@@ -84,7 +88,6 @@ export default function MobileNavbar({
 
   return (
     <>
-      {/* Burger button */}
       <button
         ref={btnRef}
         className={`md:hidden inline-flex items-center justify-center rounded-xl p-2 ${textColorWhenScrolled} hover:bg-white/10 transition`}
@@ -92,7 +95,6 @@ export default function MobileNavbar({
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
-        {/* icon */}
         <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
           <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
@@ -109,13 +111,12 @@ export default function MobileNavbar({
         ref={panelRef}
         dir={dir}
         className={`md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
-          rounded-l-2xl rounded-r-none bg-white shadow-xl transition-transform duration-300
+          rounded-l-2xl ${isRTL ? 'border-r-none' : 'border-l-none'} bg-white shadow-xl transition-transform duration-300
           ${open ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'}`}
         role="dialog"
         aria-modal="true"
         aria-label="Main menu"
       >
-        {/* Header inside sheet */}
         <div className="flex items-center justify-between p-4">
           <Link href="/" aria-label="Home" onClick={() => setOpen(false)}>
             <Image src={logoUrl} alt={logoAlt} width={92} height={40} unoptimized />
@@ -131,19 +132,18 @@ export default function MobileNavbar({
           </button>
         </div>
 
-        {/* Scrollable content */}
-        <div className="h-[calc(100%-4rem)] overflow-y-auto pb-24">
+        <div className="h-[calc(100%-4rem)]  pb-24">
           <nav className="px-2">
-            {/* Top-level items */}
             {items?.map((item, idx) => {
-              const hasChildren = Array.isArray(item.items) && item.items.length > 0;
-              const active = flatIsActive(item.href);
+              console.log("ISISISI:", item)
+             const hasChildren = isDropdown(item) && item.children.length > 0;
+  const active = flatIsActive(item.url);
 
               if (!hasChildren) {
                 return (
                   <Link
                     key={idx}
-                    href={item.href || '#'}
+                    href={item.url || '#'}
                     onClick={() => setOpen(false)}
                     className={`block rounded-xl px-4 py-3 text-[15px] font-medium
                       ${active ? 'bg-primary/5 text-primary' : 'text-[#0A1B2E] hover:bg-black/5'}`}
@@ -157,12 +157,12 @@ export default function MobileNavbar({
               return (
                 <Accordion key={idx} title={item.title} defaultOpen={active}>
                   <div className="mt-2 rounded-xl border border-[#E9EEF2] bg-[#F7FAFC] px-3">
-                    {item.items!.map((child, cIdx) => {
-                      const activeChild = flatIsActive(child.href);
+                    {item.children!.map((child, cIdx) => {
+                      const activeChild = flatIsActive(child.url);
                       return (
                         <Link
                           key={cIdx}
-                          href={child.href || '#'}
+                          href={child.url || '#'}
                           onClick={() => setOpen(false)}
                           className={`block border-b border-dashed border-[#DCE6EE] py-3 text-[14px] last:border-b-0
                             ${activeChild ? 'text-primary' : 'text-[#0A1B2E] hover:opacity-80'}`}
@@ -176,21 +176,18 @@ export default function MobileNavbar({
               );
             })}
 
-            {/* Theme / Language rows (optional, if you prefer them inside) */}
             <div className="mt-4 border-t border-[#EEF2F6] pt-3">
               <div className="flex items-center justify-between px-2 py-3">
-                <span className="text-sm text-[#6B7A8C]">Theme</span>
-                {/* Place your ModeSwitcher here if you want it inside the sheet */}
-                {/* <ModeSwitcher /> */}
+                <span className="text-sm xs:text-black">Theme</span>
+                <ModeSwitcher />
               </div>
-              <div className="flex items-center justify-between px-2 py-3">
+              {/* <div className="flex items-center justify-between px-2 py-3">
                 <span className="text-sm text-[#6B7A8C]">Language</span>
-                {/* <LanguageSwitcher /> */}
-              </div>
+                <LanguageSwitcher />
+              </div> */}
             </div>
           </nav>
 
-          {/* Store badges row */}
           <div className="sticky bottom-0 z-10 mt-6 bg-white px-4 pb-4 pt-3">
             <div className="flex items-center justify-center gap-3">
               {normalizeStores.slice(0, 3).map(s => (
@@ -218,7 +215,6 @@ export default function MobileNavbar({
   );
 }
 
-/* ---------- Accordion (no deps) ---------- */
 function Accordion({
   title,
   defaultOpen = false,
@@ -252,7 +248,7 @@ function Accordion({
       </button>
       <div
         id={id}
-        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300
+        className={`grid  transition-[grid-template-rows,opacity] duration-300
           ${open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
       >
         <div className="min-h-0">{children}</div>

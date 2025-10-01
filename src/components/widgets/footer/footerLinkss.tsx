@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-import { mergeClasses, routeMatchKey, cleanHref } from '../../../utils/utils';
+import { routeMatchKey, cleanHref } from '../../../utils/utils';
 
 export type FooterLink = { id: string; title: string; href: string };
 export type FooterLinksGroup = { id: string; title: string; links: FooterLink[] };
@@ -14,31 +14,26 @@ type Props = {
   className?: string;
 };
 
-export default function FooterLinks({ groups, className = ''}: Props) {
+export default function FooterLinks({ groups, className = '' }: Props) {
   const pathname = usePathname();
   const current = routeMatchKey(cleanHref(pathname || '/'));
 
   return (
-    <div className={mergeClasses(`grid grid-cols-3 gap-8 ${className} rtl:grid-col-reverse`)}>
-      {groups.map((g) => (
-        <nav key={g.id} aria-label={g.title} className="flex flex-col w-[215px]">
-          <h3 className="text-white text-lg font-semibold font-lufga">{g.title}</h3>
-          <ul className="mt-4 space-y-3">
-            {g.links.map((l) => {
-              const hrefNorm = routeMatchKey(cleanHref(l.href));
-              const active =
-                current === hrefNorm || (hrefNorm !== '/' && current.startsWith(hrefNorm));
+    <div className={`grid md:grid-cols-3 xs:grid-cols-2 gap-10 ${className} rtl:grid-col-reverse`}>
+      {groups.map((group) => (
+        <nav key={group.id} aria-label={group.title} className="flex flex-col w-full">
+          <h3 className="text-white text-lg font-semibold ">{group.title}</h3>
+          <ul className="mt-8 space-y-2">
+            {group.links.map((link) => {
+              const hrefNorm = routeMatchKey(cleanHref(link.href));
+
               return (
-                <li key={l.id}>
+                <li key={link.id}>
                   <Link
-                    href={l.href}
-                    aria-current={active ? 'page' : undefined}
-                    className={mergeClasses(
-                      'font-normal text-base leading-[100%] no-underline transition-colors align-middle',
-                      active ? 'text-[#010663]' : 'text-[#E0E0E0]',
-                    )}
+                    href={link.href}
+                    className={` font-normal text-base leading-[100%] no-underline transition-colors align-middle whitespace-nowrap text-ellipsis ${'text-[#E0E0E0]'}`}
                   >
-                    {l.title}
+                    {link.title}
                   </Link>
                 </li>
               );

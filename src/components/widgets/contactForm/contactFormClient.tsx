@@ -45,9 +45,9 @@ export default function ContactFormClient({
   dir = 'auto',
 }: Props) {
   const FIELD =
-    'w-full mx-auto h-[48px] px-3 py-3 rounded-[18px] text-[#BDBDBD] border border-[#BDBDBD] ' +
+    'w-full h-[48px] px-3 py-3 rounded-[18px] text-[#BDBDBD] border border-[#BDBDBD] ' +
     'bg-white text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
-  const LABEL = 'mb-1 block text-14px text-default leading-[18px]';
+  const LABEL = 'mb-1 text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -57,7 +57,7 @@ export default function ContactFormClient({
   const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
     id: o.id,
     label: o.label,
-    value: (o.id ?? '').toString().toUpperCase(), // normalize for API if needed
+    value: (o.id ?? '').toString().toUpperCase(),
   }));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,7 +67,6 @@ export default function ContactFormClient({
 
     try {
       const formData = new FormData(e.currentTarget);
-
       const firstName = String(formData.get('firstName') || '').trim();
       const lastName = String(formData.get('lastName') || '').trim();
       const fullName = [firstName, lastName].filter(Boolean).join(' ') || firstName || lastName;
@@ -113,9 +112,9 @@ export default function ContactFormClient({
       {isLoading && <FullPageLoader />}
 
       <form ref={formRef} onSubmit={handleSubmit} dir={dir} className="space-y-5">
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2">
           {/* First Name */}
-          <div>
+          <div className="grid grid-cols-1 min-w-0">
             <label className={LABEL}>
               {data.firstNameLabel ?? 'First Name'}
               {reqStar}
@@ -131,7 +130,7 @@ export default function ContactFormClient({
           </div>
 
           {/* Last Name */}
-          <div>
+          <div className="grid grid-cols-1 min-w-0">
             <label className={LABEL}>
               {data.lastNameLabel ?? 'Last Name'}
               {reqStar}
@@ -147,33 +146,50 @@ export default function ContactFormClient({
           </div>
 
           {/* Phone */}
-          <div>
+          <div className="flex flex-col min-w-0">
             <label className={LABEL}>
               {data.phoneNumberLabel ?? 'Phone Number'}
               {reqStar}
             </label>
-            <div className="w-[326.5px] flex items-stretch gap-1">
-              <div className="h-[48px] rounded-[18px] border border-[#BDBDBD] bg-white px-3 flex items-center gap-2">
+
+            {/* Unified pill wrapper */}
+            <div
+              className="
+                w-full sm:max-w-[326.5px] min-w-0
+                box-border flex items-center
+                rounded-[18px] border border-[#BDBDBD] bg-white
+                overflow-hidden focus-within:ring-2 focus-within:ring-[#0B2A8E]/20
+                divide-x divide-[#BDBDBD] rtl:divide-x-reverse
+    "
+            >
+              {/* Prefix segment (no rounded, no border) */}
+              <div className="px-3 h-[48px] inline-flex items-center gap-2 shrink-0 bg-white">
                 <span aria-hidden className="inline-flex h-6 min-w-6 items-center justify-center">
                   🇸🇦
                 </span>
                 <span className="text-sm font-medium text-[#2B2B2B]">+966</span>
               </div>
+
+              {/* Input (no border, no own radius) */}
               <input
                 name="phone"
-                placeholder={data.phoneNumberPlaceholder ?? ''}
-                className="flex-1 h-[48px] px-3 rounded-[18px] border border-[#BDBDBD] bg-white
-                           text-14px leading-6 outline-none focus:ring-2 focus:ring-[#0B2A8E]/20"
-                required
                 inputMode="tel"
                 autoComplete="tel"
+                required
+                placeholder={data.phoneNumberPlaceholder ?? ''}
+                className="
+        min-w-0 flex-1 h-[48px] px-3
+        border-0 outline-none bg-transparent
+        text-14px leading-6 text-[#2B2B2B]
+        placeholder:text-[#BDBDBD]
+      "
                 disabled={isLoading}
               />
             </div>
           </div>
 
           {/* Email */}
-          <div>
+          <div className="flex flex-col min-w-0">
             <label className={LABEL}>
               {data.emailLabel ?? 'Email'}
               {reqStar}
@@ -189,8 +205,8 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Request Type (CustomDropdown) */}
-          <div>
+          {/* Request Type */}
+          <div className="flex flex-col min-w-0">
             <label className={LABEL}>
               {data.requestTypeLabel ?? 'Request type'} {reqStar}
             </label>
@@ -201,17 +217,15 @@ export default function ContactFormClient({
               placeholder={data.requestTypePlacholder ?? 'Select request type'}
               dir={dir}
               disabled={isLoading}
-              className="relative max-w-[326.5px]"
-              buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className="relative w-full sm:max-w-[326.5px]"
+              buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
               optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
             />
           </div>
 
           {/* Topic */}
-          <div>
+          <div className="flex flex-col min-w-0">
             <label className={LABEL}>
               {data.topicLabel ?? 'Topic'}
               {reqStar}
@@ -227,7 +241,7 @@ export default function ContactFormClient({
           </div>
 
           {/* Notes */}
-          <div className="col-span-2">
+          <div className="sm:col-span-2 min-w-0">
             <label className={LABEL}>
               {data.notesLabel ?? 'Notes'}
               {reqStar}
@@ -242,7 +256,7 @@ export default function ContactFormClient({
           </div>
         </div>
 
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <span className="text-sm" aria-live="polite">
             {resStatus === 'success' && (
               <span className="text-green-600">Your message was successfully sent.</span>
@@ -255,7 +269,7 @@ export default function ContactFormClient({
           <button
             type="submit"
             disabled={isLoading}
-            className="rounded-[18px] px-6 py-3 text-white bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
+            className="w-full sm:w-auto rounded-[18px] px-6 py-3 text-white bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
           >
             {isLoading ? 'Sending…' : (data.ctaText ?? 'Send Message')}
           </button>
