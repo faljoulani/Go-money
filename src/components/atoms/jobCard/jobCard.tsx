@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
+import { useDirection, formatDaysAgo } from '../../../utils/helpers';
 
 type Job = {
   id: string;
@@ -23,6 +24,9 @@ export default function JobCard({ job, onOpen }: Props) {
   const router = useRouter();
   const { post } = useSfMutation('api/default/careers/details');
   const [loading, setLoading] = React.useState(false);
+
+  const dir = useDirection();
+  const isRtl = dir === 'rtl';
 
   const goToDetails = async () => {
     if (onOpen) return onOpen(job.id);
@@ -85,9 +89,11 @@ export default function JobCard({ job, onOpen }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-14px">
+      <div className={`flex items-center gap-2 text-14px ${isRtl ? 'flex-row-reverse' : ''}`}>
         <span className="rounded-full bg-[#E1F3F9] px-3 py-2">{job.workType}</span>
-        <span className="rounded-full bg-[#E1F3F9] px-3 py-2">{job.postedDaysAgo} days ago</span>
+        <span className="rounded-full bg-[#E1F3F9] px-3 py-2">
+          {formatDaysAgo(job.postedDaysAgo, isRtl ? 'ar' : 'en')}
+        </span>
       </div>
     </article>
   );

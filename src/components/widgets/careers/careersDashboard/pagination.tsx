@@ -20,22 +20,11 @@ export default function Pagination({
   const atStart = page <= 1;
   const atEnd = page >= Math.max(1, totalPages);
 
-  console.log({
-    'atStart ': atStart,
-    'atEnd ': atEnd,
-  });
-
   const start = Math.max(1, page - 2);
-  console.log('[pagination] start', { page, totalPages, start });
 
   const pagesNumbers = Array.from({ length: 5 }, (_, i) => start + i).filter(
     (n) => n <= totalPages,
   );
-
-  console.log({
-    'start ': start,
-    'windowNums ': pagesNumbers,
-  });
 
   return (
     <div dir="ltr" className="w-full rounded-2xl bg-white py-3 px-4 sm:py-2 sm:px-6">
