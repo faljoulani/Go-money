@@ -135,9 +135,9 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
         (attrs as any)?.className || '',
       )}
     >
-      <div className="flex h-[550px] w-auto items-center rounded-[32px] mx-20 flip overflow-clip">
+      <div className="flex xs:flex-col md:h-[550px] xs:h-[700px] md:w-[90%] rounded-2xl md:mx-auto flip overflow-clip">
         {/* Layer 1: gradient + main background image */}
-        <div className="absolute inset-0 z-0 rtl:scale-x-[-1]">
+        <div className="absolute inset-0 z-0 rtl:scale-x-[-1] rounded-2xl">
           <div
             className="absolute inset-0 "
             style={{
@@ -152,75 +152,76 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               alt={financeRepaymentBanner.images.backgroundUrl.alt}
               fill
               priority
-              className="w-[1240px] h-[550px] object-cover"
+              className="md:w-[1240px] md:h-[550px] object-cover"
             />
           )}
         </div>
 
         {/* Layer 2: content */}
 
-        <div className="relative z-10 flex w-full items-center">
-          <div className="text-white">
-            <div className="flex flex-col gap-6 pl-24 rtl:pr-24 w-full max-w-[560px]">
-              {/* Cards strip (maps from floatUrl → cards) under the title area */}
+        <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 text-left flex-col md:gap-6 md:pl-24 rtl:pr-24 md:h-full  md:max-w-[35%] md:py-10">
+          {/* Cards strip (maps from floatUrl → cards) under the title area */}
 
-              {financeRepaymentBanner.images.floatUrl.url && (
-                <div className="relative -left-8 -mb-12 rtl:-right-12 rtl:-mb-12 h-[180px] w-[590px] rounded-lg fadeRightFinanceDetails">
-                  <Image
-                    src={financeRepaymentBanner.images.floatUrl.url}
-                    alt={financeRepaymentBanner.images.floatUrl.alt}
-                    fill
-                    priority
-                    className="w-[527px] h-[97px]"
-                  />
-                </div>
-              )}
-              <div className="fadeRightFinanceDetails">
-              {!!financeRepaymentBanner.title && (
-                <Title
-                  className="text-5xl font-bold tracking-[-0.02em] leading-[90px] max-w-[100%]"
-                  color="text-white"
-                >
-                  {financeRepaymentBanner.title}
-                </Title>
-              )}
-              </div>
-
-              {!!financeRepaymentBanner.ctaLabel && (
-                <div >
-                  <CTA
-                    variant="outline"
-                    colorText="text-white"
-                    fontWeight="font-light"
-                    borderColor="border-white"
-                    align="left"
-                    icon="slot"
-                    bgColor="transparent"
-                    href={financeRepaymentBanner.ctaHref}
-                    className="fadeRightFinanceButton"
-                  >
-                    {financeRepaymentBanner.ctaLabel}
-                  </CTA>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Phone image on the right (foregroundUrl → phone) */}
-
-          {financeRepaymentBanner.images.foregroundUrl.url && (
-            <div className="absolute z-20 fadeRightFinance ltr:right-0 ltr:left-auto rtl:left-0 rtl:right-auto">
+          {financeRepaymentBanner.images.floatUrl.url && (
+            <div className="relative  md:-ml-20 w-full xs:h-[125px] md:h-[250px]  rounded-lg fadeRightFinanceDetails rtl:md:-right-12 rtl:md:-mb-12">
               <Image
-                src={financeRepaymentBanner.images.foregroundUrl.url}
-                alt={financeRepaymentBanner.images.foregroundUrl.alt}
-                width={550}
-                height={900}
+                src={financeRepaymentBanner.images.floatUrl.url}
+                alt={financeRepaymentBanner.images.floatUrl.alt}
+                fill
                 priority
-                className="w-[550px] h-[500px] pointer-events-none select-none animate-float"
+                className="md:w-[570px] md:h-[250px] xs:w-[90%] object-contain drop-shadow"
               />
             </div>
           )}
+          <div className="fadeRightFinanceDetails ">
+            {!!financeRepaymentBanner.title && (
+              <Title
+                className="md:text-5xl  md:font-bold md:tracking-[-0.02em] md:leading-[90px]  xs:max-w-none xs:text-[28px] xs:leading-9 xs:font-semibold
+"
+                color="text-white"
+              >
+                {financeRepaymentBanner.title}
+              </Title>
+            )}
+          </div>
+
+          {!!financeRepaymentBanner.ctaLabel && (
+            <div className="md:mt-6 xs:mt-5">
+              <CTA
+                variant="outline"
+                colorText="text-white"
+                fontWeight="font-light"
+                borderColor="border-white"
+                align="left"
+                icon="slot"
+                bgColor="transparent"
+                href={financeRepaymentBanner.ctaHref}
+                className="md:w-auto xs:w-full xs:h-12 xs:rounded-xl fadeRightFinanceButton"
+              >
+                {financeRepaymentBanner.ctaLabel}
+              </CTA>
+            </div>
+          )}
         </div>
+
+        {/* Phone image on the right (foregroundUrl → phone) */}
+
+        {financeRepaymentBanner.images.foregroundUrl.url && (
+          <div
+            className="md:absolute xs:mt-auto xs:relative md:z-20 md:ltr:right-0 md:ltr:left-auto md:rtl:left-0 md:rtl:right-auto fadeRightFinance
+                    w-[350px]"
+          >
+            <Image
+              src={financeRepaymentBanner.images.foregroundUrl.url}
+              alt={financeRepaymentBanner.images.foregroundUrl.alt}
+              width={550}
+              height={900}
+              priority
+              className="md:w-[550px] md:h-[500px]  xs:h-auto w-full xs:translate-y-10
+         pointer-events-none  animate-float"
+            />
+          </div>
+        )}
       </div>
     </section>
   );

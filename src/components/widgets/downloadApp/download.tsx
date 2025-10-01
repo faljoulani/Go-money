@@ -142,14 +142,14 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
     <section
       {...(attrs as any)}
       className={mergeClasses(
-        'relative h-[486px] rounded-3xl mx-20 px-16 my-16 fadeup ',
+        'relative md:h-[486px] xs:h-[700px] rounded-3xl md:mx-20 md:px-16 my-16 fadeup ',
         (attrs as any)?.className || '',
       )}
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex h-full w-full items-center gap-[30px]">
+      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center  gap-[30px]">
         {/* Left: phone image */}
-        <div className="flex h-[528px] w-[507px] items-center justify-center fadeLeftDownload">
+        <div className="flex md:h-[528px] md:w-[507px] xs:w-[50%] fadeLeftDownload">
           {!!phoneUrl && (
             <Image
               src={phoneUrl}
@@ -157,26 +157,25 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
               width={507}
               height={525}
               priority
-              className="w-[507px] h-[525px] pointer-events-none select-none object-contain absolute -top-2 animate-float"
+              className="md:w-[50px] xs:mb-14 md:h-[525px] xs:w-[100%] pointer-events-none select-none object-contain md:absolute xs:-top-2 md:-top-2 md:animate-float"
             />
           )}
         </div>
 
-        {/* Right: content */}
-        <div className="flex h-full w-1/2 items-center my-16 fadeRightDownload">
+        <div className="flex xs:w-[90%] md:h-full md:w-1/2 md:items-center md:my-16 md:fadeRightDownload">
           <div className="w-full max-w-[560px] text-[#010663]">
             {!!title && (
-              <Title className="font-bold tracking-tight text-5xl leading-snug">{title}</Title>
+              <Title className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug">{title}</Title>
             )}
-            {!!description && <Description html={description} className="mt-4 text-base" />}
+            {!!description && <Description html={description} className="mt-4" />}
 
             {/* Info chips from Certifications (max 2) */}
             {infoCards.length > 0 && (
-              <div className="mt-6 flex divide-x divide-[#7B80FF] rtl:divide-x-reverse">
+              <div className="mt-6 flex md:flex-row xs:flex-col xs:gap-3 md:divide-x md:divide-[#7B80FF] rtl:divide-x-reverse">
                 {infoCards.map((card, index) => (
                   <div
                     key={index}
-                    className={` flex items-start gap-3 ${index == 1 ? 'pl-6 rtl:pr-6 rtl:pl-0' : 'rtl:pl-6 rtl:pr-0 pr-6'}`}
+                    className={` flex items-start gap-3 ${index == 1 ? 'md:pl-6 md:rtl:pr-6 md:rtl:pl-0' : 'md:rtl:pl-6 md:rtl:pr-0 md:pr-6'}`}
                   >
                     {/* Logo */}
                     <div className="rounded-2xl bg-white/20 flex items-center justify-center">
@@ -235,7 +234,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           </div>
         </div>
       </div>
-      <div className="absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
+      <div className=" xs:hidden md:absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
     </section>
   );
 }

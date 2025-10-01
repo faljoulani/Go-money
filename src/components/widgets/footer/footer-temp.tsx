@@ -157,11 +157,11 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <source src="assets/footerAnimation.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div className="ltr:px-20 ltr:py-16 rtl:px-20 rtl:py-16">
+        <div className="md:ltr:px-20 xs:ltr:px-5 md:ltr:py-16 xs:ltr:py-8 md:rtl:px-20 xs:rtl:px-5 md:rtl:py-16 xs:rtl:py-8">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
-              className="text-40px max-w-[500px] leading-[60px] tracking-[-0.02em] xs:text-32px xs:leading-[40px]  mb-4"
+              className="md:text-40px  max-w-[500px] md:leading-[60px]  tracking-[-0.02em] xs:text-32px xs:leading-[40px]  mb-4"
             >
               {footerData.Title || footerData.SubTitle}
             </Title>
@@ -173,7 +173,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <div className="mx-auto w-full ">
             <div className="md:flex md:flex-row xs:flex-col  w-auto">
               <div className="col-span-1 mr-16 rtl:mr-0">
-                <div className="md:rtl:right-0 md:h-[759px] md:max-w-[400px]  md:ltr:border-r md:ltr:border-white/15 md:rtl:border-l md:rtl:border-white/15 flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
+                <div className="md:rtl:right-0 md:h-[759px] md:max-w-[400px] xs:w-full md:ltr:border-r md:ltr:border-white/15 md:rtl:border-l md:rtl:border-white/15 flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
                   <div className="flex items-center gap-3 ">
                     <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                       {logoSrc && (
