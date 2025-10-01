@@ -117,27 +117,25 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className="relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
              min-h-[320px] h-[450px] px-4" // add padding + avoid hard height on mobile
         style={{
-          backgroundImage: `url('/assets/HeroBackground.jpg')`,
+          backgroundImage: `url('/assets/HeroBackground.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <img
+        {/* <img
           src="/assets/BoxRight.png"
           alt="BoxRight"
-          className="absolute top-[107px] right-[166px] z-0"
-        />
-
-        {/* center container: fluid on mobile, capped on larger */}
+          className="absolute top-[107px] xl:right-[166px] z-0"
+        /> */}
         <div
-          className="text-center w-full max-w-[1040px] mx-auto h-auto md:h-[370px] min-w-0"
-          style={{
-            backgroundImage: `url('/assets/cyrcls.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          // className="text-center w-[1040px] h-[370px] max-xs:w-[375px] align-middle"
+          // style={{
+          //   backgroundImage: `url('/assets/cyrcls.png')`,
+          //   backgroundSize: 'cover',
+          //   backgroundPosition: 'center',
+          // }}
         >
-          <div className="mx-auto px-6 mt-[96px] md:mt-[145px]">
+          <div className="mx-auto px-6">
             <div className="mb-5" data-sfcontainer="Breadcrumb">
               {breadcrumbs.map((y) =>
                 RenderWidgetService.createComponent(y.model, props.requestContext),
@@ -147,18 +145,21 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
           {title && (
             <Title>
-              <p className="text-2xl md:text-40px font-bold mb-3 text-white tracking-tight">
+              <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
                 {title}
               </p>
             </Title>
           )}
-
+          {subtitle && (
+            <Description
+              html={subtitle}
+              className="text-white md:w-[485px] mx-auto text-center md:font-semibold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
+            />
+          )}
           {description && (
             <Description
               html={description}
-              className="text-white mx-auto text-center leading-7
-                   w-full max-w-[485px] px-2
-                   whitespace-normal break-words hyphens-auto"
+              className="text-white md:w-[485px] mx-auto text-center md:leading-7 xs:leading-5 xs:w-[295px]"
             />
           )}
         </div>

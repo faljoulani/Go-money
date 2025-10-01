@@ -5,6 +5,7 @@ import { HowItWorksSimple } from './howItWorksSimple';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
+import { linkToHref } from '../../../utils/utils';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
@@ -93,6 +94,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
+  console.log('->', item.CTAExternalUrl)
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -103,6 +105,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     IntroSubLead: item.IntroSubLead,
 
     CTALabel: item.CTALabel,
+    
     CTAExternalUrl: item.CTAExternalUrl,
     CTAInternalPage: item.CTAInternalPage?.DefaultUrl ?? null,
 
@@ -118,7 +121,19 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       IsVisible: s.IsVisible ?? true,
     })),
   };
-
+  
+  let rawCtaUrl = view.CTAExternalUrl;
+  
+    try {
+      if (typeof rawCtaUrl === 'string') {
+        rawCtaUrl = JSON.parse(rawCtaUrl);
+      }
+    } catch {
+      // If parsing fails, leave it as-is
+    }
+  
+  const CTAExternalUrl = linkToHref(rawCtaUrl);
+  console.log('->', CTAExternalUrl)
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
@@ -237,7 +252,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               {view.CTALabel && (
                 <div className="mt-12 flex justify-center fadeupButton">
                   <a
-                    href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
+                    href={CTAExternalUrl || view.CTAInternalPage || '#'}
                     className="group inline-flex items-center gap-2 rounded-[20px] px-6 py-3
                                text-[#F7FAFC] font-medium w-[250px] h-14 text-center justify-center
                                shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]

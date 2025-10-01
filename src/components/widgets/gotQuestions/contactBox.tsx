@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { ContactBoxEntity } from './contactBox.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
-import { resolveSitefinitySelection } from '../../../utils/utils';
+import { linkToHref, resolveSitefinitySelection } from '../../../utils/utils';
 import React from 'react';
 import ContactBoxInfo from './contactBoxInfo';
 
@@ -87,7 +87,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   } catch {
     // If parsing fails, leave it as-is
   }
-
+  const ctaHref = linkToHref(primaryHref)
   // Secondary CTA: FAQs
   const secondaryLabel = item?.FaqsLabel || 'FAQs';
   let secondaryHref = item?.FaqsURL;
@@ -99,7 +99,9 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   } catch {
     // If parsing fails, leave it as-is
   }
-
+  const faqurl = linkToHref(secondaryHref)
+  console.log('------->', primaryHref)
+  console.log('------->', secondaryHref)
   const showCorner =
     typeof item?.hasLabelCorner === 'boolean'
       ? item!.hasLabelCorner
@@ -129,7 +131,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
         <div className="mt-12 flex flex-wrap xs:flex-col md:flex-row items-center justify-center gap-4">
           <a
-            href={primaryHref}
+            href={ctaHref}
             className="inline-flex md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 rounded-[20px] border-2 border-primary px-6 py-3 text-primary font-medium transition hover:bg-primary hover:text-white"
           >
             <span>{primaryLabel}</span>
@@ -145,7 +147,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
           </a>
 
           <a
-            href={secondaryHref}
+            href={faqurl}
             className="inline-flex text-lg tracking-tight md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-primary items-center justify-center gap-2 rounded-[20px] border-2 border-primary px-6 py-3 font-medium transition hover:bg-primary hover:text-white"
           >
             <span>{secondaryLabel}</span>

@@ -136,29 +136,42 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
     };
   });
   return (
-    <section {...attributes} className="w-full px-20 pb-10">
-      <div className="flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 rounded-3xl space-x-8">
-        <div className="absolute top-[204px] right-2">
-          <img src="/icons/Floating-button.svg" alt="Floating-button" />
-        </div>
+    <section {...attributes} className="w-full md:px-20 md:py-16 xs:py-10">
+      <div className="flex md:flex-row xs:flex-col items-center rounded-3xl md:space-x-8 xs:space-y-4">
         <div className="relative justify-start">
           <img
             src={items[0]?.iconUrl}
             alt={items[0]?.title}
-            className="rounded-[20px] w-[417px] h-[506px] object-cover"
+            className="rounded-[20px] md:w-[417px] md:h-[506px] xs:w-[343px] xs:h-[420px] object-cover"
           />
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start">
-            {items[0]?.description && <Description className='text-[18px]' html={items[0]?.description}></Description>}
-            {items[0]?.title && <Title className='text-2xl font-medium'>{items[0]?.title}</Title>}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 md:w-[90%] xs:w-[310px] xs:h-[85px] text-start space-y-2">
+            {items[0]?.description && (
+              <Description
+                className="md:text-lg  xs:text-14px"
+                html={items[0]?.description}
+              ></Description>
+            )}
+            {items[0]?.title && (
+              <Title className="text-2xl xs:text-lg font-medium">{items[0]?.title}</Title>
+            )}
           </div>
         </div>
 
-        <div className="text-start max-w-[790px] space-y-3">
+        <div className="text-start md:max-w-[790px] space-y-3">
           <div className="space-y-3">
-            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            {title && <Title className='font-bold text-5xl tracking-[-0.02em] leading-[63px]' >{title}</Title>}
+            {eyebrow && <Eyebrow className="xs:text-14px xs:leading-[18px]">{eyebrow}</Eyebrow>}
+            {title && (
+              <Title className="text-[#001081] md:text-3xl xs:text-2xl font-bold tracking-[-0.02em]">
+                {title}
+              </Title>
+            )}
           </div>
-          <div>{subtitle && <Description html={subtitle}></Description>}</div>
+          {subtitle && (
+            <Description
+              className="text[16px] tracking-wider xs:leading-5"
+              html={subtitle}
+            ></Description>
+          )}
         </div>
       </div>
     </section>

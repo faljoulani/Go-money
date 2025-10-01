@@ -122,10 +122,10 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
   }
   return (
     <section {...attributes} className="w-full">
-      <div className="mx-auto px-20">
+      <div className="mx-auto md:px-20 xs:px-4">
         {/* Section header */}
         <div className="mb-8 text-center">
-          <Title className="text-[48px] leading-[90px] tracking-[-0.02em] text-center align-middle font-bold">
+          <Title className="md:text-[48px] xs:text-2xl leading-[90px] tracking-[-0.02em] text-center align-middle font-bold">
             {sectionTitle}
           </Title>
           {sectionSubtitle && (
@@ -140,24 +140,35 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
 
         {/* Gradient container */}
         <div
-          className="relative mx-auto rounded-[30px] p-16 overflow-hidden"
+          className="relative mx-auto rounded-[30px] md:p-16 xs:py-10 overflow-hidden"
           style={{
             background: 'linear-gradient(111.49deg,#000000 14.92%,#010552 46.49%,#0F148C 100.01%)',
           }}
         >
-          {/* subtle grid pattern */}
+          <img src="/assets/Vector.png" alt="" className="absolute object-cover bottom-0 left-0" />
 
           {/* cards grid */}
-          <div className="relative grid gap-8 grid-cols-3">
-            {items.map((item) => (
-              <div key={item.id} className="group">
-                <div className="rounded-[32px]">
+          <div
+            className="relative 
+            md:gap-8 
+            md:grid md:grid-cols-3 
+            xs:flex xs:gap-4 xs:overflow-x-auto xs:pb-4
+            xs:[&>*]:min-w-[250px] 
+            md:overflow-visible vertical-scroll"
+          >
+            {items.map((item, idx) => (
+              <div
+                className={`group ${
+                  idx === 0 ? 'xs:ml-4' : ''
+                } ${idx === items.length - 1 ? 'xs:mr-4' : ''}`}
+              >
+                <div className="rounded-[32px]  border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]">
                   <div
                     className="
                       rounded-[32px]                    
                     bg-white/10 
-                      px-12 py-14
-                      h-[265px] flex flex-col items-center justify-center text-center"
+                      md:px-12 md:py-14 xs:pt-10 xs:pb-20 xs:px-4
+                      md:h-[265px] xs:h-[275px]  flex flex-col items-center justify-center text-center"
                   >
                     {item.iconUrl ? (
                       <img
@@ -173,12 +184,12 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
                       </div>
                     )}
 
-                    <h3 className=" text-white text-[24px] leading-tight">{item.title}</h3>
+                    <h3 className=" text-white text-[24px] leading-8">{item.title}</h3>
 
                     {item.description && (
                       <Description
                         color="#E0E0E0"
-                        className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] leading-7"
+                        className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] md:leading-7 xs:leading-5"
                         html={item.description}
                       />
                     )}
