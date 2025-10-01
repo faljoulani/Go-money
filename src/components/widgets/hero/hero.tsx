@@ -180,7 +180,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       {/* decorative glows */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl"
+        className=" xs:hidden pointer-events-none md:absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-cyan-300/30 blur-3xl"
       />
       <div
         aria-hidden

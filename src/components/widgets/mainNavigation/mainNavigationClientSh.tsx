@@ -48,7 +48,7 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300 ` +
+        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300  ` +
         (scrolled
           ? `bg-surface
              text-black
@@ -151,6 +151,7 @@ export default function MainNavigationClientShell({
                 );
               })}
             </div>
+           
             <MobileNavbar
               logoUrl={logoUrl}
               logoAlt={logoAlt}

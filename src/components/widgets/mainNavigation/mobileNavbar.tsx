@@ -85,38 +85,43 @@ export default function MobileNavbar({
       return { key: `${link.storeType || 'store'}:${idx}`, href: link.url ?? '#', iconSrc, alt, title: link.title || '' };
     });
   }, [storeLinks, requestContext]);
-
+console.log("OPEN:", open)
   return (
-    <>
+    <div>
       <button
         ref={btnRef}
-        className={`md:hidden inline-flex items-center justify-center rounded-xl p-2 ${textColorWhenScrolled} hover:bg-white/10 transition`}
+        className={`md:hidden  inline-flex items-center justify-center rounded-xl p-2 ${textColorWhenScrolled} hover:bg-white/10 transition`}
         aria-label="Open menu"
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
+        
         <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
           <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       </button>
 
-      {/* Overlay */}
       <div
-        className={`md:hidden fixed inset-0 z-[250] bg-black/40 transition-opacity ${open ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+        className={`md:hidden fixed inset-0 z-[250] bg-black/40 transition-opacity ${open ? 'opacity-100' : 'pointer-events-none opacity-0 hidden'}`}
         onClick={() => setOpen(false)}
       />
 
-      {/* Slide-over panel */}
-      <div
-        ref={panelRef}
-        dir={dir}
-        className={`md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
-          rounded-l-2xl ${isRTL ? 'border-r-none' : 'border-l-none'} bg-white shadow-xl transition-transform duration-300
-          ${open ? 'translate-x-0' : isRTL ? 'translate-x-full' : '-translate-x-full'}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Main menu"
-      >
+   <div
+  dir={dir}
+  role="dialog"
+  aria-modal="true"
+  aria-label="Main menu"
+  aria-hidden={!open}
+  {...(!open ? { inert: '' as any } : {})}
+  className={[
+    'md:hidden fixed top-0',
+    isRTL ? 'right-0' : 'left-0',
+    'z-[251] h-full w-[86vw] max-w-[360px]',
+    isRTL ? 'rounded-l-none rounded-r-2xl' : 'rounded-r-none rounded-l-2xl',
+    'bg-white shadow-xl',
+    open ? 'block' : 'hidden',  
+  ].join(' ')}
+>
         <div className="flex items-center justify-between p-4">
           <Link href="/" aria-label="Home" onClick={() => setOpen(false)}>
             <Image src={logoUrl} alt={logoAlt} width={92} height={40} unoptimized />
@@ -211,7 +216,7 @@ export default function MobileNavbar({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
