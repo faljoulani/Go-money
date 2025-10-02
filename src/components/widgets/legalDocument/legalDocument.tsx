@@ -133,6 +133,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                       className="border-b transition border-white/10 snap-center flex-shrink-0"
                     >
                       <a
+                        suppressHydrationWarning
                         className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 xs:h-12 md:h-16 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
                         data-target={slug}
