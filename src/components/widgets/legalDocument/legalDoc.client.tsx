@@ -9,6 +9,9 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
   const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
   const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
 
+  // Shared offset for sticky header
+  const HEADER_OFFSET = 50; // must match the value used in smooth scroll
+
   // Smooth scroll
   links.forEach(a=>{
     a.addEventListener('click', function(e){
@@ -16,23 +19,44 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
       const el = document.getElementById(id);
       if(!el) return;
       e.preventDefault();
-      const y = el.getBoundingClientRect().top + window.scrollY;
+      // Offset to ensure the section title is fully visible below any sticky header
+      const y = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
       window.scrollTo({ top: y, behavior: 'smooth' });
       history.replaceState(null,'','#'+id);
     });
   });
 
-  function setActive(id){
-    // remove Tailwind utility classes first
-    links.forEach(l=>{
-      l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
-    });
-    const to = links.find(l=>l.getAttribute('data-target')===id);
-    if(to){
-      // add Tailwind classes only
-      to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+  let lastActiveId = null; // track the last active section
+
+function setActive(id){
+  if(lastActiveId === id) return; // do nothing if the same section is still active
+  lastActiveId = id;
+
+  // remove Tailwind utility classes first
+  links.forEach(l=>{
+    l.classList.remove('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+  });
+
+  const to = links.find(l=>l.getAttribute('data-target')===id);
+  if(to){
+    // add Tailwind classes only
+    to.classList.add('active','bg-[#010663]','text-white','ring-1','ring-slate-900');
+
+    // Only for horizontal mobile scroll
+    const container = to.closest('ul');
+    if(container && window.innerWidth < 768){
+      const containerRect = container.getBoundingClientRect();
+      const linkRect = to.getBoundingClientRect();
+      const offset = linkRect.left - containerRect.left - containerRect.width/2 + linkRect.width/2;
+
+      container.scrollBy({
+        left: offset,
+        behavior: 'smooth'
+      });
     }
   }
+}
+
 
   if(location.hash){
     const id = location.hash.replace('#','');
@@ -43,7 +67,7 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     if(ticking) return;
     ticking = true;
     requestAnimationFrame(()=>{
-      const topEdge = 1;
+      const topEdge = HEADER_OFFSET;
       let currentId = sections[0]?.id;
       for(const sec of sections){
         const rect = sec.getBoundingClientRect();
@@ -61,3 +85,4 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     />
   );
 }
+

@@ -21,7 +21,7 @@ export default function FooterLinks({ groups, className = '' }: Props) {
   return (
     <div className={`grid md:grid-cols-3 xs:grid-cols-2 gap-10 ${className} rtl:grid-col-reverse`}>
       {groups.map((group) => (
-        <nav key={group.id} aria-label={group.title} className="flex flex-col w-full">
+        <nav key={group.id} aria-label={group.title} className="xs:flex xs:flex-col xs:w-full">
           <h3 className="text-white text-lg font-semibold ">{group.title}</h3>
           <ul className="mt-8 space-y-2">
             {group.links.map((link) => {

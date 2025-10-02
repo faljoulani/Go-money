@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
 
@@ -39,20 +39,33 @@ type Props = {
   dir?: 'ltr' | 'rtl' | 'auto';
 };
 
+function useDir(): 'rtl' | 'ltr' {
+  const [dir, setDir] = useState<'rtl' | 'ltr'>('ltr');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const htmlDir = document.documentElement.getAttribute('dir');
+      setDir(htmlDir === 'rtl' ? 'rtl' : 'ltr');
+    }
+  }, []);
+
+  return dir;
+}
+
 export default function ContactFormClient({
   postUrl = 'api/default/customer-ticket/create',
   data,
   dir = 'auto',
 }: Props) {
   const FIELD =
-    'w-full h-[48px] px-3 py-3 rounded-[18px] text-[#BDBDBD] border border-[#BDBDBD] ' +
+    'w-full h-[48px] px-3 py-3 rounded-[18px] text-black border border-[#BDBDBD] ' +
     'bg-white text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
   const LABEL = 'mb-1 text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
 
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [resStatus, setResStatus] = React.useState<null | 'success' | 'error'>(null);
-  const formRef = React.useRef<HTMLFormElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resStatus, setResStatus] = useState<null | 'success' | 'error'>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
     id: o.id,
@@ -106,6 +119,7 @@ export default function ContactFormClient({
       setIsLoading(false);
     }
   };
+  const Dir = useDir();
 
   return (
     <>
@@ -258,12 +272,18 @@ export default function ContactFormClient({
 
         <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <span className="text-sm" aria-live="polite">
-            {resStatus === 'success' && (
-              <span className="text-green-600">Your message was successfully sent.</span>
-            )}
-            {resStatus === 'error' && (
-              <span className="text-red-600">There was a problem sending your message.</span>
-            )}
+            {resStatus === 'success' &&
+              (Dir === 'ltr' ? (
+                <span className="text-green-600">Your message was successfully sent</span>
+              ) : (
+                <span className="text-green-600">تم إرسال رسالتك بنجاح</span>
+              ))}
+            {resStatus === 'error' &&
+              (Dir === 'ltr' ? (
+                <span className="text-red-600">There was a problem sending your message</span>
+              ) : (
+                <span className="text-red-600"> حدثت مشكلة أثناء إرسال رسالتك</span>
+              ))}
           </span>
 
           <button
