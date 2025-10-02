@@ -220,57 +220,57 @@ const rawFail    = messages[0] ?? null;
     setSubmitting(true);
     setMsg('');
 
-    // const payload = {
-    //   EmployerType: employer || 'GML',
-    //   Nationality: nationality,
-    //   Gender: 'Male',
-    //   FinanceAmt: String(requestedFinanceAmount),
-    //   Tenure: String(installments),
-    //   MonthlyIncome: String(parseNum(salary)),
-    //   lenOfService: mapLenOfService(serviceLength),
-    //   ageAtApplication: calcAge(dob),
-    //   AgeAtMaturity: calcAgeAtMaturity(dob, installments),
-    // };
-
     const payload = {
-      EmployerType: 'GML',
-      Nationality: 'Saudi',
+      EmployerType: employer || 'GML',
+      Nationality: nationality,
       Gender: 'Male',
       FinanceAmt: String(requestedFinanceAmount),
-      Tenure: '12',
-      MonthlyIncome: '50000',
-      lenOfService: '5',
-      ageAtApplication: '28',
-      AgeAtMaturity: '29',
+      Tenure: String(installments),
+      MonthlyIncome: String(parseNum(salary)),
+      lenOfService: mapLenOfService(serviceLength),
+      ageAtApplication: calcAge(dob),
+      AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     };
-    //   try {
-    //     const res = await post(payload);
-    //     if (res?.Data?.IsEligible) setResult('success');
-    //     else setResult('fail');
-    //   } catch (err) {
-    //     console.error('FinanceCalculator error:', err);
-    //     setMsg(
-    //    dir=== 'ltr'
-    //      ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-    //    : 'Something went wrong. Please try again.'
-    //  );
-    //   } finally {
-    //     setSubmitting(false);
-    //   }
-    try {
-      if (Number(payload.FinanceAmt) > 7000) {
-        setResult('success');
-      } else setResult('fail');
-    } catch (err) {
-      console.error('FinanceCalculator error:', err);
-      setMsg(
-        dir === 'ltr'
-          ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-          : 'Something went wrong. Please try again.',
-      );
-    } finally {
-      setSubmitting(false);
-    }
+
+    // const payload = {
+    //   EmployerType: 'GML',
+    //   Nationality: 'Saudi',
+    //   Gender: 'Male',
+    //   FinanceAmt: String(requestedFinanceAmount),
+    //   Tenure: '12',
+    //   MonthlyIncome: '50000',
+    //   lenOfService: '5',
+    //   ageAtApplication: '28',
+    //   AgeAtMaturity: '29',
+    // };
+      try {
+        const res = await post(payload);
+        if (res?.Data?.IsEligible) setResult('success');
+        else setResult('fail');
+      } catch (err) {
+        console.error('FinanceCalculator error:', err);
+        setMsg(
+       dir=== 'ltr'
+         ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+       : 'Something went wrong. Please try again.'
+     );
+      } finally {
+        setSubmitting(false);
+      }
+    // try {
+    //   if (Number(payload.FinanceAmt) > 7000) {
+    //     setResult('success');
+    //   } else setResult('fail');
+    // } catch (err) {
+    //   console.error('FinanceCalculator error:', err);
+    //   setMsg(
+    //     dir === 'ltr'
+    //       ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+    //       : 'Something went wrong. Please try again.',
+    //   );
+    // } finally {
+    //   setSubmitting(false);
+    // }
   }
 
   if (result === 'success') {

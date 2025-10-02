@@ -145,16 +145,16 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
         />
         <div className="md:ltr:px-20 md:ltr:py-16 md:rtl:px-20 md:rtl:py-16 xs:px-6 xs:ltr:py-6 xs:rtl:px-6 xs:rtl:py-6">
         /> */}
-        {/* <video
+        <video
           className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px]"
           src="assets/footerAnimation.mp4"
           autoPlay
           playsInline
           loop
-        > */}
-          {/* <source src="assets/footerAnimation.mp4" type="video/mp4" />
+        > 
+            <source src="assets/footerAnimation.mp4" type="video/mp4" />
           Your browser does not support the video tag.
-        </video> */}
+        </video> 
         <div className="md:ltr:px-20 xs:ltr:px-5 md:ltr:py-16 xs:ltr:py-8 md:rtl:px-20 xs:rtl:px-5 md:rtl:py-16 xs:rtl:py-8">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
