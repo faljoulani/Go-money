@@ -208,7 +208,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         {financeRepaymentBanner.images.foregroundUrl.url && (
           <div
-            className="md:absolute xs:mt-auto xs:relative md:z-20 md:ltr:right-0 md:ltr:left-auto md:rtl:left-0 md:rtl:right-auto fadeRightFinance
+            className="md:absolute xs:mt-auto xs:absolute xs:bottom-10 md:z-20 xs:rtl:left-0 xs:ltr:right-0 md:ltr:right-0 md:ltr:left-auto md:rtl:left-0 md:rtl:right-auto fadeRightFinance
                     w-[350px]"
           >
             <Image
@@ -218,7 +218,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               height={900}
               priority
               className="md:w-[550px] md:h-[500px]  xs:h-auto w-full xs:translate-y-10
-         pointer-events-none  animate-float"
+         pointer-events-none  animate-float xs:inset-x-0 xs:left-0"
             />
           </div>
         )}

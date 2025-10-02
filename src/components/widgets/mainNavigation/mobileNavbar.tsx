@@ -208,30 +208,28 @@ export default function MobileNavbar({
                 <LanguageSwitcher />
               </div> */}
             </div>
-                    <div className="sticky bottom-0 z-10 mt-6 bg-white px-4 pb-4 pt-3">
-            <div className="flex items-center justify-center gap-3">
-              {normalizeStores.slice(0, 3).map((s) => (
-                <a
-                  key={s.key}
-                  href={s.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="grid h-12 w-12 place-items-center rounded-2xl bg-[#F0F4F8] ring-1 ring-black/5"
-                  aria-label={s.title}
-                  title={s.title}
-                >
-                  {s.iconSrc ? (
-                    <Image src={s.iconSrc} alt={s.alt} width={20} height={20} unoptimized />
-                  ) : (
-                    <span className="text-[10px]">{s.title}</span>
-                  )}
-                </a>
-              ))}
+            <div className="sticky bottom-0 z-10 mt-6 bg-white px-4 pb-4 pt-3">
+              <div className="flex items-center justify-center gap-3">
+                {normalizeStores.slice(0, 3).map((s) => (
+                  <a
+                    key={s.key}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="grid h-12 w-12 place-items-center rounded-2xl bg-[#F0F4F8] ring-1 ring-black/5"
+                    aria-label={s.title}
+                    title={s.title}
+                  >
+                    {s.iconSrc ? (
+                      <Image src={s.iconSrc} alt={s.alt} width={20} height={20} unoptimized />
+                    ) : (
+                      <span className="text-[10px]">{s.title}</span>
+                    )}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
           </nav>
-
-  
         </div>
       </div>
     </div>
@@ -271,8 +269,13 @@ function Accordion({
       </button>
       <div
         id={id}
-        className={`grid  transition-[grid-template-rows,opacity] duration-300
-          ${open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+        aria-hidden={!open}
+        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300
+    ${
+      open
+        ? 'grid-rows-[1fr] opacity-100 pointer-events-auto'
+        : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+    }`}
       >
         <div className="min-h-0">{children}</div>
       </div>

@@ -47,6 +47,7 @@ export default async function HighlightBlock(props: WidgetContext<HighlightBlock
 
 async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>) {
   const { culture, isEdit } = props.requestContext;
+  const dir = culture.startsWith('ar') ? 'rtl' : 'ltr';
 
   const selection = resolveSitefinitySelection(
     props.model?.Properties?.ExpandBox ?? (props.model?.Properties as any)?.ExpandBox,
@@ -104,7 +105,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
       <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
 
       {/* Content above the background */}
-      <div className="relative md:grid md:grid-cols-2 md:items-center md:py-24 md:pl-16 md:rtl:pr-16 md:align-middle md:h-[580px] xs:h-[700px]  xs:mr-14 xs:py-16 xs:px-6 xs:flex xs:flex-col-reverse">
+      <div className="relative md:grid md:grid-cols-2 md:items-center md:py-24 md:pl-16 md:rtl:pr-16 md:align-middle md:h-[580px] xs:h-[700px]   xs:py-16 xs:px-6 xs:flex xs:flex-col-reverse">
         {/* Left: copy */}
         <div className="flex flex-col gap-5 max-w-xl ">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}

@@ -27,7 +27,6 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
 
   const id = extractSelectionId(faqRoot);
-  console.log('culture ', lang);
 
   if (!id) {
     return isEdit ? (
