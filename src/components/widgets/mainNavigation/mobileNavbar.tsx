@@ -130,7 +130,6 @@ export default function MobileNavbar({
         aria-modal="true"
         aria-label="Main menu"
         aria-hidden={!open}
-        {...(!open ? { inert: '' as any } : {})}
         className={`md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
           rounded-l-2xl rounded-r-none bg-white shadow-xl transition-transform duration-300
           ${open ? 'block translate-x-0' : isRTL ? 'hidden translate-x-full' : 'hidden -translate-x-full'}`}
@@ -169,7 +168,7 @@ export default function MobileNavbar({
                     href={item.url || '#'}
                     onClick={() => setOpen(false)}
                     className={`block rounded-xl px-4 py-3 text-[15px] font-medium bg-white
-                      ${active ? 'bg-primary/5 text-primary' : 'text-[#0A1B2E] hover:bg-black/5'}`}
+                      ${active ? 'bg-primary/5 text-primary ' : 'text-[#0A1B2E] hover:bg-black/5'}`}
                   >
                     {item.title}
                   </Link>
@@ -188,7 +187,7 @@ export default function MobileNavbar({
                           href={child.url || '#'}
                           onClick={() => setOpen(false)}
                           className={`block border-b border-dashed  border-[#DCE6EE] py-3 text-[14px] last:border-b-0
-                            ${activeChild ? 'text-primary' : 'text-[#0A1B2E] hover:opacity-80'}`}
+                            ${activeChild ? 'text-primary block' : 'text-[#0A1B2E] hover:opacity-80'}`}
                         >
                           {child.title}
                         </Link>
