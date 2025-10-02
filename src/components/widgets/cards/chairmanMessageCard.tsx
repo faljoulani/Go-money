@@ -137,7 +137,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
   });
   return (
     <section {...attributes} className="w-full md:px-20 md:py-16 xs:py-10">
-      <div className="flex md:flex-row xs:flex-col items-center rounded-3xl md:space-x-8 xs:space-y-4">
+      <div className="flex md:flex-row xs:flex-col items-center rounded-3xl md:gap-x-8 xs:space-y-4">
         <div className="relative justify-start">
           <img
             src={items[0]?.iconUrl}

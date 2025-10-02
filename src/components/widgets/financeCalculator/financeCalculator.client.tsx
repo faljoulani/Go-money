@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 
 type Nationality = 'saudi' | 'nonsaudi';
@@ -33,7 +33,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
   const formatSar = (n: number) =>
     new Intl.NumberFormat('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-      n
+      n,
     );
 
   function useRangeVars(value: number, min: number, max: number, fill: string, rest: string) {
@@ -42,8 +42,21 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
       () => ({
         background: `linear-gradient(var(--grad-dir, to right), ${fill} ${pct}%, ${rest} ${pct}%)`,
       }),
-      [pct, fill, rest]
+      [pct, fill, rest],
     );
+  }
+
+  function useDir(): 'rtl' | 'ltr' {
+    const [dir, setDir] = useState<'rtl' | 'ltr'>('ltr');
+
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        const htmlDir = document.documentElement.getAttribute('dir');
+        setDir(htmlDir === 'rtl' ? 'rtl' : 'ltr');
+      }
+    }, []);
+
+    return dir;
   }
 
   const lines = (v?: string) =>
@@ -147,39 +160,69 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
       AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     };
 
-    setResult('success'); 
-    // try {
-    //   const res = await post(payload);
-    //   if (res?.Data?.IsEligible) setResult('success');
-    //   else setResult('fail');
-    // } catch (err) {
-    //   console.error('FinanceCalculator error:', err);
-    //   setMsg('Something went wrong. Please try again.');
-    // } finally {
-    //   setSubmitting(false);
-    // }
-
+    try {
+      const res = await post(payload);
+      if (res?.Data?.IsEligible) setResult('success');
+      else setResult('fail');
+    } catch (err) {
+      console.error('FinanceCalculator error:', err);
+      setMsg('Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   }
-
+  const Dir = useDir();
   if (result === 'success') {
-    const title = successMsg?.title || 'You are Eligible for Our Financing';
-    const desc =
-      successMsg?.description ||
-      'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
-    const noteTitle = successMsg?.note?.title || 'Important Note';
-    const noteDesc =
-      successMsg?.note?.description ||
-      'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
-    const backText = successMsg?.actions?.back?.label || 'Back to Calculator';
-    const primaryText = successMsg?.actions?.explore?.label || 'Download Our App';
-    const primaryHref = successMsg?.actions?.explore?.url || '#';
-    const iconUrl = successMsg?.imageUrl || '/assets/success.png';
+    // Prepare variables for use in JSX below
+    // let m: Message;
+    let title: string;
+    let desc: string;
+    let noteTitle: string;
+    let noteDesc: string;
+    let backText: string;
+    let primaryText: string;
+    let primaryHref: string;
+    let iconUrl: string;
+
+    if (Dir === 'ltr') {
+      // m = (successMsg as Message) || {};
+      title = successMsg.title || 'You are Eligible for Our Financing';
+      desc =
+        successMsg.description ||
+        'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
+      noteTitle = successMsg.note?.title || 'Important Note';
+      noteDesc =
+        successMsg.note?.description ||
+        'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
+      backText = successMsg.actions?.back?.label || 'Back to Calculator';
+      primaryText = successMsg.actions?.explore?.label || 'Download Our App';
+      primaryHref = successMsg.actions?.explore?.url || '#';
+      iconUrl = successMsg.imageUrl || '/assets/success.png';
+    } else {
+      // m = (successMsg as Message) || {};
+      title = successMsg.title || 'أنت مؤهل للحصول على تمويلنا';
+      desc =
+        successMsg.description ||
+        'استنادًا إلى المعلومات التي قدمتها، أنت مؤهل مبدئيًا للحصول على التمويل. أكمل تسجيلك الآن لاكتشاف العرض المصمم خصيصًا لك!';
+      noteTitle = successMsg.note?.title || 'ملاحظة مهمة';
+      noteDesc =
+        successMsg.note?.description ||
+        'المبلغ المؤهل هو تقديري وقد يتغير بناءً على تأكيد راتبك وتقييمك الائتماني.';
+      backText = successMsg.actions?.back?.label || 'العودة إلى الحاسبة';
+      primaryText = successMsg.actions?.explore?.label || 'حمّل تطبيقنا';
+      primaryHref = successMsg.actions?.explore?.url || '#';
+      iconUrl = successMsg.imageUrl || '/assets/success.png';
+    }
 
     return (
       <section className="w-full">
         <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
-            <img src={iconUrl} alt={successMsg?.imageAlt || 'success'} className="h-24 w-24 object-contain" />
+            <img
+              src={iconUrl}
+              alt={successMsg.imageAlt || 'success'}
+              className="h-24 w-24 object-contain"
+            />
           </div>
           <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
@@ -217,30 +260,68 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
   }
 
   if (result === 'fail') {
-    const title = failMsg?.title || 'Not Eligible Yet';
-    const sub =
-      failMsg?.description ||
-      'Unfortunately, we are unable to proceed with your application at this time.';
-    const reasonsTitle =
-      failMsg?.note?.title || 'This could be due to one or more of the following reasons:';
-    const reasonsLeft = lines(failMsg?.note?.description) || [
-      'Your verified information does not meet our internal policy requirements.',
-      'Your current financial obligations are too high for us to offer a loan at this time.',
-    ];
-    const reasonsRight = ['Your credit history does not currently meet our eligibility criteria.'];
-    const actionsTitle = failMsg?.actions?.explore?.label || 'But don’t worry — this isn’t permanent!';
-    const actionsSub = 'Here’s what you can do:';
-    const actionsLeft = ['Use Go Money regularly', 'Repay any pending dues'];
-    const actionsRight = ['Try again in 30 days'];
-    const footer = failMsg?.validationText || 'We’re here when you’re ready.';
-    const backText = failMsg?.actions?.back?.label || 'Back to Calculator';
-    const iconUrl = failMsg?.imageUrl || '/assets/failed.png';
+    // let m: Message;
+    let title: string;
+    let sub: string;
+    let reasonsTitle: string;
+    let reasonsLeft: string[];
+    let reasonsRight: string[];
+    let actionsTitle: string;
+    let actionsSub: string;
+    let actionsLeft: string[];
+    let actionsRight: string[];
+    let footer: string;
+    let backText: string;
+    let iconUrl: string;
+
+    if (Dir === 'ltr') {
+      // m = (successMsg as Message) || {};
+      title = failMsg?.title || 'Not Eligible Yet';
+      sub =
+        failMsg?.description ||
+        'Unfortunately, we are unable to proceed with your application at this time.';
+      reasonsTitle =
+        failMsg?.note?.title || 'This could be due to one or more of the following reasons:';
+      reasonsLeft = lines(failMsg?.note?.description) || [
+        'Your verified information does not meet our internal policy requirements.',
+        'Your current financial obligations are too high for us to offer a loan at this time.',
+      ];
+      reasonsRight = ['Your credit history does not currently meet our eligibility criteria.'];
+      actionsTitle = failMsg?.actions?.explore?.label || 'But don’t worry — this isn’t permanent!';
+      actionsSub = 'Here’s what you can do:';
+      actionsLeft = ['Use Go Money regularly', 'Repay any pending dues'];
+      actionsRight = ['Try again in 30 days'];
+      footer = failMsg?.validationText || 'We’re here when you’re ready.';
+      backText = failMsg?.actions?.back?.label || 'Back to Calculator';
+      iconUrl = failMsg?.imageUrl || '/assets/failed.png';
+    } else {
+      // m = (successMsg as Message) || {};
+      title = failMsg?.title || 'غير مؤهل حالياً';
+      sub = failMsg?.description || 'للأسف، لا يمكننا متابعة طلبك في الوقت الحالي.';
+      reasonsTitle = failMsg?.note?.title || 'قد يكون ذلك بسبب واحد أو أكثر من الأسباب التالية:';
+      reasonsLeft = lines(failMsg?.note?.description) || [
+        'المعلومات التي تم التحقق منها لا تتوافق مع متطلبات السياسات الداخلية لدينا.',
+        'الالتزامات المالية الحالية الخاصة بك مرتفعة جدًا بحيث لا يمكننا تقديم قرض حالياً.',
+      ];
+      reasonsRight = ['سجلك الائتماني لا يفي حاليًا بمعايير الأهلية لدينا.'];
+      actionsTitle = failMsg?.actions?.explore?.label || 'لا تقلق — هذا ليس دائماً!';
+      actionsSub = 'إليك ما يمكنك فعله:';
+      actionsLeft = ['استخدم Go Money بانتظام', 'سدّد أي مستحقات معلقة'];
+      actionsRight = ['حاول مرة أخرى خلال 30 يومًا'];
+      footer = failMsg?.validationText || 'سنكون هنا عندما تكون مستعدًا.';
+      backText = failMsg?.actions?.back?.label || 'العودة إلى الحاسبة';
+      iconUrl = failMsg?.imageUrl || '/assets/failed.png';
+    }
 
     return (
       <section className="w-full">
         <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
-            <img src={iconUrl} alt={failMsg?.imageAlt || 'not-eligible'} className="h-24 w-24 object-contain" />
+            <img
+              src={iconUrl}
+              alt={failMsg?.imageAlt || 'not-eligible'}
+              className="h-24 w-24 object-contain"
+            />
           </div>
           <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{sub}</p>
@@ -299,8 +380,11 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
   }
 
   return (
-    <section className="w-full mb-10">
-      <form onSubmit={onSubmit} className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 shadow-sm">
+    <section className="w-full">
+      <form
+        onSubmit={onSubmit}
+        className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 shadow-sm"
+      >
         <h2 className="text-[28px] font-semibold text-[#0B2A8E]">
           {C.title || 'Enter your Finance details'}
         </h2>
@@ -316,7 +400,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
               return (
                 <label key={label} className="inline-flex items-center gap-2">
                   <input
-                  required
+                    required
                     type="radio"
                     name="nationality"
                     value={val}
@@ -333,7 +417,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
 
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <Field label={C.labels?.employerType || 'Employer Type'}>
-            <Select 
+            <Select
               value={employer}
               onChange={setEmployer}
               placeholder={C.labels?.employerPlaceholder || 'Select Employer Type'}
@@ -364,7 +448,10 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
             />
           </Field>
 
-          <Field label={C.labels?.monthlySalary || 'Monthly Salary'} tooltip={C.popups?.monthlySalary}>
+          <Field
+            label={C.labels?.monthlySalary || 'Monthly Salary'}
+            tooltip={C.popups?.monthlySalary}
+          >
             <CurrencyInput
               value={salary}
               onChange={setSalary}
@@ -383,7 +470,8 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
               <div className="text-xs text-gray-500">
-                {C.validation?.requestedAmount || `Maximum eligible amount is ${formatSar(AMAX)} SAR`}
+                {C.validation?.requestedAmount ||
+                  `Maximum eligible amount is ${formatSar(AMAX)} SAR`}
               </div>
 
               <input
@@ -393,7 +481,9 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
                 max={AMAX}
                 step={ASTEP}
                 value={requestedFinanceAmount}
-                onChange={(e) => setRequestedFinanceAmount(clamp(Number(e.target.value), AMIN, AMAX))}
+                onChange={(e) =>
+                  setRequestedFinanceAmount(clamp(Number(e.target.value), AMIN, AMAX))
+                }
                 className="sf-range"
                 style={amountFill as any}
                 aria-label="Requested amount"
@@ -413,7 +503,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
                 {C.validation?.installments || `Maximum eligible installments is ${IMAX} months`}
               </div>
               <input
-              required
+                required
                 type="range"
                 min={IMIN}
                 max={IMAX}
@@ -428,7 +518,6 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
           </Field>
 
           <Field
-        
             label={C.labels?.totalMonthlyExpenses || 'Total Monthly Expenses'}
             tooltip={C.popups?.totalMonthlyExpenses}
           >
@@ -482,7 +571,9 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
             className="inline-flex items-center gap-2 rounded-full bg-[color:var(--navy,#0B2A8E)] px-6 py-3 text-white hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Submitting…' : C.cta?.text || 'Check your eligibility Now'}
-            <span aria-hidden className="rtl:rotate-180">➜</span>
+            <span aria-hidden className="rtl:rotate-180">
+              ➜
+            </span>
           </button>
         </div>
 
@@ -552,7 +643,7 @@ function Select({
   return (
     <div className="relative">
       <select
-      required
+        required
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="sf-input appearance-none pr-10"
@@ -617,3 +708,4 @@ function InfoIcon({ className = '' }: { className?: string }) {
     </svg>
   );
 }
+

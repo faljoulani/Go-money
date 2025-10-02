@@ -43,7 +43,7 @@ export default function QuestionsClient({
   }, [active, questions]);
 
   return (
-    <section className="flex md:gap-8 xs:gap-2 md:px-20 md:pt-[58px] xs:pt-[30px] md:pb-16 overflow-clip mx-auto xs:w-[90%] xs:flex-col md:flex-row">
+    <section className="flex md:gap-8 xs:gap-2 md:pt-[58px] xs:pt-[30px] md:pb-16 overflow-clip mx-auto xs:w-[90%] xs:flex-col md:flex-row">
       <aside className="w-1/4 xs:hidden md:block fadeLeft">
         <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
           {categories.map((cat) => {

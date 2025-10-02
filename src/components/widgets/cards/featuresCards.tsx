@@ -4,6 +4,7 @@ import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import { resolveAbsoluteUrl } from '../../../utils/utils';
+import { MobileFeaturesCarousel } from './mobileFeatures';
 
 type ServerSelection = {
   CardListData?: {
@@ -140,36 +141,23 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
 
         {/* Gradient container */}
         <div
-          className="relative mx-auto rounded-[30px] md:p-16 xs:py-10 overflow-hidden"
+          className="relative mx-auto rounded-[30px] md:p-16 xs:pt-10 xs:pb-20 overflow-hidden"
           style={{
             background: 'linear-gradient(111.49deg,#000000 14.92%,#010552 46.49%,#0F148C 100.01%)',
           }}
         >
-          <img src="/assets/Vector.png" alt="" className="absolute object-cover bottom-0 left-0" />
+          <img
+            src="/assets/Vector.png"
+            alt=""
+            className="absolute object-cover bottom-0 left-0 z-0 pointer-events-none"
+          />
 
-          {/* cards grid */}
-          <div
-            className="relative 
-            md:gap-8 
-            md:grid md:grid-cols-3 
-            xs:flex xs:gap-4 xs:overflow-x-auto xs:pb-4
-            xs:[&>*]:min-w-[250px] 
-            md:overflow-visible vertical-scroll"
-          >
+          {/* Desktop grid */}
+          <div className="hidden md:grid md:grid-cols-3 md:gap-8 relative">
             {items.map((item, idx) => (
-              <div
-                className={`group ${
-                  idx === 0 ? 'xs:ml-4' : ''
-                } ${idx === items.length - 1 ? 'xs:mr-4' : ''}`}
-              >
-                <div className="rounded-[32px]  border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]">
-                  <div
-                    className="
-                      rounded-[32px]                    
-                    bg-white/10 
-                      md:px-12 md:py-14 xs:pt-10 xs:pb-20 xs:px-4
-                      md:h-[265px] xs:h-[275px]  flex flex-col items-center justify-center text-center"
-                  >
+              <div key={item.id} className="group">
+                <div className="rounded-[32px] border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]">
+                  <div className="rounded-[32px] bg-white/10 md:px-12 md:py-14 md:h-[265px] flex flex-col items-center justify-center text-center">
                     {item.iconUrl ? (
                       <img
                         src={item.iconUrl}
@@ -183,13 +171,11 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
                         *
                       </div>
                     )}
-
-                    <h3 className=" text-white text-[24px] leading-8">{item.title}</h3>
-
+                    <h3 className="text-white text-[24px] leading-8">{item.title}</h3>
                     {item.description && (
                       <Description
                         color="#E0E0E0"
-                        className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] md:leading-7 xs:leading-5"
+                        className="mt-3 max-w-[253px] text-[#E0E0E0] text-[16px] md:leading-7"
                         html={item.description}
                       />
                     )}
@@ -198,6 +184,17 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
               </div>
             ))}
           </div>
+
+          {/* Mobile carousel */}
+          <MobileFeaturesCarousel
+            items={items.map((item) => ({
+              id: item.id,
+              title: item.title,
+              description: item.description,
+              imgUrl: item.iconUrl,
+              icon: null, // optional: you can pass JSX here instead
+            }))}
+          />
         </div>
       </div>
     </section>

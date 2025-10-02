@@ -115,18 +115,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <section
         {...attrs}
         className="relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
-             min-h-[320px] h-[450px] px-4" // add padding + avoid hard height on mobile
+             min-h-[320px] h-[450px] px-4" 
         style={{
           backgroundImage: `url('/assets/HeroBackground.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        {/* <img
-          src="/assets/BoxRight.png"
-          alt="BoxRight"
-          className="absolute top-[107px] xl:right-[166px] z-0"
-        /> */}
+        
         <div
         // className="text-center w-[1040px] h-[370px] max-xs:w-[375px] align-middle"
         // style={{
