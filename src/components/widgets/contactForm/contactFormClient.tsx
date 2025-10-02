@@ -67,10 +67,10 @@ export default function ContactFormClient({
   const [resStatus, setResStatus] = useState<null | 'success' | 'error'>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
-    id: o.id,
-    label: o.label,
-    value: (o.id ?? '').toString().toUpperCase(),
+  const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((option) => ({
+    id: option.id,
+    label: option.label,
+    value: (option.id ?? '').toString().toUpperCase(),
   }));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

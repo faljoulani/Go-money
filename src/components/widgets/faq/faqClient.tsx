@@ -85,7 +85,7 @@ export default function QuestionsClient({
 <div className="md:hidden xs:block">
   <ul
     className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory
-               [scrollbar-width:none] [-ms-overflow-style:none]"
+               [scrollbar-width:none] [-ms-overflow-style:none] bg-white border rounded-2xl items-center  px-8 py-4 h-[3.4rem]" 
   >
     <style>{`
       ul::-webkit-scrollbar { display: none; }
@@ -98,7 +98,7 @@ export default function QuestionsClient({
           <button
             onClick={() => setActive(cat.Id)}
             className={[
-              "px-5 py-2.5 rounded-xl text-sm whitespace-nowrap",
+              "px-5 py-2.5 rounded-xl first:ml-2 rtl:first:mr-2 text-sm whitespace-nowrap",
               "transition-colors",
               isActive
                 ? "bg-[#0B1C5A] text-white border-[#0B1C5A] shadow-sm"
@@ -127,7 +127,7 @@ export default function QuestionsClient({
             return (
               <details
                 key={q.Id}
-                className="group p-6 border rounded-md mb-4 bg-white border-[#E0E0E0]"
+                className="group p-6 border rounded-xl mb-4 bg-white border-[#E0E0E0]"
                 open={isOpen}
               >
                 <summary

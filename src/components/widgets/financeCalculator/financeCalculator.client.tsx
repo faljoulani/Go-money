@@ -224,7 +224,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
               className="h-24 w-24 object-contain"
             />
           </div>
-          <h2 className="text-[36px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
+          <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
           <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
 
           <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
