@@ -69,16 +69,16 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
         <div
-          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[60px] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] h-[110px] w-[110px] bg-secondary`}
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0    ltr:rounded-br-[30px] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] md:h-[110px] md:w-[110px] xs:w-[80px] xs:h-[80px]  bg-secondary`}
         >
-          <div className={`absolute h-[52px] w-[52px] bg-white`} />
+          <div className={`absolute md:h-[52px] md:w-[52px] xs:h-[40px] xs:w-[40px] bg-white`} />
         </div>
       )}
 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primary" className="text-[28px] font-bold tracking-[-0.02em]">
+            <Title color="text-primary" className="md:text-[28px] xs:text-[24px] font-bold tracking-[-0.02em]">
               {box.Title}
             </Title>
           )}
@@ -88,12 +88,13 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
                 {box.SubTitle}
               </Description>
             ) : (
-              <Description maxWidth="none" className="mt-0 w-72 text-lg leading-6 mb-8">
+              <Description maxWidth="none" className="mt-0 w-72 md:text-lg xs:text-[1rem] leading-6 mb-8">
                 {box.SubTitle}
               </Description>
             ))}
         </div>
       )}
+
 
       {isSubscribe ? (
         <div>

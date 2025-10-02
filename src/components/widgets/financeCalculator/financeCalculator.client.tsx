@@ -147,16 +147,17 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
       AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     };
 
-    try {
-      const res = await post(payload);
-      if (res?.Data?.IsEligible) setResult('success');
-      else setResult('fail');
-    } catch (err) {
-      console.error('FinanceCalculator error:', err);
-      setMsg('Something went wrong. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+    setResult('success'); 
+    // try {
+    //   const res = await post(payload);
+    //   if (res?.Data?.IsEligible) setResult('success');
+    //   else setResult('fail');
+    // } catch (err) {
+    //   console.error('FinanceCalculator error:', err);
+    //   setMsg('Something went wrong. Please try again.');
+    // } finally {
+    //   setSubmitting(false);
+    // }
 
   }
 
