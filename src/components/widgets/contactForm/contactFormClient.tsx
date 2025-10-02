@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
+import { COUNTRY_LIST } from '../../../utils/countries-emoji';
 
 type Option = { id: string; label: string };
 type Data = {
@@ -67,10 +68,39 @@ export default function ContactFormClient({
   const [resStatus, setResStatus] = useState<null | 'success' | 'error'>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((option) => ({
-    id: option.id,
-    label: option.label,
-    value: (option.id ?? '').toString().toUpperCase(),
+  const DEFAULT_ISO2 = 'SA';
+  const DEFAULT_DIAL = COUNTRY_LIST.find((c) => c.iso2 === DEFAULT_ISO2)?.dial ?? '+966';
+
+  const [countryIso2, setCountryIso2] = useState<string>(DEFAULT_ISO2);
+  const [countryDial, setCountryDial] = useState<string>(DEFAULT_DIAL);
+
+  const countryOptions: DropdownOption[] = useMemo(
+    () =>
+      COUNTRY_LIST.map((c) => ({
+        id: c.iso2,
+        value: c.iso2,
+        label: (
+          <span className="flex items-center gap-2">
+            <span className={`fi fi-${c.iso2.toLowerCase()}`} aria-hidden />
+            <span className="font-medium">{c.iso2}</span>
+            <span className="opacity-80">{c.dial}</span>
+          </span>
+        ),
+      })),
+    [],
+  );
+
+  const onCountryChange = (opt: DropdownOption) => {
+    const iso2 = String(opt.value ?? opt.id);
+    const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
+    setCountryIso2(iso2);
+    setCountryDial(info?.dial ?? '');
+  };
+
+  const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
+    id: o.id,
+    label: o.label,
+    value: (o.id ?? '').toString().toUpperCase(),
   }));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,7 +114,7 @@ export default function ContactFormClient({
       const lastName = String(formData.get('lastName') || '').trim();
       const fullName = [firstName, lastName].filter(Boolean).join(' ') || firstName || lastName;
 
-      const phone = String(formData.get('phone') || '').trim();
+      const localPhone = String(formData.get('phone') || '').trim();
       const email = String(formData.get('email') || '').trim();
       const topic = String(formData.get('topic') || '').trim();
       const reqType =
@@ -95,7 +125,7 @@ export default function ContactFormClient({
 
       const apiPayload = {
         customerName: fullName,
-        phone,
+        phone: `${countryDial}${localPhone}`,
         email,
         requestType: reqType,
         complaintCategory: topic || 'OTHERS',
@@ -159,32 +189,36 @@ export default function ContactFormClient({
             />
           </div>
 
-          {/* Phone */}
-          <div className="flex flex-col min-w-0">
+          {/* Phone (flag · ISO2 · +code pill + local number input) */}
+          <div>
             <label className={LABEL}>
               {data.phoneNumberLabel ?? 'Phone Number'}
               {reqStar}
             </label>
 
-            {/* Unified pill wrapper */}
-            <div
-              className="
-                w-full sm:max-w-[326.5px] min-w-0
-                box-border flex items-center
-                rounded-[18px] border border-[#BDBDBD] bg-white
-                overflow-hidden focus-within:ring-2 focus-within:ring-[#0B2A8E]/20
-                divide-x divide-[#BDBDBD] rtl:divide-x-reverse
-    "
-            >
-              {/* Prefix segment (no rounded, no border) */}
-              <div className="px-3 h-[48px] inline-flex items-center gap-2 shrink-0 bg-white">
-                <span aria-hidden className="inline-flex h-6 min-w-6 items-center justify-center">
-                  🇸🇦
-                </span>
-                <span className="text-sm font-medium text-[#2B2B2B]">+966</span>
+            <div className="w-[326.5px] flex items-stretch gap-1">
+              {/* Country pill dropdown */}
+              <div className="relative inline-block">
+                <CustomDropdown
+                  name="Country"
+                  options={countryOptions}
+                  placeholder="Select"
+                  valueId={countryIso2}
+                  onChange={onCountryChange}
+                  className="relative inline-block"
+                  buttonClassName={[
+                    'inline-flex h-[48px] min-w-[120px] w-[120px] items-center justify-center gap-2',
+                    'rounded-[18px] border border-[#BDBDBD] bg-white px-3 text-14px leading-[18px] text-[#2B2B2B]',
+                    'focus:ring-2 focus:ring-[#0B2A8E]/20',
+                    isLoading ? 'opacity-50 cursor-not-allowed' : '',
+                  ].join(' ')}
+                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-white p-2 shadow-xl"
+                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+                  disabled={isLoading}
+                />
               </div>
 
-              {/* Input (no border, no own radius) */}
+              {/* Local number only */}
               <input
                 name="phone"
                 inputMode="tel"
@@ -229,7 +263,6 @@ export default function ContactFormClient({
               name="requestType"
               options={dropdownOptions}
               placeholder={data.requestTypePlacholder ?? 'Select request type'}
-              dir={dir}
               disabled={isLoading}
               className="relative w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
