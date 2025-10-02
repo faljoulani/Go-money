@@ -4,13 +4,14 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
     <script
       dangerouslySetInnerHTML={{
         __html: `(function(){
- 
+
 
   const links = Array.from(document.querySelectorAll('.sf-ldoc__link'));
   const sections = Array.from(document.querySelectorAll('.sf-ldoc__section'));
 
   // Shared offset for sticky header
-  const HEADER_OFFSET = 50; // must match the value used in smooth scroll
+  const HEADER_OFFSET = 50;
+  const HEADER_Y_OFFSET = 120; 
 
   // Smooth scroll
   links.forEach(a=>{
@@ -20,8 +21,13 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
       if(!el) return;
       e.preventDefault();
       // Offset to ensure the section title is fully visible below any sticky header
-      const y = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      if(window.innerWidth < 768){
+        const y = el.getBoundingClientRect().top + window.scrollY - HEADER_Y_OFFSET;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else {
+        const y = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
       history.replaceState(null,'','#'+id);
     });
   });
@@ -67,7 +73,7 @@ function setActive(id){
     if(ticking) return;
     ticking = true;
     requestAnimationFrame(()=>{
-      const topEdge = HEADER_OFFSET;
+      const topEdge = window.innerWidth < 768 ? HEADER_Y_OFFSET : HEADER_OFFSET;
       let currentId = sections[0]?.id;
       for(const sec of sections){
         const rect = sec.getBoundingClientRect();
