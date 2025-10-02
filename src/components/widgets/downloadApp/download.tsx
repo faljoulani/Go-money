@@ -157,7 +157,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
               width={507}
               height={525}
               priority
-              className="md:w-[50px] xs:mb-14 md:h-[525px] xs:w-[100%] pointer-events-none select-none object-contain md:absolute xs:-top-2 md:-top-2 md:animate-float"
+              className="md:w-[570px] xs:mb-14 md:h-[525px] xs:w-[100%] pointer-events-none select-none object-contain md:absolute xs:-top-2 md:-top-2 md:animate-float"
             />
           )}
         </div>
@@ -165,7 +165,9 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
         <div className="flex xs:w-[90%] md:h-full md:w-1/2 md:items-center md:my-16 md:fadeRightDownload">
           <div className="w-full max-w-[560px] text-[#010663]">
             {!!title && (
-              <Title className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug">{title}</Title>
+              <Title className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug">
+                {title}
+              </Title>
             )}
             {!!description && <Description html={description} className="mt-4" />}
 

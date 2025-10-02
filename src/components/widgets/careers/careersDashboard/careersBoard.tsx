@@ -1,12 +1,12 @@
-// CareersBoard.tsx
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
 import EmptyState from './noCareers';
 import JobCard from '../../../atoms/jobCard/jobCard';
 import Pagination from './pagination';
 import { daysSinceUtc } from '../../../../utils/utils';
+import { useDirection } from '../../../../utils/helpers';
 
 import type {
   Labels,
@@ -17,9 +17,14 @@ import type {
   CareersSearchBody,
 } from '../../../../types/typee';
 
-const EMPLOYMENT_TYPE_LABEL: Record<string, string> = {
+const EMPLOYMENT_TYPE_LABEL_EN: Record<string, string> = {
   '1': 'Full-time',
   '2': 'Part-time',
+};
+
+const EMPLOYMENT_TYPE_LABEL_AR: Record<string, string> = {
+  '1': 'دوام كامل',
+  '2': 'دوام جزئي',
 };
 
 const DEFAULT_SEARCH: CareersSearchBody = {
@@ -32,10 +37,16 @@ const DEFAULT_SEARCH: CareersSearchBody = {
   search: null,
 };
 
-const normalizeEmploymentType = (raw?: string) =>
-  raw ? (EMPLOYMENT_TYPE_LABEL[String(raw).trim()] ?? raw) : '';
+const isRtlLang = (lang?: string) => (lang ?? 'en').toLowerCase().startsWith('ar');
 
-function mapCareerToItem(career: ModuleCareer): CareersItem {
+const normalizeEmploymentType = (raw?: string, lang?: string) => {
+  if (!raw) return '';
+  const key = String(raw).trim();
+  const dict = isRtlLang(lang) ? EMPLOYMENT_TYPE_LABEL_AR : EMPLOYMENT_TYPE_LABEL_EN;
+  return dict[key] ?? raw;
+};
+
+function mapCareerToItem(career: ModuleCareer, lang?: string): CareersItem {
   const postedAtUtc = career.Date || '';
   return {
     Id: career.Id,
@@ -43,7 +54,7 @@ function mapCareerToItem(career: ModuleCareer): CareersItem {
     DepartmentName: career.Department?.[0]?.Title || '',
     DepartmentId: career.Department?.[0]?.Id || '',
     LocationName: career.Location?.[0]?.Title || '',
-    EmploymentType: normalizeEmploymentType(career.EmploymentType),
+    EmploymentType: normalizeEmploymentType(career.EmploymentType, lang),
     PostedAtUtc: postedAtUtc,
     PostedAgoDays: daysSinceUtc(postedAtUtc),
     DetailUrl: career.DetailUrl || '',
@@ -57,7 +68,7 @@ const mapItemToJob = (item: CareersItem): Job => ({
   location: item.LocationName,
   department: item.DepartmentName,
   departmentId: item.DepartmentId,
-  workType: item.EmploymentType || 'Full-time',
+  workType: item.EmploymentType,
   postedDaysAgo: item.PostedAgoDays ?? 0,
 });
 
@@ -151,18 +162,21 @@ export default function CareersBoard({
   className?: string;
   initialBody?: Partial<CareersSearchBody>;
 }) {
-  const items = useMemo(() => (careers || []).map(mapCareerToItem), [careers]);
+  const dir = useDirection();
+  const isRtl = dir === 'rtl';
+
+  const items = useMemo(
+    () => (careers || []).map((c) => mapCareerToItem(c, isRtl ? 'ar' : 'en')),
+    [careers, isRtl],
+  );
 
   const vacanciesLabel = labels?.vacanciesLabel ?? 'Available vacancies';
   const locationLabel = labels?.locationLabel ?? 'Filter by Location';
   const departmentLabel = labels?.departmentLabel ?? 'Filter by Department';
 
-  // Applied query (controls the list)
   const [query, setQuery] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
-  // Draft filters (UI state only; does not affect list until Apply)
   const [draft, setDraft] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
 
-  // Facets reflect the DRAFT selection so the checkboxes show what the user has picked
   const { locations: locationFacets, departments: departmentFacets } = useMemo(
     () =>
       buildFacets(items, {
@@ -172,7 +186,6 @@ export default function CareersBoard({
     [items, draft.locationNames, draft.departmentNames],
   );
 
-  // Listing uses APPLIED query only
   const { pageItems, totalResults, totalPages, page } = useMemo(() => {
     const toSet = (arr: string[]) => new Set(arr.map((x) => x.toLowerCase()));
     const inSet = (s: Set<string>, v: string) => s.has((v || '').toLowerCase());
@@ -229,16 +242,10 @@ export default function CareersBoard({
 
   type QueryKey = 'locationNames' | 'departmentNames';
 
-  // Toggle affects DRAFT only
   const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
     setDraft((d) => ({ ...d, page: 1, [key]: d[key][0] === name ? [] : [name] }));
   }, []);
 
-  const clearFacet = useCallback((key: QueryKey, name: string) => {
-    setDraft((d) => ({ ...d, page: 1, [key]: d[key].filter((n) => n !== name) }));
-  }, []);
-
-  // Pagination affects APPLIED query (listing)
   const handlePage = useCallback(
     (numberOfPage: number) =>
       setQuery((q) => ({
@@ -253,16 +260,17 @@ export default function CareersBoard({
     [],
   );
 
-  // Chips reflect DRAFT (what user is currently choosing)
   const selectedChips = useMemo(
     () => [
-      ...draft.locationNames.map((name) => ({ key: 'locationNames' as QueryKey, name })),
-      ...draft.departmentNames.map((name) => ({ key: 'departmentNames' as QueryKey, name })),
+      ...(query.locationNames ?? []).map((name) => ({ key: 'locationNames' as QueryKey, name })),
+      ...(query.departmentNames ?? []).map((name) => ({
+        key: 'departmentNames' as QueryKey,
+        name,
+      })),
     ],
-    [draft.locationNames, draft.departmentNames],
+    [query.locationNames, query.departmentNames],
   );
 
-  // Clear only resets DRAFT
   const clearAllFilters = useCallback(() => {
     setDraft((d) => ({
       ...d,
@@ -271,6 +279,19 @@ export default function CareersBoard({
       departmentNames: [],
       search: null,
       sort: 'postedAt_desc',
+    }));
+  }, []);
+
+  const removeChip = useCallback((key: QueryKey, name: string) => {
+    setQuery((q) => ({
+      ...q,
+      page: 1,
+      [key]: (q[key] as string[]).filter((n) => n !== name),
+    }));
+    setDraft((d) => ({
+      ...d,
+      page: 1,
+      [key]: (d[key] as string[]).filter((n) => n !== name),
     }));
   }, []);
 
@@ -368,7 +389,7 @@ export default function CareersBoard({
                 {selectedChips.map((c) => (
                   <button
                     key={`${c.key}:${c.name}`}
-                    onClick={() => clearFacet(c.key, c.name)}
+                    onClick={() => removeChip(c.key, c.name)}
                     className="shrink-0 rounded-full border border-primary/20 bg-[#E6F3F8] px-4 py-2 text-14px text-[#0045AB]"
                   >
                     {c.name} <span className="pl-1.5">×</span>
@@ -451,7 +472,7 @@ export default function CareersBoard({
             <div className="mt-5 flex w-full flex-col items-stretch gap-3">
               <button
                 type="button"
-                onClick={clearAllFilters} // clears DRAFT only
+                onClick={clearAllFilters}
                 className="w-full rounded-2xl px-4 py-2 text-primary"
               >
                 Clear

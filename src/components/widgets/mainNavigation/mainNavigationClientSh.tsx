@@ -48,16 +48,16 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300 ` +
+        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300  ` +
         (scrolled
           ? `bg-surface
              text-black
-             backdrop-blur-[70px] backdrop-saturate-150`
+             backdrop-blur-[70px] backdrop-saturate-150 `
           : `bg-transparent text-white`)
       }
     >
-      <div className="md:px-8 md:py-3 xs:px-2 xs:py-4">
-        <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container md:px-6 xs:px-4">
+      <div className="md:px-8 md:py-3 xs:px-2 xs:py-4 ">
+        <div className="flex items-center justify-between   overflow-visible pointer-events-auto h-header max-w-container   md:px-6 xs:px-4">
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
@@ -151,6 +151,7 @@ export default function MainNavigationClientShell({
                 );
               })}
             </div>
+           
             <MobileNavbar
               logoUrl={logoUrl}
               logoAlt={logoAlt}

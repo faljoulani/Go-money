@@ -238,7 +238,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               {/* Link columns (FooterNavigation groups) */}
               <FooterLinks
                 groups={linkGroups}
-                className=" justify-start my-8 z-30 rtl:pr-16 left-0"
+                className=" justify-start my-8 z-30 rtl:pr-16 left-0 "
               />
             </div>
           </div>

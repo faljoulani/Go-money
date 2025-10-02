@@ -49,7 +49,6 @@ const citiesFrom = (form?: any, overrideCities?: any[]): CityItem[] => {
 
 export default function ApplyForJob({
   className,
-  backHref = '/careers',
   form,
   cities,
   jobTitle,
@@ -65,7 +64,7 @@ export default function ApplyForJob({
 
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<FormDataState>({
     firstName: '',
@@ -132,7 +131,6 @@ export default function ApplyForJob({
   const normalizedLanguage = (language || '').toLowerCase();
   const isRtl = form?.Direction === 'rtl' || normalizedLanguage.startsWith('ar');
 
-  // NEW: phone prefix like Figma (fallback +966)
   const phoneCode = form?.PhoneCountryCode || '+966';
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {

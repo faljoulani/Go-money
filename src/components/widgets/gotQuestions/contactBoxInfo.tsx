@@ -127,7 +127,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     >
       {showCorner && (
         <div className="absolute right-0 top-0">
-          <div className="h-24 w-24 rounded-bl-[40px] bg-[#0A43FF]" />
+          <div className="md:h-24 md:w-24 rounded-bl-[40px] bg-[#0A43FF]" />
           <div className="absolute right-0 top-0 h-12 w-12 bg-white" />
         </div>
       )}

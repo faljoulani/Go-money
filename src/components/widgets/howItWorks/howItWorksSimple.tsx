@@ -112,9 +112,8 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
     })),
   };
 
-  // ---------- render ----------
   return (
-    <section {...attrs} className="relative xs:flex:flex-col ">
+    <section {...attrs} className="relative xs:flex xs:flex-col ">
       {/* Top headline block */}
       <div className="mx-auto max-w-4xl text-center px-6">
         {view.SubTitle && (
@@ -123,7 +122,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           </p>
         )}
         {view.Title && (
-          <h1 className="mt-3 text-[48px] font-bold tracking-[-0.02em] text-primary">
+          <h1 className="mt-3 md:text-[48px]  xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
             {view.Title}
           </h1>
         )}
@@ -143,15 +142,15 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           }}
         >
           {/* Content */}
-          <div className="relative z-[70] p-16">
+          <div className="relative z-[70] md:p-16 xs:p-4">
             {view.IntroLead && (
-              <h2 className="text-center text-white text-[36px]">
+              <h2 className="text-center text-white md:text-[36px] xs:text-[1.3rem]">
                 {view.IntroLead}
               </h2>
             )}
 
             {/* Steps */}
-            <div className="mt-12 grid gap-8 md:grid-cols-3 xs:grid-cols-1">
+            <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-12 md:grid-cols-3 xs:grid-cols-1">
               {view.Steps.map((s, i) => {
                 const logoSrc = mediaSrc(s.Logo);
                 const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
@@ -160,7 +159,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                 return (
                   <div
                     key={s.Id || `${s.Title}-${i}`}
-                    className="relative rounded-[32px] p-12 rtl:p-14 text-white h-[273px]
+                    className="relative rounded-[32px] md:p-12 xs:p-8 rtl:p-14 text-white h-[273px]
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
                                  before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
@@ -176,7 +175,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                       )}
                     </div>
 
-                    <h3 className="text-center text-2xl">{s.Title}</h3>
+                    <h3 className="text-center md:text-2xl xs:text-[1.4rem]">{s.Title}</h3>
                     {s.Description && (
                       <p className="mt-3 text-center text-[16px] text-[#E0E0E0]">{s.Description}</p>
                     )}
@@ -191,7 +190,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
             {/* CTA */}
             {view.CTALabel && (
-              <div className="mt-[68px] flex justify-center">
+              <div className="md:mt-[68px]  xs:mt-[42px] flex justify-center ">
                 <a
                   href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
                   className="group inline-flex items-center gap-2 rounded-full px-6 py-3

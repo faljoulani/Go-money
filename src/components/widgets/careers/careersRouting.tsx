@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import JobDetails from './details/jobDetails';
+import JobDetails from './details/jobDetailss';
 import ApplyForJob from './applyForJob/applyForJob';
 import CareersBoard from './careersDashboard/careersBoard';
 import { type CareersSearchBody, type ModuleCareer } from '../../../types/typee';
