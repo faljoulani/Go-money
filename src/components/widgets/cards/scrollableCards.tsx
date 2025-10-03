@@ -25,6 +25,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture, isEdit } = props.requestContext;
+  const dir = culture?.startsWith('ar') ? 'rtl' : 'ltr';
 
   const id = extractSelectionId(selection);
 
@@ -140,7 +141,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             <Title className="text-[40px] font-bold tracking-[-0.02em] leading-[75px]">{title}</Title>
             {subtitle && <Description className="mx-auto">{subtitle}</Description>}
           </div>
-    <MobileCardsCarousel items={childCardData} />
+    <MobileCardsCarousel items={childCardData} dir={dir} />
 
           <div className="mt-10 px-[205px] xs:hidden md:block">
             <div className="space-y-16">
@@ -225,4 +226,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
     </section>
   );
 }
+
+
 
