@@ -2,25 +2,19 @@
 
 import * as React from 'react';
 
-export type DropdownOption = { id: string; label: string; value?: string };
+export type DropdownOption = { id: string; label: React.ReactNode; value?: string };
 
 type Props = {
   options: DropdownOption[];
   placeholder?: string;
-  /** Name for the hidden input so it submits with a <form> */
   name?: string;
-  /** Preselected option id (controlled-from-parent optional) */
   valueId?: string | null;
   onChange?: (opt: DropdownOption) => void;
-
-  dir?: 'ltr' | 'rtl' | 'auto';
   disabled?: boolean;
-
-  /** Styling hooks */
-  className?: string; // wrapper
-  buttonClassName?: string; // the visible trigger button
-  listClassName?: string; // the popup list
-  optionClassName?: string; // each option
+  className?: string;
+  buttonClassName?: string;
+  listClassName?: string;
+  optionClassName?: string;
 };
 
 export default function CustomDropdown({
@@ -29,7 +23,6 @@ export default function CustomDropdown({
   name,
   valueId = null,
   onChange,
-  dir = 'auto',
   disabled = false,
   className = 'relative',
   buttonClassName = 'h-[48px] w-full rounded-[18px] border border-[#BDBDBD] bg-white px-3 text-left text-14px leading-[18px] text-[#BDBDBD] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20 flex items-center justify-between',
@@ -45,10 +38,8 @@ export default function CustomDropdown({
     [options, selectedId],
   );
 
-  // sync when parent changes valueId
   React.useEffect(() => setSelectedId(valueId ?? null), [valueId]);
 
-  // close on outside click
   React.useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (!wrapRef.current) return;
@@ -58,7 +49,6 @@ export default function CustomDropdown({
     return () => document.removeEventListener('mousedown', onDoc);
   }, []);
 
-  // basic keyboard support
   const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === 'Escape') setOpen(false);
     if (e.key === 'Enter' || e.key === ' ') {
@@ -76,8 +66,7 @@ export default function CustomDropdown({
   const submittedValue = selected?.value ?? selected?.id ?? '';
 
   return (
-    <div ref={wrapRef} className={className} dir={dir}>
-      {/* Hidden input to integrate with native <form> submission */}
+    <div ref={wrapRef} className={className}>
       {name ? <input type="hidden" name={name} value={submittedValue} /> : null}
 
       <button

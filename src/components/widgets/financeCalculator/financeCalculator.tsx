@@ -23,6 +23,7 @@ export default async function FinanceCalculator(
 ) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
+  const lang = culture || 'en';
 
   const selection = resolveSitefinitySelection(
     (props.model as any)?.FinanceDetails ??
@@ -86,7 +87,10 @@ export default async function FinanceCalculator(
       'NoteTitle',
       'CtaText',
       'CtaUrl',
-
+      'MaximumRequestAmount',
+      'MinimumRequestAmount',
+      'MaximumEligibleInstallments',
+      'MinimumEligibleInstallments',
       'EmployerChoices/Id',
       'LengthOfServicesChoices/Id',
       'NationalityChoices/Id',
@@ -191,6 +195,10 @@ export default async function FinanceCalculator(
       monthlySalaryPlaceholder: asString(finance?.MonthlySalaryPlaceholder),
       requestedAmount: asString(finance?.RequestedFinanceAmountLabel),
       requestedAmountPlaceholder: asString(finance?.RequestedFinanceAmountPlaceholder),
+      minimumFinanceAmount : (finance?.MinimumRequestAmount),
+      maximumFinanceAmount: (finance?.MaximumRequestAmount),
+      minimumEligibleInstallments: (finance?.MinimumEligibleInstallments),
+      maximumEligibleInstallments: (finance?.MaximumEligibleInstallments),
       installments: asString(finance?.NumberOfInstallmentsLabel),
       installmentsPlaceholder: asString(finance?.NumberOfInstallmentsPlaceholder),
       totalMonthlyExpenses: asString(finance?.TotalMonthlyExpensesLabel),
@@ -234,7 +242,7 @@ export default async function FinanceCalculator(
 
   return (
     <section data-sf-enhance {...attrs}>
-      <FinanceCalculatorClient cfg={cfg} />
+      <FinanceCalculatorClient cfg={cfg} lang={lang} />
     </section>
   );
 }

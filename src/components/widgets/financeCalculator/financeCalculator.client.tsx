@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 
-type Nationality = 'saudi' | 'nonsaudi';
+type Nationality = string;
 type ResultState = null | 'success' | 'fail';
 
 type Choice = { id: string; title: string; value: string };
@@ -11,24 +11,40 @@ type LinkLike = string | { Href?: string } | Array<{ Href?: string }>;
 
 type Message = {
   id?: string;
-  title?: string;
-  description?: string;
-  note?: { title?: string; description?: string };
-  actions?: {
-    explore?: { label?: string; url?: string };
-    download?: { label?: string; url?: string };
-    back?: { label?: string; url?: string };
-  };
-  validationText?: string;
-  imageUrl?: string;
-  imageAlt?: string;
+
+  title: string;
+  description: string;
+
+  noteTitle: string;
+  noteDescription: string;
+
+  primaryLabel: string;
+  primaryUrl?: string; 
+
+  downloadLabel: string;
+  downloadUrl?: string;
+
+  backLabel: string;
+  backUrl?: string;
+
+  validationText: string;
+
+  imageUrl?: string; 
+  imageAlt: string;
+
+  // Fail-screen only
+  reasonsTitle: string;
+  reasonsDescription: string; 
+  actionsTitle: string;
+  actionsDescription: string;
 };
 
-export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
+export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang: string }) {
   const C = cfg ?? {};
+  const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
+
   const { post } = useSfMutation('api/default/eligibility/get');
 
-  console.log('FinanceCalculator cfg', C);
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
   const formatSar = (n: number) =>
@@ -46,20 +62,77 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     );
   }
 
-  function useDir(): 'rtl' | 'ltr' {
-    const [dir, setDir] = useState<'rtl' | 'ltr'>('ltr');
 
-    useEffect(() => {
-      if (typeof window !== 'undefined') {
-        const htmlDir = document.documentElement.getAttribute('dir');
-        setDir(htmlDir === 'rtl' ? 'rtl' : 'ltr');
-      }
-    }, []);
+const getHref = (v?: LinkLike | { url?: string } | null) =>
+  !v ? undefined
+  : typeof v === 'string' ? v
+  : Array.isArray(v) ? v.find(x => x?.Href)?.Href
+  : (v as any).Href ?? (v as any).url ?? undefined;
 
-    return dir;
-  }
+const getMediaUrl = (m?: any) =>
+  m?.Url ||
+  m?.MediaUrl ||
+  m?.ThumbnailUrl ||
+  (Array.isArray(m?.Urls) && m.Urls[0]) ||
+  m?.imageUrl ||
+  undefined;
 
-  const lines = (v?: string) =>
+type RawMessage = any;
+
+function mapMessage(raw: RawMessage): Message {
+  const title            = raw?.Title ?? raw?.title ?? '';
+  const description      = raw?.Description ?? raw?.description ?? '';
+
+  const noteTitle        = raw?.NoteTitle ?? raw?.note?.title ?? '';
+  const noteDescription  = raw?.NoteDescription ?? raw?.note?.description ?? '';
+
+  const primaryLabel     = raw?.ExploreLabel ?? raw?.actions?.explore?.label ?? '';
+  const primaryUrl       = getHref(raw?.ExploreUrl ?? raw?.actions?.explore?.url);
+
+  const downloadLabel    = raw?.DownloadLabel ?? raw?.actions?.download?.label ?? '';
+  const downloadUrl      = getHref(raw?.DownloadUrl ?? raw?.actions?.download?.url);
+
+  const backLabel        = raw?.BackLabel ?? raw?.actions?.back?.label ?? '';
+  const backUrl          = getHref(raw?.BackUrl ?? raw?.actions?.back?.url);
+
+  const validationText   = raw?.ValidationText ?? raw?.validationText ?? '';
+
+  const imageUrl         = getMediaUrl(raw?.Image ?? raw);
+  const imageAlt         = raw?.Image?.AlternativeText
+                        ?? raw?.Image?.Title
+                        ?? raw?.imageAlt
+                        ?? title;
+
+  const reasonsTitle       = raw?.ReasonsTitle ?? raw?.reasonsTitle ?? '';
+  const reasonsDescription = raw?.ReasonsDescription ?? raw?.reasonsDescription ?? '';
+  const actionsTitle       = raw?.ActionsTitle ?? raw?.actionsTitle ?? '';
+  const actionsDescription = raw?.ActionsDescription ?? raw?.actionsDescription ?? '';
+
+  return {
+    id: raw?.Id ?? raw?.id,
+    title,
+    description,
+    noteTitle,
+    noteDescription,
+    primaryLabel,
+    primaryUrl,
+    downloadLabel,
+    downloadUrl,
+    backLabel,
+    backUrl,
+    validationText,
+    imageUrl,
+    imageAlt,
+    reasonsTitle,
+    reasonsDescription,
+    actionsTitle,
+    actionsDescription,
+  };
+}
+
+    
+
+  const splitLines = (v?: string) =>
     (v || '')
       .split('\n')
       .map((s) => s.trim())
@@ -71,18 +144,15 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     if (Array.isArray(v)) return v.find((x) => x?.Href)?.Href || undefined;
     return v.Href || undefined;
   };
-
-  // ---- constants ----
-  const AMIN = 1000,
-    AMAX = 20000,
+  const AMIN = C.labels.minimumFinanceAmount,
+    AMAX = C.labels.maximumFinanceAmount,
     ASTEP = 500,
-    ADEF = 15000;
-  const IMIN = 6,
-    IMAX = 36,
+    ADEF = (AMAX + AMIN) / 2;
+  const IMIN = C.labels.minimumEligibleInstallments,
+    IMAX = C.labels.maximumEligibleInstallments,
     ISTEP = 1,
-    IDEF = 24;
+    IDEF = (IMAX + IMIN) / 2;
 
-  // ---- options from cfg.choices ----
   const employerChoices: Choice[] = C.choices?.employerTypes ?? [];
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
   const nationalityChoices: Choice[] = C.choices?.nationalities ?? [];
@@ -135,13 +205,15 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
     return m ? m[1] : '';
   }
 
-  const messages: Message[] = Array.isArray(C.messages) ? C.messages : [];
-  const successMsg =
-    messages.find((m) => /eligible/i.test(m.title || '')) ||
-    messages.find((m) => /success/i.test(m.title || ''));
-  const failMsg =
-    messages.find((m) => /not\s*eligible|ineligible/i.test(m.title || '')) ||
-    messages.find((m) => /fail|sorry/i.test(m.title || ''));
+  const messages: RawMessage[] = Array.isArray(C.messages) ? C.messages : [];
+ const rawSuccess = messages[1] ?? null;
+const rawFail    = messages[0] ?? null;
+
+  const successMsg = mapMessage(rawSuccess || {});
+  const failMsg = mapMessage(rawFail || {});
+
+
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -160,62 +232,63 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
       AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     };
 
-    try {
-      const res = await post(payload);
-      if (res?.Data?.IsEligible) setResult('success');
-      else setResult('fail');
-    } catch (err) {
-      console.error('FinanceCalculator error:', err);
-      setMsg('Something went wrong. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+    // const payload = {
+    //   EmployerType: 'GML',
+    //   Nationality: 'Saudi',
+    //   Gender: 'Male',
+    //   FinanceAmt: String(requestedFinanceAmount),
+    //   Tenure: '12',
+    //   MonthlyIncome: '50000',
+    //   lenOfService: '5',
+    //   ageAtApplication: '28',
+    //   AgeAtMaturity: '29',
+    // };
+      try {
+        const res = await post(payload);
+        if (res?.Data?.IsEligible) setResult('success');
+        else setResult('fail');
+      } catch (err) {
+        console.error('FinanceCalculator error:', err);
+        setMsg(
+       dir=== 'ltr'
+         ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+       : 'Something went wrong. Please try again.'
+     );
+      } finally {
+        setSubmitting(false);
+      }
+    // try {
+    //   if (Number(payload.FinanceAmt) > 7000) {
+    //     setResult('success');
+    //   } else setResult('fail');
+    // } catch (err) {
+    //   console.error('FinanceCalculator error:', err);
+    //   setMsg(
+    //     dir === 'ltr'
+    //       ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+    //       : 'Something went wrong. Please try again.',
+    //   );
+    // } finally {
+    //   setSubmitting(false);
+    // }
   }
-  const Dir = useDir();
-  if (result === 'success') {
-    // Prepare variables for use in JSX below
-    // let m: Message;
-    let title: string;
-    let desc: string;
-    let noteTitle: string;
-    let noteDesc: string;
-    let backText: string;
-    let primaryText: string;
-    let primaryHref: string;
-    let iconUrl: string;
 
-    if (Dir === 'ltr') {
-      // m = (successMsg as Message) || {};
-      title = successMsg.title || 'You are Eligible for Our Financing';
-      desc =
-        successMsg.description ||
-        'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!';
-      noteTitle = successMsg.note?.title || 'Important Note';
-      noteDesc =
-        successMsg.note?.description ||
-        'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.';
-      backText = successMsg.actions?.back?.label || 'Back to Calculator';
-      primaryText = successMsg.actions?.explore?.label || 'Download Our App';
-      primaryHref = successMsg.actions?.explore?.url || '#';
-      iconUrl = successMsg.imageUrl || '/assets/success.png';
-    } else {
-      // m = (successMsg as Message) || {};
-      title = successMsg.title || 'أنت مؤهل للحصول على تمويلنا';
-      desc =
-        successMsg.description ||
-        'استنادًا إلى المعلومات التي قدمتها، أنت مؤهل مبدئيًا للحصول على التمويل. أكمل تسجيلك الآن لاكتشاف العرض المصمم خصيصًا لك!';
-      noteTitle = successMsg.note?.title || 'ملاحظة مهمة';
-      noteDesc =
-        successMsg.note?.description ||
-        'المبلغ المؤهل هو تقديري وقد يتغير بناءً على تأكيد راتبك وتقييمك الائتماني.';
-      backText = successMsg.actions?.back?.label || 'العودة إلى الحاسبة';
-      primaryText = successMsg.actions?.explore?.label || 'حمّل تطبيقنا';
-      primaryHref = successMsg.actions?.explore?.url || '#';
-      iconUrl = successMsg.imageUrl || '/assets/success.png';
-    }
+  if (result === 'success') {
+   
+  let title = '', desc = '', noteTitle = '', noteDesc = '',
+      backText = '', primaryText = '', primaryHref = '#', iconUrl = '';
+
+  title       = successMsg.title;
+  desc        = successMsg.description;
+  noteTitle   = successMsg.noteTitle;
+  noteDesc    = successMsg.noteDescription;
+  backText    = successMsg.backLabel;
+  primaryText = successMsg.primaryLabel;
+  primaryHref = successMsg.primaryUrl || '#';
+  iconUrl     = successMsg.imageUrl || '/assets/success.png';
 
     return (
-      <section className="w-full">
+      <section className="w-full" dir={dir}>
         <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
             <img
@@ -224,8 +297,14 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
               className="h-24 w-24 object-contain"
             />
           </div>
-          <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">{title}</h2>
-          <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{desc}</p>
+
+          <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">
+            {title}
+          </h2>
+          <p
+            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto"
+            dangerouslySetInnerHTML={{ __html: desc }}
+          />
 
           <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
             <div className="flex flex-col items-start gap-2">
@@ -260,71 +339,39 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
   }
 
   if (result === 'fail') {
-    // let m: Message;
-    let title: string;
-    let sub: string;
-    let reasonsTitle: string;
-    let reasonsLeft: string[];
-    let reasonsRight: string[];
-    let actionsTitle: string;
-    let actionsSub: string;
-    let actionsLeft: string[];
-    let actionsRight: string[];
-    let footer: string;
-    let backText: string;
-    let iconUrl: string;
+  let title = '', sub = '', reasonsTitle = '',
+      actionsTitle = '', footer = '', backText = '', iconUrl = '';
+  let reasonsLeft: string[] = [];
+  let actionsLeft: string[] = [];
 
-    if (Dir === 'ltr') {
-      // m = (successMsg as Message) || {};
-      title = failMsg?.title || 'Not Eligible Yet';
-      sub =
-        failMsg?.description ||
-        'Unfortunately, we are unable to proceed with your application at this time.';
-      reasonsTitle =
-        failMsg?.note?.title || 'This could be due to one or more of the following reasons:';
-      reasonsLeft = lines(failMsg?.note?.description) || [
-        'Your verified information does not meet our internal policy requirements.',
-        'Your current financial obligations are too high for us to offer a loan at this time.',
-      ];
-      reasonsRight = ['Your credit history does not currently meet our eligibility criteria.'];
-      actionsTitle = failMsg?.actions?.explore?.label || 'But don’t worry — this isn’t permanent!';
-      actionsSub = 'Here’s what you can do:';
-      actionsLeft = ['Use Go Money regularly', 'Repay any pending dues'];
-      actionsRight = ['Try again in 30 days'];
-      footer = failMsg?.validationText || 'We’re here when you’re ready.';
-      backText = failMsg?.actions?.back?.label || 'Back to Calculator';
-      iconUrl = failMsg?.imageUrl || '/assets/failed.png';
-    } else {
-      // m = (successMsg as Message) || {};
-      title = failMsg?.title || 'غير مؤهل حالياً';
-      sub = failMsg?.description || 'للأسف، لا يمكننا متابعة طلبك في الوقت الحالي.';
-      reasonsTitle = failMsg?.note?.title || 'قد يكون ذلك بسبب واحد أو أكثر من الأسباب التالية:';
-      reasonsLeft = lines(failMsg?.note?.description) || [
-        'المعلومات التي تم التحقق منها لا تتوافق مع متطلبات السياسات الداخلية لدينا.',
-        'الالتزامات المالية الحالية الخاصة بك مرتفعة جدًا بحيث لا يمكننا تقديم قرض حالياً.',
-      ];
-      reasonsRight = ['سجلك الائتماني لا يفي حاليًا بمعايير الأهلية لدينا.'];
-      actionsTitle = failMsg?.actions?.explore?.label || 'لا تقلق — هذا ليس دائماً!';
-      actionsSub = 'إليك ما يمكنك فعله:';
-      actionsLeft = ['استخدم Go Money بانتظام', 'سدّد أي مستحقات معلقة'];
-      actionsRight = ['حاول مرة أخرى خلال 30 يومًا'];
-      footer = failMsg?.validationText || 'سنكون هنا عندما تكون مستعدًا.';
-      backText = failMsg?.actions?.back?.label || 'العودة إلى الحاسبة';
-      iconUrl = failMsg?.imageUrl || '/assets/failed.png';
-    }
+  title         = failMsg.title;
+  sub           = failMsg.description;
+  reasonsTitle  = failMsg.reasonsTitle;
+  reasonsLeft   = splitLines(failMsg.reasonsDescription);
+  actionsTitle  = failMsg.actionsTitle;
+  actionsLeft   = splitLines(failMsg.actionsDescription);
+  footer        = failMsg.validationText;
+  backText      = failMsg.backLabel;
+  iconUrl       = failMsg.imageUrl || '/assets/failed.png';
+
+
 
     return (
-      <section className="w-full">
+      <section className="w-full" dir={dir}>
         <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
           <div className="mx-auto mb-6 grid place-items-center">
             <img
               src={iconUrl}
-              alt={failMsg?.imageAlt || 'not-eligible'}
+              alt={failMsg.imageAlt || 'not-eligible'}
               className="h-24 w-24 object-contain"
             />
           </div>
+
           <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
-          <p className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto">{sub}</p>
+          <p
+            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto"
+            dangerouslySetInnerHTML={{ __html: sub }}
+          />
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
@@ -336,30 +383,21 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
               </ul>
             </div>
             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-              <ul className="list-disc pl-5 space-y-2 text-[#333]">
-                {reasonsRight.map((r, i) => (
-                  <li key={`rR-${i}`}>{r}</li>
-                ))}
-              </ul>
+              {/* optional second column later */}
             </div>
           </div>
 
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
               <strong className="block text-[#0B2A8E]">{actionsTitle}</strong>
-              <span className="block text-[#333] mb-3">{actionsSub}</span>
-              <ul className="list-disc pl-5 space-y-2 text-[#333]">
+              <ul className="list-disc pl-5 space-y-2 text-[#333] mt-3">
                 {actionsLeft.map((t, i) => (
                   <li key={`tL-${i}`}>{t}</li>
                 ))}
               </ul>
             </div>
             <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-              <ul className="list-disc pl-5 space-y-2 text-[#333]">
-                {actionsRight.map((t, i) => (
-                  <li key={`tR-${i}`}>{t}</li>
-                ))}
-              </ul>
+              {/* optional second column later */}
             </div>
           </div>
 
@@ -470,8 +508,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
               <div className="text-xs text-gray-500">
-                {C.validation?.requestedAmount ||
-                  `Maximum eligible amount is ${formatSar(AMAX)} SAR`}
+                {`Maximum eligible amount is ${formatSar(AMAX)} SAR`}
               </div>
 
               <input
@@ -500,7 +537,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
                 {installments} {C.labels?.installmentsPlaceholder || 'Months'}
               </div>
               <div className="text-xs text-gray-500">
-                {C.validation?.installments || `Maximum eligible installments is ${IMAX} months`}
+                {`Maximum eligible installments is ${IMAX} months`}
               </div>
               <input
                 required
@@ -578,7 +615,7 @@ export default function FinanceCalculatorClient({ cfg }: { cfg: any }) {
         </div>
 
         {msg && (
-          <p className="mt-3 text-center text-sm text-gray-700" role="status">
+          <p className="mt-3 text-center text-sm text-red-600" role="status">
             {msg}
           </p>
         )}
@@ -692,9 +729,10 @@ function Tooltip({ content, children }: { content: string; children: React.React
   return (
     <span className="group relative inline-flex items-center">
       {children}
-      <span className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100">
-        {content}
-      </span>
+      <span
+        dangerouslySetInnerHTML={{ __html: content }}
+        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100"
+      ></span>
     </span>
   );
 }

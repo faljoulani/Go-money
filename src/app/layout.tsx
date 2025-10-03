@@ -1,8 +1,9 @@
 // import 'bootstrap/dist/css/bootstrap.css';
 import './../index.css';
+import 'flag-icons/css/flag-icons.min.css';
 import RtlDirection from '../components/customComponents/rtlDirection/rtlDirection';
 import { ThemeProvider } from 'next-themes';
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />;
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // let bootstrapScript = '';
   // if (process.env.NODE_ENV === 'development') {
@@ -22,3 +23,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
