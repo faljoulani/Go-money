@@ -94,7 +94,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  console.log('->', item.CTAExternalUrl)
+  console.log('->', item.CTAExternalUrl);
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -105,7 +105,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     IntroSubLead: item.IntroSubLead,
 
     CTALabel: item.CTALabel,
-    
+
     CTAExternalUrl: item.CTAExternalUrl,
     CTAInternalPage: item.CTAInternalPage?.DefaultUrl ?? null,
 
@@ -121,19 +121,19 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       IsVisible: s.IsVisible ?? true,
     })),
   };
-  
+
   let rawCtaUrl = view.CTAExternalUrl;
-  
-    try {
-      if (typeof rawCtaUrl === 'string') {
-        rawCtaUrl = JSON.parse(rawCtaUrl);
-      }
-    } catch {
-      // If parsing fails, leave it as-is
+
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
     }
-  
+  } catch {
+    // If parsing fails, leave it as-is
+  }
+
   const CTAExternalUrl = linkToHref(rawCtaUrl);
-  console.log('->', CTAExternalUrl)
+  console.log('->', CTAExternalUrl);
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 
@@ -144,9 +144,10 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     <section {...attrs} className="relative md:mx-20 bg-white">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
-        {view.SubTitle && <Eyebrow>{view.SubTitle}</Eyebrow>}
+        {view.SubTitle && <Eyebrow color="text-default">{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title
+            color="text-black"
             className="
               md:text-[40px]
               xs:text-[1.6rem]
@@ -182,12 +183,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         <section className="relative w-full">
           <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
-            <img 
+            <img
               src="/assets/transparentN.png"
               alt=""
               className="absolute inset-0 w-full xs:object-fill md:object-cover h-full left-0 z-40  object-top"
             />
-      
 
             {/* pocket lip */}
             <img

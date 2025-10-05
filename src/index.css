@@ -95,13 +95,26 @@
 }
 
 :root {
-  --Background-background-neutral-200: #eeeeee;
   --color-primary: #010663;
-  --color-secondary: #0b2a8e;
+  --color-primary-alt: #010663;
+  --color-default: #424242;
+  --color-secondary: #ffffff;
+  --surface-page: #eeeeee;
+  --surface-section: #ffffff;
+  --surface-input: #ffffff;
+  --surface-sheet: #e1f3f9;
+  --surface-gradient: linear-gradient(258.38deg, #6be5bf -1.4%, #b3dfef 100%);
 }
 html.dark {
-  --color-primary: 'white';
-  --color-secondary: 'red';
+  --color-primary: #fafafa;
+  --color-primary-alt: #a6efd9;
+  --color-default: #f5f5f5;
+  --color-secondary: #000000;
+  --surface-page: #131321;
+  --surface-section: #44444433;
+  --surface-input: #000000;
+  --surface-sheet: #004c86;
+  --surface-gradient: linear-gradient(258.38deg, #a6efd9 -1.4%, #006aa5 100%);
 }
 
 body {
@@ -120,11 +133,16 @@ html.dark {
   color-scheme: dark;
 }
 html.dark body {
-  background-color: #0a0a0a;
+  background-color: #131321;
   color: #e5e5e5;
 }
 html.dark .defaultBgColor {
-  background-color: #0a0a0a;
+  background-color: #131321;
+}
+
+html.modal-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
 }
 
 [dir='rtl'] .cta-arrow {
@@ -167,7 +185,6 @@ html.dark .defaultBgColor {
     transform: translateY(100px);
   }
   to {
-
     transform: translateY(0);
   }
 }
@@ -178,13 +195,11 @@ html.dark .defaultBgColor {
   animation-range: entry 0% cover 20%;
 }
 
-
 @keyframes fadeup {
   from {
     transform: translateY(150px);
   }
   to {
-
     transform: translateY(0);
   }
 }
@@ -282,8 +297,8 @@ html.dark .defaultBgColor {
     transform: translateX(0);
   }
 }
-.fadeRightFinanceDetails{
-  animation:fadeRightFinanceDetails ease-in-out both;
+.fadeRightFinanceDetails {
+  animation: fadeRightFinanceDetails ease-in-out both;
   animation-timeline: view();
   animation-range: entry 5% cover 30%;
 }
@@ -310,7 +325,7 @@ html.dark .defaultBgColor {
     transform: translateX(0);
   }
 }
-.fadeRightFinanceButton{
+.fadeRightFinanceButton {
   animation: 3.5s ease-in-out both;
   animation-timeline: view();
   animation-range: entry 0% cover 10%;
@@ -355,10 +370,9 @@ html.dark .defaultBgColor {
 @keyframes fadeLeftDownload {
   from {
     transform: translateX(0px) translateY(100px);
-
   }
   to {
-      transform: translate(0) translateY(0px);
+    transform: translate(0) translateY(0px);
   }
 }
 
@@ -543,11 +557,11 @@ html.dark .defaultBgColor {
 
 @keyframes fadeupText {
   from {
-    opacity:0.5;
+    opacity: 0.5;
     transform: translateY(100px);
   }
   to {
-    opacity:1;
+    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -563,7 +577,6 @@ html.dark .defaultBgColor {
     transform: translateY(-100px);
   }
   to {
-
     transform: translateY(500px);
   }
 }
@@ -590,11 +603,12 @@ html.dark .defaultBgColor {
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
+

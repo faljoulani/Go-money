@@ -5,14 +5,23 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color-primary)', // Use it with bg-primary, text-primary, border-primary
+        primary: 'var(--color-primary)',
+        primaryAlt: 'var(--color-primary-alt)',
         secondary: 'var(--color-secondary)',
-        default: '#424242', // Use it with bg-default, text-default, border-default
+        default: 'var(--color-default)',
+        'surface-page': 'var(--surface-page)',
+        'surface-section': 'var(--surface-section)',
+        'surface-gradient': 'var(--surface-gradient)',
+        'surface-sheet': 'var(--surface-sheet)',
+        'surface-input': 'var(--surface-input)',
+        black: 'var( --color-black)',
         surface: 'hsla(0, 0%, 100%, 0.75)',
         neutral: '#9E9E9E',
         line: '#e0e0e0',
         bgNeutral200: '#eeeeee',
-        skyTint: '#CFE8F1',
+        skyTint: 'var(--color-skyTint-surface)',
+        bgLayout: 'var(--color-skyTint-surface)',
+        bgPrimary: 'var(--color-background-primary)',
         lineMuted: '#EAEDF3',
       },
       spacing: {
@@ -39,9 +48,7 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    
-  ],
+  plugins: [],
 };
 
 /**

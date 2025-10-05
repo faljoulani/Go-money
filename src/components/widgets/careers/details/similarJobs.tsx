@@ -73,7 +73,6 @@ export default function SimilarJobs({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // sync prop -> state
   useEffect(() => {
     if (departmentIdProp && departmentIdProp !== departmentId) {
       setDepartmentId(departmentIdProp);
@@ -82,7 +81,6 @@ export default function SimilarJobs({
     }
   }, [departmentIdProp, departmentId]);
 
-  // resolve department when not provided
   useEffect(() => {
     if (!language) return;
     if (departmentIdProp) return;

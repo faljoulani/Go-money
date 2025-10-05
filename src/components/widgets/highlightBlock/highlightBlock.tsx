@@ -2,7 +2,6 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { HighlightBlockEntity } from './highlightBlock.entity';
 import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
 import { fetchData, pickImageUrl } from '../../../utils/sitefinity';
-import { CmsImage } from '../../../types/typee';
 
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
@@ -90,7 +89,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     }
   } catch {}
   const ctaHref = linkToHref(rawCtaUrl);
-  console.log('---------->', ctaHref)
+  console.log('---------->', ctaHref);
   const imgSrc: string | undefined = pickImageUrl(
     Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );
@@ -108,8 +107,9 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
       <div className="relative md:grid md:grid-cols-2 md:items-center md:py-24 md:pl-16 md:rtl:pr-16 md:align-middle md:h-[580px] xs:h-[700px]   xs:py-16 xs:px-6 xs:flex xs:flex-col-reverse">
         {/* Left: copy */}
         <div className="flex flex-col gap-5 max-w-xl ">
-          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+          {eyebrow && <Eyebrow className="text-default">{eyebrow}</Eyebrow>}
           <Title
+            color="text-black"
             className="
                 text-5xl
                 font-bold     
@@ -119,13 +119,13 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           >
             {title}
           </Title>
-          {description && <Description className="text-base" html={description} />}
+          {description && <Description className="text-default text-base" html={description} />}
 
           {ctaText && (
             <div>
               <CTA
                 href={(ctaHref || '').trim() || '#'}
-                colorText="text-primary"
+                colorText="text-textPrimaryAlt"
                 borderColor="border-primary"
                 bgColor="transparent"
                 variant="outline"
@@ -149,7 +149,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
                 draggable={false}
               />
             ) : (
-              <div className="h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100"/>
+              <div className="h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100" />
             )}
           </div>
         </div>
