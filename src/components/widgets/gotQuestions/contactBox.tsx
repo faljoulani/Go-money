@@ -100,8 +100,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     // If parsing fails, leave it as-is
   }
   const faqurl = linkToHref(secondaryHref)
-  console.log('------->', primaryHref)
-  console.log('------->', secondaryHref)
+
   const showCorner =
     typeof item?.hasLabelCorner === 'boolean'
       ? item!.hasLabelCorner

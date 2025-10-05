@@ -20,7 +20,6 @@ export function useSf<T = any>(path: string | null, params?: Params, config?: SW
     if (!path) return null;
 
     const p = stripCulturePrefix(path.replace(/^\/+/, ''));
-    console.log('Path after stripCulturePrefix: ', p);
     const qs = new URLSearchParams();
     Object.entries(params || {}).forEach(([k, v]) => {
       if (v !== undefined && v !== null) qs.set(k, String(v));

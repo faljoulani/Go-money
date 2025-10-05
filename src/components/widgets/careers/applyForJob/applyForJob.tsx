@@ -5,7 +5,12 @@ import Image from 'next/image';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 import InputField from '../../../atoms/inputField/inputField';
 import SpinnerLoader from '../../../atoms/spinnerLoader/spinnerLoader';
-import CustomDropdown, { DropdownOption } from '../../../atoms/dropdown/dropdown';
+import CustomDropdown, {
+  DROPDOWN_BUTTON_BASE,
+  DROPDOWN_LIST_BASE,
+  DROPDOWN_OPTION_BASE,
+  DropdownOption,
+} from '../../../atoms/dropdown/dropdown';
 import ApplicationSuccess from './applicationSuccess';
 import { COUNTRY_LIST } from '../../../../utils/countries-emoji';
 
@@ -40,7 +45,7 @@ type FormDataState = {
 };
 
 const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
-const maxBytes = 2 * 1024 * 1024; // 2MB
+const maxBytes = 2 * 1024 * 1024;
 
 const citiesFrom = (form?: any, overrideCities?: any[]): CityItem[] => {
   const a: CityItem[] = Array.isArray(form?.CityChoices) ? form.CityChoices : [];
@@ -84,8 +89,10 @@ export default function ApplyForJob({
   const [serverError, setServerError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // 1) Give the success section a ref and make it focusable
+
+  // Refs for layout & a11y
   const successRef = useRef<HTMLDivElement | null>(null);
+  const detailsRef = useRef<HTMLDivElement | null>(null);
 
   // Form data
   const [data, setData] = useState<FormDataState>({
@@ -130,7 +137,6 @@ export default function ApplyForJob({
     if (!err) applyFieldChange('resume', file);
   };
 
-  // Fetch job details
   useEffect(() => {
     setJobError(null);
     setJobDetails(null);
@@ -165,7 +171,6 @@ export default function ApplyForJob({
     };
   }, [jobId, language, fetchJobDetails, isRtl]);
 
-  // Derived job info
   const title = jobDetails?.Title || jobTitle;
   const department = jobDetails?.DepartmentName ?? '';
   const location = jobDetails?.LocationName ?? '';
@@ -173,7 +178,6 @@ export default function ApplyForJob({
   const overviewHtml = jobDetails?.Sections?.OverviewHtml ?? '';
   const submissionTitle = title || (isRtl ? 'طلب وظيفة' : 'Job Application');
 
-  // Country change
   const onCountryChange = (opt: DropdownOption) => {
     const iso2 = String(opt.value ?? opt.id);
     const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
@@ -181,7 +185,6 @@ export default function ApplyForJob({
     setCountryDial(info?.dial ?? '');
   };
 
-  // Submit
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setServerError(null);
@@ -227,22 +230,59 @@ export default function ApplyForJob({
     }
   }
 
-  // 2) When submitted, move focus + scroll to it (with a tiny timeout for layout)
   useEffect(() => {
     if (!submitted) return;
-    const el = successRef.current;
-    if (!el) return;
 
-    // Make sure it's focusable for screen readers and keyboard users
-    el.setAttribute('tabindex', '-1');
+    const detailsEl = detailsRef.current;
+    const successEl = successRef.current;
+    const targets = [detailsEl, successEl].filter(Boolean) as HTMLDivElement[];
 
-    // Focus first, then smooth scroll (Safari sometimes needs a tick)
-    const id = window.setTimeout(() => {
-      el.focus({ preventScroll: true });
-      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-    }, 0);
+    if (targets.length === 0) return;
 
-    return () => window.clearTimeout(id);
+    targets.forEach((el) => el.setAttribute('tabindex', '-1'));
+
+    const STICKY_HEADER_OFFSET_PX = 80;
+
+    const rafId = window.requestAnimationFrame(() => {
+      try {
+        const vh = window.innerHeight;
+        const currentScroll = window.scrollY;
+
+        const rects = targets.map((el) => {
+          const rect = el.getBoundingClientRect();
+          const top = currentScroll + rect.top;
+          const bottom = top + rect.height;
+          return { el, top, bottom };
+        });
+
+        const spanTop = Math.min(...rects.map((r) => r.top));
+        const spanBottom = Math.max(...rects.map((r) => r.bottom));
+        const spanHeight = spanBottom - spanTop;
+
+        const successTop = successEl
+          ? (rects.find((r) => r.el === successEl)?.top ?? spanTop)
+          : spanTop;
+
+        const targetTop =
+          spanHeight <= vh
+            ? Math.max(0, spanTop - (vh - spanHeight) / 2 - STICKY_HEADER_OFFSET_PX)
+            : Math.max(0, successTop - 24 - STICKY_HEADER_OFFSET_PX);
+
+        if (detailsEl) {
+          detailsEl.focus({ preventScroll: true });
+        }
+
+        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+
+        if (successEl) {
+          window.setTimeout(() => successEl.focus({ preventScroll: true }), 250);
+        }
+      } catch {
+        successEl?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
   }, [submitted]);
 
   return (
@@ -264,7 +304,11 @@ export default function ApplyForJob({
 
         {/* Job header card */}
         {jobDetails && (
-          <div className="w-full rounded-2xl border border-neutral-200/70 bg-white p-5 shadow-sm md:p-6">
+          <div
+            ref={detailsRef}
+            tabIndex={-1}
+            className="scroll-mt-24 w-full rounded-2xl bg-surface-section p-5 shadow-md md:p-6"
+          >
             <h1 className="text-2xl font-bold leading-[100%] md:text-primary">{title}</h1>
 
             {(department || location || employmentType) && (
@@ -277,7 +321,13 @@ export default function ApplyForJob({
                 )}
                 {location && (
                   <div className="flex items-center gap-2">
-                    <Image src="/icons/map-pin.png" alt="Location" width={20} height={20} />
+                    <Image
+                      src="/icons/map-pin.png"
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="h-4 w-4 object-contain dark:invert"
+                    />
                     <span>{location}</span>
                   </div>
                 )}
@@ -306,22 +356,28 @@ export default function ApplyForJob({
           </div>
         )}
 
-        {/* Form card */}
+        {/* Form card OR Success */}
         {submitted ? (
-          <section aria-live="polite" className="mt-6 outline-none" ref={successRef} role="status">
+          <section
+            aria-live="polite"
+            className="scroll-mt-24 mt-6 outline-none"
+            ref={successRef}
+            role="status"
+            tabIndex={-1}
+          >
             <ApplicationSuccess />
           </section>
         ) : (
           <form
             noValidate
             onSubmit={onSubmit}
-            className="mt-6 rounded-2xl border bg-white p-5 shadow-sm md:p-7"
+            className="mt-6 rounded-2xl bg-white dark:bg-[#05060799] p-5 shadow-xl md:p-7"
           >
             {/* Title + subtitle */}
             <h2 className="text-2xl font-bold leading-tight md:text-primary">
               {form?.Title ?? (isRtl ? 'نموذج التقديم' : 'Application form')}
             </h2>
-            <p className="mt-2 mb-5 text-sm leading-6 text-gray-600">
+            <p className="mt-2 mb-5 text-sm leading-6 text-default">
               {form?.SubTitle ??
                 (isRtl
                   ? 'يرجى ملء النموذج أدناه لإرسال طلبك'
@@ -333,7 +389,7 @@ export default function ApplyForJob({
               {/* First name */}
               <InputField label={form?.FirstNameLabel} required>
                 <input
-                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
                   placeholder={form?.FirstNamePlaceholder}
                   value={data.firstName}
                   onChange={(e) => applyFieldChange('firstName', e.target.value)}
@@ -344,7 +400,7 @@ export default function ApplyForJob({
               {/* Last name */}
               <InputField label={form?.LastNameLabel} required>
                 <input
-                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
                   placeholder={form?.LastNamePlaceholder}
                   value={data.lastName}
                   onChange={(e) => applyFieldChange('lastName', e.target.value)}
@@ -366,18 +422,14 @@ export default function ApplyForJob({
                     valueId={countryIso2}
                     onChange={onCountryChange}
                     className="relative inline-block"
-                    buttonClassName={[
-                      'inline-flex h-12 min-w-[96px] w-[96px] md:min-w-[120px] md:w-[120px] items-center justify-center gap-2',
-                      'rounded-2xl border border-gray-200 bg-white px-3 text-sm text-gray-800',
-                      'hover:border-gray-300 hover:bg-gray-100 focus:ring-2 focus:ring-primary/20',
-                    ].join(' ')}
-                    listClassName="absolute top-full left-0 right-0 z-50 mt-1 max-h-72 w-full overflow-auto rounded-2xl bg-white p-2 shadow-xl"
-                    optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-sm text-gray-800 hover:bg-gray-100 rounded-xl"
+                    buttonClassName={`${DROPDOWN_BUTTON_BASE} min-w-[96px] w-[96px] md:min-w-[120px] md:w-[120px] justify-center gap-2 px-3 text-sm`}
+                    listClassName={`${DROPDOWN_LIST_BASE} max-h-72 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-white/20`}
+                    optionClassName={`${DROPDOWN_OPTION_BASE} text-sm`}
                   />
 
                   {/* Local phone input */}
                   <input
-                    className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
+                    className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
                     placeholder={form?.PhoneNumberPlaceholder}
                     value={data.phone}
                     onChange={(e) => applyFieldChange('phone', e.target.value)}
@@ -390,7 +442,7 @@ export default function ApplyForJob({
               {/* Email */}
               <InputField label={form?.EmailLabel} required>
                 <input
-                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition focus:border-primary"
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
                   placeholder={form?.EmailPlaceholder}
                   type="email"
                   value={data.email}
@@ -400,7 +452,11 @@ export default function ApplyForJob({
               </InputField>
 
               {/* City — full width on md (matches Figma) */}
-              <InputField label={form?.CityLabel} required className="md:col-span-2">
+              <InputField
+                label={form?.CityLabel}
+                required
+                className="md:col-span-2 bg-surface-input"
+              >
                 <CustomDropdown
                   name="City"
                   options={cityChoices.map((c, i) => {
@@ -413,15 +469,9 @@ export default function ApplyForJob({
                   valueId={data.city || null}
                   onChange={(opt) => applyFieldChange('city', (opt as any).value ?? opt.id)}
                   className="relative w-full"
-                  buttonClassName={[
-                    'group flex h-12 w-full items-center justify-between overflow-hidden rounded-2xl',
-                    'border border-gray-200 bg-white text-14px text-gray-800',
-                    'transition-colors duration-150 hover:border-gray-300 hover:bg-gray-100',
-                    'focus:ring-2 focus:ring-primary/20 px-4',
-                    isRtl ? 'text-right' : 'text-left',
-                  ].join(' ')}
-                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 overflow-auto rounded-2xl bg-white p-2 shadow-xl"
-                  optionClassName="mt-1 w-full rounded-xl p-2 text-left text-sm text-gray-800 hover:bg-gray-100 rtl:text-right"
+                  buttonClassName={`${DROPDOWN_BUTTON_BASE} w-full ${isRtl ? 'text-right' : 'text-left'}`}
+                  listClassName={`${DROPDOWN_LIST_BASE} max-h-60 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-white/20`}
+                  optionClassName={`${DROPDOWN_OPTION_BASE} text-sm`}
                 />
               </InputField>
 
@@ -429,7 +479,7 @@ export default function ApplyForJob({
               <div className="md:col-span-2">
                 <InputField label={form?.CoverLetterLabel}>
                   <textarea
-                    className="min-h-[120px] w-full rounded-2xl border-2 border-gray-200 p-4 text-14px outline-none transition focus:border-[#5F66FF]"
+                    className="min-h-[120px] w-full rounded-2xl border-2 border-gray-200 p-4 text-14px outline-none transition bg-surface-input focus:border-[#5F66FF]"
                     placeholder={form?.CoverLetterPlaceholder}
                     value={data.coverLetter}
                     onChange={(e) => applyFieldChange('coverLetter', e.target.value)}
@@ -455,27 +505,33 @@ export default function ApplyForJob({
                     e.stopPropagation();
                     handleResume(e.dataTransfer.files?.[0]);
                   }}
-                  className="block cursor-pointer rounded-2xl border-2 border-dashed border-[#7B80FF] bg-[#F7FAFF] p-5 text-center md:p-6"
+                  className="block cursor-pointer rounded-2xl border-2 border-dashed border-[#7B80FF] dark:border-white bg-[#F5F6FF] dark:bg-[#054E42] p-5 text-center md:p-6"
                 >
                   <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center">
-                    <Image src="/icons/upload_icon.png" alt="upload" width={24} height={24} />
+                    <Image
+                      src="/icons/upload_icon.png"
+                      alt="upload"
+                      width={24}
+                      height={24}
+                      className="dark:invert"
+                    />
                   </div>
 
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept=".pdf,.png,.jpg,.jpeg"
-                    className="hidden"
+                    className="hidden bg-surface-input"
                     onChange={(e) => handleResume(e.target.files?.[0] ?? null)}
                   />
 
-                  <div className="text-sm font-semibold text-[#212121]">
+                  <div className="text-sm font-semibold text-default">
                     {form?.ResumeSectionTitle ??
                       (isRtl
                         ? 'اسحب وأفلت الملفات هنا للتحميل'
                         : 'Drag and drop files here to upload')}
                   </div>
-                  <div className="mt-2 text-xs leading-5 text-[#424242]">
+                  <div className="mt-2 text-xs leading-5 text-default">
                     {form?.ResumeFileNote ??
                       (isRtl
                         ? 'الحد الأقصى للحجم 2MB، الصيغ المدعومة: .jpg, .png, .pdf'
@@ -485,7 +541,7 @@ export default function ApplyForJob({
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-sm font-semibold text-primary underline decoration-transparent hover:decoration-primary"
+                      className="text-sm font-semibold text-primaryAlt underline decoration-transparent hover:decoration-primary"
                     >
                       {form?.CtaText || (isRtl ? 'تصفح الملفات' : 'Browse Files')}
                     </button>
@@ -494,7 +550,7 @@ export default function ApplyForJob({
 
                 {/* File info + error */}
                 {data.resume && !error && (
-                  <div className="mt-2 text-sm text-gray-700 text-center">
+                  <div className="mt-2 text-sm text-default text-center">
                     {isRtl ? 'الملف المحدد: ' : 'Selected: '} {data.resume.name}
                   </div>
                 )}
@@ -510,9 +566,15 @@ export default function ApplyForJob({
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex h-12 w-full items-center justify-center rounded-2xl bg-[#010663] text-base font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-60 md:w-auto md:px-6 md:rounded-2xl"
+                className="flex h-12 w-full items-center justify-center rounded-2xl bg-primaryAlt text-base font-semibold text-secondary shadow-sm hover:opacity-90 disabled:opacity-60 md:w-auto md:px-6 md:rounded-2xl"
               >
-                {isRtl ? 'إرسال الطلب' : submitting ? 'Submitting…' : 'Submit Application'}
+                {isRtl
+                  ? submitting
+                    ? 'جارٍ الإرسال…'
+                    : 'إرسال الطلب'
+                  : submitting
+                    ? 'Submitting…'
+                    : 'Submit Application'}
               </button>
             </div>
           </form>

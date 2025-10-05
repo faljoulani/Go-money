@@ -10,7 +10,6 @@ import type { DetailsResponse, JobDetailsProps } from '../../../../types/typee';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
 
 export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {
-  console.log('JOB DETAILS COMPONENT');
   const { post: postDetails } = useSfMutation('api/default/careers/details');
   const postDetailsRef = useRef(postDetails);
   useEffect(() => {
@@ -69,7 +68,6 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   if (loading || !language) return <FullPageLoader />;
 
   const job = data?.Data;
-  console.log('JOB ' + JSON.stringify(job));
   if (error || !job) {
     return (
       <section className="w-full mx-20 py-10">
@@ -86,57 +84,48 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
 
   return (
     <section className={`w-full py-6 md:px-20 md:py-16 ${className ?? ''}`}>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr,1fr]">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr,1fr] text-default">
         {/* Left column */}
-        <div className="w-full rounded-3xl border bg-white px-4 md:px-8">
+        <div className="w-full rounded-3xl shadow-xl bg-surface-section px-4 md:px-8 text-default">
           {/* Overview */}
           <div className="p-6">
-            <h3 className="mb-1 text-xl md:text-2xl font-semibold text-[#212121] md:text-primary">
+            <h3 className="mb-1 text-xl md:text-2xl font-semibold md:text-primary">
               {job.Sections?.OverviewLabel || 'Overview'}
             </h3>
-            <div
-              className="leading-relaxed text-gray-700 descriptionHtml"
-              dangerouslySetInnerHTML={{ __html: overviewHtml }}
-            />
+            <div className="leading-relaxed " dangerouslySetInnerHTML={{ __html: overviewHtml }} />
           </div>
 
           {/* Responsibilities */}
           {responsibilitiesHtml && (
             <div className="px-6">
-              <h3 className="mb-1 text-2xl font-semibold text-[#212121] md:text-primary">
+              <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                 {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
               </h3>
-              <div
-                className="mt-3 text-gray-700 descriptionHtml"
-                dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }}
-              />
+              <div className="mt-3" dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }} />
             </div>
           )}
 
           {/* Qualifications */}
           {qualificationsHtml && (
             <div className="p-5">
-              <h3 className="mb-1 text-2xl font-semibold text-[#212121] md:text-primary">
+              <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                 {job.Sections?.QualificationsLabel || 'Qualifications'}
               </h3>
-              <div
-                className="mt-3 text-gray-700 descriptionHtml"
-                dangerouslySetInnerHTML={{ __html: qualificationsHtml }}
-              />
+              <div className="mt-3" dangerouslySetInnerHTML={{ __html: qualificationsHtml }} />
             </div>
           )}
 
           {/* Skills */}
           {Array.isArray(job.Skills) && job.Skills.length > 0 && (
             <div className="pb-6 px-6">
-              <h3 className="mb-1 text-2xl font-semibold text-[#212121] md:text-primary">
+              <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                 {job.Sections?.SkillsLabel || 'Skills'}
               </h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {job.Skills.map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center rounded-full bg-[#E1F3F9] px-3 py-1 text-sm text-gray-700"
+                    className="inline-flex items-center rounded-full bg-surface-sheet px-3 py-1 text-sm"
                   >
                     {skill}
                   </span>
@@ -148,15 +137,15 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
 
         {/* Right column */}
         <aside className="w-full lg:max-w-sm">
-          <div className="flex flex-col gap-6 rounded-3xl border bg-white p-6 md:p-8">
+          <div className="flex flex-col gap-6 rounded-3xl shadow-xl bg-surface-section p-6 md:p-8">
             {/* Location row */}
             <div className="flex items-center gap-3">
               <Image
                 src="/icons/map-pin.png"
-                alt="Location"
+                alt=""
                 width={24}
                 height={24}
-                className="opacity-80"
+                className="h-4 w-4 object-contain dark:invert"
               />
               <div>
                 <div>{job.LocationName}</div>
@@ -200,17 +189,23 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
             {job.ApplyUrl && !onApply ? (
               <Link
                 href={job.ApplyUrl}
-                className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
+                className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
               >
-                {job.ButtonLabel}
+                {job.ButtonLabel ||
+                  (document?.documentElement?.dir === 'rtl'
+                    ? 'التقدم لهذه الوظيفة'
+                    : 'Apply for this job')}
               </Link>
             ) : (
               <button
                 type="button"
                 onClick={() => onApply?.(id)}
-                className="mt-6 w-full rounded-2xl bg-[#010663] px-4 py-3 text-center font-medium text-white hover:opacity-90"
+                className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
               >
-                {job.ButtonLabel || 'Apply for this job'}
+                {job.ButtonLabel ||
+                  (document?.documentElement?.dir === 'rtl'
+                    ? 'التقدم لهذه الوظيفة'
+                    : 'Apply for this job')}
               </button>
             )}
           </div>

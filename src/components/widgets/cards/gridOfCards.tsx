@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId, pickImageUrl } from '../../../utils/sitefinity';
 import { resolveAbsoluteUrl, extractHref } from '../../../utils/utils';
-import {MobileCardsCarousel} from './mobileCards'
+import { MobileCardsCarousel } from './mobileCards';
 
 import ScrollableCards from './scrollableCards';
 import FeatureCards from './featuresCards';
@@ -151,8 +151,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         : [];
   }
 
-  //console.log('cardItems ======= >>>>>> ' + JSON.stringify(cardItems));
-
   const childCardData = cardItems.map((card) => {
     const img = Array.isArray(card?.Image) ? card.Image[0] : card?.Image;
 
@@ -178,11 +176,9 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
     };
   });
 
-  //console.log('childCardData ======= >>>>>> ' + JSON.stringify(childCardData));
-
   return (
     <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12">
-          <MobileCardsCarousel items={childCardData} dir={dir} />
+      <MobileCardsCarousel items={childCardData} dir={dir} />
       <div className="xs:hidden md:block">
         <div className="flex flex-col items-center gap-2 text-center fadeupText">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
@@ -204,13 +200,13 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             {childCardData.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
+                className="group rounded-[20px] bg-surface-section shadow-md p-8 hover:scale-105 duration-300"
               >
                 <div className="gap-4">
                   <div>{item.icon}</div>
                 </div>
                 <div className="">
-                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">
+                  <h3 className="text-xl font-bold text-primaryAlt leading-9 tracking-[-0.02em]">
                     {item.title}
                   </h3>
                   {item.description ? (
@@ -228,13 +224,13 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             {childCardData.slice(3, 6).map((item) => (
               <div
                 key={item.id}
-                className="group rounded-[20px] bg-white p-8 hover:scale-105 duration-300"
+                className="group rounded-[20px] bg-surface-section shadow-md p-8 hover:scale-105 duration-300"
               >
                 <div className="gap-4">
                   <div>{item.icon}</div>
                 </div>
                 <div className="">
-                  <h3 className="text-xl font-bold text-primary leading-9 tracking-[-0.02em]">
+                  <h3 className="text-xl font-bold text-primaryAlt leading-9 tracking-[-0.02em]">
                     {item.title}
                   </h3>
                   {item.description ? (
@@ -248,23 +244,23 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
           </div>
         </div>
       </div>
-       {ctaText && (
-          <div className="mt-12 text-center fadeupButton">
-            <CTA
-              variant="outline"
-              colorText="text-primary"
-              fontWeight="font-medium"
-              borderColor="border-primary"
-              align="center"
-              icon="arrow"
-              bgColor="transparent"
-              href={ctaHref || '#'}
-              className="text-lg"
-            >
-              {ctaText}
-            </CTA>
-          </div>
-        )}
+      {ctaText && (
+        <div className="mt-12 text-center fadeupButton">
+          <CTA
+            variant="outline"
+            colorText="text-primaryAlt"
+            fontWeight="font-medium"
+            borderColor="border-primary"
+            align="center"
+            icon="arrow"
+            bgColor="transparent"
+            href={ctaHref || '#'}
+            className="text-lg"
+          >
+            {ctaText}
+          </CTA>
+        </div>
+      )}
     </section>
   );
 }

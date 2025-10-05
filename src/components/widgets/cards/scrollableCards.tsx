@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { extractHref } from '../../../utils/utils';
-import {MobileCardsCarousel} from './mobileCards'
+import { MobileCardsCarousel } from './mobileCards';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -103,7 +103,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         : [];
   }
 
-  console.log('cardItems ' + JSON.stringify(cardItems));
 
   const childCardData = cardItems.map((card: any) => {
     const rawHref = card?.LinkUrl ?? '';
@@ -132,15 +131,21 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
   });
 
   return (
-    <section {...attributes} className="w-full bg-white">
+    <section {...attributes} className="w-full">
       <div className="mx-auto max-w-[1240px]">
         <div className="relative">
-          <div className="md:sticky md:top-20 flex flex-col gap-2 text-center bg-white  md:h-[600px] fadeupText">
-            {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-            <Title className="text-[40px] font-bold tracking-[-0.02em] leading-[75px]">{title}</Title>
+          <div className="md:sticky md:top-20 flex flex-col gap-2 text-center md:h-[600px] fadeupText">
+            {eyebrow && <Eyebrow color="text-default">{eyebrow}</Eyebrow>}
+            <Title
+              color="text-black"
+              className="text-[40px] font-bold tracking-[-0.02em] leading-[75px]"
+            >
+              {title}
+            </Title>
             {subtitle && <Description className="mx-auto">{subtitle}</Description>}
           </div>
     <MobileCardsCarousel items={childCardData} dir='' />
+          {/* <MobileCardsCarousel items={childCardData} /> */}
 
           <div className="mt-10 px-[205px] xs:hidden md:block">
             <div className="space-y-16">
@@ -178,7 +183,9 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                             className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
                           >
                             <div
-                              className={`absolute w-10 h-10 bg-white ${isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
+                              className={`absolute w-10 h-10 bg-white dark:bg-transparent ${
+                                isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'
+                              }`}
                             ></div>
                           </div>
                         </div>
@@ -209,7 +216,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             <CTA
               className="w-[248px] h-14"
               variant="outline"
-              colorText="text-primary"
+              colorText="text-primaryAlt"
               fontWeight="font-medium"
               borderColor="border-primary"
               align="center"
