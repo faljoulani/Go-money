@@ -108,7 +108,6 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
     };
   });
 
-  console.log('items in feature cards ==== >>>> ' + JSON.stringify(items));
 
   if (!items.length) {
     return props.requestContext.isEdit ? (

@@ -25,9 +25,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
 
   const isEdit = props.requestContext.isEdit;
   const id = extractSelectionId(selection);
-  console.log('ID OF PARENT ========== >>>>>>>>>>>>> ' + JSON.stringify(id));
 
-  console.log('selection ========== >>>>>>>>>>>>> ' + JSON.stringify(selection));
 
   if (!id) {
     return isEdit ? (
@@ -82,7 +80,6 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
     return [];
   })();
 
-  console.log('DATA OF PARENT =========== >>>>>>>>>>>> ' + JSON.stringify(parent));
 
   let cardItems: any[] = [];
   if (selectedIds.length > 0) {

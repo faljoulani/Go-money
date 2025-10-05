@@ -44,7 +44,6 @@ export default function MobileNavbar({
 
   const dir = (requestContext?.culture || '').startsWith('ar') ? 'rtl' : 'ltr';
   const isRTL = dir === 'rtl';
-  console.log('RTL', dir);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
@@ -98,7 +97,6 @@ export default function MobileNavbar({
       };
     });
   }, [storeLinks, requestContext]);
-  console.log('OPEN:', open);
   return (
     <div>
       <button
@@ -157,7 +155,6 @@ export default function MobileNavbar({
         <div className="h-[full] bg-white pb-24">
           <nav className="px-2 bg-white">
             {items?.map((item, idx) => {
-              console.log('ISISISI:', item);
               const hasChildren = isDropdown(item) && item.children.length > 0;
               const active = flatIsActive(item.url);
 

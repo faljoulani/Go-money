@@ -10,7 +10,6 @@ import type { DetailsResponse, JobDetailsProps } from '../../../../types/typee';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
 
 export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {
-  console.log('JOB DETAILS COMPONENT');
   const { post: postDetails } = useSfMutation('api/default/careers/details');
   const postDetailsRef = useRef(postDetails);
   useEffect(() => {
@@ -69,7 +68,6 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   if (loading || !language) return <FullPageLoader />;
 
   const job = data?.Data;
-  console.log('JOB ' + JSON.stringify(job));
   if (error || !job) {
     return (
       <section className="w-full mx-20 py-10">

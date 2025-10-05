@@ -94,7 +94,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   const sortByOrder = (arr: any[] = []) =>
     arr.slice().sort((a, b) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  console.log('->', item.CTAExternalUrl)
   const view = {
     Id: item.Id,
     Title: item.Title,
@@ -133,7 +132,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     }
   
   const CTAExternalUrl = linkToHref(rawCtaUrl);
-  console.log('->', CTAExternalUrl)
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
 

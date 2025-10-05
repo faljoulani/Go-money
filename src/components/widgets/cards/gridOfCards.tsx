@@ -151,7 +151,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         : [];
   }
 
-  //console.log('cardItems ======= >>>>>> ' + JSON.stringify(cardItems));
 
   const childCardData = cardItems.map((card) => {
     const img = Array.isArray(card?.Image) ? card.Image[0] : card?.Image;
@@ -178,7 +177,6 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
     };
   });
 
-  //console.log('childCardData ======= >>>>>> ' + JSON.stringify(childCardData));
 
   return (
     <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12">

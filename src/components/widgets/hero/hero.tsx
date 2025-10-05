@@ -19,7 +19,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   if(lang==='ar'){
     isAr=true;
   }
-  console.log('aklsdjaskdj', lang);
   const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||

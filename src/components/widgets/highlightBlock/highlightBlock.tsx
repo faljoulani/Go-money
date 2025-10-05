@@ -75,9 +75,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
 
   if (!data) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[ExpandBoxDefault] itemId=%s', data.Id);
-  }
+
 
   const eyebrow: string | undefined = data.Eyebrow;
   const title: string | undefined = data.Title;
@@ -90,7 +88,6 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     }
   } catch {}
   const ctaHref = linkToHref(rawCtaUrl);
-  console.log('---------->', ctaHref)
   const imgSrc: string | undefined = pickImageUrl(
     Array.isArray(data.Image) ? data.Image[0] : data.Image,
   );

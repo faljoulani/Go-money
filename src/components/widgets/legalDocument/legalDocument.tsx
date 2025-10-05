@@ -45,8 +45,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   const legalDocSel = resolveSitefinitySelection(model?.LegalDocRoot);
   const sectionsSel = resolveSitefinitySelection(model?.SectionsSelection);
 
-  console.log('legalDocSel', legalDocSel);
-  console.log('sectionsSel', sectionsSel);
+
 
   if (!legalDocSel?.Content?.length) {
     return (
