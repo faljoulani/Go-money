@@ -114,15 +114,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className="relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
-             min-h-[320px] h-[450px] px-4" 
-        style={{
-          backgroundImage: `url('/assets/HeroBackground.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        className={`relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
+             min-h-[320px] h-[450px] px-4 bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] bg-cover bg-center`}
       >
-        
         <div
         // className="text-center w-[1040px] h-[370px] max-xs:w-[375px] align-middle"
         // style={{
@@ -183,7 +177,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className=" xs:hidden pointer-events-none md:absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
-<div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24 xs:flex xs:flex-col xs:px-8 xs:pt-20 xs:pb-[220px]">
+      <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24 xs:flex xs:flex-col xs:px-8 xs:pt-20 xs:pb-[220px]">
         <div className="flex flex-col items-start justify-center md:mb-44 md:fadeLeftHero xs:mb-4">
           {eyebrow && (
             <Eyebrow
@@ -221,12 +215,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
             </div>
           )}
         </div>
-
-
-
       </div>
       <div
-  className="
+        className="
     xs:absolute xs:inset-x-0 xs:bottom-0 xs:flex xs:justify-center xs:h-[330px] xs:w-auto
 
     /* DESKTOP: restore original placement & size on the right */
@@ -235,28 +226,28 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     md:h-[660px] md:w-[690px] md:-bottom-8
     fadeupHero
   "
->
-  <div
-    className="
+      >
+        <div
+          className="
       relative
       md:h-[660px] md:w-[850px]
       xs:h-[330px] xs:w-[72%] xs:max-w-[420px] xs:bottom-0 xs:inset-x-0
     "
-  >
-    {heroImgUrl ? (
-      <Image
-        src={heroImgUrl}
-        alt={bgAlt || 'Hero image'}
-        fill
-        priority
-        quality={90}
-        className="xs:object-fill"
-      />
-    ) : (
-      <div className="absolute inset-0 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />
-    )}
-  </div>
-</div>
+        >
+          {heroImgUrl ? (
+            <Image
+              src={heroImgUrl}
+              alt={bgAlt || 'Hero image'}
+              fill
+              priority
+              quality={90}
+              className="xs:object-fill"
+            />
+          ) : (
+            <div className="absolute inset-0 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />
+          )}
+        </div>
+      </div>
     </section>
   );
 }

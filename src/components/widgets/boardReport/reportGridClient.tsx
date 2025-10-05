@@ -94,8 +94,8 @@ export default function ReportGridClient({
                 className={[
                   'px-5 py-2 rounded-full text-base md:text-lg transition',
                   isActive
-                    ? 'bg-[#0B1C5A] text-white'
-                    : 'bg-transparent text-slate-500 hover:text-slate-800 cursor-pointer',
+                    ? 'bg-primaryAlt text-whiteCta'
+                    : 'bg-transparent text-slate-500 cursor-pointer',
                 ].join(' ')}
                 aria-pressed={isActive}
               >
@@ -133,22 +133,22 @@ export default function ReportGridClient({
             {pageItems.map((f) => (
               <article
                 key={f.Id}
-                className="rounded-2xl border border-slate-200 bg-white shadow-sm px-6 py-8 flex flex-col items-center justify-center"
+                className="rounded-2xl border border-slate-200 dark:border-none bg-pdfSection shadow-sm px-6 py-8 flex flex-col items-center justify-center"
               >
-                <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-slate-100">
+                <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-bgPdf">
                   <svg
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
                     fill="none"
-                    stroke="#0B1C5A"
+                    className='stroke-pdf'
                     strokeWidth="2"
                   >
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <path d="M14 2v6h6" />
                   </svg>
                 </div>
-                <h3 className="text-center text-[17px] font-semibold text-slate-900">{f.Title}</h3>
+                <h3 className="text-center text-[17px] font-semibold text-pdfText">{f.Title}</h3>
               </article>
             ))}
           </div>

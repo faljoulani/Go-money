@@ -5,15 +5,25 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color-primary)', // Use it with bg-primary, text-primary, border-primary
-        secondary: 'var(--color-secondary)',
-        default: '#424242', // Use it with bg-default, text-default, border-default
-        surface: 'hsla(0, 0%, 100%, 0.75)',
-        neutral: '#9E9E9E',
-        line: '#e0e0e0',
-        bgNeutral200: '#eeeeee',
-        skyTint: '#CFE8F1',
-        lineMuted: '#EAEDF3',
+        primary: 'var(--color-primary)',
+        primaryAlt: 'var(--color-primary-alt)',
+        default: 'var(--color-default)',
+        primaryEyebrow: 'var(--color-primary-eyebrow)',
+        corner: 'var(--color-corner)',
+        bgAlt: 'var(--color-bg-alt)',
+        bgAltReverse: 'var(--color-bg-alt-reverse)',
+        whiteCta: 'var(--color-white-cta)',
+        pdfSection: 'var(--color-pdf-section)',
+        pdfText: 'var(--color-pdf-text)',
+        bgPdf: 'var(--color-bg-pdf)',
+        pdf: 'var(--color-pdf)',
+        gradientFrom: 'var(--color-gradient-from)',
+        gradientTo: 'var(--color-gradient-to)',
+        gradientAFrom: 'var(--color-gradient-a-from)',
+        gradientATo: 'var(--color-gradient-a-to)',
+        'surface-page': 'var(--surface-page)',
+        'surface-section': 'var(--surface-section)',
+        'surface-gradient': 'var(--surface-gradient)',
       },
       spacing: {
         1.5: '6px', // now you can use p-1.5, px-1.5, py-1.5
@@ -39,9 +49,7 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    
-  ],
+  plugins: [],
 };
 
 /**

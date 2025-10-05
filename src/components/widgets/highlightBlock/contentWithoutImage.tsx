@@ -52,7 +52,7 @@ export default async function WithoutImage(props: WidgetContext<HighlightBlockEn
   const ctaHref: string | undefined = linkToHref(rawCtaUrl);
   console.log('------------>', ctaHref )
   return (
-    <div className="mx-auto w-full h-auto bg-[#EEEEEE]">
+    <div className="mx-auto w-full h-auto">
       <div className="mx-auto max-w-[1400px] md:h-[266px] xs:h-[241px] md:px-6 xs:px-4 md:pt-16 xs:pt-10 flex flex-col items-center justify-center text-center space-y-4">
         {/* Title */}
         {title ? (

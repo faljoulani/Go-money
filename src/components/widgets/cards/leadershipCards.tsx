@@ -130,9 +130,9 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
   });
 
   return (
-    <section {...attributes} className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5 bg-[#EEEEEE]">
+    <section {...attributes} className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5">
       <div className="mb-8">
-        <Title className="text-start md:leading-[63px] md:w-[650px] md:text-5xl xs:text-2xl xs:leading-8 font-bold">
+        <Title className="text-start md:leading-[63px] md:w-[650px] md:text-5xl xs:text-2xl xs:leading-8 font-bold text-primaryAlt">
           {title}
         </Title>
         {subtitle && (
@@ -140,7 +140,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
         )}
       </div>
 
-      <div className="bg-gradient-to-br from-[#10CEBB] to-[#0357AD] rounded-[30px] md:p-16 xs:py-16 xs:px-10 h-auto">
+      <div className="bg-gradient-to-br from-gradientAFrom to-gradientATo rounded-[30px] md:p-16 xs:py-16 xs:px-10 h-auto">
         <div className="grid md:grid-cols-3 xs:grid-cols-1 md:gap-x-10 xs:gap-y-4">
           {/* First 3 items */}
           {items.slice(0, 3).map((item: any, i: number) => (
