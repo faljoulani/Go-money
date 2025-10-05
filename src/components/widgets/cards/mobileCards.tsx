@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 export function MobileCardsCarousel({
   items,
+  dir,
 }: {
   items: {
     id: string;
@@ -12,6 +13,7 @@ export function MobileCardsCarousel({
     href?: string;
     icon?: any;
   }[];
+  dir: string;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -67,7 +69,9 @@ export function MobileCardsCarousel({
                 />
               </div>
             )}
-            {card.icon && <div className="ml-12 mt-12">{card.icon}</div>}
+            {card.icon && (
+              <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12`}>{card.icon}</div>
+            )}
             <div className="pt-4 pb-6 px-3">
               <h3 className="text-[20px] leading-7 font-medium text-primary">{card.title}</h3>
               {card.description && (
@@ -96,3 +100,4 @@ export function MobileCardsCarousel({
     </div>
   );
 }
+

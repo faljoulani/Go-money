@@ -63,6 +63,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   const attributes = htmlAttributes(props);
   const selection = (props.model?.Properties || {}) as any;
   const { culture } = props.requestContext;
+  const dir = culture.startsWith('ar') ? 'rtl' : 'ltr';
 
   const parentSelectionId = extractSelectionId(selection);
 
@@ -181,7 +182,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
 
   return (
     <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12">
-          <MobileCardsCarousel items={childCardData} />
+          <MobileCardsCarousel items={childCardData} dir={dir} />
       <div className="xs:hidden md:block">
         <div className="flex flex-col items-center gap-2 text-center fadeupText">
           {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}

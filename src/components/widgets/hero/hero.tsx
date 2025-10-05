@@ -14,6 +14,12 @@ import { fetchData, pickOneMedia, getImageSrc } from '../../../utils/sitefinity'
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
+  const lang = props.requestContext.culture;
+  let isAr: boolean = false;
+  if (lang === 'ar') {
+    isAr = true;
+  }
+  console.log('aklsdjaskdj', lang);
   const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
@@ -217,15 +223,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         </div>
       </div>
       <div
-        className="
+        className={`
     xs:absolute xs:inset-x-0 xs:bottom-0 xs:flex xs:justify-center xs:h-[330px] xs:w-auto
 
-    /* DESKTOP: restore original placement & size on the right */
-    md:absolute md:col-start-2 md:row-start-1 md:ml-auto
+    md:absolute md:col-start-2 md:row-start-1 ${isAr ? 'md:mr-auto' : 'md:ml-auto'}
     md:flex md:justify-end
-    md:h-[660px] md:w-[690px] md:-bottom-8
+    md:h-[660px] md:w-[690px] md:-bottom-8 
     fadeupHero
-  "
+  `}
       >
         <div
           className="
