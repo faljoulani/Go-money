@@ -144,7 +144,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
             alt={items[0]?.title}
             className="rounded-[20px] md:w-[417px] md:h-[506px] xs:w-[343px] xs:h-[420px] object-cover"
           />
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 md:w-[90%] xs:w-[310px] xs:h-[85px] text-start space-y-2">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-bgAlt rounded-[16px] px-6 py-6 md:w-[90%] xs:w-[310px] xs:h-[115px] text-start space-y-2">
             {items[0]?.description && (
               <Description
                 className="md:text-lg  xs:text-14px"
@@ -152,7 +152,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
               ></Description>
             )}
             {items[0]?.title && (
-              <Title className="text-2xl xs:text-lg font-medium">{items[0]?.title}</Title>
+              <Title className="md:text-2xl xs:text-lg font-medium text-primaryAlt">{items[0]?.title}</Title>
             )}
           </div>
         </div>

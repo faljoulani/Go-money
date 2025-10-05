@@ -12,7 +12,7 @@ type Props = {
 export default function Eyebrow({
   children,
   className = '',
-  color = 'text-primary',
+  color = 'text-primaryEyebrow',
   fontSize = 'text-lg',
   fontWeight = 'font-normal',
   lineHeight = 'leading-[100%]',

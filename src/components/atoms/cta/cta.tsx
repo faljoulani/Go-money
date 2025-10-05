@@ -34,10 +34,10 @@ export default function CTA({
   href,
   target = '_self',
   onClick,
-  colorText = 'text-primary',
+  colorText = 'text-whiteCta',
   fontWeight = 'font-normal',
-  borderColor = 'border-primary',
-  bgColor = 'bg-primary',
+  borderColor = 'border-primary-alt',
+  bgColor = 'bg-primaryAlt',
   align = 'center',
   block = false,
   type = 'button',
@@ -59,7 +59,7 @@ export default function CTA({
   const widthClass = block ? 'w-full' : '';
 
   const outline = `bg-transparent ${colorText} ${borderColor} hover:opacity-80`;
-  const solid = `${bgColor} text-white border-transparent hover:brightness-95`;
+  const solid = `${bgColor} text-whiteCta border-transparent hover:brightness-95`;
   const ghost = `bg-transparent ${colorText} border-0 hover:opacity-80`;
 
   const look = variant === 'solid' ? solid : variant === 'ghost' ? ghost : outline;
