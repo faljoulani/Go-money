@@ -139,7 +139,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             <Title className="text-[40px] font-bold tracking-[-0.02em] leading-[75px]">{title}</Title>
             {subtitle && <Description className="mx-auto">{subtitle}</Description>}
           </div>
-    <MobileCardsCarousel items={childCardData}  dir=''/>
+    <MobileCardsCarousel items={childCardData} dir='' />
 
           <div className="mt-10 px-[205px] xs:hidden md:block">
             <div className="space-y-16">

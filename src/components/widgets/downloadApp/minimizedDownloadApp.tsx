@@ -96,14 +96,11 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
 
   return (
     <section {...attrs}>
-      <div
-        className="relative w-full rounded-3xl md:mx-20 mb-16 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px]"
-        style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
-      >
+      <div className="relative w-full rounded-3xl md:mx-20 mb-16 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px] bg-[linear-gradient(258.38deg,var(--color-gradient-from),var(--color-gradient-to))]">
         <div className="relative flex flex-col md:flex-row items-center md:place-items-start gap-6 pt-8 md:py-0 px-6 md:px-16">
           {/* TEXT — order 1 on xs, middle on md+ */}
           <div className="order-1 md:order-2 w-full md:flex-1 text-[#0A1B2E] justify-start min-w-0 md:my-10">
-            <h2 className="text-2xl md:text-4xl font-bold leading-tight md:leading-[67px] tracking-[-0.02em] text-primary">
+            <h2 className="text-2xl md:text-4xl font-bold leading-tight md:leading-[67px] tracking-[-0.02em] text-primaryAlt">
               {title}
             </h2>
 
@@ -119,12 +116,33 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
           {orderedStores.length > 0 && (
             <div className="order-2 md:order-3 -ml-10 relative md:my-16 md:rtl:ml-24">
               {orderedStores.slice(0, 3).map((item: any, index: number) => (
-                <a key={index} href={item.href} rel="" className="flex flex-col items-end">
+                <a key={index} href={item.href} className="flex flex-col items-end">
                   {item.iconUrl && (
                     <div
-                      className={`flex items-center justify-center h-[56px] w-[56px] rounded-full bg-black border-2 border-[#6BE5BF] ${index === 0 ? 'absolute right-[95px] top-0 z-30' : `${index === 1 ? 'absolute right-12 top-0' : ''}`}`}
+                      className={`flex items-center justify-center h-[56px] w-[56px] rounded-full bg-bgAltReverse border-2 border-[#6BE5BF] ${
+                        index === 0
+                          ? 'absolute right-[95px] top-0 z-30'
+                          : index === 1
+                            ? 'absolute right-12 top-0'
+                            : ''
+                      }`}
                     >
-                      <img src={item.iconUrl} alt={item.title} className="h-7 w-7 object-contain" />
+                      {index === 0 ? (
+                        <div
+                          className="h-7 w-7 bg-bgAlt"
+                          style={{
+                            WebkitMask: `url(${item.iconUrl}) no-repeat center / contain`,
+                            mask: `url(${item.iconUrl}) no-repeat center / contain`,
+                          }}
+                          aria-hidden
+                        />
+                      ) : (
+                        <img
+                          src={item.iconUrl}
+                          alt={item.title}
+                          className="h-7 w-7 object-contain"
+                        />
+                      )}
                     </div>
                   )}
                 </a>

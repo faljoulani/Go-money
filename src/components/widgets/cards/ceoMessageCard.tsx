@@ -130,11 +130,11 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
   });
 
   const wrapCls = toBool(isOverlay)
-    ? 'relative z-20 -mt-40 max-w-[90%] mx-auto '
+    ? 'relative z-20 -mt-40 max-w-[90%] mx-auto'
     : 'bg-[#EEEEEE] w-full px-20 pb-10 mt-16';
 
   const cardShellCls = isOverlay
-    ? 'relative flex md:flex-row xs:flex-col items-center gap-8 bg-white rounded-3xl md:px-24 xs:px-4 rtl:md:px-10 rtl:xs:px-4 pb-10 ring-1 ring-black/5 overflow-hidden'
+    ? 'bg-bgAlt relative flex md:flex-row xs:flex-col items-center gap-8 rounded-3xl md:px-24 xs:px-4 rtl:md:px-10 rtl:xs:px-4 py-10 ring-1 ring-black/5 overflow-hidden'
     : 'flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8 shadow-sm';
 
   const figureCls = isOverlay ? 'relative justify-start ' : 'relative justify-start';
@@ -144,8 +144,8 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     : 'rounded-[20px] w-[417px] h-[506px] object-cover';
 
   const overlayPanelCls = isOverlay
-    ? 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] md:p-6 xs:p-[18px] md:w-[90%] md:h-[115px] xs:w-[255px] xs:h-[86px] text-start shadow-md'
-    : 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-[16px] px-6 py-4 w-[90%] text-start';
+    ? 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-bgAlt rounded-[16px] md:p-6 xs:p-[18px] md:w-[90%] md:h-[115px] xs:w-[255px] xs:h-[86px] text-start shadow-md'
+    : 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-bgAlt rounded-[16px] px-6 py-4 w-[90%] text-start';
 
   const textColCls = isOverlay
     ? 'text-start w-auto space-y-3'
@@ -156,8 +156,8 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     <section {...attributes} className={wrapCls}>
       <div className={cardShellCls}>
         <>
-          <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-32 h-32 bg-[#0023F5] rounded-bl-[60px] rtl:rounded-br-[60px] rtl:rounded-bl-none xs:hidden">
-            <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-14 h-14 bg-white" />
+          <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-32 h-32 bg-corner rounded-bl-[60px] rtl:rounded-br-[60px] rtl:rounded-bl-none xs:hidden md:block">
+            <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-14 h-14 bg-bgAlt" />
           </div>
         </>
 
@@ -168,16 +168,16 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           <div className={overlayPanelCls}>
             {items[0]?.description && <Description className='xs:text-14px xs:leading-[18px]'>{items[0].description}</Description>}
             {items[0]?.title && (
-              <Title className="md:text-2xl xs:text-[18px] font-medium md:mt-3 xs:mt-2">{items[0].title}</Title>
+              <Title className="md:text-2xl xs:text-[18px] font-medium md:mt-3 xs:mt-2 text-primaryAlt">{items[0].title}</Title>
             )}
           </div>
         </div>
 
         <div className={textColCls}>
           <div className="space-y-3">
-            {eyebrow && <Eyebrow className='xs:text-14px xs:leading-[18px]'>{eyebrow}</Eyebrow>}
+            {eyebrow && <Eyebrow className='xs:text-14px xs:leading-[18px] text-primaryAlt'>{eyebrow}</Eyebrow>}
             {title && (
-              <Title className="text-[#001081] md:text-3xl xs:text-2xl font-bold tracking-[-0.02em]">{title}</Title>
+              <Title className="text-primary md:text-3xl xs:text-2xl font-bold tracking-[-0.02em]">{title}</Title>
             )}
           </div>
           {subtitle && (

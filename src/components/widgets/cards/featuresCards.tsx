@@ -125,12 +125,12 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
       <div className="mx-auto md:px-20 xs:px-4">
         {/* Section header */}
         <div className="mb-8 text-center">
-          <Title className="md:text-[48px] xs:text-2xl leading-[90px] tracking-[-0.02em] text-center align-middle font-bold">
+          <Title className="md:text-[48px] xs:text-2xl md:leading-[63px] tracking-[-0.02em] text-center align-middle font-bold">
             {sectionTitle}
           </Title>
           {sectionSubtitle && (
             <Description
-              color="text-[#757575]"
+              color="text-[#757575] dark:text-[#E0E0E0]"
               className="mt-2 text-[16px] mx-auto align-middle text-center"
             >
               {sectionSubtitle}
@@ -140,10 +140,8 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
 
         {/* Gradient container */}
         <div
-          className="relative mx-auto rounded-[30px] md:p-16 xs:pt-10 xs:pb-20 overflow-hidden"
-          style={{
-            background: 'linear-gradient(111.49deg,#000000 14.92%,#010552 46.49%,#0F148C 100.01%)',
-          }}
+          className="relative mx-auto rounded-[30px] md:p-16 xs:pt-10 xs:pb-20 overflow-hidden bg-[linear-gradient(111.49deg,#000000_14.92%,#010552_46.49%,#0F148C_100.01%)] dark:bg-[#131321] dark:bg-none"
+          
         >
           <img
             src="/assets/Vector.png"
@@ -155,8 +153,8 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
           <div className="hidden md:grid md:grid-cols-3 md:gap-8 relative">
             {items.map((item, idx) => (
               <div key={item.id} className="group">
-                <div className="rounded-[32px] border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]">
-                  <div className="rounded-[32px] bg-white/10 md:px-12 md:py-14 md:h-[265px] flex flex-col items-center justify-center text-center">
+                <div className="rounded-[32px] dark:border-none border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]">
+                  <div className="rounded-[32px] bg-white/10 dark:bg-surface-section md:px-12 md:py-14 md:h-[265px] flex flex-col items-center justify-center text-center">
                     {item.iconUrl ? (
                       <img
                         src={item.iconUrl}

@@ -25,7 +25,7 @@ export async function StackLayout(props) {
     <>
       <section {...attrs}>
         <div
-          className="bg-white md:py-16 xs:py-10 rounded-3xl flex flex-col md:gap-16 xs:gap-8 w-full"
+          className="bg-surface-section md:py-16 xs:py-10 rounded-3xl flex flex-col md:gap-16 xs:gap-8 w-full"
           {...(props.requestContext.isEdit
             ? { 'data-sfcontainer': CONTENT, 'data-sfplaceholderlabel': 'Content' }
             : {})}

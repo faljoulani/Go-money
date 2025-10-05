@@ -141,7 +141,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
   });
 
   return (
-    <section {...attributes} className="w-full bg-white">
+    <section {...attributes} className="w-full">
       <div className="mx-auto md:px-20 xs:px-4">
         {/* rows */}
         <div className="">
@@ -193,7 +193,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                         <div className="self-start">
                           <CTA
                             href={card.href}
-                            borderColor="#010663"
+                            borderColor=""
                             variant="solid"
                             className="rounded-[18px] w-[250px] h-12 border"
                           >
