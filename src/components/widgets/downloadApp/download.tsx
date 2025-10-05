@@ -199,7 +199,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                       <div className="text-[16px] font-bold text-black">{card.title}</div>
                       {!!card.desc && (
                         <div
-                          className="text-sm text-default"
+                          className="text-sm text-default descriptionHtml"
                           dangerouslySetInnerHTML={{ __html: card.desc }}
                         />
                       )}
