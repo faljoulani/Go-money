@@ -11,7 +11,7 @@ export default function InputField({
 }) {
   return (
     <div className="text-14px space-y-2">
-      <label className={` text-[#424242] ${className}`}>
+      <label className={`text-default ${className}`}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}

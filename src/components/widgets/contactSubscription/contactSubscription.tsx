@@ -57,44 +57,44 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
   const ctaHref = linkToHref(rawCtaUrl);
   const ctaText = box.ButtonLabel || box.CTAURL?.Text || box.CTAURL?.text || 'Contact Us';
   const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
-
-  // const cornerSide = isRTL ? 'left-0' : 'right-0';
-  // const cornerRound = isRTL ? 'rounded-br-[60px]' : 'rounded-bl-[60px]';
-  // const notchSide = cornerSide;
-
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-white p-6 md:p-8 flex flex-col justify-between ${className}`}
+      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-surface-section p-6 md:p-8 flex flex-col justify-between ${className}`}
     >
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
         <div
-          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0    ltr:rounded-br-[30px] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] md:h-[110px] md:w-[110px] xs:w-[80px] xs:h-[80px]  bg-secondary`}
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[60px] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] h-[110px] w-[110px] bg-primaryAlt`}
         >
-          <div className={`absolute md:h-[52px] md:w-[52px] xs:h-[40px] xs:w-[40px] bg-white`} />
+          <div className={`absolute h-[52px] w-[52px] bg-surface-page`} />
         </div>
       )}
 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primary" className="md:text-[28px] xs:text-[24px] font-bold tracking-[-0.02em]">
+            <Title color="text-primaryAlt" className="text-[28px] font-bold tracking-[-0.02em]">
               {box.Title}
             </Title>
           )}
           {box.SubTitle &&
             (isSubscribe ? (
-              <Description maxWidth="none" className="mt-0 md:text-lg xs:text-[1rem] xs:mb-2 leading-6">
+              <Description
+                maxWidth="none"
+                className="mt-0 md:text-lg xs:text-[1rem] xs:mb-2 leading-6"
+              >
                 {box.SubTitle}
               </Description>
             ) : (
-              <Description maxWidth="none" className="mt-0 w-72 md:text-lg xs:text-[1rem] leading-6 mb-8">
+              <Description
+                maxWidth="none"
+                className="mt-0 w-72 md:text-lg xs:text-[1rem] leading-6 mb-8"
+              >
                 {box.SubTitle}
               </Description>
             ))}
         </div>
       )}
-
 
       {isSubscribe ? (
         <div>
@@ -134,7 +134,8 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             <CTA
               href={ctaHref}
               target={ctaTarget}
-              borderColor="border-primary"
+              colorText="text-primaryAlt"
+              borderColor="border-primaryAlt"
               variant="outline"
               icon="arrow"
               className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] mt-auto px-6 py-[18px]"
@@ -151,7 +152,6 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
 export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
-  const isRTL = (culture || '').toLowerCase().startsWith('ar');
 
   const properties = (props.model?.Properties || {}) as any;
   const rawSel =
@@ -189,11 +189,11 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
 
   return (
     <section {...attrs} className=" px-5 overflow-clip mt-16">
-      <div className="mx-auto max-w-[1240px]">
+      <div className="mx-auto max-w-[1240px">
         {parent?.Title && (
           <div className="mb-10">
             <Title
-              color="text-primary"
+              color="text-primaryAlt"
               className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px]"
             >
               {parent.Title}

@@ -57,8 +57,8 @@ export default function JobCard({ job, onOpen }: Props) {
       onClick={goToDetails}
       onKeyDown={onKey}
       className="
-        mx-auto w-full md:w-[274px] md:h-[218px] p-6 rounded-xl bg-white 
-        shadow-sm hover:shadow-md transition overflow-hidden
+        mx-auto w-full md:w-[274px] md:h-[218px] p-6 rounded-xl bg-surface-section 
+        shadow-md hover:shadow-md transition overflow-hidden
         flex flex-col items-center justify-between gap-4"
       aria-busy={loading}
       aria-label={`${job.title} - ${job.location}`}
@@ -83,15 +83,17 @@ export default function JobCard({ job, onOpen }: Props) {
             alt=""
             width={16}
             height={16}
-            className="h-4 w-4 object-contain"
+            className="h-4 w-4 object-contain dark:invert"
           />
-          <span className="flex-1">{job.location}</span>
+          <span className="flex-1 text-default">{job.location}</span>
         </div>
       </div>
 
       <div className={`flex items-center gap-2 text-14px ${isRtl ? 'flex-row-reverse' : ''}`}>
-        <span className="rounded-full bg-[#E1F3F9] px-3 py-2">{job.workType}</span>
-        <span className="rounded-full bg-[#E1F3F9] px-3 py-2">
+        <span className="rounded-full px-3 py-2 bg-surface-sheet dark:text-white">
+          {job.workType}
+        </span>
+        <span className="rounded-full px-3 py-2 bg-surface-sheet dark:text-white">
           {formatDaysAgo(job.postedDaysAgo, isRtl ? 'ar' : 'en')}
         </span>
       </div>

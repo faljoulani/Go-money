@@ -97,54 +97,24 @@
 :root {
   --color-primary: #010663;
   --color-primary-alt: #010663;
-  --color-primary-eyebrow: #010663;
-  --color-corner: #0023f5;
-  --color-bg-alt: #ffffff;
-  --color-bg-alt-reverse: #000000;
-  --color-white-cta: #ffffff;
   --color-default: #424242;
-  --color-pdf-section: #ffffff;
-  --color-pdf-text: #212121;
-  --color-bg-pdf: #f5f6ff;
-  --color-pdf: #212121;
-  --color-gradient-from: #6be5bf;
-  --color-gradient-to: #b3dfef;
-  --color-gradient-a-from: #10cebb;
-  --color-gradient-a-to: #0357ad;
+  --color-secondary: #ffffff;
   --surface-page: #eeeeee;
   --surface-section: #ffffff;
-  --surface-gradient: linear-gradient(258.38deg, #6be5bf, #b3dfef);
-  /* --surface-gradient-alt: linear-gradient(258.38deg, #6BE5BF, #B3DFEF); */
-  /* --color-black: #010663; */
-  /* --color-skyTint-surface: #cfe8f1;
-  --color-background-white: #ffffff;
-  --color-background-primary: #0023f5; */
+  --surface-input: #ffffff;
+  --surface-sheet: #e1f3f9;
+  --surface-gradient: linear-gradient(258.38deg, #6be5bf -1.4%, #b3dfef 100%);
 }
 html.dark {
   --color-primary: #fafafa;
   --color-primary-alt: #a6efd9;
-  --color-primary-eyebrow: #bdbdbd;
-  --color-corner: #a6efd9;
-  --color-bg-alt: #000000;
-  --color-bg-alt-reverse: #ffffff;
-  --color-white-cta: #010663;
   --color-default: #f5f5f5;
-  --color-pdf-section: #131321;
-  --color-pdf-text: #fafafa;
-  --color-bg-pdf: #a6efd9;
-  --color-pdf: #010663;
-  --color-gradient-from: #a6efd9;
-  --color-gradient-to: #006aa5;
-  --color-gradient-a-from: #054e42;
-  --color-gradient-a-to: #010552;
+  --color-secondary: #000000;
   --surface-page: #131321;
-  --surface-section: #1c1c28;
-  --surface-gradient: linear-gradient(258.38deg, #0e0f0e -1.4%, #006aa5 100%);
-  /* --surface-gradient-alt: linear-gradient(258.38deg, #006AA5, #A6EFD9); */
-  /* --color-black: #fafafa; */
-  /* --color-skyTint-surface: #0f0f15;
-  --color-background-white: #bdbdbd;
-  --color-background-primary: #a6efd9; */
+  --surface-section: #44444433;
+  --surface-input: #000000;
+  --surface-sheet: #004c86;
+  --surface-gradient: linear-gradient(258.38deg, #a6efd9 -1.4%, #006aa5 100%);
 }
 
 body {
@@ -163,12 +133,17 @@ body {
   color-scheme: dark;
 }
 html.dark body {
-  background-color: #0a0a0a;
+  background-color: #131321;
   color: #e5e5e5;
 }
 html.dark .defaultBgColor {
-  background-color: #0a0a0a;
-} */
+  background-color: #131321;
+}
+
+html.modal-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
 
 [dir='rtl'] .cta-arrow {
   transform: scaleX(-1);

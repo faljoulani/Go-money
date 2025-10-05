@@ -17,6 +17,26 @@ type Props = {
   optionClassName?: string;
 };
 
+export const DROPDOWN_BUTTON_BASE = [
+  'group flex h-12 items-center justify-between overflow-hidden rounded-2xl px-4',
+  'border border-gray-200 bg-white text-14px transition-colors duration-150',
+  'hover:border-gray-300 hover:bg-gray-100 focus:border-primary focus:ring-2 focus:ring-primary/20',
+  'dark:bg-transparent dark:hover:bg-white/5 dark:focus:border-primary',
+].join(' ');
+
+export const DROPDOWN_LIST_BASE = [
+  'absolute top-full left-0 right-0 z-50 mt-1 max-h-60 w-full overflow-auto rounded-2xl p-2 shadow-xl',
+  'bg-white border border-gray-200',
+  'dark:bg-[#000000] dark:border-white/10',
+].join(' ');
+
+export const DROPDOWN_OPTION_BASE = [
+  'mt-1 w-full rounded-xl p-2 text-left text-14px leading-[18px]',
+  'text-gray-800 hover:bg-gray-100',
+  'dark:text-white dark:hover:bg-white/10',
+  'rtl:text-right',
+].join(' ');
+
 export default function CustomDropdown({
   options,
   placeholder = 'Select…',
@@ -25,9 +45,9 @@ export default function CustomDropdown({
   onChange,
   disabled = false,
   className = 'relative',
-  buttonClassName = 'h-[48px] w-full rounded-[18px] border border-[#BDBDBD] bg-white px-3 text-left text-14px leading-[18px] text-[#BDBDBD] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20 flex items-center justify-between',
-  listClassName = 'absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2',
-  optionClassName = 'w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]',
+  buttonClassName = `${DROPDOWN_BUTTON_BASE} w-full`,
+  listClassName = DROPDOWN_LIST_BASE,
+  optionClassName = DROPDOWN_OPTION_BASE,
 }: Props) {
   const [open, setOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState<string | null>(valueId);

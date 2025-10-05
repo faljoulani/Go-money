@@ -47,7 +47,7 @@ export default function SubscribeEmailForm({
     <div className="flex flex-col justify-end h-full">
       <form onSubmit={onSubmit} className={className} noValidate>
         <label className="sr-only">{label}</label>
-        <div className="mb-4 flex h-[56px] items-center rounded-[20px] border border-[#DFE3EA] px-4 bg-white ">
+        <div className="mb-4 flex h-[56px] items-center rounded-[20px] border border-[#DFE3EA] px-4 bg-surface-section">
           <input
             type="email"
             inputMode="email"
@@ -61,7 +61,8 @@ export default function SubscribeEmailForm({
           />
         </div>
         <CTA
-          borderColor="border-primary"
+          colorText="text-primaryAlt"
+          borderColor="border-primaryAlt"
           variant="outline"
           icon="arrow"
           className="w-full rounded-[20px] border-[2px] px-6 py-[18px] text-lg font-medium tracking-[-0.025%em]"
