@@ -57,14 +57,12 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     { itemType: selection?.CardListData?.Content?.[0]?.Type, single: true },
   );
   const parent = parentFetched as CeoMessage;
-  console.log('PARENT:', parent);
   const eyebrow = parent?.Eyebrow ?? '';
   const title = parent?.Title ?? 'Cards';
   const subtitle = parent?.Description ?? parent?.SubTitle ?? '';
   const ctaText = parent?.CtaText ?? '';
   const isOverlay = parent?.isOverlay ?? true;
-  console.log('zksmdkfasdkf', isOverlay);
-  console.log('zzzzzzzzz', ctaText);
+
 
   const ctaUrlRaw = parent?.CtaUrl;
   const ctaHref =

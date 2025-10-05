@@ -41,9 +41,7 @@ function resolveItems(props: CustomBreadcrumbProps) {
   return items;
 }
 export default function BreadcrumbCustomView(props: CustomBreadcrumbProps) {
-  console.log('PROPS:', props);
   const items = resolveItems(props);
-  console.log(items);
   return (
     <nav {...props.attributes} aria-label="Breadcrumb">
       <ol className="flex flex-wrap justify-center items-center gap-1 text-sm">

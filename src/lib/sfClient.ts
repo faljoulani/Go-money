@@ -1,5 +1,5 @@
 let cachedToken: { token: string; exp: number } | null = null;
-
+console.log('ZZZZZZ', process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL);
 const SF_BASE = (
   process.env.NEXT_PUBLIC_SITEFINITY_BASE_URL || 'http://dev-sfall.ddns.net:9095'
 ).replace(/\/$/, '');

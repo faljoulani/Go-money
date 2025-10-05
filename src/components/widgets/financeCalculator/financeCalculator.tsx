@@ -7,27 +7,22 @@ import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 
 const asString = (v: any) => (v == null ? '' : String(v));
 
-const FINANCE_DETAILS_TYPE =
-  'Telerik.Sitefinity.DynamicTypes.Model.FinanceDetails.FinanceDetails';
+const FINANCE_DETAILS_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FinanceDetails.FinanceDetails';
 const EMPLOYER_TYPE =
   'Telerik.Sitefinity.DynamicTypes.Model.EmployerTypeDropList.Employertypedroplist';
 const LENGTH_OF_SERVICE_TYPE =
   'Telerik.Sitefinity.DynamicTypes.Model.LengthOfServicesDropList.Lengthofservicesdroplist';
 const NATIONALITY_TYPE =
   'Telerik.Sitefinity.DynamicTypes.Model.NationalityDropList.NationalityDropList';
-const MESSAGE_TYPE =
-  'Telerik.Sitefinity.DynamicTypes.Model.Message.Message';
+const MESSAGE_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.Message.Message';
 
-export default async function FinanceCalculator(
-  props: WidgetContext<FinanceCalculatorEntity>
-) {
+export default async function FinanceCalculator(props: WidgetContext<FinanceCalculatorEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
   const lang = culture || 'en';
 
   const selection = resolveSitefinitySelection(
-    (props.model as any)?.FinanceDetails ??
-      (props.model?.Properties as any)?.FinanceDetails
+    (props.model as any)?.FinanceDetails ?? (props.model?.Properties as any)?.FinanceDetails,
   );
   const id = extractSelectionId(selection);
 
@@ -38,7 +33,7 @@ export default async function FinanceCalculator(
         className={mergeClasses(
           'p-6 border border-dashed rounded-2xl text-center text-slate-500 bg-white/70',
           (props.model as any)?.CssClass,
-          attrs.className
+          attrs.className,
         )}
       >
         <strong>Select a Finance Calculator item</strong>
@@ -96,7 +91,7 @@ export default async function FinanceCalculator(
       'NationalityChoices/Id',
       'RelatedMessage/Id',
     ],
-    { itemType: FINANCE_DETAILS_TYPE, single: true }
+    { itemType: FINANCE_DETAILS_TYPE, single: true },
   );
 
   if (!finance) {
@@ -106,7 +101,7 @@ export default async function FinanceCalculator(
         className={mergeClasses(
           'p-6 border border-dashed rounded-2xl text-center text-slate-500 bg-white/70',
           (props.model as any)?.CssClass,
-          attrs.className
+          attrs.className,
         )}
       >
         <strong>FinanceDetails not found</strong>
@@ -148,9 +143,13 @@ export default async function FinanceCalculator(
         'BackUrl',
         'Image/DefaultUrl',
         'Image/AlternativeText',
+        'ActionsTitle',
+        'ActionsDescription',
+        'ReasonsTitle',
+        'ReasonsDescription',
         'DownloadUrl/DefaultUrl',
       ],
-      { itemType: MESSAGE_TYPE }
+      { itemType: MESSAGE_TYPE },
     ),
   ]);
 
@@ -179,6 +178,10 @@ export default async function FinanceCalculator(
     validationText: String(m?.ValidationText ?? ''),
     imageUrl: String(m?.Image?.DefaultUrl ?? ''),
     imageAlt: String(m?.Image?.AlternativeText ?? ''),
+    actionsTitle: String(m?.ActionsTitle ?? ''),
+    actionsDescription: String(m?.ActionsDescription ?? ''),
+    reasonsTitle: String(m?.ReasonsTitle ?? ''),
+    reasonsDescription: String(m?.ReasonsDescription ?? ''),
   });
 
   const cfg = {
@@ -195,10 +198,10 @@ export default async function FinanceCalculator(
       monthlySalaryPlaceholder: asString(finance?.MonthlySalaryPlaceholder),
       requestedAmount: asString(finance?.RequestedFinanceAmountLabel),
       requestedAmountPlaceholder: asString(finance?.RequestedFinanceAmountPlaceholder),
-      minimumFinanceAmount : (finance?.MinimumRequestAmount),
-      maximumFinanceAmount: (finance?.MaximumRequestAmount),
-      minimumEligibleInstallments: (finance?.MinimumEligibleInstallments),
-      maximumEligibleInstallments: (finance?.MaximumEligibleInstallments),
+      minimumFinanceAmount: finance?.MinimumRequestAmount,
+      maximumFinanceAmount: finance?.MaximumRequestAmount,
+      minimumEligibleInstallments: finance?.MinimumEligibleInstallments,
+      maximumEligibleInstallments: finance?.MaximumEligibleInstallments,
       installments: asString(finance?.NumberOfInstallmentsLabel),
       installmentsPlaceholder: asString(finance?.NumberOfInstallmentsPlaceholder),
       totalMonthlyExpenses: asString(finance?.TotalMonthlyExpensesLabel),
@@ -207,7 +210,7 @@ export default async function FinanceCalculator(
       mortgageLiabilitiesPlaceholder: asString(finance?.MortgageLiabilitiesPlaceholder),
       monthlyFinancialLiabilities: asString(finance?.MonthlyFinancialLiabilitiesLabel),
       monthlyFinancialLiabilitiesPlaceholder: asString(
-        finance?.MonthlyFinancialLiabilitiesPlaceholder
+        finance?.MonthlyFinancialLiabilitiesPlaceholder,
       ),
     },
     popups: {
@@ -246,3 +249,4 @@ export default async function FinanceCalculator(
     </section>
   );
 }
+

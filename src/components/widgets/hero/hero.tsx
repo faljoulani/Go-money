@@ -19,7 +19,6 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   if (lang === 'ar') {
     isAr = true;
   }
-  console.log('aklsdjaskdj', lang);
   const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
@@ -226,33 +225,34 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className={`
     xs:absolute xs:inset-x-0 xs:bottom-0 xs:flex xs:justify-center xs:h-[330px] xs:w-auto
 
-    md:absolute md:col-start-2 md:row-start-1 ${isAr ? 'md:mr-auto' : 'md:ml-auto'}
-    md:flex md:justify-end
-    md:h-[660px] md:w-[690px] md:-bottom-8 
+    md:absolute  ${isAr ? 'md:mr-[35%]' : 'md:ml-[35%]'}
+    md:flex 
+    md:h-[660px] md:w-[700px] md:-bottom-8 
     fadeupHero
   `}
       >
-        <div
+        {/* <div
           className="
+          p-4
       relative
-      md:h-[660px] md:w-[850px]
+      md:h-[660px] md:w-full
       xs:h-[330px] xs:w-[72%] xs:max-w-[420px] xs:bottom-0 xs:inset-x-0
     "
-        >
-          {heroImgUrl ? (
-            <Image
-              src={heroImgUrl}
-              alt={bgAlt || 'Hero image'}
-              fill
-              priority
-              quality={90}
-              className="xs:object-fill"
-            />
-          ) : (
-            <div className="absolute inset-0 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />
-          )}
-        </div>
+        > */}
+        {heroImgUrl ? (
+          <Image
+            src={heroImgUrl}
+            alt={bgAlt || 'Hero image'}
+            fill
+            priority
+            quality={90}
+            className="xs:object-fill md:object-fill"
+          />
+        ) : (
+          <div className="absolute inset-0 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />
+        )}
       </div>
+      {/* </div> */}
     </section>
   );
 }

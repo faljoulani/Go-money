@@ -45,9 +45,6 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   const legalDocSel = resolveSitefinitySelection(model?.LegalDocRoot);
   const sectionsSel = resolveSitefinitySelection(model?.SectionsSelection);
 
-  console.log('legalDocSel', legalDocSel);
-  console.log('sectionsSel', sectionsSel);
-
   if (!legalDocSel?.Content?.length) {
     return (
       <div {...attrs}>
@@ -117,6 +114,8 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
       </div>
     );
   }
+  console.log('zzzz', sections);
+
   const offset = 0;
   return (
     <div {...attrs}>
@@ -124,7 +123,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
         <div className="mx-auto md:grid md:gap-8 md:grid-cols-[360px_1fr]">
           <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0 xs:h-16 md:h-auto">
             <nav className="md:rounded-[15px] xs:rounded-xl">
-              <ul className="md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto snap-x snap-mandatory no-scrollbar">
+              <ul className="  md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto snap-x snap-mandatory no-scrollbar">
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
                   return (
@@ -134,7 +133,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                     >
                       <a
                         suppressHydrationWarning
-                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 xs:h-12 md:h-16 text-[15px] border-b transition last:border-b-0 border-white/10`}
+                        className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 xs:h-12 md:h-16 text-[15px] border-b transition last:border-b-0 border-white/10 `}
                         href={`#${slug}`}
                         data-target={slug}
                         data-index={i + 1}
@@ -172,7 +171,10 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                   <h4 className="mb-3 text-xl font-bold leading-6 text-primary">
                     {s.SectionHeader}
                   </h4>
-                  <div className="" dangerouslySetInnerHTML={{ __html: s.Description ?? '' }} />
+                  <div
+                    className="descriptionHtml"
+                    dangerouslySetInnerHTML={{ __html: s.Description ?? '' }}
+                  />
                 </section>
               );
             })}

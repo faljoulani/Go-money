@@ -106,7 +106,6 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
       : childCardPayload
         ? [childCardPayload]
         : [];
-    console.log('Child card payload:', childCardPayload);
   }
 
   const childCardData = items.map((card: any) => {

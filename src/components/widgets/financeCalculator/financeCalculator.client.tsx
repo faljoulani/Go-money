@@ -2,42 +2,13 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
+import { SuccessResponse, FailResponse, type ResponseMessage } from './responseMessage';
 
 type Nationality = string;
 type ResultState = null | 'success' | 'fail';
 
 type Choice = { id: string; title: string; value: string };
 type LinkLike = string | { Href?: string } | Array<{ Href?: string }>;
-
-type Message = {
-  id?: string;
-
-  title: string;
-  description: string;
-
-  noteTitle: string;
-  noteDescription: string;
-
-  primaryLabel: string;
-  primaryUrl?: string; 
-
-  downloadLabel: string;
-  downloadUrl?: string;
-
-  backLabel: string;
-  backUrl?: string;
-
-  validationText: string;
-
-  imageUrl?: string; 
-  imageAlt: string;
-
-  // Fail-screen only
-  reasonsTitle: string;
-  reasonsDescription: string; 
-  actionsTitle: string;
-  actionsDescription: string;
-};
 
 export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang: string }) {
   const C = cfg ?? {};
@@ -62,88 +33,73 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     );
   }
 
+  const getHref = (v?: LinkLike | { url?: string } | null) =>
+    !v
+      ? undefined
+      : typeof v === 'string'
+        ? v
+        : Array.isArray(v)
+          ? v.find((x) => x?.Href)?.Href
+          : ((v as any).Href ?? (v as any).url ?? undefined);
 
-const getHref = (v?: LinkLike | { url?: string } | null) =>
-  !v ? undefined
-  : typeof v === 'string' ? v
-  : Array.isArray(v) ? v.find(x => x?.Href)?.Href
-  : (v as any).Href ?? (v as any).url ?? undefined;
+  const getMediaUrl = (m?: any) =>
+    m?.Url ||
+    m?.MediaUrl ||
+    m?.ThumbnailUrl ||
+    (Array.isArray(m?.Urls) && m.Urls[0]) ||
+    m?.imageUrl ||
+    undefined;
 
-const getMediaUrl = (m?: any) =>
-  m?.Url ||
-  m?.MediaUrl ||
-  m?.ThumbnailUrl ||
-  (Array.isArray(m?.Urls) && m.Urls[0]) ||
-  m?.imageUrl ||
-  undefined;
+  type RawMessage = any;
 
-type RawMessage = any;
+  function mapMessage(raw: RawMessage): ResponseMessage {
+    const title = raw?.Title ?? raw?.title ?? '';
+    const description = raw?.Description ?? raw?.description ?? '';
 
-function mapMessage(raw: RawMessage): Message {
-  const title            = raw?.Title ?? raw?.title ?? '';
-  const description      = raw?.Description ?? raw?.description ?? '';
+    const noteTitle = raw?.NoteTitle ?? raw?.note?.title ?? '';
+    const noteDescription = raw?.NoteDescription ?? raw?.note?.description ?? '';
 
-  const noteTitle        = raw?.NoteTitle ?? raw?.note?.title ?? '';
-  const noteDescription  = raw?.NoteDescription ?? raw?.note?.description ?? '';
+    const primaryLabel = raw?.ExploreLabel ?? raw?.actions?.explore?.label ?? '';
+    const primaryUrl = getHref(raw?.ExploreUrl ?? raw?.actions?.explore?.url);
 
-  const primaryLabel     = raw?.ExploreLabel ?? raw?.actions?.explore?.label ?? '';
-  const primaryUrl       = getHref(raw?.ExploreUrl ?? raw?.actions?.explore?.url);
+    const downloadLabel = raw?.DownloadLabel ?? raw?.actions?.download?.label ?? '';
+    const downloadUrl = getHref(raw?.DownloadUrl ?? raw?.actions?.download?.url);
 
-  const downloadLabel    = raw?.DownloadLabel ?? raw?.actions?.download?.label ?? '';
-  const downloadUrl      = getHref(raw?.DownloadUrl ?? raw?.actions?.download?.url);
+    const backLabel = raw?.BackLabel ?? raw?.actions?.back?.label ?? '';
+    const backUrl = getHref(raw?.BackUrl ?? raw?.actions?.back?.url);
 
-  const backLabel        = raw?.BackLabel ?? raw?.actions?.back?.label ?? '';
-  const backUrl          = getHref(raw?.BackUrl ?? raw?.actions?.back?.url);
+    const validationText = raw?.ValidationText ?? raw?.validationText ?? '';
 
-  const validationText   = raw?.ValidationText ?? raw?.validationText ?? '';
+    const imageUrl = getMediaUrl(raw?.Image ?? raw);
+    const imageAlt = raw?.Image?.AlternativeText ?? raw?.Image?.Title ?? raw?.imageAlt ?? title;
 
-  const imageUrl         = getMediaUrl(raw?.Image ?? raw);
-  const imageAlt         = raw?.Image?.AlternativeText
-                        ?? raw?.Image?.Title
-                        ?? raw?.imageAlt
-                        ?? title;
+    const reasonsTitle = raw?.ReasonsTitle ?? raw?.reasonsTitle ?? '';
+    const reasonsDescription = raw?.ReasonsDescription ?? raw?.reasonsDescription ?? '';
+    const actionsTitle = raw?.ActionsTitle ?? raw?.actionsTitle ?? '';
+    const actionsDescription = raw?.ActionsDescription ?? raw?.actionsDescription ?? '';
 
-  const reasonsTitle       = raw?.ReasonsTitle ?? raw?.reasonsTitle ?? '';
-  const reasonsDescription = raw?.ReasonsDescription ?? raw?.reasonsDescription ?? '';
-  const actionsTitle       = raw?.ActionsTitle ?? raw?.actionsTitle ?? '';
-  const actionsDescription = raw?.ActionsDescription ?? raw?.actionsDescription ?? '';
+    return {
+      id: raw?.Id ?? raw?.id,
+      title,
+      description,
+      noteTitle,
+      noteDescription,
+      primaryLabel,
+      primaryUrl,
+      downloadLabel,
+      downloadUrl,
+      backLabel,
+      backUrl,
+      validationText,
+      imageUrl,
+      imageAlt,
+      reasonsTitle,
+      reasonsDescription,
+      actionsTitle,
+      actionsDescription,
+    };
+  }
 
-  return {
-    id: raw?.Id ?? raw?.id,
-    title,
-    description,
-    noteTitle,
-    noteDescription,
-    primaryLabel,
-    primaryUrl,
-    downloadLabel,
-    downloadUrl,
-    backLabel,
-    backUrl,
-    validationText,
-    imageUrl,
-    imageAlt,
-    reasonsTitle,
-    reasonsDescription,
-    actionsTitle,
-    actionsDescription,
-  };
-}
-
-    
-
-  const splitLines = (v?: string) =>
-    (v || '')
-      .split('\n')
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-  const href = (v?: LinkLike): string | undefined => {
-    if (!v) return undefined;
-    if (typeof v === 'string') return v;
-    if (Array.isArray(v)) return v.find((x) => x?.Href)?.Href || undefined;
-    return v.Href || undefined;
-  };
   const AMIN = C.labels.minimumFinanceAmount,
     AMAX = C.labels.maximumFinanceAmount,
     ASTEP = 500,
@@ -206,215 +162,79 @@ function mapMessage(raw: RawMessage): Message {
   }
 
   const messages: RawMessage[] = Array.isArray(C.messages) ? C.messages : [];
- const rawSuccess = messages[1] ?? null;
-const rawFail    = messages[0] ?? null;
+  const rawSuccess = messages[1] ?? null;
+  const rawFail = messages[0] ?? null;
 
   const successMsg = mapMessage(rawSuccess || {});
   const failMsg = mapMessage(rawFail || {});
-
-
-
-
+  console.log('RAW messages:', C.messages);
+  console.log('Mapped failMsg:', failMsg);
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setMsg('');
 
-    const payload = {
-      EmployerType: employer || 'GML',
-      Nationality: nationality,
-      Gender: 'Male',
-      FinanceAmt: String(requestedFinanceAmount),
-      Tenure: String(installments),
-      MonthlyIncome: String(parseNum(salary)),
-      lenOfService: mapLenOfService(serviceLength),
-      ageAtApplication: calcAge(dob),
-      AgeAtMaturity: calcAgeAtMaturity(dob, installments),
-    };
-
     // const payload = {
-    //   EmployerType: 'GML',
-    //   Nationality: 'Saudi',
+    //   EmployerType: employer || 'GML',
+    //   Nationality: nationality,
     //   Gender: 'Male',
     //   FinanceAmt: String(requestedFinanceAmount),
-    //   Tenure: '12',
-    //   MonthlyIncome: '50000',
-    //   lenOfService: '5',
-    //   ageAtApplication: '28',
-    //   AgeAtMaturity: '29',
+    //   Tenure: String(installments),
+    //   MonthlyIncome: String(parseNum(salary)),
+    //   lenOfService: mapLenOfService(serviceLength),
+    //   ageAtApplication: calcAge(dob),
+    //   AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     // };
-      try {
-        const res = await post(payload);
-        if (res?.Data?.IsEligible) setResult('success');
-        else setResult('fail');
-      } catch (err) {
-        console.error('FinanceCalculator error:', err);
-        setMsg(
-       dir=== 'ltr'
-         ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-       : 'Something went wrong. Please try again.'
-     );
-      } finally {
-        setSubmitting(false);
-      }
-    // try {
-    //   if (Number(payload.FinanceAmt) > 7000) {
-    //     setResult('success');
-    //   } else setResult('fail');
-    // } catch (err) {
-    //   console.error('FinanceCalculator error:', err);
-    //   setMsg(
-    //     dir === 'ltr'
-    //       ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-    //       : 'Something went wrong. Please try again.',
-    //   );
-    // } finally {
-    //   setSubmitting(false);
-    // }
+
+    const payload = {
+      EmployerType: 'GML',
+      Nationality: 'Saudi',
+      Gender: 'Male',
+      FinanceAmt: String(requestedFinanceAmount),
+      Tenure: '12',
+      MonthlyIncome: '50000',
+      lenOfService: '5',
+      ageAtApplication: '28',
+      AgeAtMaturity: '29',
+    };
+    //   try {
+    //     const res = await post(payload);
+    //     if (res?.Data?.IsEligible) setResult('success');
+    //     else setResult('fail');
+    //   } catch (err) {
+    //     console.error('FinanceCalculator error:', err);
+    //     setMsg(
+    //    dir=== 'ltr'
+    //      ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+    //    : 'Something went wrong. Please try again.'
+    //  );
+    //   } finally {
+    //     setSubmitting(false);
+    //   }
+    try {
+      if (Number(payload.FinanceAmt) > 7000) {
+        setResult('success');
+      } else setResult('fail');
+    } catch (err) {
+      console.error('FinanceCalculator error:', err);
+      setMsg(
+        dir === 'ltr'
+          ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+          : 'Something went wrong. Please try again.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
+  const success: ResponseMessage = successMsg;
+  const fail: ResponseMessage = failMsg;
   if (result === 'success') {
-   
-  let title = '', desc = '', noteTitle = '', noteDesc = '',
-      backText = '', primaryText = '', primaryHref = '#', iconUrl = '';
-
-  title       = successMsg.title;
-  desc        = successMsg.description;
-  noteTitle   = successMsg.noteTitle;
-  noteDesc    = successMsg.noteDescription;
-  backText    = successMsg.backLabel;
-  primaryText = successMsg.primaryLabel;
-  primaryHref = successMsg.primaryUrl || '#';
-  iconUrl     = successMsg.imageUrl || '/assets/success.png';
-
-    return (
-      <section className="w-full" dir={dir}>
-        <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
-          <div className="mx-auto mb-6 grid place-items-center">
-            <img
-              src={iconUrl}
-              alt={successMsg.imageAlt || 'success'}
-              className="h-24 w-24 object-contain"
-            />
-          </div>
-
-          <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-[#0B2A8E] mb-3">
-            {title}
-          </h2>
-          <p
-            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto"
-            dangerouslySetInnerHTML={{ __html: desc }}
-          />
-
-          <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84] max-w-4xl mx-auto">
-            <div className="flex flex-col items-start gap-2">
-              <div className="flex gap-2">
-                <InfoIcon />
-                <strong>{noteTitle}</strong>
-              </div>
-              <div>
-                <p className="mt-1 ml-6">{noteDesc}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={() => setResult(null)}
-              className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
-            >
-              {backText}
-            </button>
-            <a
-              href={primaryHref}
-              className="rounded-full bg-[#0B2A8E] text-white px-6 py-3 text-[15px] hover:opacity-90"
-            >
-              {primaryText}
-            </a>
-          </div>
-        </div>
-      </section>
-    );
+    return <SuccessResponse msg={success} dir={dir} onBack={() => setResult(null)} />;
   }
 
   if (result === 'fail') {
-  let title = '', sub = '', reasonsTitle = '',
-      actionsTitle = '', footer = '', backText = '', iconUrl = '';
-  let reasonsLeft: string[] = [];
-  let actionsLeft: string[] = [];
-
-  title         = failMsg.title;
-  sub           = failMsg.description;
-  reasonsTitle  = failMsg.reasonsTitle;
-  reasonsLeft   = splitLines(failMsg.reasonsDescription);
-  actionsTitle  = failMsg.actionsTitle;
-  actionsLeft   = splitLines(failMsg.actionsDescription);
-  footer        = failMsg.validationText;
-  backText      = failMsg.backLabel;
-  iconUrl       = failMsg.imageUrl || '/assets/failed.png';
-
-
-
-    return (
-      <section className="w-full" dir={dir}>
-        <div className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 text-center">
-          <div className="mx-auto mb-6 grid place-items-center">
-            <img
-              src={iconUrl}
-              alt={failMsg.imageAlt || 'not-eligible'}
-              className="h-24 w-24 object-contain"
-            />
-          </div>
-
-          <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
-          <p
-            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto"
-            dangerouslySetInnerHTML={{ __html: sub }}
-          />
-
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-              <strong className="block mb-3 text-[#0B2A8E]">{reasonsTitle}</strong>
-              <ul className="list-disc pl-5 space-y-2 text-[#333]">
-                {reasonsLeft.map((r, i) => (
-                  <li key={`rL-${i}`}>{r}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-              {/* optional second column later */}
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-              <strong className="block text-[#0B2A8E]">{actionsTitle}</strong>
-              <ul className="list-disc pl-5 space-y-2 text-[#333] mt-3">
-                {actionsLeft.map((t, i) => (
-                  <li key={`tL-${i}`}>{t}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
-              {/* optional second column later */}
-            </div>
-          </div>
-
-          <p className="mt-8 text-[#555]">{footer}</p>
-
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setResult(null)}
-              className="rounded-full border border-[#0B2A8E] text-[#0B2A8E] px-6 py-3 text-[15px] hover:bg-[#0B2A8E]/5"
-            >
-              {backText}
-            </button>
-          </div>
-        </div>
-      </section>
-    );
+    return <FailResponse msg={fail} dir={dir} onBack={() => setResult(null)} />;
   }
 
   return (
@@ -438,7 +258,6 @@ const rawFail    = messages[0] ?? null;
               return (
                 <label key={label} className="inline-flex items-center gap-2">
                   <input
-                    required
                     type="radio"
                     name="nationality"
                     value={val}
@@ -466,7 +285,6 @@ const rawFail    = messages[0] ?? null;
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
             <input
               type="date"
-              required
               value={dob}
               onChange={(e) => setDob(e.target.value)}
               placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
@@ -512,7 +330,6 @@ const rawFail    = messages[0] ?? null;
               </div>
 
               <input
-                required
                 type="range"
                 min={AMIN}
                 max={AMAX}
@@ -540,7 +357,6 @@ const rawFail    = messages[0] ?? null;
                 {`Maximum eligible installments is ${IMAX} months`}
               </div>
               <input
-                required
                 type="range"
                 min={IMIN}
                 max={IMAX}
@@ -680,7 +496,6 @@ function Select({
   return (
     <div className="relative">
       <select
-        required
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="sf-input appearance-none pr-10"
@@ -712,7 +527,6 @@ function CurrencyInput({
 }) {
   return (
     <input
-      required
       inputMode="decimal"
       value={value === '' ? '' : String(value)}
       onChange={(e) => {
@@ -731,13 +545,13 @@ function Tooltip({ content, children }: { content: string; children: React.React
       {children}
       <span
         dangerouslySetInnerHTML={{ __html: content }}
-        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100 descriptionHtml"
       ></span>
     </span>
   );
 }
 
-function InfoIcon({ className = '' }: { className?: string }) {
+export function InfoIcon({ className = '' }: { className?: string }) {
   return (
     <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="currentColor">
       <circle cx="12" cy="12" r="12" fill="#0052CC" />

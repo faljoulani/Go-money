@@ -143,29 +143,33 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
       {...(attrs as any)}
       className={mergeClasses(
         'relative md:h-[486px] xs:h-[700px] rounded-3xl md:mx-20 md:px-16 my-16 fadeup ',
+        'bg-[image:var(--surface-gradient)]',
         (attrs as any)?.className || '',
       )}
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center  gap-[30px]">
+      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center">
         {/* Left: phone image */}
-        <div className="flex md:h-[528px] md:w-[507px] xs:w-[50%] fadeLeftDownload">
+        <div className="flex h-full md:w-[40%] xs:w-[70%] fadeLeftDownload ">
           {!!phoneUrl && (
             <Image
               src={phoneUrl}
               alt={phoneAlt}
               width={507}
-              height={525}
+              height={528}
               priority
-              className="md:w-[570px] xs:mb-14 md:h-[525px] xs:w-[100%] pointer-events-none select-none object-contain md:absolute xs:-top-2 md:-top-2 md:animate-float"
+              className="md:w-[90%] xs:absolute md:h-[525px] xs:w-[500px] pointer-events-none select-none md:object-fill xs:object-contain  xs:-top-8 md:-top-2 md:animate-float"
             />
           )}
         </div>
 
         <div className="flex xs:w-[90%] md:h-full md:w-1/2 md:items-center md:my-16 md:fadeRightDownload">
-          <div className="w-full max-w-[560px] text-[#010663]">
+          <div className="w-full max-w-[560px]">
             {!!title && (
-              <Title className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug">
+              <Title
+                color="text-black"
+                className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug"
+              >
                 {title}
               </Title>
             )}
@@ -180,23 +184,22 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                     className={` flex items-start gap-3 ${index == 1 ? 'md:pl-6 md:rtl:pr-6 md:rtl:pl-0' : 'md:rtl:pl-6 md:rtl:pr-0 md:pr-6'}`}
                   >
                     {/* Logo */}
-                    <div className="rounded-2xl bg-white/20 flex items-center justify-center">
-                      {card.logoUrl && (
-                        <Image
-                          src={card.logoUrl}
-                          alt={card.logoAlt}
-                          width={48}
-                          height={48}
-                          className="h-12 w-12 object-contain"
-                        />
-                      )}
+                    <div className="rounded-2xl bg-primaryAlt flex items-center justify-center w-16 h-16 p-2">
+                      <Image
+                        src={card.logoUrl}
+                        alt={card.logoAlt}
+                        width={24}
+                        height={24}
+                        className="h-12 w-12 object-contain"
+                      />
                     </div>
+
                     {/* Text */}
                     <div className="min-w-0 space-y-2">
-                      <div className="text-[16px] font-bold text-[#212121]">{card.title}</div>
+                      <div className="text-[16px] font-bold text-black">{card.title}</div>
                       {!!card.desc && (
                         <div
-                          className="text-sm text-default"
+                          className="text-sm text-default descriptionHtml"
                           dangerouslySetInnerHTML={{ __html: card.desc }}
                         />
                       )}
@@ -236,7 +239,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           </div>
         </div>
       </div>
-      <div className=" xs:hidden md:absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
+      <div className="xs:hidden md:absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
     </section>
   );
 }
