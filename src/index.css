@@ -637,3 +637,10 @@ html.dark .defaultBgColor {
   scrollbar-width: none; /* Firefox */
 }
 
+.descriptionHtml ul,
+.descriptionHtml ol {
+  list-style: revert;
+  margin: revert;
+  padding: revert;
+}
+

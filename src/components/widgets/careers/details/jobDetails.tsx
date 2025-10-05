@@ -95,7 +95,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
               {job.Sections?.OverviewLabel || 'Overview'}
             </h3>
             <div
-              className="leading-relaxed text-gray-700"
+              className="leading-relaxed text-gray-700 descriptionHtml"
               dangerouslySetInnerHTML={{ __html: overviewHtml }}
             />
           </div>
@@ -107,7 +107,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                 {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
               </h3>
               <div
-                className="mt-3 text-gray-700"
+                className="mt-3 text-gray-700 descriptionHtml"
                 dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }}
               />
             </div>
@@ -120,7 +120,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                 {job.Sections?.QualificationsLabel || 'Qualifications'}
               </h3>
               <div
-                className="mt-3 text-gray-700"
+                className="mt-3 text-gray-700 descriptionHtml"
                 dangerouslySetInnerHTML={{ __html: qualificationsHtml }}
               />
             </div>

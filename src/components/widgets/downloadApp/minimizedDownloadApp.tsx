@@ -158,7 +158,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
                 alt={phoneAlt || 'Mobile'}
                 width={360}
                 height={720}
-                className="mx-auto md:mx-0 md:absolute md:left-0 md:bottom-[98px] max-h-[300px] md:max-h-none"
+                className="mx-auto xs:w-[210px] md:mx-0 md:absolute md:left-0 md:bottom-[98px] max-h-[300px] md:max-h-none"
               />
             )}
           </div>

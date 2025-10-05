@@ -245,8 +245,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               alt={bgAlt || 'Hero image'}
               fill
               priority
+              
               quality={90}
-              className="xs:object-fill"
+              className=" absolute xs:object-fill md:h-[660px] md:w-[850px] xs:h-[330px] xs:w-[72%]"
             />
           ) : (
             <div className="absolute inset-0 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl" />

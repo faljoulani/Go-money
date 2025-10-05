@@ -298,7 +298,7 @@ export default function ApplyForJob({
             {overviewHtml && (
               <div className="mt-5">
                 <div
-                  className="prose max-w-none text-[14px] leading-6 text-neutral-700 md:text-base"
+                  className="prose max-w-none text-[14px] leading-6 text-neutral-700 md:text-base descriptionHtml"
                   dangerouslySetInnerHTML={{ __html: overviewHtml }}
                 />
               </div>

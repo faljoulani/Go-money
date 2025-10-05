@@ -302,7 +302,7 @@ const rawFail    = messages[0] ?? null;
             {title}
           </h2>
           <p
-            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto"
+            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto descriptionHtml"
             dangerouslySetInnerHTML={{ __html: desc }}
           />
 
@@ -369,7 +369,7 @@ const rawFail    = messages[0] ?? null;
 
           <h2 className="text-[32px] md:text-[40px] font-semibold text-[#0B2A8E] mb-2">{title}</h2>
           <p
-            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto"
+            className="text-[16px] md:text-[18px] text-[#333] max-w-3xl mx-auto descriptionHtml"
             dangerouslySetInnerHTML={{ __html: sub }}
           />
 
@@ -731,7 +731,7 @@ function Tooltip({ content, children }: { content: string; children: React.React
       {children}
       <span
         dangerouslySetInnerHTML={{ __html: content }}
-        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100 descriptionHtml"
       ></span>
     </span>
   );
