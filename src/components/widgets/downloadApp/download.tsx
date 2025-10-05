@@ -150,7 +150,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
     >
       <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center">
         {/* Left: phone image */}
-        <div className="flex h-full md:w-[40%] xs:w-[80%] fadeLeftDownload ">
+        <div className="flex h-full md:w-[40%] xs:w-[70%] fadeLeftDownload ">
           {!!phoneUrl && (
             <Image
               src={phoneUrl}
@@ -158,7 +158,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
               width={507}
               height={528}
               priority
-              className="md:w-[90%] xs:absolute md:h-[525px] xs:w-[100%] pointer-events-none select-none md:object-fill xs:object-contain  xs:-top-8 md:-top-2 md:animate-float"
+              className="md:w-[90%] xs:absolute md:h-[525px] xs:w-[500px] pointer-events-none select-none md:object-fill xs:object-contain  xs:-top-8 md:-top-2 md:animate-float"
             />
           )}
         </div>
