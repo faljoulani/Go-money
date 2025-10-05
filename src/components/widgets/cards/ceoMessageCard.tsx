@@ -156,7 +156,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     <section {...attributes} className={wrapCls}>
       <div className={cardShellCls}>
         <>
-          <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-32 h-32 bg-corner rounded-bl-[60px] rtl:rounded-br-[60px] rtl:rounded-bl-none xs:hidden md:block">
+          <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-32 h-32 bg-[#0023f5] dark:bg-[#a6efd9] rounded-bl-[60px] rtl:rounded-br-[60px] rtl:rounded-bl-none xs:hidden md:block">
             <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-14 h-14 bg-bgAlt" />
           </div>
         </>

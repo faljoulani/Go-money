@@ -8,6 +8,8 @@ module.exports = {
         primary: 'var(--color-primary)',
         primaryAlt: 'var(--color-primary-alt)',
         secondary: 'var(--color-secondary)',
+        bgAlt: 'var(--color-bg-alt)',
+        whiteCta:  'var(--color-white-cta)',
         default: 'var(--color-default)',
         'surface-page': 'var(--surface-page)',
         'surface-section': 'var(--surface-section)',

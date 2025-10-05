@@ -151,15 +151,15 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           autoPlay
           playsInline
           loop
-        > 
-            <source src="assets/footerAnimation.mp4" type="video/mp4" />
+        >
+          <source src="assets/footerAnimation.mp4" type="video/mp4" />
           Your browser does not support the video tag.
-        </video> 
+        </video>
         <div className="md:ltr:px-20 xs:ltr:px-5 md:ltr:py-16 xs:ltr:py-8 md:rtl:px-20 xs:rtl:px-5 md:rtl:py-16 xs:rtl:py-8">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
-              className="md:text-40px  max-w-[500px] md:leading-[60px]  tracking-[-0.02em] xs:text-32px xs:leading-[40px]  mb-4"
+              className="md:text-40px  md:max-w-[500px] xs:max-w-[270px] md:leading-[60px]  tracking-[-0.02em] xs:text-lg xs:leading-6  mb-4"
             >
               {footerData.Title || footerData.SubTitle}
             </Title>
@@ -171,7 +171,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <div className="mx-auto w-full ">
             <div className="md:flex md:flex-row xs:flex-col  w-auto">
               <div className="col-span-1 mr-16 rtl:mr-0">
-                <div className="md:rtl:right-0 md:max-w-[400px] xs:w-full md:ltr:border-r md:ltr:border-white/15 md:rtl:border-l md:rtl:border-white/15 flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
+                <div className="md:rtl:right-0 md:max-w-[400px] h-full xs:max-w-[310px] md:ltr:border-r md:ltr:border-white/15 md:rtl:border-l md:rtl:border-white/15 flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
                   <div className="flex items-center gap-3 ">
                     <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                       {logoSrc && (
@@ -194,7 +194,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                   </div>
 
                   {footerData.Description && (
-                    <p className="md:max-w-[400px] xs:w-full font-normal text-[14px] leading-[18px] text-gray-300/90">
+                    <p className="md:max-w-[400px] xs:max-w-[310px] text-14px leading-[18px] text-[#E0E0E0]">
                       {String(footerData.Description).replace(/\s+/g, ' ').trim()}
                     </p>
                   )}
@@ -234,7 +234,6 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                   )}
                 </div>
               </div>
-
               {/* Link columns (FooterNavigation groups) */}
               <FooterLinks
                 lang={culture}
@@ -244,7 +243,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
             </div>
           </div>
 
-          <hr className="mb-8 border-white/10" />
+          <hr className="mb-8 border-white/10 " />
 
           {/* Bottom row: certifications | copyright | extra */}
           <div className="relative  gap-6 md:grid md:grid-cols-3 md:items-center xs:grid-cols-2">

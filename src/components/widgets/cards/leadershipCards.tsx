@@ -140,7 +140,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
         )}
       </div>
 
-      <div className="bg-gradient-to-br from-gradientAFrom to-gradientATo rounded-[30px] md:p-16 xs:py-16 xs:px-10 h-auto">
+      <div className="bg-gradient-to-br from-[#10cebb] to-[#0357ad] dark:from-[#054e42] dark:to-[#010552] rounded-[30px] md:p-16 xs:py-16 xs:px-10 h-auto">
         <div className="grid md:grid-cols-3 xs:grid-cols-1 md:gap-x-10 xs:gap-y-4">
           {/* First 3 items */}
           {items.slice(0, 3).map((item: any, i: number) => (

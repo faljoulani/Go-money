@@ -99,6 +99,8 @@
   --color-primary-alt: #010663;
   --color-default: #424242;
   --color-secondary: #ffffff;
+  --color-bg-alt: #ffffff;
+  --color-white-cta: #ffffff;
   --surface-page: #eeeeee;
   --surface-section: #ffffff;
   --surface-input: #ffffff;
@@ -110,6 +112,8 @@ html.dark {
   --color-primary-alt: #a6efd9;
   --color-default: #f5f5f5;
   --color-secondary: #000000;
+  --color-bg-alt: #000000;
+  --color-white-cta: #010663;
   --surface-page: #131321;
   --surface-section: #44444433;
   --surface-input: #000000;
