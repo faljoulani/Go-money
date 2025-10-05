@@ -125,8 +125,7 @@ export function FailResponse({
     imageUrl,
     imageAlt,
   } = msg;
-  console.log('FailResponse > reasonsDescription:', reasonsDescription);
-  console.log('FailResponse > actionsDescription:', actionsDescription);
+
   const iconUrl = imageUrl || '/assets/failed.png';
   const splitLines = (v?: string) =>
     (v || '')
@@ -155,19 +154,19 @@ export function FailResponse({
           dangerouslySetInnerHTML={{ __html: description }}
         />
 
-        <div className="mt-8 grid xs:grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+        <div className="mt-8 grid  grid-cols-1 gap-4">
+          <div className="rounded-xl bg-[#F4F6FA] p-5">
             <strong className="block mb-3 text-[#0B2A8E]">{reasonsTitle}</strong>
-  
-            <div dangerouslySetInnerHTML={{ __html: reasonsDescription }}></div>
+
+            <p className="leading-4" dangerouslySetInnerHTML={{ __html: reasonsDescription }}></p>
           </div>
         </div>
 
-        <div className="mt-4 grid xs:grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-xl bg-[#F4F6FA] p-5 text-left">
+        <div className="mt-4 grid grid-cols-1 gap-4">
+          <div className="rounded-xl bg-[#F4F6FA] p-5">
             <strong className="block text-[#0B2A8E]">{actionsTitle}</strong>
-         
-            <div dangerouslySetInnerHTML={{ __html: actionsDescription }}></div>
+
+            <p className="leading-4" dangerouslySetInnerHTML={{ __html: actionsDescription }}></p>
           </div>
         </div>
 

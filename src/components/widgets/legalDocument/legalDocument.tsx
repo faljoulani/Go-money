@@ -45,8 +45,6 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   const legalDocSel = resolveSitefinitySelection(model?.LegalDocRoot);
   const sectionsSel = resolveSitefinitySelection(model?.SectionsSelection);
 
-
-
   if (!legalDocSel?.Content?.length) {
     return (
       <div {...attrs}>
@@ -171,7 +169,11 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                   <h4 className="mb-3 text-xl font-bold leading-6 text-primary">
                     {s.SectionHeader}
                   </h4>
-                  <div className="" dangerouslySetInnerHTML={{ __html: s.Description ?? '' }} />
+
+                  <div
+                    className="list-none m-0 p-0"
+                    dangerouslySetInnerHTML={{ __html: s.Description ?? '' }}
+                  />
                 </section>
               );
             })}

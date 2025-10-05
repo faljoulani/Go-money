@@ -233,7 +233,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
                       <h3 className="text-center text-2xl">{s.Title}</h3>
                       {s.Description && (
-                        <p className="mt-3 text-center text-[#E0E0E0] text-base w-[253px]">
+                        <p className="mt-3 text-center text-[#E0E0E0] mb-4 text-base">
                           {s.Description}
                         </p>
                       )}

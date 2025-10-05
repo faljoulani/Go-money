@@ -147,17 +147,17 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
       )}
       style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center  gap-[30px]">
+      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center">
         {/* Left: phone image */}
-        <div className="flex md:h-[528px] md:w-[507px] xs:w-[50%] fadeLeftDownload">
+        <div className="flex h-full md:w-[40%] xs:w-[80%] fadeLeftDownload ">
           {!!phoneUrl && (
             <Image
               src={phoneUrl}
               alt={phoneAlt}
               width={507}
-              height={525}
+              height={528}
               priority
-              className="md:w-[570px] xs:mb-14 md:h-[525px] xs:w-[100%] pointer-events-none select-none object-contain md:absolute xs:-top-2 md:-top-2 md:animate-float"
+              className="md:w-[90%] xs:absolute md:h-[525px] xs:w-[100%] pointer-events-none select-none md:object-fill xs:object-contain  xs:-top-8 md:-top-2 md:animate-float"
             />
           )}
         </div>
@@ -236,7 +236,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           </div>
         </div>
       </div>
-      <div className=" xs:hidden md:absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
+      <div className="xs:hidden md:absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
     </section>
   );
 }

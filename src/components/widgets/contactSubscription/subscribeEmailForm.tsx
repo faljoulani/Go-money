@@ -32,7 +32,7 @@ export default function SubscribeEmailForm({
     setMsg('');
     try {
       const res = await post({ Email: email });
-      if (!(res?.Email)) throw new Error(await res.text());
+      if (!res?.Email) throw new Error(await res.text());
       setState('ok');
       setMsg('Subscribed! Check your inbox.');
       setEmail('');
@@ -44,38 +44,38 @@ export default function SubscribeEmailForm({
   }
 
   return (
-    <div className='flex flex-col justify-end h-full'>
-    <form onSubmit={onSubmit} className={className} noValidate>
-      <label className="sr-only">{label}</label>
-      <div className="mb-4 flex h-[56px] items-center rounded-[20px] border border-[#DFE3EA] px-4 bg-white ">
-        <input
-          type="email"
-          inputMode="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={placeholder}
-          aria-label={label}
-          className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
+    <div className="flex flex-col justify-end h-full">
+      <form onSubmit={onSubmit} className={className} noValidate>
+        <label className="sr-only">{label}</label>
+        <div className="mb-4 flex h-[56px] items-center rounded-[20px] border border-[#DFE3EA] px-4 bg-white ">
+          <input
+            type="email"
+            inputMode="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={placeholder}
+            aria-label={label}
+            className="w-full bg-transparent text-[14px] outline-none placeholder:text-[#9DA3AE]"
+            disabled={state === 'loading'}
+            required
+          />
+        </div>
+        <CTA
+          borderColor="border-primary"
+          variant="outline"
+          icon="arrow"
+          className="w-full rounded-[20px] border-[2px] px-6 py-[18px] text-lg font-medium tracking-[-0.025%em]"
           disabled={state === 'loading'}
-          required
-        />
-      </div>
-      <CTA
-        borderColor="border-primary"
-        variant="outline"
-        icon="arrow"
-        className="w-full rounded-[20px] border-[2px] px-6 py-[18px] text-lg font-medium tracking-[-0.025%em]"
-        disabled={state === 'loading'}
-        type="submit"
-      >
-        {state === 'loading' ? 'Submitting…' : button}
-      </CTA>
-      {msg && (
-        <p className={`mt-2 text-sm ${state === 'ok' ? 'text-emerald-600' : 'text-rose-600'}`}>
-          {msg}
-        </p>
-      )}
-    </form>
+          type="submit"
+        >
+          {state === 'loading' ? 'Submitting…' : button}
+        </CTA>
+        {msg && (
+          <p className={`mt-2 text-sm ${state === 'ok' ? 'text-emerald-600' : 'text-rose-600'}`}>
+            {msg}
+          </p>
+        )}
+      </form>
     </div>
   );
 }

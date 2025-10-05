@@ -159,24 +159,25 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         {/* Layer 2: content */}
 
-        <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 text-left flex-col md:gap-6 md:pl-24 rtl:pr-24 md:h-full  md:max-w-[35%] md:py-10">
+        <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 flex-col  md:pl-24 rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:-mr-16">
           {/* Cards strip (maps from floatUrl → cards) under the title area */}
 
           {financeRepaymentBanner.images.floatUrl.url && (
-            <div className="relative  md:-ml-20 w-full xs:h-[125px] md:h-[250px]  rounded-lg fadeRightFinanceDetails rtl:md:-right-12 rtl:md:-mb-12">
+            <div className="relative  w-full xs:h-[125px]  md:-ml-[24px] xs:-ml-[20px] xs:-mr-[20px] md:mr-[16px] rounded-lg fadeRightFinanceDetails  md:rtl:-right-12 ">
               <Image
                 src={financeRepaymentBanner.images.floatUrl.url}
                 alt={financeRepaymentBanner.images.floatUrl.alt}
                 fill
                 priority
-                className="md:w-[570px] md:h-[250px] xs:w-[90%] object-contain drop-shadow"
+                className="  xs:w-[90%] object-fill drop-shadow"
               />
             </div>
           )}
+
           <div className="fadeRightFinanceDetails ">
             {!!financeRepaymentBanner.title && (
               <Title
-                className="md:text-5xl  md:font-bold md:tracking-[-0.02em] md:leading-[90px]  xs:max-w-none xs:text-[28px] xs:leading-9 xs:font-semibold
+                className="md:text-5xl  md:font-bold md:tracking-[-0.02em] md:leading-[60px]  xs:max-w-none xs:text-[28px] xs:leading-9 xs:font-semibold
 "
                 color="text-white"
               >
@@ -209,7 +210,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
         {financeRepaymentBanner.images.foregroundUrl.url && (
           <div
             className="md:absolute xs:mt-auto xs:absolute xs:bottom-10 md:z-20 xs:rtl:left-0 xs:ltr:right-0 md:ltr:right-0 md:ltr:left-auto md:rtl:left-0 md:rtl:right-auto fadeRightFinance
-                    w-[350px]"
+                    "
           >
             <Image
               src={financeRepaymentBanner.images.foregroundUrl.url}
@@ -217,7 +218,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               width={550}
               height={900}
               priority
-              className="md:w-[550px] md:h-[500px]  xs:h-auto w-full xs:translate-y-10
+              className="md:w-[550px] md:h-[500px]  xs:w-[360px]  xs:h-auto w-full xs:translate-y-10
          pointer-events-none  animate-float xs:inset-x-0 xs:left-0"
             />
           </div>
