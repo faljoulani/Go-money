@@ -225,7 +225,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className={`
     xs:absolute xs:inset-x-0 xs:bottom-0 xs:flex xs:justify-center xs:h-[330px] xs:w-auto
 
-    md:absolute  ${isAr ? 'md:mr-[35%]' : 'md:ml-[35%]'}
+    md:absolute  ${isAr ? 'md:mr-[32%] lg:ml-[37%] xl:mr-[55%] ' : 'md:ml-[32%] lg:ml-[37%] xl:ml-[55%]'}
     md:flex 
     md:h-[660px] md:w-[700px] md:-bottom-8 
     fadeupHero

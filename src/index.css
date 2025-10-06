@@ -104,6 +104,10 @@
   --surface-input: #ffffff;
   --surface-sheet: #e1f3f9;
   --surface-gradient: linear-gradient(258.38deg, #6be5bf -1.4%, #b3dfef 100%);
+    --howitworks-bg: url('/assets/Shape.png'); 
+  --range-inner-circle: #FFFFFF;
+
+    
 }
 html.dark {
   --color-primary: #fafafa;
@@ -115,6 +119,9 @@ html.dark {
   --surface-input: #000000;
   --surface-sheet: #004c86;
   --surface-gradient: linear-gradient(258.38deg, #a6efd9 -1.4%, #006aa5 100%);
+    --howitworks-bg: url('/assets/circlesDark.png');
+  --range-inner-circle: #054E42;
+    
 }
 
 body {

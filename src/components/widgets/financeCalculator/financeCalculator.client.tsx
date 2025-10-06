@@ -136,8 +136,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string>('');
 
-  const amountFill = useRangeVars(requestedFinanceAmount, AMIN, AMAX, '#0B2A8E', '#C9CDD6');
-  const instFill = useRangeVars(installments, IMIN, IMAX, '#0B2A8E', '#C9CDD6');
+  const amountFill = useRangeVars(requestedFinanceAmount, AMIN, AMAX,  'var(--color-primary-alt)', '#C9CDD6');
+  const instFill = useRangeVars(installments, IMIN, IMAX, 'var(--color-primary-alt)', '#C9CDD6');
 
   // ---- age utils ----
   function calcAge(dobStr: string) {
@@ -241,14 +241,14 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     <section className="w-full">
       <form
         onSubmit={onSubmit}
-        className="mx-auto max-w-[1240px] rounded-3xl bg-white mt-16 p-8 shadow-sm"
+        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm"
       >
-        <h2 className="text-[28px] font-semibold text-[#0B2A8E]">
+        <h2 className="text-[28px] font-semibold text-primary">
           {C.title || 'Enter your Finance details'}
         </h2>
 
         <div className="mt-4">
-          <p className="text-[15px] font-medium text-gray-700">
+          <p className="text-[15px] font-medium text-primary">
             {C.labels?.nationality || 'Choose nationality'}
           </p>
           <div className="mt-2 flex items-center gap-6">
@@ -263,7 +263,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                     value={val}
                     checked={checked}
                     onChange={() => setNationality(val as Nationality)}
-                    className="h-4 w-4 accent-[#0B2A8E]"
+                    className="h-4 w-4 accent-primaryAlt"
                   />
                   <span>{label}</span>
                 </label>
@@ -288,7 +288,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               value={dob}
               onChange={(e) => setDob(e.target.value)}
               placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
-              className="sf-input"
+              className="sf-input bg-secondary"
             />
           </Field>
 
@@ -322,6 +322,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             <div className="space-y-2">
               <CurrencyInput
                 value={requestedFinanceAmount}
+                
                 onChange={(v) => setRequestedFinanceAmount(clamp(Number(v || 0), AMIN, AMAX))}
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
@@ -338,7 +339,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 onChange={(e) =>
                   setRequestedFinanceAmount(clamp(Number(e.target.value), AMIN, AMAX))
                 }
-                className="sf-range"
+                className="sf-range bg-primaryAlt"
                 style={amountFill as any}
                 aria-label="Requested amount"
               />
@@ -403,12 +404,12 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
-          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] bg-[#E9F5FF] p-4 text-[13px] text-[#0B4F84]">
+          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] bg-surface-page p-4 text-[13px] text-primaryAlt">
             <div className="flex items-start gap-2">
               <InfoIcon />
               <div>
                 <strong>{C.popups?.note?.title || 'Important Note'}</strong>
-                <p className="mt-1">
+                <p className="mt-1 text-default">
                   {C.popups?.note?.description ||
                     'This calculation is for guidance only. The results do not constitute a final offer and have no legal effect.'}
                 </p>
@@ -421,7 +422,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-full bg-[color:var(--navy,#0B2A8E)] px-6 py-3 text-white hover:opacity-90 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full bg-primaryAlt px-6 py-3 text-secondary hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Submitting…' : C.cta?.text || 'Check your eligibility Now'}
             <span aria-hidden className="rtl:rotate-180">
@@ -439,14 +440,14 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
       <style>{`
         .sf-input{
-          height:48px;width:100%;border-radius:1rem;border:1px solid #DFE3EA;background:#fff;
+          height:48px;width:100%;border-radius:1rem;border:1px solid #DFE3EA;
           padding:0 1rem;font-size:14px;outline:none;
         }
         .sf-range{
-          -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:9999px;background:#c9cdd6;outline:none;
+          -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:9999px;outline:none;
         }
         .sf-range::-webkit-slider-thumb{
-          -webkit-appearance:none;appearance:none;height:18px;width:18px;border-radius:9999px;background:#fff;border:3px solid #0b2a8e;
+          -webkit-appearance:none;appearance:none;height:18px;width:18px;border-radius:9999px;background:var(--range-inner-circle);border:3px solid var(--color-primary-alt);
           box-shadow:0 0 0 3px rgba(11,42,142,.1);cursor:pointer;
         }
         .sf-range::-moz-range-thumb{
@@ -470,10 +471,10 @@ function Field({
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <label className="text-[13px] font-medium text-gray-700">{label}</label>
+        <label className="text-[13px] font-medium text-default">{label}</label>
         {!!tooltip && (
           <Tooltip content={tooltip}>
-            <InfoIcon className="text-[#0B4F84]" />
+            <InfoIcon className="text-default " />
           </Tooltip>
         )}
       </div>
@@ -498,7 +499,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="sf-input appearance-none pr-10"
+        className="sf-input appearance-none pr-10 bg-secondary "
       >
         <option value="" disabled>
           {placeholder || 'Select…'}
@@ -509,7 +510,7 @@ function Select({
           </option>
         ))}
       </select>
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-primaryAlt">
         ▾
       </span>
     </div>
@@ -528,13 +529,14 @@ function CurrencyInput({
   return (
     <input
       inputMode="decimal"
+      type= "number"
       value={value === '' ? '' : String(value)}
       onChange={(e) => {
         const v = e.target.value.replace(/[^\d.]/g, '');
         onChange(v === '' ? '' : Number(v));
       }}
       placeholder={placeholder || '0.00 ﷼'}
-      className="sf-input"
+      className="sf-input bg-secondary"
     />
   );
 }
@@ -545,7 +547,7 @@ function Tooltip({ content, children }: { content: string; children: React.React
       {children}
       <span
         dangerouslySetInnerHTML={{ __html: content }}
-        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-white p-4 text-xs text-black opacity-0 group-hover:block group-hover:opacity-100 descriptionHtml"
+        className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 w-[15rem] rounded-xl shadow-md bg-surface-input p-4 text-xs text-default opacity-0 group-hover:block group-hover:opacity-100 descriptionHtml"
       ></span>
     </span>
   );
@@ -554,9 +556,9 @@ function Tooltip({ content, children }: { content: string; children: React.React
 export function InfoIcon({ className = '' }: { className?: string }) {
   return (
     <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="currentColor">
-      <circle cx="12" cy="12" r="12" fill="#0052CC" />
-      <rect x="11" y="10" width="2" height="6" fill="white" />
-      <circle cx="12" cy="7" r="1.2" fill="white" />
+      <circle cx="12" cy="12" r="12" fill="var(--color-primary-alt)" />
+      <rect x="11" y="10" width="2" height="6" fill="var(--color-secondary)" />
+      <circle cx="12" cy="7" r="1.2" fill="var(--color-secondary)" />
     </svg>
   );
 }

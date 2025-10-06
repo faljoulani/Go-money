@@ -57,7 +57,7 @@ export function MobileCardsCarousel({
             key={card.id ?? i}
             data-slide={i}
             data-index={i}
-            className="snap-start shrink-0 w-[85%] max-w-[360px] rounded-xl bg-white"
+            className="snap-start shrink-0 w-[85%] max-w-[360px] rounded-xl bg-surface-section"
           >
             {card.imgUrl && (
               <div className="relative overflow-hidden rounded-xl w-full h-[250px]">
@@ -70,10 +70,10 @@ export function MobileCardsCarousel({
               </div>
             )}
             {card.icon && (
-              <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12`}>{card.icon}</div>
+              <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12` }>{card.icon}</div>
             )}
             <div className="pt-4 pb-6 px-3">
-              <h3 className="text-[20px] leading-7 font-medium text-primary">{card.title}</h3>
+              <h3 className="text-[20px] leading-7 font-medium text-primaryAlt">{card.title}</h3>
               {card.description && (
                 <p
                   className="mt-2 text-default text-sm leading-5"

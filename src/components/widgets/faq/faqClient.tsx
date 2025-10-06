@@ -17,10 +17,9 @@ export default function QuestionsClient({
 }) {
   const defaultActive = categories[0]?.Id ?? '';
   const [active, setActive] = useState<string>(defaultActive);
-  let endpoint = `api/default/faqquestions`;
 
   const { data, error, isLoading } = useSf<SfList<Question>>(
-    endpoint,
+    'api/default/faqquestions',
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
@@ -39,13 +38,26 @@ export default function QuestionsClient({
 
   const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => {
-    setOpenId(questions[0]?.Id ?? null); 
+    setOpenId(questions[0]?.Id ?? null);
   }, [active, questions]);
 
   return (
-    <section className="flex md:gap-8 xs:gap-2 md:pt-[58px] xs:pt-[30px] md:pb-16 overflow-clip mx-auto xs:w-[90%] xs:flex-col md:flex-row">
+    <section
+      className="
+        mx-auto overflow-clip
+        xs:w-[90%] xs:flex-col xs:gap-2 xs:pt-[30px]
+        md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16
+      "
+    >
+      {/* LEFT: desktop categories */}
       <aside className="w-1/4 xs:hidden md:block fadeLeft">
-        <ul className="rounded-2xl overflow-hidden bg-white border border-slate-200">
+        <ul
+          className="
+            overflow-hidden rounded-2xl
+            border border-line dark:border-white/10
+            bg-surface-section
+          "
+        >
           {categories.map((cat) => {
             const isActive = active === cat.Id;
             return (
@@ -53,15 +65,20 @@ export default function QuestionsClient({
                 key={cat.Id}
                 aria-current={isActive ? 'true' : undefined}
                 onClick={() => setActive(cat.Id)}
-                className={`flex hover:cursor-pointer items-center justify-between px-6 py-5 text-[15px] border-t border-slate-200 first:border-t-0 ${
-                  isActive ? 'bg-[#0B1C5A] text-white' : 'bg-white text-slate-900 hover:bg-slate-50'
-                }`}
+                className={[
+                  'flex cursor-pointer items-center justify-between px-6 py-5 text-[15px]',
+                  'border-t border-line first:border-t-0 dark:border-white/10',
+                  isActive
+                    ? 'bg-primaryAlt text-secondary'
+                    : 'bg-surface-section text-default hover:opacity-90',
+                ].join(' ')}
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
                 <span
-                  className={`grid place-items-center w-8 h-8 rounded-lg rtl:rotate-180 ${
-                    isActive ? 'text-white' : 'text-black'
-                  }`}
+                  className={[
+                    'grid h-8 w-8 place-items-center rounded-lg rtl:rotate-180',
+                    isActive ? 'text-secondary' : 'text-default',
+                  ].join(' ')}
                   aria-hidden
                 >
                   <svg
@@ -71,7 +88,7 @@ export default function QuestionsClient({
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-[24px] h-[24px] xs:hidden md:block"
+                    className="hidden h-[24px] w-[24px] md:block"
                   >
                     <line x1="0" y1="12" x2="15" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
@@ -82,44 +99,46 @@ export default function QuestionsClient({
           })}
         </ul>
       </aside>
-<div className="md:hidden xs:block">
-  <ul
-    className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory
-               [scrollbar-width:none] [-ms-overflow-style:none] bg-white border rounded-2xl items-center  px-8 py-4 h-[3.4rem]" 
-  >
-    <style>{`
-      ul::-webkit-scrollbar { display: none; }
-    `}</style>
 
-    {categories.map((cat) => {
-      const isActive = active === cat.Id;
-      return (
-        <li key={cat.Id} className="snap-start shrink-0">
-          <button
-            onClick={() => setActive(cat.Id)}
-            className={[
-              "px-5 py-2.5 rounded-xl first:ml-2 rtl:first:mr-2 text-sm whitespace-nowrap",
-              "transition-colors",
-              isActive
-                ? "bg-[#0B1C5A] text-white border-[#0B1C5A] shadow-sm"
-                : "bg-white text-slate-900 border-slate-200"
-            ].join(" ")}
-            aria-current={isActive ? "true" : undefined}
-          >
-            {cat.Title}
-          </button>
-        </li>
-      );
-    })}
-  </ul>
-</div>
+      {/* TOP: mobile categories (chips) */}
+      <div className="md:hidden xs:block">
+        <ul
+          className="
+            flex snap-x snap-mandatory items-center gap-3 overflow-x-auto rounded-2xl border
+            border-line dark:border-white/10 bg-surface-section px-8 py-4 pb-4
+            [scrollbar-width:none] [-ms-overflow-style:none] h-[3.4rem]
+          "
+        >
+          <style>{`ul::-webkit-scrollbar{display:none}`}</style>
+          {categories.map((cat) => {
+            const isActive = active === cat.Id;
+            return (
+              <li key={cat.Id} className="snap-start shrink-0">
+                <button
+                  onClick={() => setActive(cat.Id)}
+                  className={[
+                    'rounded-xl px-5 py-2.5 text-sm whitespace-nowrap transition-colors',
+                    isActive
+                      ? 'bg-primaryAlt text-secondary shadow-sm'
+                      : 'bg-surface-section text-default border border-line dark:border-white/10',
+                  ].join(' ')}
+                  aria-current={isActive ? 'true' : undefined}
+                >
+                  {cat.Title}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
+      {/* RIGHT: questions */}
       <div className="flex-1 fadeRight">
-        <div className=" rounded-xl">
-          {isLoading && <div className="p-6 text-slate-500">Loading…</div>}
-          {error && <div className="p-6 text-red-600">Failed to load FAQs</div>}
+        <div className="rounded-xl">
+          {isLoading && <div className="p-6 text-default/70">Loading…</div>}
+          {error && <div className="p-6 text-rose-500">Failed to load FAQs</div>}
           {!isLoading && !error && questions.length === 0 && (
-            <div className="p-6 text-slate-500">No questions in this category yet.</div>
+            <div className="p-6 text-default/70">No questions in this category yet.</div>
           )}
 
           {questions.map((q) => {
@@ -127,24 +146,28 @@ export default function QuestionsClient({
             return (
               <details
                 key={q.Id}
-                className="group p-6 border rounded-xl mb-4 bg-white border-[#E0E0E0]"
+                className="
+                  group mb-4 rounded-xl border bg-surface-section
+                  border-line dark:border-white/10
+                  p-6
+                "
                 open={isOpen}
               >
                 <summary
-                  className="flex list-none items-center justify-between cursor-pointer "
+                  className="flex cursor-pointer list-none items-center justify-between"
                   onClick={(e) => {
                     e.preventDefault();
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
-                  <span className="text-default font-semibold">{q.Title}</span>
-                  <span className="ml-6 grid size-9 place-items-center rounded-lg bg-primary text-white">
-                    <svg
-                      viewBox="0 0 14 14"
-                      className="w-[15px] h-[15px]"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
+                  <span className="font-semibold text-default">{q.Title}</span>
+                  <span
+                    className="
+                      ml-6 grid size-9 place-items-center rounded-lg
+                      bg-primaryAlt text-secondary
+                    "
+                  >
+                    <svg viewBox="0 0 14 14" className="h-[15px] w-[15px]" stroke="currentColor" strokeWidth="2">
                       {isOpen ? (
                         <line x1="0" y1="7" x2="15" y2="7" />
                       ) : (
@@ -156,8 +179,9 @@ export default function QuestionsClient({
                     </svg>
                   </span>
                 </summary>
+
                 {q.Answer && (
-                  <Description className="mt-6 text-default leading-5 text-14px" html={q.Answer} />
+                  <Description className="mt-6 text-14px leading-5 text-default" html={q.Answer} />
                 )}
               </details>
             );
@@ -167,4 +191,3 @@ export default function QuestionsClient({
     </section>
   );
 }
-

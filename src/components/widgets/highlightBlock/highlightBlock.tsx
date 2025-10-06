@@ -142,7 +142,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="md:h-[392px] md:w-[490px] object-contain rounded-[20px] xs:h-[250px] xs:w-[250px] xs:mx-auto"
+                className="md:h-[392px] md:w-[490px] object-contain rounded-[20px] xs:h-[250px] xs:w-[250px] xs:mr-[40px] xs:ml-[20px]"
                 draggable={false}
               />
             ) : (
