@@ -96,7 +96,10 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
 
   return (
     <section {...attrs}>
-      <div className="relative w-full rounded-3xl md:mx-20 mb-16 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px] bg-[linear-gradient(258.38deg,var(--color-gradient-from),var(--color-gradient-to))]">
+      <div
+        className="relative w-full rounded-3xl md:mx-20 mb-16 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px] bg-[linear-gradient(258.38deg,_#6be5bf,_#b3dfef)]
+        dark:bg-[linear-gradient(258.38deg,_#a6efd9,_#006aa5)]"
+      >
         <div className="relative flex flex-col md:flex-row items-center md:place-items-start gap-6 pt-8 md:py-0 px-6 md:px-16">
           {/* TEXT — order 1 on xs, middle on md+ */}
           <div className="order-1 md:order-2 w-full md:flex-1 text-[#0A1B2E] justify-start min-w-0 md:my-10">
@@ -119,7 +122,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
                 <a key={index} href={item.href} className="flex flex-col items-end">
                   {item.iconUrl && (
                     <div
-                      className={`flex items-center justify-center h-[56px] w-[56px] rounded-full bg-bgAltReverse border-2 border-[#6BE5BF] ${
+                      className={`flex items-center justify-center h-[56px] w-[56px] rounded-full bg-[#000000] dark:bg-white border-2 border-[#6BE5BF] ${
                         index === 0
                           ? 'absolute right-[95px] top-0 z-30'
                           : index === 1
@@ -158,7 +161,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
                 alt={phoneAlt || 'Mobile'}
                 width={360}
                 height={720}
-                className="mx-auto xs:w-[210px] md:mx-0 md:absolute md:left-0 md:bottom-[98px] max-h-[300px] md:max-h-none"
+                className="mx-auto xs:w-[210px] md:w-[360px] md:mx-0 md:absolute md:left-0 md:bottom-[98px] max-h-[300px] md:max-h-none"
               />
             )}
           </div>

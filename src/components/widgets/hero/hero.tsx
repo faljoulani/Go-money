@@ -182,11 +182,11 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className=" xs:hidden pointer-events-none md:absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-indigo-400/30 blur-3xl"
       />
 
-      <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24 xs:flex xs:flex-col xs:px-8 xs:pt-20 xs:pb-[220px]">
-        <div className="flex flex-col items-start justify-center md:mb-44 md:fadeLeftHero xs:mb-4">
+      <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24 xs:flex xs:flex-col xs:px-4 xs:pt-28">
+        <div className="flex flex-col items-start justify-center md:mt-20 fadeLeftHero xs:mb-4">
           {eyebrow && (
             <Eyebrow
-              className="md:font-medium xs:font-light md:text-lg xs:text-md leading-6"
+              className="md:font-medium xs:font-normal md:text-lg xs:text-sm md:leading-6 xs:leading-[18px]"
               color="white"
             >
               {eyebrow}
@@ -196,20 +196,22 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-[2rem] md:leading-[90px] md:tracking-[-0.02em] xs:tracking-[-0.01em] mb-4"
+              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[90px] tracking-[-0.02em] xs:leading-8 mb-4"
             >
               {title}
             </Title>
           )}
 
-          {description && <Description html={description} className="text-white mb-4 " />}
+          {description && (
+            <Description html={description} className="text-white mb-4 xs:leading-5" />
+          )}
 
           {ctaText && (
             <div>
               <CTA
                 variant="outline"
                 colorText="text-white"
-                fontWeight="font-semibold"
+                fontWeight="font-medium"
                 borderColor="border-white"
                 icon="slot"
                 bgColor="transparent"
@@ -227,7 +229,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
     md:absolute  ${isAr ? 'md:mr-[32%] lg:ml-[37%] xl:mr-[55%] ' : 'md:ml-[32%] lg:ml-[37%] xl:ml-[55%]'}
     md:flex 
-    md:h-[660px] md:w-[700px] md:-bottom-8 
+    md:-bottom-8 md:w-[700px] md:h-[650px]
     fadeupHero
   `}
       >

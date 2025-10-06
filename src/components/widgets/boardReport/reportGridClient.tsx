@@ -133,22 +133,22 @@ export default function ReportGridClient({
             {pageItems.map((f) => (
               <article
                 key={f.Id}
-                className="rounded-2xl border border-slate-200 dark:border-none bg-pdfSection shadow-sm px-6 py-8 flex flex-col items-center justify-center"
+                className="rounded-2xl border border-slate-200 dark:border-none bg-white dark:bg-[#131321] shadow-sm px-6 py-8 flex flex-col items-center justify-center"
               >
-                <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-bgPdf">
+                <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-[#f5f6ff] dark:bg-[#a6efd9]">
                   <svg
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
                     fill="none"
-                    className='stroke-pdf'
+                    className='stroke-[#212121] dark:stroke-[#010663]'
                     strokeWidth="2"
                   >
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <path d="M14 2v6h6" />
                   </svg>
                 </div>
-                <h3 className="text-center text-[17px] font-semibold text-pdfText">{f.Title}</h3>
+                <h3 className="text-center text-[17px] font-semibold text-[#212121] dark:text-[#fafafa]">{f.Title}</h3>
               </article>
             ))}
           </div>

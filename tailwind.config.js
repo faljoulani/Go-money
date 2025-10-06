@@ -9,6 +9,8 @@ module.exports = {
         primaryAlt: 'var(--color-primary-alt)',
         secondary: 'var(--color-secondary)',
         accent: 'var(--color-accent)',
+        bgAlt: 'var(--color-bg-alt)',
+        whiteCta:  'var(--color-white-cta)',
         default: 'var(--color-default)',
         expand: 'var(--color-expand)',
         'surface-page': 'var(--surface-page)',
