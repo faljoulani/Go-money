@@ -104,7 +104,7 @@ export default function CTA({
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5 text-primaryAlt transition-colors"
+          className="h-5 w-5 text-primaryAlt transition-colors cta-arrow"
           aria-hidden="true"
         >
           <path d="M9 18l6-6-6-6" />

@@ -158,7 +158,7 @@ const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Directi
         phone: `${countryDial}${localPhone}`,
         email,
         requestType: reqType,
-        complaintCategory: topic || 'OTHERS',
+        complaintCategory: dropdownOptionsTopics || 'OTHERS',
         description: notes || `Request from ${fullName || email}`,
         channel: 'MOBILE.APPLICATION',
       };
