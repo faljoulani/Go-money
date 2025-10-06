@@ -227,7 +227,7 @@ export default function ContactFormClient({
                 placeholder={data.phoneNumberPlaceholder ?? ''}
                 className="
          w-full flex-1 h-[48px] px-3 overflow-clip
-        border  bg-transparent rounded-2xl
+        border border-[#BDBDBD] bg-transparent rounded-2xl
         text-14px leading-6 text-primary
         placeholder:text-[#BDBDBD]
       "
