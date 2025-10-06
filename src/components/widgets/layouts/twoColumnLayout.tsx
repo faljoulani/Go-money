@@ -41,9 +41,9 @@ export default async function TwoColumnLayout(props) {
   return (
     <>
       <section {...attrs}>
-        <div className="w-full md:mx-auto md:my-16 flex flex-col-reverse gap-8 md:flex-row">
+        <div className="w-full md:mx-auto md:my-16 flex flex-col-reverse gap-8 md:flex-row bg-surface-page">
           <div
-            className="w-full md:basis-[40%] bg-white rounded-3xl min-w-0"
+            className="w-full md:basis-[40%] rounded-3xl min-w-0 bg-red-500"
             {...(props.requestContext.isEdit
               ? { 'data-sfcontainer': LEFT, 'data-sfplaceholderlabel': 'Left' }
               : {})}
@@ -54,7 +54,7 @@ export default async function TwoColumnLayout(props) {
           </div>
 
           <div
-            className="w-full md:basis=[60%] md:basis-[60%] bg-white rounded-3xl min-w-0"
+            className="w-full md:basis=[60%] md:basis-[60%] rounded-3xl min-w-0 bg-surface-input"
             {...(props.requestContext.isEdit
               ? { 'data-sfcontainer': RIGHT, 'data-sfplaceholderlabel': 'Right' }
               : {})}
