@@ -5,7 +5,7 @@ import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
 import { COUNTRY_LIST } from '../../../utils/countries-emoji';
 
-type Option = { id: string; label: string };
+type Option = { id: string; label: string; value: string };
 type Data = {
   title?: string;
   subTitle?: string;
@@ -100,8 +100,38 @@ export default function ContactFormClient({
   const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
     id: o.id,
     label: o.label,
-    value: (o.id ?? '').toString().toUpperCase(),
+    value: o.value ?? '',
   }));
+  
+  const getDropdownOptionsTopics = (dir: 'ltr' | 'rtl'): DropdownOption[] => [
+  {
+    id: '1',
+    value: 'ACCOUNT.ISSUE',
+    label: dir === 'rtl' ? 'مشكلة في الحساب' : 'Account Issue',
+  },
+  {
+    id: '2',
+    value: 'PAYMENT.ISSUE',
+    label: dir === 'rtl' ? 'مشكلة في الدفع' : 'Payment Issue',
+  },
+  {
+    id: '3',
+    value: 'TECHNICAL.ISSUE',
+    label: dir === 'rtl' ? 'مشكلة تقنية' : 'Technical Issue',
+  },
+  {
+    id: '4',
+    value: 'PRODUCT.ISSUE',
+    label: dir === 'rtl' ? 'مشكلة في المنتج' : 'Product Issue',
+  },
+  {
+    id: '5',
+    value: 'OTHERS',
+    label: dir === 'rtl' ? 'أخرى' : 'Others',
+  },
+];
+const Direction = useDir(); // 'ltr' or 'rtl'
+const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Direction);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -190,13 +220,13 @@ export default function ContactFormClient({
           </div>
 
           {/* Phone (flag · ISO2 · +code pill + local number input) */}
-          <div>
+          <div className="flex flex-col min-w-0">
             <label className={LABEL}>
               {data.phoneNumberLabel ?? 'Phone Number'}
               {reqStar}
             </label>
 
-            <div className="w-[326.5px] flex items-stretch gap-1">
+            <div className="flex items-stretch gap-1">
               {/* Country pill dropdown */}
               <div className="relative inline-block">
                 <CustomDropdown
@@ -219,20 +249,17 @@ export default function ContactFormClient({
               </div>
 
               {/* Local number only */}
-              <input
-                name="phone"
-                inputMode="tel"
-                autoComplete="tel"
-                required
-                placeholder={data.phoneNumberPlaceholder ?? ''}
-                className="
-        min-w-0 flex-1 h-[48px] px-3
-        border-0 outline-none bg-transparent
-        text-14px leading-6 text-[#2B2B2B]
-        placeholder:text-[#BDBDBD]
-      "
-                disabled={isLoading}
-              />
+              <div className="flex-1">
+                <input
+                  name="phone"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  required
+                  placeholder={data.phoneNumberPlaceholder ?? ''}
+                  className={FIELD}
+                  disabled={isLoading}
+                />
+              </div>
             </div>
           </div>
 
@@ -264,7 +291,7 @@ export default function ContactFormClient({
               options={dropdownOptions}
               placeholder={data.requestTypePlacholder ?? 'Select request type'}
               disabled={isLoading}
-              className="relative w-full sm:max-w-[326.5px]"
+              className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
               optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
@@ -277,13 +304,15 @@ export default function ContactFormClient({
               {data.topicLabel ?? 'Topic'}
               {reqStar}
             </label>
-            <input
-              name="topic"
-              placeholder={data.topicPlaceholder ?? ''}
-              className={FIELD}
-              required
-              autoComplete="off"
+            <CustomDropdown
+              name="requestType"
+              options={dropdownOptionsTopics}
+              placeholder={data.topicPlaceholder?? 'Select topic'}
               disabled={isLoading}
+              className="relative w-full md:max-w-full sm:max-w-[326.5px]"
+              buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
+              optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
             />
           </div>
 
