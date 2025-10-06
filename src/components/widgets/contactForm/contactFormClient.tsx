@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
 import { COUNTRY_LIST } from '../../../utils/countries-emoji';
+import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 
 type Option = { id: string; label: string; value: string };
 type Data = {
@@ -89,7 +90,7 @@ export default function ContactFormClient({
       })),
     [],
   );
-
+const { post } = useSfMutation(postUrl); 
   const onCountryChange = (opt: DropdownOption) => {
     const iso2 = String(opt.value ?? opt.id);
     const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
@@ -162,14 +163,8 @@ const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Directi
         description: notes || `Request from ${fullName || email}`,
         channel: 'MOBILE.APPLICATION',
       };
+    await post(apiPayload);
 
-      const response = await fetch(postUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(apiPayload),
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setResStatus('success');
       formRef.current?.reset();
     } catch (err) {
