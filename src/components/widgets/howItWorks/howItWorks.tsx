@@ -139,7 +139,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return <HowItWorksSimple {...props} />;
   }
   return (
-    <section {...attrs} className="relative md:mx-20 bg-surface-page">
+    <section {...attrs} className="relative mx-4 md:mx-20">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
         {view.SubTitle && <Eyebrow color="text-default">{view.SubTitle}</Eyebrow>}
@@ -186,13 +186,13 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               alt=""
               className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[400px] left-0 z-10  object-top"
             />
- <img
+            <img
               src="/assets/transparentN.png"
               alt=""
               className="absolute  xs:h-[100%]  w-full xs:object-fill md:object-cover md:h-[100%] xl:h-[1275px] left-0 z-50  "
             />
             {/* pocket lip */}
-          
+
             <img
               src="/assets/pocketHQ.webp"
               alt=""

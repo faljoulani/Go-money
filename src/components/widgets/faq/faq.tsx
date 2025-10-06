@@ -74,7 +74,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
     return <section {...attrs}>No Category</section>;
   }
   return (
-    <section {...attrs}>
+    <section {...attrs} className="md:px-0 px-4">
       <div className="md:mx-auto w-full flex flex-col gap-2 text-center justify-center xs:mt-4 items-center md:px-6 md:pt-12 md:pb-4 fadeupText">
         {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && (
@@ -92,9 +92,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
           </Title>
         )}
 
-        {rootData?.Description && (
-          <Description>{rootData.Description}</Description>
-        )}
+        {rootData?.Description && <Description>{rootData.Description}</Description>}
       </div>
 
       {categories.length > 0 && <QuestionsClient lang={lang} categories={categories} />}
