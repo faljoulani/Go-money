@@ -189,7 +189,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
  <img
               src="/assets/transparentN.png"
               alt=""
-              className="absolute  xs:h-[100%]  w-full xs:object-fill md:object-cover md:h-[100%] xl:h-[1275px] left-0 z-50  "
+              className="absolute  xs:h-[100%]  w-full xs:object-fill md:object-cover md:h-[100%] xl:h-[900px] left-0 z-50  "
             />
             {/* pocket lip */}
           
@@ -197,7 +197,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[100%] select-none absolute left-0 z-50"
+              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[500px] select-none absolute left-0 z-50"
             />
             <img
               src="/assets/Vector.png"
