@@ -135,7 +135,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
 
   return (
     <section {...attrs} className="relative [perspective:1000px] overflow-x-clip  ">
-      <footer className=" text-gray-300 h-auto md:flip">
+      <footer className=" text-gray-300 h-auto flip ">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
         {/* <img

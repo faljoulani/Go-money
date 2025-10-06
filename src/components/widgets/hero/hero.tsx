@@ -202,7 +202,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
             </Title>
           )}
 
-          {description && <Description html={description} className="text-white mb-4 xs:leading-5" />}
+          {description && (
+            <Description html={description} className="text-white mb-4 xs:leading-5" />
+          )}
 
           {ctaText && (
             <div>
