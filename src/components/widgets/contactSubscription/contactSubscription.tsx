@@ -64,7 +64,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
         <div
-          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[30%] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] xs:h-[70px] xs:w-[70px] bg-primaryAlt`}
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[30px] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] xs:h-[75px] xs:w-[75px] bg-primaryAlt md:h-[90px] md:w-[90px]`}
         >
           <div className={`absolute h-[52px] w-[52px] bg-[#FFFFFF] dark:bg-[#1d1d28]`} />
         </div>
