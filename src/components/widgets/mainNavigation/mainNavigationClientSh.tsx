@@ -10,7 +10,7 @@ import type { ApiNavItem as ClientNavItem } from '../../../types/typee';
 import LanguageSwitcher from '../../customComponents/languageSwitcher/languageSwitcher';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 import MobileNavbar from './mobileNavbar';
-import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon'
+import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon';
 
 export default function MainNavigationClientShell({
   attrs,
@@ -49,15 +49,15 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300  ` +
+        `fixed md:mx-5 mx-4 left-0 right-0 z-[200] md:rounded-3xl   transition-surface duration-300  ` +
         (scrolled
-          ? `bg-surface dark:bg-[#000]
+          ? `top-0 bg-surface dark:bg-[#000]
              text-black
              backdrop-blur-[70px] backdrop-saturate-150 `
-          : `bg-transparent text-white`)
+          : `bg-transparent text-white top-5 md:top-10`)
       }
     >
-      <div className="md:px-8 md:py-3 xs:px-2 xs:py-4 ">
+      <div className="md:px-8 md:py-3 py-3 px-4">
         <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container md:px-6 xs:px-4">
           {/* Left: Logo */}
           {/* <div className="flex items-center gap-3">
@@ -76,11 +76,11 @@ export default function MainNavigationClientShell({
 
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
-      <GoMoneyIcon
-  className={`w-[102px] h-[45px] transition-colors ${
-    scrolled ? 'text-primaryAlt' : 'text-white'
-  }`}
-/>
+              <GoMoneyIcon
+                className={`w-[102px] h-[45px] transition-colors ${
+                  scrolled ? 'text-primaryAlt' : 'text-white'
+                }`}
+              />
             </Link>
           </div>
 

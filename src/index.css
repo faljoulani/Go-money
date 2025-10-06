@@ -125,7 +125,6 @@ html.dark {
   --surface-gradient: linear-gradient(258.38deg, #a6efd9 -1.4%, #006aa5 100%);
     --howitworks-bg: url('/assets/circlesDark.png');
   --range-inner-circle: #054E42;
-    
 }
 
 body {
@@ -156,11 +155,12 @@ html.modal-open {
   scrollbar-gutter: stable;
 }
 
+
+
+/* base helpers */
 [dir='rtl'] .cta-arrow {
   transform: scaleX(-1);
 }
-
-/* base helpers */
 @layer base {
   .font-lufga {
     font-family: 'Lufga', sans-serif;

@@ -32,6 +32,7 @@ type NavLink = {
   ViewUrl?: string;
   RelativeUrlPath?: string;
   Link?: CmsLink | CmsLink[] | null;
+  CTAExternalUrl?: string;
   SubNavigation?: NavSubLink[];
 };
 
@@ -114,12 +115,12 @@ function mapNavLink(navLink: NavLink): ClientNavItem | null {
     .filter(Boolean) as ClientNavLink[];
 
   const url = resolveNavigationHref({
-    link: navLink?.Link,
+    link: navLink.CTAExternalUrl,
     urlName: navLink?.UrlName,
     viewUrl: navLink?.ViewUrl,
     relativeUrlPath: navLink?.RelativeUrlPath,
   });
-
+  console.log('tttt---->', navLink.CTAExternalUrl);
   return children.length ? { title, url, children } : { title, url };
 }
 
@@ -148,7 +149,7 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
     'Title',
     'UrlName',
     'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
-    'NavPages($select=Id,Title,Order,UrlName,ViewUrl,RelativeUrlPath,Link,SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath))',
+    'NavPages($select=Id,Title,Order,CTAExternalUrl,ViewUrl,RelativeUrlPath,Link,SubNavigation($select=Id,Title,UrlName,ViewUrl,RelativeUrlPath))',
     'StoreLinks($select=Id,Title,Url,StoreType,IsVisible,Order,Icon($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
   ];
 
@@ -156,7 +157,6 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
     itemType: selection?.Content?.[0]?.Type,
     single: true,
   });
-
   const mainNavigationData: MainNavigationItem | null = mainNavigationPayload
     ? ((Array.isArray(mainNavigationPayload) ? mainNavigationPayload[0] : mainNavigationPayload) ??
       null)
@@ -169,6 +169,7 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
       </section>
     ) : null;
   }
+  console.log('MNPAYLOAD', mainNavigationData);
 
   const logoImg = selectPrimaryImage(mainNavigationData.Logo);
   const logoRaw = getImageSrc(logoImg);

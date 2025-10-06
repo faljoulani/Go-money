@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 export function MobileCardsCarousel({
   items,
   dir,
+  target,
 }: {
   items: {
     id: string;
@@ -14,6 +15,7 @@ export function MobileCardsCarousel({
     icon?: any;
   }[];
   dir: string;
+  target?: string;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -44,11 +46,11 @@ export function MobileCardsCarousel({
   };
 
   return (
-    <div className="md:hidden xs:block mt-10 px-4">
+    <div className="md:hidden xs:block mt-10">
       <div
         ref={trackRef}
-        className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth
-                   [-ms-overflow-style:none] [scrollbar-width:none]"
+        className={`flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth
+                   [-ms-overflow-style:none] [scrollbar-width:none] ${target == 'scrollableCards' ? '' : '-mx-4'}`}
       >
         <style>{`.no-scrollbar::-webkit-scrollbar{display:none}`}</style>
 
@@ -57,7 +59,10 @@ export function MobileCardsCarousel({
             key={card.id ?? i}
             data-slide={i}
             data-index={i}
-            className="snap-start shrink-0 w-[85%] max-w-[360px] rounded-xl bg-surface-section"
+            className={`
+              ${i == 0 ? 'ltr:ml-4 rtl:mr-4' : ''}
+              ${i == items.length - 1 ? 'ltr:mr-4 rtl:ml-4' : ''}
+             snap-center shrink-0 w-[85%] max-w-[360px] rounded-xl bg-surface-section`}
           >
             {card.imgUrl && (
               <div className="relative overflow-hidden rounded-xl w-full h-[250px]">
@@ -70,7 +75,7 @@ export function MobileCardsCarousel({
               </div>
             )}
             {card.icon && (
-              <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12` }>{card.icon}</div>
+              <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12`}>{card.icon}</div>
             )}
             <div className="pt-4 pb-6 px-3">
               <h3 className="text-[20px] leading-7 font-medium text-primaryAlt">{card.title}</h3>
