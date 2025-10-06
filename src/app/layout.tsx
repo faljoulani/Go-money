@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="container-fluid">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <RtlDirection />
-          <div className="p-4">{children}</div>
+          <div className="p-4 md:p-5">{children}</div>
         </ThemeProvider>
       </body>
     </html>
