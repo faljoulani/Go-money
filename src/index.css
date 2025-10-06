@@ -99,6 +99,7 @@
   --color-primary-alt: #010663;
   --color-default: #424242;
   --color-secondary: #ffffff;
+  --color-accent: #ffffff;
   --surface-page: #eeeeee;
   --surface-section: #ffffff;
   --surface-input: #ffffff;
@@ -114,6 +115,7 @@ html.dark {
   --color-primary-alt: #a6efd9;
   --color-default: #f5f5f5;
   --color-secondary: #000000;
+  --color-accent: #a6efd9;
   --surface-page: #131321;
   --surface-section: #44444433;
   --surface-input: #000000;
@@ -136,7 +138,7 @@ body {
 }
 
 /* Dark mode base overrides (next-themes adds `dark` class to <html>) */
-/* html.dark {
+html.dark {
   color-scheme: dark;
 }
 html.dark body {

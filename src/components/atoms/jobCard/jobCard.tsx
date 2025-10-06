@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import { useDirection, formatDaysAgo } from '../../../utils/helpers';
+import BreifCasiIcon from '../../../../public/icons/breif-case.svg';
 
 type Job = {
   id: string;
@@ -63,15 +64,9 @@ export default function JobCard({ job, onOpen }: Props) {
       aria-busy={loading}
       aria-label={`${job.title} - ${job.location}`}
     >
-      <div className="h-10 w-10 rounded-xl">
+      <div className="h-10 w-10 p-6 rounded-xl bg-[#E6E8FF] dark:bg-[#A6EFD9] m-auto flex  items-center justify-center">
         <span className="text-xl">
-          <Image
-            src="/icons/job_icon.png"
-            alt="Job"
-            width={64}
-            height={64}
-            className="mb-6 opacity-70"
-          />
+          <BreifCasiIcon className="text-[#010663]" />
         </span>
       </div>
 

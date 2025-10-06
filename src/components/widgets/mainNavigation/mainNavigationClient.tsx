@@ -10,7 +10,11 @@ import { useDismissable } from '../../../utils/hooks/useDismissable';
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
   return Array.isArray((item as any)?.children);
 }
-const toHref = (url: string, stripQuery: boolean) => (stripQuery ? cleanHref(url) : url);
+const normalizeUrl = (url: string, stripQuery: boolean) => {
+  if (!url) return '/';
+  const cleaned = stripQuery ? cleanHref(url) : url;
+  return routeMatchKey(cleaned);
+};
 
 export default function ClientNavbar({
   items,
@@ -34,33 +38,37 @@ export default function ClientNavbar({
   }, [pathname]);
 
   const rawPath = currentPath ?? pathname ?? '';
-  const pathForMatch = routeMatchKey(stripQuery ? cleanHref(rawPath) : rawPath);
+  const currentMatch = normalizeUrl(rawPath, stripQuery);
+
+  const isActivePath = (href: string) => {
+    const target = normalizeUrl(href, stripQuery);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[MainNavigation] compare:', { href, target, currentMatch });
+    }
+    if (target === '/') return currentMatch === '/';
+    return currentMatch === target || currentMatch.startsWith(`${target}/`);
+  };
 
   return (
     <nav ref={navRef} className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
       {items.map((item, i) => {
-        const itemHref = toHref(item.url, stripQuery);
-        const itemMatch = routeMatchKey(itemHref);
+        const itemHref = normalizeUrl(item.url, false);
+        const itemUrl = stripQuery ? cleanHref(item.url || '/') : item.url || '/';
 
-        const childActive = isDropdown(item)
-          ? item.children.some((c) => {
-              const cHref = toHref(c.url, stripQuery);
-              const cMatch = routeMatchKey(cHref);
-              return pathForMatch === cMatch || (cMatch !== '/' && pathForMatch.startsWith(cMatch));
-            })
-          : false;
+        const selfActive = isActivePath(item.url);
+        const childActive = isDropdown(item) && item.children.some((c) => isActivePath(c.url));
+        const active = selfActive || childActive;
 
-        const selfActive =
-          pathForMatch === itemMatch || (itemMatch !== '/' && pathForMatch.startsWith(itemMatch));
-        const active = childActive || selfActive;
-
-        const colorClass = active
-          ? scrolled
-            ? 'text-[var(--Text-text-primary,hsla(237,98%,20%,1))]'
-            : 'text-white'
-          : scrolled
-            ? 'text-black'
-            : 'text-white';
+        const colorClass = scrolled
+          ? active
+            ? 'text-primaryAlt'
+            : 'text-default'
+          : active
+            ? 'text-white'
+            : 'text-[#E0E0E0]';
+        const underlineClass = active
+          ? 'after:absolute after:bottom-0 after:left-1/2 after:h-[2px] after:w-[70%] after:-translate-x-1/2 after:rounded-full after:bg-current after:content-[""]'
+          : '';
 
         return (
           <div key={`${itemHref}-${i}`} className="relative">
@@ -70,7 +78,7 @@ export default function ClientNavbar({
                 aria-haspopup="menu"
                 aria-expanded={openIdx === i}
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
+                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass} ${underlineClass}`}
               >
                 {displayTitle(item.title)}
                 <svg
@@ -86,8 +94,8 @@ export default function ClientNavbar({
               </button>
             ) : (
               <Link
-                href={itemHref}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass}`}
+                href={itemUrl}
+                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass} ${underlineClass}`}
               >
                 {displayTitle(item.title)}
               </Link>
@@ -96,17 +104,19 @@ export default function ClientNavbar({
             {isDropdown(item) && openIdx === i && (
               <div
                 role="menu"
-                className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-white backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
+                className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-secondary backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
               >
                 {item.children.map((child) => {
-                  const childHref = toHref(child.url, stripQuery);
+                  const childHref = stripQuery ? cleanHref(child.url || '/') : child.url || '/';
+                  const childIsActive = isActivePath(child.url);
+
                   return (
                     <Link
                       key={childHref}
                       href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className="block rounded-lg px-3 py-2 no-underline text-14px leading-5 text-default hover:bg-[#E6E8FF]"
+                      className={`block rounded-lg px-3 py-2 no-underline text-default text-14px leading-5 transition-colors hover:text-[#000] hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9]`}
                     >
                       {displayTitle(child.title)}
                     </Link>

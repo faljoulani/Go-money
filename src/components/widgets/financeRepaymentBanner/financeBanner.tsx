@@ -65,7 +65,6 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
       'ForegroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
       'FloatImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls)',
     ],
-
     {
       itemType: selection?.Content?.[0]?.Type,
       single: true,
@@ -138,13 +137,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
       <div className="flex xs:flex-col md:h-[550px] xs:h-[700px] md:w-[90%] rounded-2xl md:mx-auto flip overflow-clip">
         {/* Layer 1: gradient + main background image */}
         <div className="absolute inset-0 z-0 rtl:scale-x-[-1] rounded-2xl">
-          <div
-            className="absolute inset-0 "
-            style={{
-              backgroundImage:
-                'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000 100%), linear-gradient(97.8deg, #010663 0%, #6BE5BF 100%)',
-            }}
-          />
+          <div className="absolute inset-0 bg-finance-banner dark:bg-finance-banner-dark rounded-3xl" />
 
           {financeRepaymentBanner.images.backgroundUrl.url && (
             <Image
@@ -160,8 +153,6 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
         {/* Layer 2: content */}
 
         <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 flex-col  md:pl-24 rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:-mr-16">
-          {/* Cards strip (maps from floatUrl → cards) under the title area */}
-
           {financeRepaymentBanner.images.floatUrl.url && (
             <div className="relative  w-full xs:h-[125px]  md:-ml-[24px] xs:-ml-[20px] xs:-mr-[20px] md:mr-[16px] rounded-lg fadeRightFinanceDetails  md:rtl:-right-12 ">
               <Image
@@ -190,9 +181,9 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             <div className="md:mt-6 xs:mt-5">
               <CTA
                 variant="outline"
-                colorText="text-white"
+                colorText="text-accent"
                 fontWeight="font-light"
-                borderColor="border-white"
+                borderColor="border-accent"
                 align="left"
                 icon="slot"
                 bgColor="transparent"
@@ -218,8 +209,10 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
               width={550}
               height={900}
               priority
-              className="md:w-[550px] md:h-[500px]  xs:w-[360px]  xs:h-auto w-full xs:translate-y-10
-         pointer-events-none  animate-float xs:inset-x-0 xs:left-0"
+              className="
+                md:w-[550px] md:h-[500px]  xs:w-[360px]  xs:h-auto w-full xs:translate-y-10
+                pointer-events-none  animate-float xs:inset-x-0 xs:left-0
+              "
             />
           </div>
         )}

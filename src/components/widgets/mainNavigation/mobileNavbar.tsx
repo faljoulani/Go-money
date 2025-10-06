@@ -8,9 +8,11 @@ import { pickOneMedia } from '../../../utils/sitefinity';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 
 import type { ApiNavItem as ClientNavItem } from '../../../types/typee';
+
 function isDropdown(item: ClientNavItem): item is import('../../../types/typee').ApiNavDropdown {
   return Array.isArray((item as any).children);
 }
+
 type StoreLink = {
   title?: string;
   order?: number;
@@ -51,7 +53,7 @@ export default function MobileNavbar({
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  // Prevent background scroll when open
+  // Prevent background scroll when drawer is open
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -97,11 +99,13 @@ export default function MobileNavbar({
       };
     });
   }, [storeLinks, requestContext]);
+
   return (
     <div>
+      {/* Open (hamburger) button */}
       <button
         ref={btnRef}
-        className={`md:hidden  inline-flex items-center justify-center rounded-xl p-2 ${textColorWhenScrolled} hover:bg-white/10 transition`}
+        className={`md:hidden inline-flex items-center justify-center rounded-xl p-2 ${textColorWhenScrolled} hover:bg-white/10 dark:text-white dark:hover:bg-white/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30`}
         aria-label="Open menu"
         aria-expanded={open}
         onClick={() => setOpen(true)}
@@ -116,11 +120,13 @@ export default function MobileNavbar({
         </svg>
       </button>
 
+      {/* Backdrop */}
       <div
-        className={`md:hidden fixed inset-0 z-[250] bg-black/40 transition-opacity ${open ? 'opacity-100 ' : 'pointer-events-none opacity-0'}`}
+        className={`md:hidden fixed inset-0 z-[250] bg-black/40 transition-opacity ${open ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
         onClick={() => setOpen(false)}
       />
 
+      {/* Drawer */}
       <div
         ref={panelRef}
         dir={dir}
@@ -129,15 +135,21 @@ export default function MobileNavbar({
         aria-label="Main menu"
         aria-hidden={!open}
         className={`md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
-          rounded-l-2xl rounded-r-none bg-white shadow-xl transition-transform duration-300
+          rounded-l-2xl rounded-r-none bg-white dark:bg-[#000] shadow-xl transition-transform duration-300
           ${open ? 'block translate-x-0' : isRTL ? 'hidden translate-x-full' : 'hidden -translate-x-full'}`}
       >
+        {/* Header row */}
         <div className="flex items-center justify-between p-4">
-          <Link href="/" aria-label="Home" onClick={() => setOpen(false)}>
+          <Link
+            href="/"
+            aria-label="Home"
+            onClick={() => setOpen(false)}
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-lg"
+          >
             <Image src={logoUrl} alt={logoAlt} width={92} height={40} unoptimized />
           </Link>
           <button
-            className="rounded-xl p-2 text-primary hover:bg-black/5"
+            className="rounded-xl p-2 text-primary hover:bg-black/5 dark:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             aria-label="Close menu"
             onClick={() => setOpen(false)}
           >
@@ -152,8 +164,9 @@ export default function MobileNavbar({
           </button>
         </div>
 
-        <div className="h-[full] bg-white pb-24">
-          <nav className="px-2 bg-white">
+        {/* Body */}
+        <div className="h-full bg-white dark:bg-[#000] pb-24">
+          <nav className="px-2">
             {items?.map((item, idx) => {
               const hasChildren = isDropdown(item) && item.children.length > 0;
               const active = flatIsActive(item.url);
@@ -164,8 +177,12 @@ export default function MobileNavbar({
                     key={idx}
                     href={item.url || '#'}
                     onClick={() => setOpen(false)}
-                    className={`block rounded-xl px-4 py-3 text-[15px] font-medium bg-white
-                      ${active ? 'bg-primary/5 text-primary ' : 'text-[#0A1B2E] hover:bg-black/5'}`}
+                    className={`block rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                      ${
+                        active
+                          ? 'bg-primary/5 text-primary dark:bg-white/10 dark:text-white'
+                          : 'text-[#0A1B2E] hover:bg-black/5 dark:text-white dark:hover:bg-white/10'
+                      }`}
                   >
                     {item.title}
                   </Link>
@@ -175,7 +192,7 @@ export default function MobileNavbar({
               // Accordion group
               return (
                 <Accordion key={idx} title={item.title} defaultOpen={active}>
-                  <div className={`mt-2 border border-[#E9EEF2]  px-3`}>
+                  <div className="mt-2 border border-[#E9EEF2] dark:border-white/10 px-3 rounded-xl">
                     {item.children!.map((child, cIdx) => {
                       const activeChild = flatIsActive(child.url);
                       return (
@@ -183,8 +200,12 @@ export default function MobileNavbar({
                           key={cIdx}
                           href={child.url || '#'}
                           onClick={() => setOpen(false)}
-                          className={`block border-b border-dashed  border-[#DCE6EE] py-3 text-[14px] last:border-b-0
-                            ${activeChild ? 'text-primary block' : 'text-[#0A1B2E] hover:opacity-80'}`}
+                          className={`block border-b border-dashed border-[#DCE6EE] dark:border-white/10 py-3 text-[14px] last:border-b-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                            ${
+                              activeChild
+                                ? 'text-primary dark:text-white'
+                                : 'text-[#0A1B2E] hover:opacity-80 dark:text-white dark:hover:text-white'
+                            }`}
                         >
                           {child.title}
                         </Link>
@@ -195,17 +216,21 @@ export default function MobileNavbar({
               );
             })}
 
-            <div className="mt-4 border-t border-[#EEF2F6] bg-white pt-3">
+            {/* Footer controls */}
+            <div className="mt-4 border-t border-[#EEF2F6] dark:border-white/10 pt-3">
               <div className="flex items-center justify-between px-2 py-3">
-                <span className="text-sm xs:text-black">Theme</span>
+                <span className="text-sm text-[#0A1B2E] dark:text-white">Theme</span>
                 <ModeSwitcher />
               </div>
+              {/* Language switcher area (optional) */}
               {/* <div className="flex items-center justify-between px-2 py-3">
-                <span className="text-sm text-[#6B7A8C]">Language</span>
+                <span className="text-sm text-[#6B7A8C] dark:text-neutral-400">Language</span>
                 <LanguageSwitcher />
               </div> */}
             </div>
-            <div className="sticky bottom-0 z-10 mt-6 bg-white px-4 pb-4 pt-3">
+
+            {/* Store badges */}
+            <div className="sticky bottom-0 z-10 mt-6 px-4 pb-4 pt-3">
               <div className="flex items-center justify-center gap-3">
                 {normalizeStores.slice(0, 3).map((s) => (
                   <a
@@ -213,14 +238,16 @@ export default function MobileNavbar({
                     href={s.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-12 w-12 place-items-center rounded-2xl bg-[#F0F4F8] ring-1 ring-black/5"
+                    className="grid h-12 w-12 place-items-center rounded-2xl ring-1 ring-black/5 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
                     aria-label={s.title}
                     title={s.title}
                   >
                     {s.iconSrc ? (
                       <Image src={s.iconSrc} alt={s.alt} width={20} height={20} unoptimized />
                     ) : (
-                      <span className="text-[10px]">{s.title}</span>
+                      <span className="text-[10px] text-[#0A1B2E] dark:text-neutral-300">
+                        {s.title}
+                      </span>
                     )}
                   </a>
                 ))}
@@ -244,14 +271,19 @@ function Accordion({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const id = useId();
+
   return (
     <div className="my-1">
       <button
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium
-          ${open ? 'bg-primary/5 text-primary' : 'text-[#0A1B2E] hover:bg-black/5'}`}
+        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+          ${
+            open
+              ? 'bg-primary/5 text-primary dark:bg-white/10 dark:text-white'
+              : 'text-[#0A1B2E] hover:bg-black/5 dark:text-white dark:hover:bg-white/10'
+          }`}
       >
         <span>{title}</span>
         <svg
@@ -267,12 +299,11 @@ function Accordion({
       <div
         id={id}
         aria-hidden={!open}
-        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300
-    ${
-      open
-        ? 'grid-rows-[1fr] opacity-100 pointer-events-auto'
-        : 'grid-rows-[0fr] opacity-0 pointer-events-none'
-    }`}
+        className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ${
+          open
+            ? 'grid-rows-[1fr] opacity-100 pointer-events-auto'
+            : 'grid-rows-[0fr] opacity-0 pointer-events-none'
+        }`}
       >
         <div className="min-h-0">{children}</div>
       </div>

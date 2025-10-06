@@ -17,15 +17,13 @@ export default function LanguageSwitcher() {
     setLangSubMenuShown(false),
   );
 
-  const supportedLanguages =
-    process.env.NEXT_PUBLIC_SUPPORTED_CULTURES?.split(',')
-      .map((lang) => lang.trim().toLowerCase())
-      .filter(Boolean) || ['en', 'ar'];
+  const supportedLanguages = process.env.NEXT_PUBLIC_SUPPORTED_CULTURES?.split(',')
+    .map((lang) => lang.trim().toLowerCase())
+    .filter(Boolean) || ['en', 'ar'];
 
   const defaultCulture = (process.env.NEXT_PUBLIC_DEFAULT_CULTURE || 'en').toLowerCase();
-  const prefixDefault = (process.env.NEXT_PUBLIC_PREFIX_DEFAULT_CULTURE || 'false')
-    .toString()
-    .toLowerCase() === 'true';
+  const prefixDefault =
+    (process.env.NEXT_PUBLIC_PREFIX_DEFAULT_CULTURE || 'false').toString().toLowerCase() === 'true';
 
   const normalizePathWithoutLang = (path: string) => {
     const segments = path.split('/').filter(Boolean);
@@ -43,22 +41,21 @@ export default function LanguageSwitcher() {
     return `${prefixedPath}${qs ? `?${qs}` : ''}`;
   };
 
-  // Build the homepage URL for the selected language (respects default culture prefix rule)
   const buildHomeHrefForLang = (lang: string) => {
     const needsPrefix = lang !== defaultCulture || prefixDefault;
     return needsPrefix ? `/${lang}` : '/';
   };
 
-  // On mount / navigation: sync from URL and localStorage, redirect if needed
   useEffect(() => {
     const storedLang = typeof window !== 'undefined' ? localStorage.getItem('language') : null;
     const urlFirst = pathname?.split('/')[1]?.toLowerCase();
-    const urlLang = supportedLanguages.includes(urlFirst || '') ? (urlFirst as string) : defaultCulture;
+    const urlLang = supportedLanguages.includes(urlFirst || '')
+      ? (urlFirst as string)
+      : defaultCulture;
 
     const effective = (storedLang || urlLang || defaultCulture).toLowerCase();
     setCurrentLang(effective);
 
-    // If stored language exists and differs from URL, redirect to stored language URL
     if (storedLang && storedLang.toLowerCase() !== urlLang) {
       const href = buildHrefForLang(storedLang.toLowerCase());
       if (href !== window.location.pathname + (window.location.search || '')) {
@@ -118,14 +115,14 @@ export default function LanguageSwitcher() {
       {langSubMenuShown && (
         <div
           role="listbox"
-          className="absolute mt-2 text-black bg-white border border-gray-300 rounded shadow-lg min-w-32 right-0"
+          className="absolute mt-2 bg-secondary rounded-xl shadow-xl border border-white/20 min-w-32 right-0 p-2"
         >
           {supportedLanguages.map((lang) => (
             <div
               role="option"
               aria-selected={currentLang === lang}
               key={lang}
-              className={`${lang == 'ar' && 'font-cairo'} py-2 px-4 cursor-pointer hover:bg-[#E6E8FF]`}
+              className={`${lang == 'ar' && 'font-cairo'} rounded-lg px-3 py-2 cursor-pointer text-default hover:text-[#000]  hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9]`}
               onClick={() => onChange(lang)}
             >
               {getCustomLabel(lang)}
@@ -136,3 +133,4 @@ export default function LanguageSwitcher() {
     </div>
   );
 }
+
