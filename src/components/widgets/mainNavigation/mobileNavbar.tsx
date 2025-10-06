@@ -136,7 +136,7 @@ export default function MobileNavbar({
         aria-hidden={!open}
         className={`transition-all duration-300 h-screen md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
            bg-white dark:bg-[#000] shadow-xl
-          ${open ? 'translate-x-0' : isRTL ? '-translate-x-[600px]' : '-translate-x-[600px]'}`}
+          ${open ? 'translate-x-0' : isRTL ? 'translate-x-[600px]' : 'translate-x-[-600px]'}`}
       >
         {/* Header row */}
         <div className="flex items-center justify-between p-4">

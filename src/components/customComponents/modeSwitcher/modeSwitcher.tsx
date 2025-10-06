@@ -19,7 +19,7 @@ export default function ModeSwitcher() {
     >
       <svg
         viewBox="0 0 24 24"
-        className="h-6 w-6 stroke-current fill-transparent"
+        className="h-6 w-6 fill-transparent stroke-primary dark:stroke-white md:stroke-current"
         strokeWidth={1.5}
         aria-hidden
       >
