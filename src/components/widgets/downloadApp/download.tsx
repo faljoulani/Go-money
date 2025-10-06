@@ -167,7 +167,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           <div className="w-full max-w-[560px]">
             {!!title && (
               <Title
-                color="text-black"
+                color="text-primary"
                 className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug"
               >
                 {title}

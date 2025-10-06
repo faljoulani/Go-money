@@ -50,14 +50,14 @@ export default function MainNavigationClientShell({
       className={
         `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300  ` +
         (scrolled
-          ? `bg-surface
+          ? `bg-surface dark:bg-[#000]
              text-black
              backdrop-blur-[70px] backdrop-saturate-150 `
           : `bg-transparent text-white`)
       }
     >
       <div className="md:px-8 md:py-3 xs:px-2 xs:py-4 ">
-        <div className="flex items-center justify-between   overflow-visible pointer-events-auto h-header max-w-container   md:px-6 xs:px-4">
+        <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container md:px-6 xs:px-4">
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
@@ -85,10 +85,12 @@ export default function MainNavigationClientShell({
           <div className="flex items-center md:gap-4">
             <div
               className={`flex items-center gap-3 text-14px font-normal leading-5 tracking-[0] ${
-                scrolled ? 'text-primary' : 'text-white'
+                scrolled ? 'text-primary' : 'text-black'
               }`}
             >
-              <div className="xs:hidden md:block" ><ModeSwitcher/></div>
+              <div className="xs:hidden md:block">
+                <ModeSwitcher />
+              </div>
               <LanguageSwitcher />
             </div>
             <div className="xs:hidden md:block md:h-6 md:w-px bg-white" />
@@ -151,7 +153,7 @@ export default function MainNavigationClientShell({
                 );
               })}
             </div>
-           
+
             <MobileNavbar
               logoUrl={logoUrl}
               logoAlt={logoAlt}

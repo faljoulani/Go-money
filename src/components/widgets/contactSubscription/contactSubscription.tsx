@@ -66,7 +66,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
         <div
           className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[60px] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] h-[110px] w-[110px] bg-primaryAlt`}
         >
-          <div className={`absolute h-[52px] w-[52px] bg-surface-page`} />
+          <div className={`absolute h-[52px] w-[52px] bg-[#FFFFFF] dark:bg-[#1d1d28]`} />
         </div>
       )}
 

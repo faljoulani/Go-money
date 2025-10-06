@@ -36,7 +36,7 @@ export default function CTA({
   onClick,
   colorText = 'text-whiteCta',
   fontWeight = 'font-normal',
-  borderColor = 'border-primary-alt',
+  borderColor = 'border-primaryAlt',
   bgColor = 'bg-primaryAlt',
   align = 'center',
   block = false,
@@ -63,7 +63,6 @@ export default function CTA({
   const ghost = `bg-transparent ${colorText} border-0 hover:opacity-80`;
 
   const look = variant === 'solid' ? solid : variant === 'ghost' ? ghost : outline;
-
   const disabledCls = disabled ? 'opacity-60 cursor-not-allowed pointer-events-none' : '';
 
   const classes = [base, fontWeight, alignClass, widthClass, look, disabledCls, className]
@@ -98,8 +97,20 @@ export default function CTA({
       <span className="whitespace-nowrap">{children}</span>
 
       {icon === 'arrow' && (
-        <img src="/icons/chevron-right.svg" alt="" className="cta-arrow" aria-hidden />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5 text-primaryAlt transition-colors"
+          aria-hidden="true"
+        >
+          <path d="M9 18l6-6-6-6" />
+        </svg>
       )}
+
       {icon === 'slot' && (
         <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
       )}

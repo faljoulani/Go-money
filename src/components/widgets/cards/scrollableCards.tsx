@@ -103,7 +103,6 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         : [];
   }
 
-
   const childCardData = cardItems.map((card: any) => {
     const rawHref = card?.LinkUrl ?? '';
     const href = rawHref?.trim() || '#';
@@ -144,8 +143,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             </Title>
             {subtitle && <Description className="mx-auto">{subtitle}</Description>}
           </div>
-    <MobileCardsCarousel items={childCardData} dir='' />
-          {/* <MobileCardsCarousel items={childCardData} /> */}
+          <MobileCardsCarousel items={childCardData} dir="" />
 
           <div className="mt-10 px-[205px] xs:hidden md:block">
             <div className="space-y-16">
@@ -183,7 +181,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                             className={`relative w-[72px] h-[72px] ${isRight ? 'bg-[#0DF9C4] rounded-tr-3xl' : ' bg-[#1919E5] rounded-tl-3xl'}`}
                           >
                             <div
-                              className={`absolute w-10 h-10 bg-white dark:bg-transparent ${
+                              className={`absolute w-10 h-10 bg-white dark:bg-[#1D1D28] ${
                                 isRight ? 'left-0 -bottom-0' : 'right-0 -bottom-0'
                               }`}
                             ></div>
