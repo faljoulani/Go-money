@@ -43,7 +43,7 @@ export default async function TwoColumnLayout(props) {
       <section {...attrs}>
         <div className="w-full md:mx-auto md:my-16 flex flex-col-reverse gap-8 md:flex-row bg-surface-page">
           <div
-            className="w-full md:basis-[40%] rounded-3xl min-w-0 bg-red-500"
+            className="w-full md:basis-[40%] rounded-3xl min-w-0"
             {...(props.requestContext.isEdit
               ? { 'data-sfcontainer': LEFT, 'data-sfplaceholderlabel': 'Left' }
               : {})}

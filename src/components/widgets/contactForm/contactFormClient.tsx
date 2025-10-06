@@ -207,12 +207,12 @@ export default function ContactFormClient({
                   onChange={onCountryChange}
                   className="relative inline-block"
                   buttonClassName={[
-                    'inline-flex h-[48px] min-w-[120px] w-[120px] items-center justify-center gap-2',
+                    'inline-flex h-[48px] min-w-[120px] w-[200px] items-center justify-center gap-2',
                     'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 text-14px leading-[18px] text-[#2B2B2B]',
                     'focus:ring-2 focus:ring-[#0B2A8E]/20',
                     isLoading ? 'opacity-50 cursor-not-allowed' : '',
                   ].join(' ')}
-                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-white p-2 shadow-xl"
+                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-surface-page p-2 shadow-xl"
                   optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
                   disabled={isLoading}
                 />
@@ -226,9 +226,9 @@ export default function ContactFormClient({
                 required
                 placeholder={data.phoneNumberPlaceholder ?? ''}
                 className="
-        min-w-0 flex-1 h-[48px] px-3
-        border-0 outline-none bg-transparent
-        text-14px leading-6 text-[#2B2B2B]
+         w-full flex-1 h-[48px] px-3 overflow-clip
+        border  bg-transparent rounded-2xl
+        text-14px leading-6 text-primary
         placeholder:text-[#BDBDBD]
       "
                 disabled={isLoading}
@@ -266,7 +266,7 @@ export default function ContactFormClient({
               disabled={isLoading}
               className="relative w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
+              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-surface-page shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
               optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
             />
           </div>
@@ -322,7 +322,7 @@ export default function ContactFormClient({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto rounded-[18px] px-6 py-3 text-white bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
+            className="w-full sm:w-auto rounded-[18px] px-6 py-3 text-secondary bg-primaryAlt focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
           >
             {isLoading ? 'Sending…' : (data.ctaText ?? 'Send Message')}
           </button>
