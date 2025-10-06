@@ -59,8 +59,8 @@ export default function ContactFormClient({
   dir = 'auto',
 }: Props) {
   const FIELD =
-    'w-full h-[48px] px-3 py-3 rounded-[18px] text-black border border-[#BDBDBD] ' +
-    'bg-white text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
+    'w-full h-[48px] px-3 py-3 rounded-[18px] text-black border border-default ' +
+    'bg-surface-input text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
   const LABEL = 'mb-1 text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
 
@@ -80,7 +80,7 @@ export default function ContactFormClient({
         id: c.iso2,
         value: c.iso2,
         label: (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 text-default">
             <span className={`fi fi-${c.iso2.toLowerCase()}`} aria-hidden />
             <span className="font-medium">{c.iso2}</span>
             <span className="opacity-80">{c.dial}</span>
@@ -152,11 +152,11 @@ export default function ContactFormClient({
   const Dir = useDir();
 
   return (
-    <>
+    <div>
       {isLoading && <FullPageLoader />}
 
       <form ref={formRef} onSubmit={handleSubmit} dir={dir} className="space-y-5">
-        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 ">
           {/* First Name */}
           <div className="grid grid-cols-1 min-w-0">
             <label className={LABEL}>
@@ -208,7 +208,7 @@ export default function ContactFormClient({
                   className="relative inline-block"
                   buttonClassName={[
                     'inline-flex h-[48px] min-w-[120px] w-[120px] items-center justify-center gap-2',
-                    'rounded-[18px] border border-[#BDBDBD] bg-white px-3 text-14px leading-[18px] text-[#2B2B2B]',
+                    'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 text-14px leading-[18px] text-[#2B2B2B]',
                     'focus:ring-2 focus:ring-[#0B2A8E]/20',
                     isLoading ? 'opacity-50 cursor-not-allowed' : '',
                   ].join(' ')}
@@ -328,7 +328,7 @@ export default function ContactFormClient({
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }
 

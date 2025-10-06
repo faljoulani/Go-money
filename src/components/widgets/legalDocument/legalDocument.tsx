@@ -121,7 +121,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
     <div {...attrs}>
       <div className="sf-ldoc md:mt-16 xs:my-10">
         <div className="mx-auto md:grid md:gap-8 md:grid-cols-[360px_1fr]">
-          <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0 xs:h-16 md:h-auto">
+          <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white dark:bg-[#1d1d28] md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0 xs:h-16 md:h-auto">
             <nav className="md:rounded-[15px] xs:rounded-xl">
               <ul className="  md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto snap-x snap-mandatory no-scrollbar">
                 {sections.map((s, i) => {
@@ -158,7 +158,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
               </ul>
             </nav>
           </aside>
-          <main className="md:min-h-[320px] rounded-2xl bg-white p-4 md:p-7 ring-1 ring-slate-200">
+          <main className="md:min-h-[320px] rounded-2xl bg-white dark:bg-[#1d1d28] p-4 md:p-7">
             {sections.map((s, i) => {
               const slug = slugify(s.SectionHeader || `section-${i + 1}`);
               return (
@@ -187,3 +187,4 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   );
 }
 
+ 

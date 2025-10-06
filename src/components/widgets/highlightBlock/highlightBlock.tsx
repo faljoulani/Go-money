@@ -74,8 +74,6 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
 
   if (!data) return <EmptySafe isEdit={isEdit} label="ExpandBox" />;
 
-
-
   const eyebrow: string | undefined = data.Eyebrow;
   const title: string | undefined = data.Title;
   const description: string | undefined = data.Description;
@@ -98,7 +96,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
   return (
     <section className="md:mx-20 relative xs:flex xs:flex-col xs:mx-2">
       {/* Background div that scales */}
-      <div className="absolute inset-0 rounded-3xl bg-skyTint"></div>
+      <div className="absolute inset-0 rounded-3xl bg-[#B3DFEF] dark:bg-[#0F0F15]"></div>
 
       {/* Content above the background */}
       <div className="relative md:grid md:grid-cols-2 md:items-center md:py-24 md:pl-16 md:rtl:pr-16 md:align-middle md:h-[580px] xs:h-[700px]   xs:py-16 xs:px-6 xs:flex xs:flex-col-reverse">
@@ -122,8 +120,8 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
             <div>
               <CTA
                 href={(ctaHref || '').trim() || '#'}
-                colorText="text-textPrimaryAlt"
-                borderColor="border-primary"
+                colorText="text-primaryAlt"
+                borderColor="border-primaryAlt"
                 bgColor="transparent"
                 variant="outline"
                 icon="arrow"
@@ -142,7 +140,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="md:h-[392px] md:w-[490px] object-contain rounded-[20px] xs:h-[250px] xs:w-[250px] xs:mx-auto"
+                className="md:h-[392px] md:w-[490px] object-contain rounded-[20px] xs:h-[250px] xs:w-[250px] xs:mr-[40px] xs:ml-[20px]"
                 draggable={false}
               />
             ) : (

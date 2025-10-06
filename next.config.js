@@ -1,3 +1,5 @@
+/** @type {import('next').NextConfig} */
+
 const path = require('path');
 
 const cspHeader = `
@@ -11,6 +13,11 @@ const cspHeader = `
 module.exports = {
   webpack: (config, options) => {
     config.resolve['alias']['@widgetregistry'] = path.resolve(__dirname, 'src/app/widget-registry');
+    config.module.rules.push({
+      test: /\.svg$/,
+      issuer: /\.[jt]sx?$/,
+      use: ['@svgr/webpack'],
+    });
     return config;
   },
   skipTrailingSlashRedirect: true,

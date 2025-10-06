@@ -111,12 +111,12 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   return (
     <section
       {...attrs}
-      className="relative  w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-white xs:px-4 xs:py-12 md:px-6 md:py-16 text-center shadow-sm ring-1 ring-black/5 md:mx-20 mt-16 mb-8"
+      className="relative  w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-surface-section xs:px-4 xs:py-12 md:px-6 md:py-16 text-center shadow-sm ring-1 ring-black/5 md:mx-20 mt-16 mb-8"
     >
       <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
-        <div className="md:h-24 md:w-24 xs:w-20 xs:h-20 md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-[#0023F5] rtl:rounded-br-[40px] rtl:rounded-bl-none" />
+        <div className="md:h-24 md:w-24 xs:w-20 xs:h-20 md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-primaryAlt rtl:rounded-br-[40px] rtl:rounded-bl-none" />
 
-        <div className="absolute right-0 top-0 rtl:left-0 rtl:right-auto md:h-12 md:w-12 xs:h-10 xs:w-10  bg-white" />
+        <div className="absolute right-0 top-0 rtl:left-0 rtl:right-auto md:h-12 md:w-12 xs:h-10 xs:w-10  bg-surface-section" />
       </div>
 
       <div className="mx-auto max-w-2xl">
@@ -131,9 +131,9 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
         <div className="md:mt-12 xs:mt-8 flex flex-wrap xs:flex-col md:flex-row items-center justify-center gap-4">
           <a
             href={ctaHref}
-            className="inline-flex md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 rounded-[20px] border-2 border-primary px-6 py-3 text-primary font-medium transition hover:bg-primary hover:text-white"
+            className="inline-flex md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 rounded-[20px] border-2 border-primaryAlt px-6 py-3 text-primary font-medium transition hover:bg-primary hover:text-white"
           >
-            <span>{primaryLabel}</span>
+            <span className="text-primaryAlt">{primaryLabel}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className='cta-arrow'>
               <path
                 d="M9 18l6-6-6-6"
@@ -147,9 +147,9 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
           <a
             href={faqurl}
-            className="inline-flex text-lg tracking-tight md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-primary items-center justify-center gap-2 rounded-[20px] border-2 border-primary px-6 py-3 font-medium transition hover:bg-primary hover:text-white"
+            className="inline-flex text-lg tracking-tight md:w-[189px] xs:w-[90%] md:rtl:w-[168px]  items-center justify-center gap-2 rounded-[20px] border-2 border-primaryAlt px-6 py-3 font-medium transition hover:bg-primary hover:text-white"
           >
-            <span>{secondaryLabel}</span>
+            <span className="text-primaryAlt">{secondaryLabel}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className='cta-arrow'>
               <path
                 d="M9 18l6-6-6-6"

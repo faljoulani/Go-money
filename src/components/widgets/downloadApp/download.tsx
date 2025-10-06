@@ -167,7 +167,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           <div className="w-full max-w-[560px]">
             {!!title && (
               <Title
-                color="text-black"
+                color="text-primary"
                 className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug"
               >
                 {title}
@@ -239,7 +239,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           </div>
         </div>
       </div>
-      <div className="xs:hidden md:absolute -bottom-8 h-8 w-full defaultBgColor z-30" />
+      <div className="xs:hidden md:block md:absolute -bottom-12 h-12 w-full defaultBgColor z-30" />
     </section>
   );
 }

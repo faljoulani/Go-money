@@ -32,13 +32,13 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
 
         // remove Tailwind utility classes first
         links.forEach((l) => {
-          l.classList.remove('active', 'bg-[#010663]', 'text-white', 'ring-1', 'ring-slate-900');
+          l.classList.remove('active', 'bg-primaryAlt', 'text-secondary', 'ring-1', 'ring-slate-900');
         });
 
         const to = links.find((l) => l.getAttribute('data-target') === id);
         if (to) {
           // add Tailwind classes only
-          to.classList.add('active', 'bg-[#010663]', 'text-white', 'ring-1', 'ring-slate-900');
+          to.classList.add('active', 'bg-primaryAlt', 'text-secondary', 'ring-1', 'ring-slate-900');
 
           // Only for horizontal mobile scroll
           const container = to.closest('ul');
@@ -120,3 +120,4 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
   return null; // No need to render anything
 }
 
+ 
