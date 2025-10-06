@@ -179,7 +179,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1300px]">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1330px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
               src="/assets/blackCurve.webp"
