@@ -10,6 +10,7 @@ import type { ApiNavItem as ClientNavItem } from '../../../types/typee';
 import LanguageSwitcher from '../../customComponents/languageSwitcher/languageSwitcher';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 import MobileNavbar from './mobileNavbar';
+import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon'
 
 export default function MainNavigationClientShell({
   attrs,
@@ -59,7 +60,7 @@ export default function MainNavigationClientShell({
       <div className="md:px-8 md:py-3 xs:px-2 xs:py-4 ">
         <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container md:px-6 xs:px-4">
           {/* Left: Logo */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
               <Image
                 src={logoUrl}
@@ -70,6 +71,16 @@ export default function MainNavigationClientShell({
                 className={scrolled ? '' : 'invert brightness-0'}
                 unoptimized
               />
+            </Link>
+          </div> */}
+
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2" aria-label="Home">
+      <GoMoneyIcon
+  className={`w-[102px] h-[45px] transition-colors ${
+    scrolled ? 'text-primaryAlt' : 'text-white'
+  }`}
+/>
             </Link>
           </div>
 
