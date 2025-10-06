@@ -10,7 +10,7 @@ import type { ApiNavItem as ClientNavItem } from '../../../types/typee';
 import LanguageSwitcher from '../../customComponents/languageSwitcher/languageSwitcher';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 import MobileNavbar from './mobileNavbar';
-import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon'
+import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon';
 
 export default function MainNavigationClientShell({
   attrs,
@@ -49,7 +49,7 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed mx-5 top-0 left-0 right-0 z-[200] rounded-3xl  transition-surface duration-300  ` +
+        `fixed md:mx-5 top-0 left-0 right-0 z-[200] md:rounded-3xl  transition-surface duration-300  ` +
         (scrolled
           ? `bg-surface dark:bg-[#000]
              text-black
@@ -76,11 +76,11 @@ export default function MainNavigationClientShell({
 
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
-      <GoMoneyIcon
-  className={`w-[102px] h-[45px] transition-colors ${
-    scrolled ? 'text-primaryAlt' : 'text-white'
-  }`}
-/>
+              <GoMoneyIcon
+                className={`w-[102px] h-[45px] transition-colors ${
+                  scrolled ? 'text-primaryAlt' : 'text-white'
+                }`}
+              />
             </Link>
           </div>
 

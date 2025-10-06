@@ -139,7 +139,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return <HowItWorksSimple {...props} />;
   }
   return (
-    <section {...attrs} className="relative md:mx-20" >
+    <section {...attrs} className="relative mx-4 md:mx-20">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
         {view.SubTitle && <Eyebrow color="text-default">{view.SubTitle}</Eyebrow>}

@@ -29,6 +29,8 @@ export default function ClientNavbar({
   stripQuery?: boolean;
   scrolled?: boolean;
 }) {
+  console.log('tems--->', items);
+
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
   const navRef = useDismissable<HTMLDivElement>(openIdx !== null, () => setOpenIdx(null));
@@ -53,7 +55,15 @@ export default function ClientNavbar({
     <nav ref={navRef} className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
       {items.map((item, i) => {
         const itemHref = normalizeUrl(item.url, false);
-        const itemUrl = stripQuery ? cleanHref(item.url || '/') : item.url || '/';
+
+        let itemUrl: string;
+        try {
+          const parsed = JSON.parse(item.url);
+          itemUrl = Array.isArray(parsed) && parsed[0]?.href ? parsed[0].href : item.url;
+        } catch {
+          itemUrl = item.url;
+        }
+        console.log('itemUrl------>', itemUrl);
 
         const selfActive = isActivePath(item.url);
         const childActive = isDropdown(item) && item.children.some((c) => isActivePath(c.url));
