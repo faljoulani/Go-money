@@ -184,7 +184,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
             <img
               src="/assets/blackCurve.webp"
               alt=""
-              className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[400px] left-0 z-10  object-top"
+              className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[100%] left-0 z-10  object-top"
             />
  <img
               src="/assets/transparentN.png"
