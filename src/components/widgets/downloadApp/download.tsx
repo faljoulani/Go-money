@@ -239,7 +239,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
           </div>
         </div>
       </div>
-      <div className="xs:hidden md:block md:absolute -bottom-12 h-14 w-full defaultBgColor z-30" />
+      <div className="xs:hidden md:block md:absolute left-0 -bottom-14 h-14 w-full defaultBgColor z-30" />
     </section>
   );
 }

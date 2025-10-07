@@ -162,7 +162,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative md:mt-10 md:h-[1390px] xs:mt-36 xs:h-[1400px] flex flex-col justify-center items-center"
+        className="relative md:mt-10 md:h-[1390px] xs:mt-24 xs:h-[1400px] flex flex-col justify-center items-center"
         style={{
           backgroundImage: 'var(--howitworks-bg)',
           backgroundSize: '1380px',
@@ -170,8 +170,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-36 md:left-[170px] xs:left-[6.5rem] ">
-          <div className=" translatePhone  sticky  flex justify-center">
+        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[6.5rem] ">
+          <div className=" translatePhone  sticky md:top-20 flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
           </div>
         </div>
@@ -182,7 +182,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1330px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
-              src="/assets/blackCurve.webp"
+              src="/assets/BlackCurve.webp"
               alt=""
               className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[100%] left-0 z-10  object-top"
             />
@@ -197,7 +197,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[500px] select-none absolute left-0 z-50"
+              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[500px] select-none absolute left-0 xs:top-3 z-50"
             />
             <img
               src="/assets/Vector.png"
