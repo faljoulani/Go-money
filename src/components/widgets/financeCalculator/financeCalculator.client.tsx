@@ -123,7 +123,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
   // ---- state ----
   const [result, setResult] = useState<ResultState>(null);
-  const [nationality, setNationality] = useState<Nationality>('saudi');
+  const [nationality, setNationality] = useState<Nationality>('Saudi');
   const [employer, setEmployer] = useState('');
   const [serviceLength, setServiceLength] = useState(lengthOptions[0] ?? '3 Months');
   const [dob, setDob] = useState('');
@@ -248,7 +248,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           </p>
           <div className="mt-2 flex items-center gap-6">
             {nationalityOptions.map((label) => {
-              const val = /non/i.test(label) ? 'nonsaudi' : 'saudi';
+              const val = /non/i.test(label) ? 'Non-Saudi' : 'Saudi';
               const checked = nationality === (val as Nationality);
               return (
                 <label key={label} className="inline-flex items-center gap-2">
