@@ -233,7 +233,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   }
 
   return (
-    <section className="w-full">
+    <section className="w-full mt-8">
       <div id="calc-result" className="pointer-events-none h-0 -mt-24" />
       <form
         onSubmit={onSubmit}
