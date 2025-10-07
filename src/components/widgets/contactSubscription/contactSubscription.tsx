@@ -64,7 +64,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
         <div
-          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[30%] rtl:rounded-bl-[60px] ltr:rotate-90 rtl:rotate-[270deg] xs:h-[70px] xs:w-[70px] bg-primaryAlt`}
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[30px] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] xs:h-[75px] xs:w-[75px] bg-primaryAlt md:h-[90px] md:w-[90px]`}
         >
           <div className={`absolute h-[52px] w-[52px] bg-[#FFFFFF] dark:bg-[#1d1d28]`} />
         </div>
@@ -102,7 +102,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             placeholder={box.EmailPlaceholder || 'Enter your email address'}
             label={box.EmailLabel || 'Email'}
             button={box.ButtonLabel || 'Subscribe Now'}
-            endpoint="api/default/SubscriptionEmails"
+            endpoint="api/default/subscriptions"
             className="flex flex-col h-full [&>button[type=submit]]:mt-auto"
           />
         </div>
@@ -188,7 +188,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const lines = parent.Title.split('\n');
 
   return (
-    <section {...attrs} className=" px-5 overflow-clip mt-16">
+    <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16">
       <div className="mx-auto max-w-[1240px">
         {parent?.Title && (
           <div className="mb-10">

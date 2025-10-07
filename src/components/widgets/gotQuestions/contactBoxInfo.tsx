@@ -110,12 +110,12 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     href ? (
       <a
         href={href}
-        className="block rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition hover:shadow-md"
+        className="block rounded-2xl border border-slate-200 bg-surface-section p-8 text-center shadow-sm transition hover:shadow-md"
       >
         {children}
       </a>
     ) : (
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+      <div className="rounded-2xl border border-slate-200 bg-surface-section p-8 text-center shadow-sm">
         {children}
       </div>
     );
@@ -123,25 +123,25 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   return (
     <section
       {...attrs}
-      className="relative mx-auto w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-black/5 mb-10 mt-16"
+      className="relative mx-auto w-full max-w-[1240px] overflow-hidden rounded-[28px] border-none bg-surface-section px-6 py-16 text-center shadow-sm  mb-10 mt-16"
     >
       {showCorner && (
         <div className="absolute right-0 top-0">
-          <div className="md:h-24 md:w-24 rounded-bl-[40px] bg-[#0A43FF]" />
-          <div className="absolute right-0 top-0 h-12 w-12 bg-white" />
+          <div className="md:h-24 md:w-24 rounded-bl-[40px] bg-primaryAlt" />
+          <div className="absolute right-0 top-0 h-12 w-12 bg-surface-section" />
         </div>
       )}
 
       <div className="mx-auto max-w-3xl">
-        <h2 className="text-[48px] font-extrabold leading-tight tracking-[-0.02em] text-[#01115A]">
+        <h2 className="text-[48px] font-extrabold leading-tight tracking-[-0.02em] text-primary">
           {title}
         </h2>
-        {subtitle && <p className="mt-4 text-lg leading-relaxed text-[#0a1b2e]/60">{subtitle}</p>}
+        {subtitle && <p className="mt-4 text-lg leading-relaxed text-default">{subtitle}</p>}
       </div>
 
       <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
         <CardWrap href={phoneHref}>
-          <div className="flex items-center justify-center gap-2 text-[#01115A]">
+          <div className="flex items-center justify-center gap-2 text-primary">
             <svg
               width="18"
               height="18"
@@ -161,13 +161,13 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
             <span className="text-base font-semibold">{callLabel}</span>
           </div>
 
-          <div className="mx-auto my-5 h-px w-3/4 bg-slate-200" />
+          <div className="mx-auto my-5 h-px w-3/4 bg-default" />
 
-          <div className="text-lg text-[#0a1b2e]/90">{phoneText || '-'}</div>
+          <div className="text-lg text-default">{phoneText || '-'}</div>
         </CardWrap>
 
         <CardWrap href={emailHref}>
-          <div className="flex items-center justify-center gap-2 text-[#01115A] font-light">
+          <div className="flex items-center justify-center gap-2 text-default font-light">
             <svg
               width="18"
               height="18"
@@ -187,9 +187,9 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
             <span className="text-base font-semibold">{emailLabel}</span>
           </div>
 
-          <div className="mx-auto my-5 h-px w-3/4 bg-slate-200" />
+          <div className="mx-auto my-5 h-px w-3/4 bg-default" />
 
-          <div className="text-lg text-[#0a1b2e]/90 break-all font-light">{emailText || '-'}</div>
+          <div className="text-lg text-default break-all font-light">{emailText || '-'}</div>
         </CardWrap>
       </div>
     </section>

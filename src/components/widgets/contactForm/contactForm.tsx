@@ -4,7 +4,7 @@ import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 import type { FormEntity } from './contactForm.entity';
 import ContactFormClient from './contactFormClient';
 
-type Option = { id: string; label: string};
+type Option = { id: string; label: string; value:any; };
 
 type FormItem = {
   Id: string;
@@ -51,8 +51,8 @@ const toOptions = (arr: unknown): Option[] => {
     .filter(Boolean)
     .map((option: any) => ({ 
       id: option?.Id || '', 
-      label: option?.Key || option?.Value || '',
-      value: option?.value || ''
+      label: option?.Key || option?.Value || '', 
+      value: option?.Value ?? ''
     }))
     .filter((option: Option) => !!option.id && !!option.label);
 };

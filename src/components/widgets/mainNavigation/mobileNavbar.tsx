@@ -134,9 +134,9 @@ export default function MobileNavbar({
         aria-modal="true"
         aria-label="Main menu"
         aria-hidden={!open}
-        className={`md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
-          rounded-l-2xl rounded-r-none bg-white dark:bg-[#000] shadow-xl transition-transform duration-300
-          ${open ? 'block translate-x-0' : isRTL ? 'hidden translate-x-full' : 'hidden -translate-x-full'}`}
+        className={`transition-all duration-300 h-screen md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
+           bg-white dark:bg-[#000] shadow-xl
+          ${open ? 'translate-x-0' : isRTL ? 'translate-x-[600px]' : 'translate-x-[-600px]'}`}
       >
         {/* Header row */}
         <div className="flex items-center justify-between p-4">
@@ -165,7 +165,7 @@ export default function MobileNavbar({
         </div>
 
         {/* Body */}
-        <div className="h-full bg-white dark:bg-[#000] pb-24">
+        <div className="bg-white dark:bg-[#000] pb-24">
           <nav className="px-2">
             {items?.map((item, idx) => {
               const hasChildren = isDropdown(item) && item.children.length > 0;

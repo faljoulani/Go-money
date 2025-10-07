@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
 import { COUNTRY_LIST } from '../../../utils/countries-emoji';
+import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 
 type Option = { id: string; label: string };
 type Data = {
@@ -91,7 +92,7 @@ export default function ContactFormClient({
       })),
     [],
   );
-
+const { post } = useSfMutation(postUrl); 
   const onCountryChange = (opt: DropdownOption) => {
     const iso2 = String(opt.value ?? opt.id);
     const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
@@ -164,14 +165,8 @@ export default function ContactFormClient({
         description: notes || `Request from ${fullName || email}`,
         channel: 'MOBILE.APPLICATION',
       };
+    await post(apiPayload);
 
-      const response = await fetch(postUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(apiPayload),
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setResStatus('success');
       formRef.current?.reset();
     } catch (err) {
@@ -240,12 +235,12 @@ export default function ContactFormClient({
                   onChange={onCountryChange}
                   className="relative inline-block"
                   buttonClassName={[
-                    'inline-flex h-[48px] min-w-[120px] w-[120px] items-center justify-center gap-2',
+                    'inline-flex h-[48px] min-w-[120px] w-[200px] items-center justify-center gap-2',
                     'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 text-14px leading-[18px] text-[#2B2B2B]',
                     'focus:ring-2 focus:ring-[#0B2A8E]/20',
                     isLoading ? 'opacity-50 cursor-not-allowed' : '',
                   ].join(' ')}
-                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-white p-2 shadow-xl"
+                  listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-surface-page p-2 shadow-xl"
                   optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
                   disabled={isLoading}
                 />
@@ -300,7 +295,7 @@ export default function ContactFormClient({
               }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
+              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-surface-page shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
               optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
             />
           </div>
@@ -367,7 +362,7 @@ export default function ContactFormClient({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto rounded-[18px] px-6 py-3 text-white bg-primary focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
+            className="w-full sm:w-auto rounded-[18px] px-6 py-3 text-secondary bg-primaryAlt focus:outline-none focus:ring-2 focus:ring-[#0B2A8E]/30 disabled:opacity-60"
           >
             {isLoading ? 'Sending…' : (data.ctaText ?? 'Send Message')}
           </button>

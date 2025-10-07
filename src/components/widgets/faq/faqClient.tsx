@@ -44,13 +44,13 @@ export default function QuestionsClient({
   return (
     <section
       className="
-        mx-auto overflow-clip
-        xs:w-[90%] xs:flex-col xs:gap-2 xs:pt-[30px]
+        md:mx-20 overflow-clip
+         xs:flex-col xs:gap-2 xs:pt-[30px]
         md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16
       "
     >
       {/* LEFT: desktop categories */}
-      <aside className="w-1/4 xs:hidden md:block fadeLeft">
+      <aside className="w-[360px] xs:hidden md:block fadeLeft">
         <ul
           className="
             overflow-hidden rounded-2xl
@@ -104,8 +104,8 @@ export default function QuestionsClient({
       <div className="md:hidden xs:block">
         <ul
           className="
-            flex snap-x snap-mandatory items-center gap-3 overflow-x-auto rounded-2xl border
-            border-line dark:border-white/10 bg-surface-section px-8 py-4 pb-4
+            flex snap-x snap-mandatory items-center gap-3 overflow-x-auto md:rounded-2xl md:border
+            border-line md:dark:border-white/10 md:bg-surface-section md:px-8 py-4 pb-4
             [scrollbar-width:none] [-ms-overflow-style:none] h-[3.4rem]
           "
         >
@@ -167,7 +167,12 @@ export default function QuestionsClient({
                       bg-primaryAlt text-secondary
                     "
                   >
-                    <svg viewBox="0 0 14 14" className="h-[15px] w-[15px]" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      viewBox="0 0 14 14"
+                      className="h-[15px] w-[15px]"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       {isOpen ? (
                         <line x1="0" y1="7" x2="15" y2="7" />
                       ) : (
@@ -191,3 +196,4 @@ export default function QuestionsClient({
     </section>
   );
 }
+

@@ -124,7 +124,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                     width={20}
                     height={20}
                     sizes="28px"
-                    className="object-contain"
+                    className="object-contain dark:invert"
                     unoptimized
                   />
                 )}

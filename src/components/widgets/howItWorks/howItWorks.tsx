@@ -139,7 +139,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return <HowItWorksSimple {...props} />;
   }
   return (
-    <section {...attrs} className="relative md:mx-20 bg-surface-page">
+    <section {...attrs} className="relative mx-4 md:mx-20">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
         {view.SubTitle && <Eyebrow color="text-default">{view.SubTitle}</Eyebrow>}
@@ -179,17 +179,17 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1300px]">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1330px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
               src="/assets/blackCurve.webp"
               alt=""
-              className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[400px] left-0 z-10  object-top"
+              className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[100%] left-0 z-10  object-top"
             />
             <img
               src="/assets/transparentN.png"
               alt=""
-              className="absolute  xs:h-[100%]  w-full xs:object-fill md:object-cover md:h-[100%] xl:h-[1275px] left-0 z-50  "
+              className="absolute  xs:h-[100%]  w-full xs:object-fill md:object-cover md:h-[100%] xl:h-[900px] left-0 z-50  "
             />
             {/* pocket lip */}
 
@@ -197,7 +197,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[100%] select-none absolute left-0 z-50"
+              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[500px] select-none absolute left-0 z-50"
             />
             <img
               src="/assets/Vector.png"
