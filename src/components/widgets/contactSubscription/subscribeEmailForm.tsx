@@ -23,24 +23,36 @@ export default function SubscribeEmailForm({
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setMsg('Please enter a valid email.');
-      setState('err');
-      return;
-    }
-    setState('loading');
-    setMsg('');
+     const isRTL =
+    (typeof document !== 'undefined' &&
+      document?.documentElement?.getAttribute('dir') === 'rtl') ||
+    false;
+
+  const MSG = {
+    invalid: isRTL ? 'يرجى إدخال بريد إلكتروني صالح.' : 'Please enter a valid email.',
+    ok:      isRTL ? 'تم الاشتراك! تحقق من بريدك الوارد.' : 'Subscribed! Check your inbox.',
+    fail:    isRTL ? 'تعذر إتمام الاشتراك. يرجى المحاولة مرة أخرى.' : 'Could not subscribe. Please try again.',
+  };
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setMsg(MSG.invalid);
+    setState('err');
+    return;
+  }
+
+  setState('loading');
+  setMsg('');
     try {
-      const res = await post({ Email: email });
-      if (!res?.Email) throw new Error(await res.text());
-      setState('ok');
-      setMsg('Subscribed! Check your inbox.');
-      setEmail('');
-    } catch (err: any) {
-      setState('err');
-      setMsg('Could not subscribe. Please try again.');
-      console.error(err);
-    }
+    const res = await post({ Email: email });
+    if (!res?.Email) throw new Error(await res.text?.());
+    setState('ok');
+    setMsg(MSG.ok);
+    setEmail('');
+  } catch (err: any) {
+    setState('err');
+    setMsg(MSG.fail);
+    console.error(err);
+  }
   }
 
   return (
