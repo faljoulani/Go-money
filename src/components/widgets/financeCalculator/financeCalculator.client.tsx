@@ -203,34 +203,34 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     //   ageAtApplication: '28',
     //   AgeAtMaturity: '29',
     // };
-    try {
-      const res = await post(payload);
-      if (res?.Data?.IsEligible) setResult('success');
-      else setResult('fail');
-    } catch (err) {
-      console.error('FinanceCalculator error:', err);
-      setMsg(
-        dir === 'ltr'
-          ? 'Something went wrong. Please try again.'
-          : 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
-      );
-    } finally {
-      setSubmitting(false);
-    }
     // try {
-    //   if (Number(payload.FinanceAmt) > 7000) {
-    //     setResult('success');
-    //   } else setResult('fail');
+    //   const res = await post(payload);
+    //   if (res?.Data?.IsEligible) setResult('success');
+    //   else setResult('fail');
     // } catch (err) {
     //   console.error('FinanceCalculator error:', err);
     //   setMsg(
     //     dir === 'ltr'
-    //       ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-    //       : 'Something went wrong. Please try again.',
+    //       ? 'Something went wrong. Please try again.'
+    //       : 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
     //   );
     // } finally {
     //   setSubmitting(false);
     // }
+    try {
+      if (Number(payload.FinanceAmt) > 7000) {
+        setResult('success');
+      } else setResult('fail');
+    } catch (err) {
+      console.error('FinanceCalculator error:', err);
+      setMsg(
+        dir === 'ltr'
+          ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+          : 'Something went wrong. Please try again.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   const success: ResponseMessage = successMsg;
@@ -289,17 +289,37 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
+          {/* <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
+            <div className="relative date-wrap">
+              <input
+                required
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
+                className="sf-input bg-secondary pr-12 ltr:pr-12 rtl:pl-12"
+              />
+              <span aria-hidden className="date-icon" />
+            </div>
+          </Field> */}
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
-            <input
-              required
-              type="date"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
-              className="sf-input bg-secondary"
-            />
-          </Field>
+            <div className="relative date-wrap">
+              <input
+                required
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
+                className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''}`}
 
+                data-placeholder={
+                  C.labels?.dateOfBirthPlaceholder 
+                }
+              />
+              {/* theme-aware calendar icon */}
+              <span aria-hidden className="date-icon" />
+            </div>
+          </Field>
           <Field
             label={C.labels?.lengthOfServices || 'Length of Services'}
             tooltip={C.popups?.lengthOfServices}
@@ -415,7 +435,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
-          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] bg-surface-page p-4 text-[13px] text-primaryAlt">
+          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4 text-[13px] text-primaryAlt">
             <div className="flex items-start gap-2">
               <InfoIcon />
               <div>
@@ -450,6 +470,70 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       </form>
 
       <style>{`
+      :root {
+    /* control sizes from one place */
+    --icon-size: 28px;
+    --icon-offset: 12px;
+  }
+
+ 
+  .select-wrap { position: relative; }
+
+  .select-caret{
+    position:absolute;
+    top:50%;
+    right:var(--icon-offset);
+    transform:translateY(-50%);
+    width:var(--icon-size);
+    height:var(--icon-size);
+    pointer-events:none;
+    background-color: var(--color-primary-alt);
+    /* Use mask so color comes from background-color (theme var) */
+    -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.7 9.7a1 1 0 0 1 1.4 0L12 13.6l3.9-3.9a1 1 0 1 1 1.4 1.4l-4.6 4.6a1 1 0 0 1-1.4 0L6.7 11.1a1 1 0 0 1 0-1.4z'/%3E%3C/svg%3E") no-repeat center / contain;
+            mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.7 9.7a1 1 0 0 1 1.4 0L12 13.6l3.9-3.9a1 1 0 1 1 1.4 1.4l-4.6 4.6a1 1 0 0 1-1.4 0L6.7 11.1a1 1 0 0 1 0-1.4z'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+
+  /* RTL mirrors & moves */
+  [dir='rtl'] .select-caret{
+    left:var(--icon-offset);
+    right:auto;
+    transform:translateY(-50%) scaleX(-1);
+  }
+
+  
+  .date-wrap { position: relative; }
+
+  .date-icon{
+    position:absolute;
+    top:50%;
+    right:var(--icon-offset);
+    transform:translateY(-50%);
+    width:var(--icon-size);
+    height:var(--icon-size);
+    pointer-events:none;
+    background-color: var(--color-primary-alt);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1Zm13 8H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9ZM5 6a1 1 0 0 0-1 1v1h16V7a1 1 0 0 0-1-1H5Z'/%3E%3C/svg%3E") no-repeat center / contain;
+            mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1Zm13 8H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9ZM5 6a1 1 0 0 0-1 1v1h16V7a1 1 0 0 0-1-1H5Z'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+
+  [dir='rtl'] .date-icon{
+    left:var(--icon-offset);
+    right:auto;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator{
+    opacity:0;
+    position:absolute;
+    right:0; left:auto;
+    width:100%; height:100%;
+    cursor:pointer;
+  }
+  [dir='rtl'] input[type="date"]::-webkit-calendar-picker-indicator{
+    left:0; right:auto;
+  }
+
+  .ltr\\:pr-12{ padding-right:3rem; }
+  .rtl\\:pl-12{ padding-left:3rem; }
         .sf-input{
           height:3.5rem;width:100%;border-radius:1rem;border:1px solid #DFE3EA;
           padding:0 1rem;font-size:14px;outline:none;
@@ -465,6 +549,46 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           height:18px;width:18px;border-radius:9999px;background:#fff;border:3px solid #0b2a8e;
           box-shadow:0 0 0 3px rgba(11,42,142,.1);cursor:pointer;
         }
+
+.date-input::-webkit-datetime-edit { color: transparent; }
+.date-input:focus::-webkit-datetime-edit,
+.date-input.has-value::-webkit-datetime-edit { color: inherit; }
+
+/* Firefox (date can fall back to text) */
+.date-input::-moz-placeholder { opacity: 0; }
+.date-input::-ms-input-placeholder { opacity: 0; }
+.date-input::placeholder { opacity: 0; }
+
+.date-input{
+display:none
+  position: absolute;
+}
+.date-input:not(.has-value)::before{
+  content: attr(data-placeholder);
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  color: var(--color-default);
+  pointer-events: none;
+      max-inline-size: calc(100% - 3.5rem);
+
+}
+.date-input.has-value::before{ content: ""; }
+.date-input:dir(ltr):not(.has-value)::before{
+  inset-inline-start: 1rem;     
+  inset-inline-end: 2.5rem;    
+  text-align: left;
+}
+
+.date-input:dir(rtl):not(.has-value)::before{
+  inset-inline-end: 1rem;      
+  inset-inline-start: 2.5rem;   
+  text-align: right;
+}
+
+.date-input::-webkit-datetime-edit { color: transparent; }
+.date-input:focus::-webkit-datetime-edit,
+.date-input.has-value::-webkit-datetime-edit { color: inherit; }
       `}</style>
     </section>
   );
@@ -494,6 +618,7 @@ function Field({
   );
 }
 
+// --- Select component ---
 function Select({
   value,
   onChange,
@@ -506,11 +631,11 @@ function Select({
   placeholder?: string;
 }) {
   return (
-    <div className="relative">
+    <div className="relative select-wrap ">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="sf-input appearance-none pr-10 bg-secondary "
+        className="sf-input appearance-none pr-10 ltr:pr-10 rtl:pl-10 bg-secondary"
       >
         <option value="" disabled>
           {placeholder || 'Select…'}
@@ -521,9 +646,8 @@ function Select({
           </option>
         ))}
       </select>
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-primaryAlt">
-        ▾
-      </span>
+
+      <span aria-hidden className="select-caret" />
     </div>
   );
 }
@@ -539,7 +663,6 @@ function CurrencyInput({
 }) {
   return (
     <input
-      required
       inputMode="decimal"
       type="number"
       value={value === '' ? '' : String(value)}
@@ -568,21 +691,11 @@ function Tooltip({ content, children }: { content: string; children: React.React
 export function InfoIcon({ className = '' }: { className?: string }) {
   return (
     <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="none">
-      {/* circle background */}
       <circle cx="12" cy="12" r="12" fill="var(--color-primary-alt)" />
 
-      {/* dot */}
       <circle cx="12" cy="7" r="1.3" fill="var(--color-secondary)" />
 
-      {/* stem with rounded ends (pill) */}
-      <rect
-        x="10.9" // centered
-        y="10.2"
-        width="2.2"
-        height="8.5"
-        rx="1.1" // half of width -> fully rounded caps
-        fill="var(--color-secondary)"
-      />
+      <rect x="10.9" y="10.2" width="2.2" height="8.5" rx="1.1" fill="var(--color-secondary)" />
     </svg>
   );
 }

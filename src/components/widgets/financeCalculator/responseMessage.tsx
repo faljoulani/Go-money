@@ -72,14 +72,17 @@ export function SuccessResponse({
           dangerouslySetInnerHTML={{ __html: description }}
         />
 
-        <div className="mt-8 rounded-2xl border border-[#B9D7F2] bg-surface-page p-4 text-[13px]  max-w-4xl mx-auto">
+        <div className="mt-8 rounded-2xl border border-[#B9D7F2]  dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4 text-[13px]  max-w-4xl mx-auto">
           <div className="flex flex-col items-start gap-2 ">
             <div className="flex gap-2 text-primaryAlt">
               <InfoIcon />
               <strong>{noteTitle}</strong>
             </div>
             <div>
-              <p className="mt-1 ml-6 text-default" dangerouslySetInnerHTML={{ __html: noteDescription }}></p>
+              <p
+                className="mt-1 ml-6 text-default"
+                dangerouslySetInnerHTML={{ __html: noteDescription }}
+              ></p>
             </div>
           </div>
         </div>
@@ -154,29 +157,39 @@ export function FailResponse({
           dangerouslySetInnerHTML={{ __html: description }}
         />
 
-        <div className="mt-8 grid  grid-cols-1 gap-4">
-          <div className="rounded-xl bg-surface-page p-5">
+        <div
+          className={`mx-auto mt-8 w-[80%] grid  grid-cols-1 gap-4 ${dir === 'ltr' ? 'text-left' : 'text-right'}`}
+        >
+          <div className="rounded-xl dark:bg-[#23242C] bg-gray-100 p-5">
             <strong className="block mb-3 text-default">{reasonsTitle}</strong>
 
-            <p className="leading-4" dangerouslySetInnerHTML={{ __html: reasonsDescription }}></p>
+            <p
+              className="leading-4 .descriptionHtml"
+              dangerouslySetInnerHTML={{ __html: reasonsDescription }}
+            ></p>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4">
-          <div className="rounded-xl bg-surface-page p-5">
+        <div
+          className={` mx-auto mt-8 grid  w-[80%] grid-cols-1 gap-4 ${dir === 'ltr' ? 'text-left' : 'text-right'}`}
+        >
+          <div className="rounded-xl dark:bg-[#23242C] bg-gray-100 p-5">
             <strong className="block text-default">{actionsTitle}</strong>
 
-            <p className="leading-4" dangerouslySetInnerHTML={{ __html: actionsDescription }}></p>
+            <p
+              className="leading-5 .descriptionHtml"
+              dangerouslySetInnerHTML={{ __html: actionsDescription }}
+            ></p>
           </div>
         </div>
 
-        <p className="mt-8 text-[#555]">{validationText}</p>
+        <p className="mt-8 text-default">{validationText}</p>
 
         <div className="mt-8">
           <button
             type="button"
             onClick={onBack}
-            className="rounded-full border border-primaryalt text-primaryAlt px-6 py-3 text-[15px] hover:opacity-90"
+            className="rounded-full border-2 dark:border-primaryAlt border-[#010663] text-primaryAlt px-6 py-3 text-[15px] hover:bg-gray-50"
           >
             {backLabel}
           </button>
@@ -188,7 +201,7 @@ export function FailResponse({
 
 function InfoIcon({ className = '' }: { className?: string }) {
   return (
-   <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="currentColor">
+    <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="currentColor">
       <circle cx="12" cy="12" r="12" fill="var(--color-primary-alt)" />
       <rect x="11" y="10" width="2" height="6" fill="var(--color-secondary)" />
       <circle cx="12" cy="7" r="1.2" fill="var(--color-secondary)" />
