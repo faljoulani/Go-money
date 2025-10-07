@@ -77,7 +77,7 @@ export default function ClientNavbar({
             ? 'text-white'
             : 'text-[#E0E0E0]';
         const underlineClass = active
-          ? 'after:absolute after:bottom-0 after:left-1/2 after:h-[2px] after:w-[70%] after:-translate-x-1/2 after:rounded-full after:bg-current after:content-[""]'
+          ? 'after:absolute after:bottom-0 after:left-1/2 after:h-1 after:w-[10px] after:-translate-x-1/2 after:rounded-full after:bg-current after:content-[""]'
           : '';
 
         return (
