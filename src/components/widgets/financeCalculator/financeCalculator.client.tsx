@@ -203,10 +203,13 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     //   ageAtApplication: '28',
     //   AgeAtMaturity: '29',
     // };
+
+
     try {
       const res = await post(payload);
       if (res?.Data?.IsEligible) setResult('success');
       else setResult('fail');
+        window.location.hash = '#calc-result';
     } catch (err) {
       console.error('FinanceCalculator error:', err);
       setMsg(
@@ -218,6 +221,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       setSubmitting(false);
     }
   }
+
 
   const success: ResponseMessage = successMsg;
   const fail: ResponseMessage = failMsg;
@@ -231,6 +235,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
   return (
     <section className="w-full">
+      <div id="calc-result" className="pointer-events-none h-0 -mt-24" />
       <form
         onSubmit={onSubmit}
         className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm"
@@ -238,7 +243,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         <h2 className="text-[28px] font-semibold text-primary">
           {C.title || 'Enter your Finance details'}
         </h2>
-
         <div className="mt-4">
           <p className="text-[15px] font-medium text-default">
             {C.labels?.nationality || 'Choose nationality'}

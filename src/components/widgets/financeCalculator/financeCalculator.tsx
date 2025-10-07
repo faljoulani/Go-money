@@ -152,7 +152,7 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       { itemType: MESSAGE_TYPE },
     ),
   ]);
-
+console.log("zzzzzz", messages);
   const toChoice = (x: any) => ({
     id: String(x?.Id ?? ''),
     title: String(x?.Title ?? x?.Name ?? x?.Value ?? ''),
