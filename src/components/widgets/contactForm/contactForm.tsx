@@ -4,7 +4,7 @@ import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 import type { FormEntity } from './contactForm.entity';
 import ContactFormClient from './contactFormClient';
 
-type Option = { id: string; label: string; value: string};
+type Option = { id: string; label: string};
 
 type FormItem = {
   Id: string;

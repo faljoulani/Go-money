@@ -586,10 +586,10 @@ html.modal-open {
 
 @keyframes translatePhone {
   from {
-    transform: translateY(-100px);
+    transform: translateY(-50px);
   }
   to {
-    transform: translateY(500px);
+    transform: translateY(200px);
   }
 }
 

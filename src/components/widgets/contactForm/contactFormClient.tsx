@@ -5,7 +5,7 @@ import FullPageLoader from '../../atoms/fullPageLoader/fullPageLoader';
 import CustomDropdown, { DropdownOption } from '../../atoms/dropdown/dropdown';
 import { COUNTRY_LIST } from '../../../utils/countries-emoji';
 
-type Option = { id: string; label: string; value: string };
+type Option = { id: string; label: string };
 type Data = {
   title?: string;
   subTitle?: string;
@@ -58,6 +58,7 @@ export default function ContactFormClient({
   data,
   dir = 'auto',
 }: Props) {
+  console.log('ContactFormClient data:', data);
   const FIELD =
     'w-full h-[48px] px-3 py-3 rounded-[18px] text-black border border-default ' +
     'bg-surface-input text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
@@ -66,6 +67,7 @@ export default function ContactFormClient({
 
   const [isLoading, setIsLoading] = useState(false);
   const [resStatus, setResStatus] = useState<null | 'success' | 'error'>(null);
+  const [selectedRequestType, setSelectedRequestType] = useState<string>('COMPLAINT');
   const formRef = useRef<HTMLFormElement>(null);
 
   const DEFAULT_ISO2 = 'SA';
@@ -100,38 +102,38 @@ export default function ContactFormClient({
   const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
     id: o.id,
     label: o.label,
-    value: o.value ?? '',
   }));
-  
+  console.log('Dropdown options:', dropdownOptions);
+
   const getDropdownOptionsTopics = (dir: 'ltr' | 'rtl'): DropdownOption[] => [
-  {
-    id: '1',
-    value: 'ACCOUNT.ISSUE',
-    label: dir === 'rtl' ? 'مشكلة في الحساب' : 'Account Issue',
-  },
-  {
-    id: '2',
-    value: 'PAYMENT.ISSUE',
-    label: dir === 'rtl' ? 'مشكلة في الدفع' : 'Payment Issue',
-  },
-  {
-    id: '3',
-    value: 'TECHNICAL.ISSUE',
-    label: dir === 'rtl' ? 'مشكلة تقنية' : 'Technical Issue',
-  },
-  {
-    id: '4',
-    value: 'PRODUCT.ISSUE',
-    label: dir === 'rtl' ? 'مشكلة في المنتج' : 'Product Issue',
-  },
-  {
-    id: '5',
-    value: 'OTHERS',
-    label: dir === 'rtl' ? 'أخرى' : 'Others',
-  },
-];
-const Direction = useDir(); // 'ltr' or 'rtl'
-const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Direction);
+    {
+      id: '1',
+      value: 'ACCOUNT.ISSUE',
+      label: dir === 'rtl' ? 'مشكلة في الحساب' : 'Account Issue',
+    },
+    {
+      id: '2',
+      value: 'PAYMENT.ISSUE',
+      label: dir === 'rtl' ? 'مشكلة في الدفع' : 'Payment Issue',
+    },
+    {
+      id: '3',
+      value: 'TECHNICAL.ISSUE',
+      label: dir === 'rtl' ? 'مشكلة تقنية' : 'Technical Issue',
+    },
+    {
+      id: '4',
+      value: 'PRODUCT.ISSUE',
+      label: dir === 'rtl' ? 'مشكلة في المنتج' : 'Product Issue',
+    },
+    {
+      id: '5',
+      value: 'OTHERS',
+      label: dir === 'rtl' ? 'أخرى' : 'Others',
+    },
+  ];
+  const Direction = useDir(); // 'ltr' or 'rtl'
+  const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Direction);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -158,7 +160,7 @@ const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Directi
         phone: `${countryDial}${localPhone}`,
         email,
         requestType: reqType,
-        complaintCategory: dropdownOptionsTopics || 'OTHERS',
+        complaintCategory: topic || 'OTHERS',
         description: notes || `Request from ${fullName || email}`,
         channel: 'MOBILE.APPLICATION',
       };
@@ -186,6 +188,7 @@ const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Directi
       {isLoading && <FullPageLoader />}
 
       <form ref={formRef} onSubmit={handleSubmit} dir={dir} className="space-y-5">
+        <input type="hidden" name="requestType" value={selectedRequestType} />
         <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 ">
           {/* First Name */}
           <div className="grid grid-cols-1 min-w-0">
@@ -291,6 +294,10 @@ const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Directi
               options={dropdownOptions}
               placeholder={data.requestTypePlacholder ?? 'Select request type'}
               disabled={isLoading}
+              onChange={(opt) => {
+                const val = String(opt.label || '').toUpperCase();
+                setSelectedRequestType(val);
+              }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
@@ -305,10 +312,19 @@ const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Directi
               {reqStar}
             </label>
             <CustomDropdown
-              name="requestType"
+              name="topic"
               options={dropdownOptionsTopics}
-              placeholder={data.topicPlaceholder?? 'Select topic'}
-              disabled={isLoading}
+              placeholder={data.topicPlaceholder ?? 'Select topic'}
+              disabled={isLoading || selectedRequestType === 'INQUIRY'}
+              onChange={(opt) => {
+                // find the selected label from your dropdownOptions array
+                const selected = dropdownOptions.find((o) => o.id === opt.id);
+                const label = String(selected?.label || '').toUpperCase();
+                console.log('Selected label:', label);
+
+                // if you want to store it in state for submission
+                // setSelectedTopic(label); // <-- define a state for selected topic
+              }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"

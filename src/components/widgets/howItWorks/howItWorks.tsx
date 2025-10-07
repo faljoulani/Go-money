@@ -162,7 +162,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative md:mt-10 md:h-[1390px] xs:mt-36 xs:h-[1400px] flex flex-col justify-center items-center"
+        className="relative md:mt-10 md:h-[1390px] xs:mt-24 xs:h-[1400px] flex flex-col justify-center items-center"
         style={{
           backgroundImage: 'var(--howitworks-bg)',
           backgroundSize: '1380px',
@@ -170,8 +170,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-36 md:left-[170px] xs:left-[6.5rem] ">
-          <div className=" translatePhone  sticky  flex justify-center">
+        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[6.5rem] ">
+          <div className=" translatePhone  sticky md:top-20 flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
           </div>
         </div>
@@ -186,13 +186,13 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               alt=""
               className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[400px] left-0 z-10  object-top"
             />
- <img
+            <img
               src="/assets/transparentN.png"
               alt=""
               className="absolute  xs:h-[100%]  w-full xs:object-fill md:object-cover md:h-[100%] xl:h-[1275px] left-0 z-50  "
             />
             {/* pocket lip */}
-          
+
             <img
               src="/assets/pocketHQ.webp"
               alt=""
