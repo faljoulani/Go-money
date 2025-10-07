@@ -95,7 +95,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
   });
 
   return (
-    <section {...attrs}>
+    <section {...attrs} className="flex justify-center">
       <div
         className="relative w-full md:mx-auto rounded-3xl mb-16 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px] bg-[linear-gradient(258.38deg,_#6be5bf,_#b3dfef)]
         dark:bg-[linear-gradient(258.38deg,_#a6efd9,_#006aa5)]"

@@ -83,137 +83,143 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
   return (
-    <section className={`w-full py-6 md:px-20 md:py-16 ${className ?? ''}`}>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr,1fr] text-default">
-        {/* Left column */}
-        <div className="w-full rounded-3xl shadow-xl bg-surface-section px-4 md:px-8 text-default">
-          {/* Overview */}
-          <div className="p-6">
-            <h3 className="mb-1 text-xl md:text-2xl font-semibold md:text-primary">
-              {job.Sections?.OverviewLabel || 'Overview'}
-            </h3>
-            <div className="leading-relaxed " dangerouslySetInnerHTML={{ __html: overviewHtml }} />
-          </div>
-
-          {/* Responsibilities */}
-          {responsibilitiesHtml && (
-            <div className="px-6">
-              <h3 className="mb-1 text-2xl font-semibold md:text-primary">
-                {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
+    <section className="flex mx-auto">
+      <div className={`w-full py-6 md:px-20 md:py-16 ${className ?? ''}`}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr,1fr] text-default">
+          {/* Left column */}
+          <div className="w-full rounded-3xl shadow-xl bg-surface-section px-4 md:px-8 text-default">
+            {/* Overview */}
+            <div className="p-6">
+              <h3 className="mb-1 text-xl md:text-2xl font-semibold md:text-primary">
+                {job.Sections?.OverviewLabel || 'Overview'}
               </h3>
-              <div className="mt-3" dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }} />
-            </div>
-          )}
-
-          {/* Qualifications */}
-          {qualificationsHtml && (
-            <div className="p-5">
-              <h3 className="mb-1 text-2xl font-semibold md:text-primary">
-                {job.Sections?.QualificationsLabel || 'Qualifications'}
-              </h3>
-              <div className="mt-3" dangerouslySetInnerHTML={{ __html: qualificationsHtml }} />
-            </div>
-          )}
-
-          {/* Skills */}
-          {Array.isArray(job.Skills) && job.Skills.length > 0 && (
-            <div className="pb-6 px-6">
-              <h3 className="mb-1 text-2xl font-semibold md:text-primary">
-                {job.Sections?.SkillsLabel || 'Skills'}
-              </h3>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {job.Skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="inline-flex items-center rounded-full bg-surface-sheet px-3 py-1 text-sm"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right column */}
-        <aside className="w-full lg:max-w-sm">
-          <div className="flex flex-col gap-6 rounded-3xl shadow-xl bg-surface-section p-6 md:p-8">
-            {/* Location row */}
-            <div className="flex items-center gap-3">
-              <Image
-                src="/icons/map-pin.png"
-                alt=""
-                width={24}
-                height={24}
-                className="h-4 w-4 object-contain dark:invert"
+              <div
+                className="leading-relaxed "
+                dangerouslySetInnerHTML={{ __html: overviewHtml }}
               />
-              <div>
-                <div>{job.LocationName}</div>
+            </div>
+
+            {/* Responsibilities */}
+            {responsibilitiesHtml && (
+              <div className="px-6">
+                <h3 className="mb-1 text-2xl font-semibold md:text-primary">
+                  {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
+                </h3>
+                <div className="mt-3" dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }} />
               </div>
-            </div>
+            )}
 
-            <div>
-              {job.ShortMessage ||
-                'Please send us your detailed CV to apply for this job or click on apply now'}
-            </div>
+            {/* Qualifications */}
+            {qualificationsHtml && (
+              <div className="p-5">
+                <h3 className="mb-1 text-2xl font-semibold md:text-primary">
+                  {job.Sections?.QualificationsLabel || 'Qualifications'}
+                </h3>
+                <div className="mt-3" dangerouslySetInnerHTML={{ __html: qualificationsHtml }} />
+              </div>
+            )}
 
-            <div className="mt-6 space-y-5">
-              {(job.ContactInfo?.length
-                ? job.ContactInfo
-                : [
-                    { Title: 'Contact email', Info: 'careers@gomoney.com' },
-                    { Title: 'Industry', Info: 'Information Technology & Services' },
-                    { Title: 'Job type', Info: job.EmploymentType || 'Full time' },
-                    { Title: 'Posted', Info: '' },
-                  ]
-              ).map((row, idx) => {
-                const iconSrc = iconFor(row.Title);
-                return (
-                  <div key={`${row.Title}-${idx}`} className="flex items-start gap-3">
-                    <Image
-                      src={iconSrc}
-                      alt={row.Title}
-                      width={48}
-                      height={48}
-                      className="opacity-80"
-                    />
-                    <div>
-                      <div className="text-[18px] md:font-bold">{row.Title}</div>
-                      <div>{row.Info}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {job.ApplyUrl && !onApply ? (
-              <Link
-                href={job.ApplyUrl}
-                className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
-              >
-                {job.ButtonLabel ||
-                  (document?.documentElement?.dir === 'rtl'
-                    ? 'التقدم لهذه الوظيفة'
-                    : 'Apply for this job')}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => onApply?.(id)}
-                className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
-              >
-                {job.ButtonLabel ||
-                  (document?.documentElement?.dir === 'rtl'
-                    ? 'التقدم لهذه الوظيفة'
-                    : 'Apply for this job')}
-              </button>
+            {/* Skills */}
+            {Array.isArray(job.Skills) && job.Skills.length > 0 && (
+              <div className="pb-6 px-6">
+                <h3 className="mb-1 text-2xl font-semibold md:text-primary">
+                  {job.Sections?.SkillsLabel || 'Skills'}
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {job.Skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-flex items-center rounded-full bg-surface-sheet px-3 py-1 text-sm"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
-        </aside>
-      </div>
 
-      {/* Note: If SimilarJobs also calls an API, consider applying the same language logic there. */}
-      <SimilarJobs jobId={id} departmentId={job.DepartmentId} onOpenJob={onOpenJob} />
+          {/* Right column */}
+          <aside className="w-full lg:max-w-sm">
+            <div className="flex flex-col gap-6 rounded-3xl shadow-xl bg-surface-section p-6 md:p-8">
+              {/* Location row */}
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/icons/map-pin.png"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="h-4 w-4 object-contain dark:invert"
+                />
+                <div>
+                  <div>{job.LocationName}</div>
+                </div>
+              </div>
+
+              <div>
+                {language === 'ar'
+                  ? 'يرجى إرسال سيرتك الذاتية المفصلة للتقدم لهذه الوظيفة أو انقر فوق "التقدم لهذه الوظيفة"'
+                  : job.ShortMessage ||
+                    'Please send us your detailed CV to apply for this job or click on apply now'}
+              </div>
+
+              <div className="mt-6 space-y-5">
+                {(job.ContactInfo?.length
+                  ? job.ContactInfo
+                  : [
+                      { Title: 'Contact email', Info: 'careers@gomoney.com' },
+                      { Title: 'Industry', Info: 'Information Technology & Services' },
+                      { Title: 'Job type', Info: job.EmploymentType || 'Full time' },
+                      { Title: 'Posted', Info: '' },
+                    ]
+                ).map((row, idx) => {
+                  const iconSrc = iconFor(row.Title);
+                  return (
+                    <div key={`${row.Title}-${idx}`} className="flex items-start gap-3">
+                      <Image
+                        src={iconSrc}
+                        alt={row.Title}
+                        width={48}
+                        height={48}
+                        className="opacity-80"
+                      />
+                      <div>
+                        <div className="text-[18px] md:font-bold">{row.Title}</div>
+                        <div>{row.Info}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {job.ApplyUrl && !onApply ? (
+                <Link
+                  href={job.ApplyUrl}
+                  className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
+                >
+                  {job.ButtonLabel ||
+                    (document?.documentElement?.dir === 'rtl'
+                      ? 'التقدم لهذه الوظيفة'
+                      : 'Apply for this job')}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onApply?.(id)}
+                  className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
+                >
+                  {job.ButtonLabel ||
+                    (document?.documentElement?.dir === 'rtl'
+                      ? 'التقدم لهذه الوظيفة'
+                      : 'Apply for this job')}
+                </button>
+              )}
+            </div>
+          </aside>
+        </div>
+        {/* Note: If SimilarJobs also calls an API, consider applying the same language logic there. */}
+        <SimilarJobs jobId={id} departmentId={job.DepartmentId} onOpenJob={onOpenJob} />
+      </div>
     </section>
   );
 }

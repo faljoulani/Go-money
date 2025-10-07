@@ -1,7 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useDirection } from '../../../../utils/helpers'; // assuming you already use this in other components
 
-export default function ApplicationSuccess({ backHref = '/careers' }: { backHref?: string }) {
+export default function ApplicationSuccess({ backHref }: { backHref?: string }) {
+  const direction = useDirection();
+  const isRtl = direction === 'rtl';
+
+  const href = backHref || (isRtl ? 'الوظائف' : '/careers');
+
   return (
     <div className="rounded-3xl shadow-md bg-surface-section px-6 md:px-16 py-16 text-center">
       <div className="flex items-center justify-center">
@@ -39,7 +45,7 @@ export default function ApplicationSuccess({ backHref = '/careers' }: { backHref
 
       {/* CTA Button */}
       <Link
-        href={backHref}
+        href={href}
         className="inline-flex items-center gap-3 rounded-2xl bg-primaryAlt px-6 py-3 font-medium text-secondary hover:opacity-90"
       >
         <span className="ltr:inline rtl:hidden">Back to career</span>
