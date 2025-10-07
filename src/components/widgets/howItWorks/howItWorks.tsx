@@ -182,7 +182,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1330px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
-              src="/assets/blackCurve.webp"
+              src="/assets/BlackCurve.webp"
               alt=""
               className="absolute inset-0 w-full xs:object-fill md:object-cover md:h-full xs:h-[100%] left-0 z-10  object-top"
             />
