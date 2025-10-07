@@ -70,6 +70,7 @@ export default function ContactFormClient({
   const [resStatus, setResStatus] = useState<null | 'success' | 'error'>(null);
   const [selectedRequestType, setSelectedRequestType] = useState<string>('COMPLAINT');
   const formRef = useRef<HTMLFormElement>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string>('');
 
   const DEFAULT_ISO2 = 'SA';
   const DEFAULT_DIAL = COUNTRY_LIST.find((c) => c.iso2 === DEFAULT_ISO2)?.dial ?? '+966';
@@ -92,7 +93,7 @@ export default function ContactFormClient({
       })),
     [],
   );
-const { post } = useSfMutation(postUrl); 
+  const { post } = useSfMutation(postUrl);
   const onCountryChange = (opt: DropdownOption) => {
     const iso2 = String(opt.value ?? opt.id);
     const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
@@ -100,11 +101,18 @@ const { post } = useSfMutation(postUrl);
     setCountryDial(info?.dial ?? '');
   };
 
-  const dropdownOptions: DropdownOption[] = (data.requestTypeChoices ?? []).map((o) => ({
-    id: o.id,
-    label: o.label,
-  }));
-  console.log('Dropdown options:', dropdownOptions);
+  const getdropdownOptions = (dir: 'ltr' | 'rtl'): DropdownOption[] => [
+    {
+      id: '1',
+      value: 'COMPLAINT',
+      label: dir === 'ltr' ? 'Complaint' : 'شكوى',
+    },
+    {
+      id: '2',
+      value: 'INQUIRY',
+      label: dir === 'ltr' ? 'Inquiry' : 'استفسار',
+    },
+  ];
 
   const getDropdownOptionsTopics = (dir: 'ltr' | 'rtl'): DropdownOption[] => [
     {
@@ -135,6 +143,7 @@ const { post } = useSfMutation(postUrl);
   ];
   const Direction = useDir(); // 'ltr' or 'rtl'
   const dropdownOptionsTopics: DropdownOption[] = getDropdownOptionsTopics(Direction);
+  const dropdownOptions: DropdownOption[] = getdropdownOptions(Direction);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -161,11 +170,11 @@ const { post } = useSfMutation(postUrl);
         phone: `${countryDial}${localPhone}`,
         email,
         requestType: reqType,
-        complaintCategory: topic || 'OTHERS',
+        complaintCategory: reqType === 'COMPLAINT' ? topic : selectedTopic,
         description: notes || `Request from ${fullName || email}`,
         channel: 'MOBILE.APPLICATION',
       };
-    await post(apiPayload);
+      await post(apiPayload);
 
       setResStatus('success');
       formRef.current?.reset();
@@ -292,6 +301,7 @@ const { post } = useSfMutation(postUrl);
               onChange={(opt) => {
                 const val = String(opt.label || '').toUpperCase();
                 setSelectedRequestType(val);
+                console.log('Selected request type:', val);
               }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -312,13 +322,14 @@ const { post } = useSfMutation(postUrl);
               placeholder={data.topicPlaceholder ?? 'Select topic'}
               disabled={isLoading || selectedRequestType === 'INQUIRY'}
               onChange={(opt) => {
-                // find the selected label from your dropdownOptions array
                 const selected = dropdownOptions.find((o) => o.id === opt.id);
+                console.log('SELECTEDREQUESTYPE:', selectedRequestType);
+                if (selectedRequestType === 'Inquiry') {
+                  setSelectedTopic('');
+                  return;
+                }
                 const label = String(selected?.label || '').toUpperCase();
                 console.log('Selected label:', label);
-
-                // if you want to store it in state for submission
-                // setSelectedTopic(label); // <-- define a state for selected topic
               }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}

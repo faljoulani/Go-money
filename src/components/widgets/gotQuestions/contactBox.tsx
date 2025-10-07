@@ -87,7 +87,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   } catch {
     // If parsing fails, leave it as-is
   }
-  const ctaHref = linkToHref(primaryHref)
+  const ctaHref = linkToHref(primaryHref);
   // Secondary CTA: FAQs
   const secondaryLabel = item?.FaqsLabel || 'FAQs';
   let secondaryHref = item?.FaqsURL;
@@ -99,7 +99,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   } catch {
     // If parsing fails, leave it as-is
   }
-  const faqurl = linkToHref(secondaryHref)
+  const faqurl = linkToHref(secondaryHref);
 
   const showCorner =
     typeof item?.hasLabelCorner === 'boolean'
@@ -111,12 +111,12 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   return (
     <section
       {...attrs}
-      className="relative  w-full max-w-[1240px] overflow-hidden rounded-[28px] bg-surface-section xs:px-4 xs:py-12 md:px-6 md:py-16 text-center shadow-sm ring-1 ring-black/5 md:mx-20 mt-16 mb-8"
+      className="relative w-full md:mx-auto max-w-[1240px] overflow-hidden rounded-[28px] bg-surface-section xs:px-4 xs:py-12 md:px-6 md:py-16 text-center shadow-sm ring-1 ring-black/5  mt-16 mb-8"
     >
       <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
         <div className="md:h-24 md:w-24 xs:w-20 xs:h-20 md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-primaryAlt rtl:rounded-br-[40px] rtl:rounded-bl-none" />
 
-        <div className="absolute right-0 top-0 rtl:left-0 rtl:right-auto md:h-12 md:w-12 xs:h-10 xs:w-10  bg-surface-section" />
+        <div className="absolute right-0 top-0 rtl:left-0 rtl:right-auto md:h-12 md:w-12 xs:h-10 xs:w-10  bg-white dark:bg-[#1d1d29]" />
       </div>
 
       <div className="mx-auto max-w-2xl">
@@ -128,13 +128,20 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
           <p className="mt-3 text-base leading-relaxed text-[#9E9E9E] font-medium">{subtitle}</p>
         )}
 
-        <div className="md:mt-12 xs:mt-8 flex flex-wrap xs:flex-col md:flex-row items-center justify-center gap-4">
+        <div className="md:mt-12 xs:mt-8 flex flex-wrap xs:flex-col md:flex-row items-center justify-center gap-4 ">
           <a
             href={ctaHref}
-            className="inline-flex md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 rounded-[20px] border-2 border-primaryAlt px-6 py-3 text-primary font-medium transition hover:bg-primary hover:text-white"
+            className="group transition-colors inline-flex md:w-[189px] xs:w-[90%] md:rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 rounded-[20px] border-2 border-primaryAlt px-6 py-3 text-primaryAlt font-medium hover:bg-primary hover:text-white dark:hover:text-[#a6efd9]"
           >
-            <span className="text-primaryAlt">{primaryLabel}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className='cta-arrow'>
+            <div className=" group-hover:text-white text-primaryAlt dark:group-hover:text-[#a6efd9]">{primaryLabel}</div>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              className="cta-arrow"
+            >
               <path
                 d="M9 18l6-6-6-6"
                 stroke="currentColor"
@@ -147,10 +154,17 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
           <a
             href={faqurl}
-            className="inline-flex text-lg tracking-tight md:w-[189px] xs:w-[90%] md:rtl:w-[168px]  items-center justify-center gap-2 rounded-[20px] border-2 border-primaryAlt px-6 py-3 font-medium transition hover:bg-primary hover:text-white"
+            className="group inline-flex hover:bg-primary text-lg tracking-tight md:w-[189px] xs:w-[90%] md:rtl:w-[168px]  items-center justify-center gap-2 rounded-[20px] border-2 border-primaryAlt px-6 py-3 font-medium transition hover:text-white text-primaryAlt dark:hover:text-[#a6efd9]"
           >
-            <span className="text-primaryAlt">{secondaryLabel}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className='cta-arrow'>
+            <span className="text-primaryAlt group-hover:text-white dark:group-hover:text-[#a6efd9]">{secondaryLabel}</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              className="cta-arrow"
+            >
               <path
                 d="M9 18l6-6-6-6"
                 stroke="currentColor"
