@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import EmptyState from './noCareers';
 import JobCard from '../../../atoms/jobCard/jobCard';
 import Pagination from './pagination';
@@ -61,26 +61,67 @@ const mapItemToJob = (i: CareersItem): Job => ({
   postedDaysAgo: i.PostedAgoDays ?? 0,
 });
 
-function buildFacets(
+type QueryKey = 'locationNames' | 'departmentNames';
+
+const filterItemsByQuery = (
   items: CareersItem[],
-  selected: { locationNames: string[]; departmentNames: string[] },
-): { locations: CareersFiltration[]; departments: CareersFiltration[] } {
-  const mk = (pick: (x: CareersItem) => string, selectedNames: string[]) => {
-    const counts = new Map<string, number>();
-    for (const it of items) {
-      const key = pick(it);
-      if (!key) continue;
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-    return [...counts]
-      .map(([name, count]) => ({ name, count, selected: selectedNames.includes(name) }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  };
-  return {
-    locations: mk((x) => x.LocationName, selected.locationNames),
-    departments: mk((x) => x.DepartmentName, selected.departmentNames),
-  };
-}
+  query: CareersSearchBody,
+  { omit }: { omit?: QueryKey } = {},
+): CareersItem[] => {
+  const toSet = (arr: string[]) => new Set(arr.map((x) => x.toLowerCase()));
+  const inSet = (s: Set<string>, v: string) => s.has((v || '').toLowerCase());
+  const hasText = (s?: string | null) => !!s && s.trim().length > 0;
+
+  let filtered = items;
+
+  if (omit !== 'locationNames' && query.locationNames?.length) {
+    const want = toSet(query.locationNames);
+    filtered = filtered.filter((i) => inSet(want, i.LocationName));
+  }
+
+  if (omit !== 'departmentNames' && query.departmentNames?.length) {
+    const want = toSet(query.departmentNames);
+    filtered = filtered.filter((i) => inSet(want, i.DepartmentName));
+  }
+
+  if (hasText(query.search)) {
+    const needle = query.search!.toLowerCase();
+    filtered = filtered.filter(
+      (i) =>
+        i.Title.toLowerCase().includes(needle) ||
+        i.DepartmentName.toLowerCase().includes(needle) ||
+        i.LocationName.toLowerCase().includes(needle),
+    );
+  }
+
+  return filtered;
+};
+
+const buildFacetList = (
+  items: CareersItem[],
+  pick: (item: CareersItem) => string,
+  selectedNames: string[],
+): CareersFiltration[] => {
+  const counts = new Map<string, number>();
+  for (const it of items) {
+    const name = pick(it)?.trim();
+    if (!name) continue;
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+
+  const base = [...counts].map(([name, count]) => ({
+    name,
+    count,
+    selected: selectedNames.includes(name),
+  }));
+
+  for (const name of selectedNames) {
+    if (!name || counts.has(name)) continue;
+    base.push({ name, count: 0, selected: true });
+  }
+
+  return base.sort((a, b) => a.name.localeCompare(b.name));
+};
 
 function FilterSection({
   title,
@@ -159,6 +200,20 @@ export default function CareersBoard({
 }) {
   const dir = useDirection();
   const isRtl = dir === 'rtl';
+  const topAnchorRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBoardTop = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    window.requestAnimationFrame(() => {
+      const anchor = topAnchorRef.current;
+      if (anchor) {
+        anchor.focus({ preventScroll: true });
+        anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }, []);
 
   const allItems = useMemo(
     () => (careers || []).map((c) => mapCareerToItem(c, isRtl ? 'ar' : 'en')),
@@ -183,63 +238,79 @@ export default function CareersBoard({
   const [isLocationOpen, setIsLocationOpen] = useState(true);
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const showMobileFiltersRef = useRef(showMobileFilters);
 
-  const { locations: locationFacets, departments: departmentFacets } = useMemo(
-    () =>
-      buildFacets(allItems, {
-        locationNames: showMobileFilters ? draft.locationNames : query.locationNames,
-        departmentNames: showMobileFilters ? draft.departmentNames : query.departmentNames,
-      }),
-    [
-      allItems,
-      draft.departmentNames,
-      draft.locationNames,
-      query.departmentNames,
-      query.locationNames,
-      showMobileFilters,
-    ],
+  useEffect(() => {
+    showMobileFiltersRef.current = showMobileFilters;
+  }, [showMobileFilters]);
+
+  type QueryUpdater = CareersSearchBody | ((prev: CareersSearchBody) => CareersSearchBody);
+  type UpdateOptions = { force?: boolean };
+
+  const updateQuery = useCallback(
+    (updater: QueryUpdater, options?: UpdateOptions) => {
+      setQuery((prev) => {
+        const next =
+          typeof updater === 'function'
+            ? (updater as (prev: CareersSearchBody) => CareersSearchBody)(prev)
+            : updater;
+
+        const shouldScroll = options?.force || !showMobileFiltersRef.current;
+        if (shouldScroll) {
+          scrollToBoardTop();
+        }
+
+        return next;
+      });
+    },
+    [scrollToBoardTop],
   );
 
+  const queryForFacets = useMemo(() => {
+    if (!showMobileFilters) return query;
+    return {
+      ...query,
+      locationNames: draft.locationNames,
+      departmentNames: draft.departmentNames,
+    } as CareersSearchBody;
+  }, [showMobileFilters, query, draft.locationNames, draft.departmentNames]);
+
   const filteredItems = useMemo(() => {
-    const base: CareersItem[] =
-      typeof structuredClone === 'function'
-        ? structuredClone(allItems)
-        : JSON.parse(JSON.stringify(allItems));
-    const toSet = (arr: string[]) => new Set(arr.map((x) => x.toLowerCase()));
-    const inSet = (s: Set<string>, v: string) => s.has((v || '').toLowerCase());
-    const hasText = (s?: string | null) => !!s && s.trim().length > 0;
+    const filtered = filterItemsByQuery(allItems, query);
     const byDate = (date?: string) => +new Date(date || 0);
-
-    let filteredJobs = base;
-
-    if (query.locationNames.length) {
-      const want = toSet(query.locationNames);
-      filteredJobs = filteredJobs.filter((i) => inSet(want, i.LocationName));
-    }
-    if (query.departmentNames.length) {
-      const want = toSet(query.departmentNames);
-      filteredJobs = filteredJobs.filter((i) => inSet(want, i.DepartmentName));
-    }
-    if (hasText(query.search)) {
-      const needle = query.search!.toLowerCase();
-      filteredJobs = filteredJobs.filter(
-        (i) =>
-          i.Title.toLowerCase().includes(needle) ||
-          i.DepartmentName.toLowerCase().includes(needle) ||
-          i.LocationName.toLowerCase().includes(needle),
-      );
-    }
-
-    filteredJobs = filteredJobs
+    return filtered
       .slice()
       .sort((a, b) =>
         query.sort === 'postedAt_asc'
           ? byDate(a.PostedAtUtc) - byDate(b.PostedAtUtc)
           : byDate(b.PostedAtUtc) - byDate(a.PostedAtUtc),
       );
-
-    return filteredJobs;
   }, [allItems, query]);
+
+  const selectedLocationNames = showMobileFilters ? draft.locationNames : query.locationNames;
+  const selectedDepartmentNames = showMobileFilters ? draft.departmentNames : query.departmentNames;
+
+  const { locationFacets, departmentFacets } = useMemo(() => {
+    const baseForLocations = filterItemsByQuery(allItems, queryForFacets, {
+      omit: 'locationNames',
+    });
+    const baseForDepartments = filterItemsByQuery(allItems, queryForFacets, {
+      omit: 'departmentNames',
+    });
+
+    return {
+      locationFacets: buildFacetList(
+        baseForLocations,
+        (item) => item.LocationName,
+        selectedLocationNames,
+      ),
+      departmentFacets: buildFacetList(
+        baseForDepartments,
+        (item) => item.DepartmentName,
+        selectedDepartmentNames,
+      ),
+    };
+  }, [allItems, queryForFacets, selectedLocationNames, selectedDepartmentNames]);
 
   const { pageItems, totalResults, totalPages, page } = useMemo(() => {
     const pageSize = Math.max(1, query.pageSize || 9);
@@ -257,34 +328,35 @@ export default function CareersBoard({
   }, [filteredItems, query.page, query.pageSize]);
 
   const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
+  console.log('JOBS ====== >>>>>> ' + JSON.stringify(jobs));
   const hasResults = totalResults > 0;
-
-  type QueryKey = 'locationNames' | 'departmentNames';
 
   const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
     setDraft((d) => ({ ...d, page: 1, [key]: d[key][0] === name ? [] : [name] }));
   }, []);
 
-  const toggleFacet = useCallback((key: QueryKey, name: string) => {
-    setQuery((q) => {
-      const exists = q[key].includes(name);
-      const nextVals = exists ? q[key].filter((n) => n !== name) : [...q[key], name];
-      return { ...q, page: 1, [key]: nextVals } as CareersSearchBody;
-    });
-  }, []);
+  const toggleFacet = useCallback(
+    (key: QueryKey, name: string) => {
+      updateQuery((q) => {
+        const nextVals = q[key][0] === name ? [] : [name];
+        return { ...q, page: 1, [key]: nextVals } as CareersSearchBody;
+      });
+    },
+    [updateQuery],
+  );
 
   const handlePage = useCallback(
     (n: number) =>
-      setQuery((q) => ({
+      updateQuery((q) => ({
         ...q,
         page: Math.max(1, Math.min(n, Math.max(1, totalPages))),
       })),
-    [totalPages],
+    [totalPages, updateQuery],
   );
 
   const handlePageSize = useCallback(
-    (n: number) => setQuery((q) => ({ ...q, page: 1, pageSize: n })),
-    [],
+    (n: number) => updateQuery((q) => ({ ...q, page: 1, pageSize: n })),
+    [updateQuery],
   );
 
   const selectedChips = useMemo(
@@ -309,18 +381,29 @@ export default function CareersBoard({
     }));
   }, []);
 
-  const removeChip = useCallback((key: QueryKey, name: string) => {
-    setQuery((q) => ({
-      ...q,
-      page: 1,
-      [key]: (q[key] as string[]).filter((n) => n !== name),
-    }));
-    setDraft((d) => ({
-      ...d,
-      page: 1,
-      [key]: (d[key] as string[]).filter((n) => n !== name),
-    }));
-  }, []);
+  const removeChip = useCallback(
+    (key: QueryKey, name: string) => {
+      updateQuery((q) => ({
+        ...q,
+        page: 1,
+        [key]: (q[key] as string[]).filter((n) => n !== name),
+      }));
+      setDraft((d) => ({
+        ...d,
+        page: 1,
+        [key]: (d[key] as string[]).filter((n) => n !== name),
+      }));
+    },
+    [updateQuery],
+  );
+
+  const handleOpenJob = useCallback(
+    (id: string, departmentId: string) => {
+      scrollToBoardTop();
+      onOpenJob?.(id, departmentId);
+    },
+    [onOpenJob, scrollToBoardTop],
+  );
 
   useEffect(() => {
     if (showMobileFilters) {
@@ -333,6 +416,12 @@ export default function CareersBoard({
 
   return (
     <section className={`mx-auto py-10 md:px-10 ${className ?? ''}`}>
+      <div
+        ref={topAnchorRef}
+        tabIndex={-1}
+        className="h-0 w-0 overflow-hidden focus:outline-none"
+        data-careers-board-top-anchor
+      />
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_minmax(0,1fr)]">
         {/* Sidebar filters (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
@@ -421,7 +510,7 @@ export default function CareersBoard({
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
                 {jobs.map((job) => (
                   <div key={job.id} className="h-[218px]">
-                    <JobCard job={job} onOpen={() => onOpenJob?.(job.id, job.departmentId)} />
+                    <JobCard job={job} onOpen={() => handleOpenJob(job.id, job.departmentId)} />
                   </div>
                 ))}
               </div>
@@ -495,7 +584,7 @@ export default function CareersBoard({
               <button
                 type="button"
                 onClick={() => {
-                  setQuery((q) => ({ ...q, ...draft, page: 1 }));
+                  updateQuery((q) => ({ ...q, ...draft, page: 1 }), { force: true });
                   setShowMobileFilters(false);
                 }}
                 className="w-full rounded-2xl bg-primaryAlt px-4 py-2 text-secondary"

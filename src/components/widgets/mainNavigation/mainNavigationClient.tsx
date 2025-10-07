@@ -29,8 +29,6 @@ export default function ClientNavbar({
   stripQuery?: boolean;
   scrolled?: boolean;
 }) {
-  console.log('tems--->', items);
-
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
   const navRef = useDismissable<HTMLDivElement>(openIdx !== null, () => setOpenIdx(null));
@@ -44,9 +42,6 @@ export default function ClientNavbar({
 
   const isActivePath = (href: string) => {
     const target = normalizeUrl(href, stripQuery);
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[MainNavigation] compare:', { href, target, currentMatch });
-    }
     if (target === '/') return currentMatch === '/';
     return currentMatch === target || currentMatch.startsWith(`${target}/`);
   };
@@ -63,8 +58,6 @@ export default function ClientNavbar({
         } catch {
           itemUrl = item.url;
         }
-        console.log('itemUrl------>', itemUrl);
-
         const selfActive = isActivePath(item.url);
         const childActive = isDropdown(item) && item.children.some((c) => isActivePath(c.url));
         const active = selfActive || childActive;

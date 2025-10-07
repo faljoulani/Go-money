@@ -120,7 +120,6 @@ function mapNavLink(navLink: NavLink): ClientNavItem | null {
     viewUrl: navLink?.ViewUrl,
     relativeUrlPath: navLink?.RelativeUrlPath,
   });
-  console.log('tttt---->', navLink.CTAExternalUrl);
   return children.length ? { title, url, children } : { title, url };
 }
 
@@ -169,7 +168,6 @@ export default async function MainNavigation(props: WidgetContext<MainNavigation
       </section>
     ) : null;
   }
-  console.log('MNPAYLOAD', mainNavigationData);
 
   const logoImg = selectPrimaryImage(mainNavigationData.Logo);
   const logoRaw = getImageSrc(logoImg);
