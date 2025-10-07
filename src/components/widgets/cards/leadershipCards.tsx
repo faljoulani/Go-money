@@ -136,7 +136,9 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
           {title}
         </Title>
         {subtitle && (
-          <Description className="text-start mt-1.5 tracking-[-0.02em] xs:leading-5">{subtitle}</Description>
+          <Description className="text-start mt-1.5 tracking-[-0.02em] xs:leading-5">
+            {subtitle}
+          </Description>
         )}
       </div>
 
@@ -153,8 +155,12 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                 />
               )}
               <div className="text-center mt-6">
-                <h1 className="text-white md:text-[26px] xs:text-lg whitespace-nowrap md:font-bold xs:font-semibold">{item.title}</h1>
-                <p className="text-white md:text-[20px] xs:text-base md:font-medium">{item.description}</p>
+                <h1 className="text-white md:text-[26px] xs:text-lg whitespace-[90%] md:font-bold xs:font-semibold">
+                  {item.title}
+                </h1>
+                <p className="text-white md:text-[20px] xs:text-base md:font-medium">
+                  {item.description}
+                </p>
               </div>
             </div>
           ))}
@@ -162,19 +168,21 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
           {/* Last 2 items */}
           <div className="md:col-span-3 md:flex justify-center md:gap-x-10 xs:space-y-4 md:mt-14">
             {items.slice(3, 5).map((item: any, i: number) => (
-              <div key={i} className="md:flex md:flex-col items-center">
+              <div key={i} className="md:flex md:flex-col ">
                 {item.iconUrl && (
                   <img
                     src={item.iconUrl}
                     alt={item.title}
-                    className="rounded-full w-[251px] h-[363px]"
+                    className="rounded-full w-[251px] h-[363px] xs:mx-auto xs:items-center"
                   />
                 )}
                 <div className="text-center mt-6">
                   <h1 className="text-white md:text-[26px] xs:text-lg whitespace-nowrap md:font-bold xs:font-semibold">
                     {item.title}
                   </h1>
-                  <p className="text-white md:text-[20px] xs:text-base md:font-medium xs:font-normal">{item.description}</p>
+                  <p className="text-white md:text-[20px] xs:text-base md:font-medium xs:font-normal">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             ))}
