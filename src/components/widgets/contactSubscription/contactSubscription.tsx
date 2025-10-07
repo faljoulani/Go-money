@@ -102,7 +102,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             placeholder={box.EmailPlaceholder || 'Enter your email address'}
             label={box.EmailLabel || 'Email'}
             button={box.ButtonLabel || 'Subscribe Now'}
-            endpoint="api/default/SubscriptionEmails"
+            endpoint="api/default/subscriptions"
             className="flex flex-col h-full [&>button[type=submit]]:mt-auto"
           />
         </div>

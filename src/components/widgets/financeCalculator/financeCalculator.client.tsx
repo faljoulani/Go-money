@@ -136,7 +136,13 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string>('');
 
-  const amountFill = useRangeVars(requestedFinanceAmount, AMIN, AMAX,  'var(--color-primary-alt)', '#C9CDD6');
+  const amountFill = useRangeVars(
+    requestedFinanceAmount,
+    AMIN,
+    AMAX,
+    'var(--color-primary-alt)',
+    '#C9CDD6',
+  );
   const instFill = useRangeVars(installments, IMIN, IMAX, 'var(--color-primary-alt)', '#C9CDD6');
 
   // ---- age utils ----
@@ -197,20 +203,20 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     //   ageAtApplication: '28',
     //   AgeAtMaturity: '29',
     // };
-      try {
-        const res = await post(payload);
-        if (res?.Data?.IsEligible) setResult('success');
-        else setResult('fail');
-      } catch (err) {
-        console.error('FinanceCalculator error:', err);
-        setMsg(
-       dir=== 'ltr'
-       ? 'Something went wrong. Please try again.' :           'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-
-     );
-      } finally {
-        setSubmitting(false);
-      }
+    try {
+      const res = await post(payload);
+      if (res?.Data?.IsEligible) setResult('success');
+      else setResult('fail');
+    } catch (err) {
+      console.error('FinanceCalculator error:', err);
+      setMsg(
+        dir === 'ltr'
+          ? 'Something went wrong. Please try again.'
+          : 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
     // try {
     //   if (Number(payload.FinanceAmt) > 7000) {
     //     setResult('success');
@@ -248,7 +254,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         </h2>
 
         <div className="mt-4">
-          <p className="text-[15px] font-medium text-primary">
+          <p className="text-[15px] font-medium text-default">
             {C.labels?.nationality || 'Choose nationality'}
           </p>
           <div className="mt-2 flex items-center gap-6">
@@ -258,7 +264,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               return (
                 <label key={label} className="inline-flex items-center gap-2">
                   <input
-                  required
+                    required
                     type="radio"
                     name="nationality"
                     value={val}
@@ -285,7 +291,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
             <input
-            required
+              required
               type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
@@ -324,15 +330,14 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             <div className="space-y-2">
               <CurrencyInput
                 value={requestedFinanceAmount}
-                
                 onChange={(v) => setRequestedFinanceAmount(clamp(Number(v || 0), AMIN, AMAX))}
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
               <div className="text-xs text-gray-500">
-  {dir === 'ltr'
-    ? `Maximum eligible installments is ${IMAX} months`
-    : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
-</div>
+                {dir === 'ltr'
+                  ? `Maximum eligible installments is ${IMAX} months`
+                  : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
+              </div>
 
               <input
                 type="range"
@@ -358,11 +363,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               <div className="sf-input cursor-default flex items-center">
                 {installments} {C.labels?.installmentsPlaceholder || 'Months'}
               </div>
-            <div className="text-xs text-gray-500">
-  {dir === 'ltr'
-    ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
-    : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
-</div>
+              <div className="text-xs text-gray-500">
+                {dir === 'ltr'
+                  ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
+                  : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
+              </div>
               <input
                 type="range"
                 min={IMIN}
@@ -446,7 +451,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
       <style>{`
         .sf-input{
-          height:48px;width:100%;border-radius:1rem;border:1px solid #DFE3EA;
+          height:3.5rem;width:100%;border-radius:1rem;border:1px solid #DFE3EA;
           padding:0 1rem;font-size:14px;outline:none;
         }
         .sf-range{
@@ -534,9 +539,9 @@ function CurrencyInput({
 }) {
   return (
     <input
-    required
+      required
       inputMode="decimal"
-      type= "number"
+      type="number"
       value={value === '' ? '' : String(value)}
       onChange={(e) => {
         const v = e.target.value.replace(/[^\d.]/g, '');
@@ -562,10 +567,22 @@ function Tooltip({ content, children }: { content: string; children: React.React
 
 export function InfoIcon({ className = '' }: { className?: string }) {
   return (
-    <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="currentColor">
+    <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="none">
+      {/* circle background */}
       <circle cx="12" cy="12" r="12" fill="var(--color-primary-alt)" />
-      <rect x="11" y="10" width="2" height="6" fill="var(--color-secondary)" />
-      <circle cx="12" cy="7" r="1.2" fill="var(--color-secondary)" />
+
+      {/* dot */}
+      <circle cx="12" cy="7" r="1.3" fill="var(--color-secondary)" />
+
+      {/* stem with rounded ends (pill) */}
+      <rect
+        x="10.9" // centered
+        y="10.2"
+        width="2.2"
+        height="8.5"
+        rx="1.1" // half of width -> fully rounded caps
+        fill="var(--color-secondary)"
+      />
     </svg>
   );
 }

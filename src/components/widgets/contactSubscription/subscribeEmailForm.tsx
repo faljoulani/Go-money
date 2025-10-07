@@ -7,7 +7,7 @@ export default function SubscribeEmailForm({
   placeholder = 'Enter your email address',
   label = 'Email',
   button = 'Subscribe Now',
-  endpoint = 'api/default/SubscriptionEmails',
+  endpoint = 'api/default/subscriptions',
   className = '',
 }: {
   placeholder?: string;
