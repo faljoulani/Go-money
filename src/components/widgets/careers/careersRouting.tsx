@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import JobDetails from './details/jobDetails';
 import ApplyForJob from './applyForJob/applyForJob';
@@ -29,6 +29,7 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
 
   const jobId = search.get('job') ?? '';
   const isApplying = search.get('apply') === '1';
+  const detailsStartRef = useRef<HTMLDivElement | null>(null);
 
   const buildUrl = useCallback(
     (mutate: (p: URLSearchParams) => void) => {
@@ -67,6 +68,17 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
     [router, buildUrl],
   );
 
+  useEffect(() => {
+    if (!jobId || isApplying) return;
+
+    const raf = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      detailsStartRef.current?.focus({ preventScroll: true });
+    });
+
+    return () => window.cancelAnimationFrame(raf);
+  }, [jobId, isApplying]);
+
   const content = useMemo(() => {
     if (jobId && isApplying) {
       return (
@@ -86,15 +98,20 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
 
     if (jobId) {
       return (
-        <>
+        <div
+          ref={detailsStartRef}
+          tabIndex={-1}
+          data-job-details-start
+          className="focus:outline-none"
+        >
           <JobDetails id={jobId} onApply={() => goToApply(jobId)} onOpenJob={openJob} />
-        </>
+        </div>
       );
     }
 
     return <CareersBoard labels={labels} careers={careers} onOpenJob={openJob} />;
   }, [jobId, isApplying, labels, careers, entity, language, buildUrl, goToApply, openJob]);
 
-  return <section className="mx-auto w-full">{content}</section>;
+  return <section className="flex mx-auto">{content}</section>;
 }
 

@@ -204,12 +204,12 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     //   AgeAtMaturity: '29',
     // };
 
-
     try {
       const res = await post(payload);
       if (res?.Data?.IsEligible) setResult('success');
+      // if (requestedFinanceAmount > 7000) setResult('success');
       else setResult('fail');
-        window.location.hash = '#calc-result';
+      window.location.hash = '#calc-result';
     } catch (err) {
       console.error('FinanceCalculator error:', err);
       setMsg(
@@ -221,7 +221,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       setSubmitting(false);
     }
   }
-
 
   const success: ResponseMessage = successMsg;
   const fail: ResponseMessage = failMsg;
@@ -301,10 +300,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 onChange={(e) => setDob(e.target.value)}
                 placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
                 className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''}`}
-
-                data-placeholder={
-                  C.labels?.dateOfBirthPlaceholder 
-                }
+                data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
               {/* theme-aware calendar icon */}
               <span aria-hidden className="date-icon" />
@@ -623,7 +619,7 @@ function Select({
   return (
     <div className="relative select-wrap ">
       <select
-      required
+        required
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="sf-input appearance-none pr-10 ltr:pr-10 rtl:pl-10 bg-secondary"
@@ -654,7 +650,7 @@ function CurrencyInput({
 }) {
   return (
     <input
-    required
+      required
       inputMode="decimal"
       type="number"
       value={value === '' ? '' : String(value)}

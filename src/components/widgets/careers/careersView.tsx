@@ -6,6 +6,7 @@ import {
 } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 import CareersRouting from './careersRouting';
+import { useEffect } from 'react';
 
 const T_FORM_LABEL = 'Telerik.Sitefinity.DynamicTypes.Model.CareersFormLabel.CareersFormLabel';
 
@@ -150,9 +151,9 @@ export default async function Careers(props: WidgetContext<any>) {
   const careersPlain = toPlain(careers);
 
   const labels = {
-    vacanciesLabel: pageData?.VacanciesLabel ?? 'Available vacancies',
-    locationLabel: pageData?.LocationLabel ?? 'Filter by Location',
-    departmentLabel: pageData?.DepartmentLabel ?? 'Filter by Department',
+    vacanciesLabel: pageData?.VacanciesLabel,
+    locationLabel: pageData?.LocationLabel,
+    departmentLabel: pageData?.DepartmentLabel,
   };
 
   if (!careers.length && isEdit) {
@@ -166,9 +167,12 @@ export default async function Careers(props: WidgetContext<any>) {
       </section>
     );
   }
+  console.log({
+    applyForm: JSON.stringify(applyForm),
+  });
 
   return (
-    <section {...attrs} className="m-auto">
+    <section {...attrs} className="flex justify-center mx-auto">
       <CareersRouting
         language={culture || 'en'}
         labels={labels}
