@@ -203,30 +203,16 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     //   ageAtApplication: '28',
     //   AgeAtMaturity: '29',
     // };
-    // try {
-    //   const res = await post(payload);
-    //   if (res?.Data?.IsEligible) setResult('success');
-    //   else setResult('fail');
-    // } catch (err) {
-    //   console.error('FinanceCalculator error:', err);
-    //   setMsg(
-    //     dir === 'ltr'
-    //       ? 'Something went wrong. Please try again.'
-    //       : 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
-    //   );
-    // } finally {
-    //   setSubmitting(false);
-    // }
     try {
-      if (Number(payload.FinanceAmt) > 7000) {
-        setResult('success');
-      } else setResult('fail');
+      const res = await post(payload);
+      if (res?.Data?.IsEligible) setResult('success');
+      else setResult('fail');
     } catch (err) {
       console.error('FinanceCalculator error:', err);
       setMsg(
         dir === 'ltr'
-          ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-          : 'Something went wrong. Please try again.',
+          ? 'Something went wrong. Please try again.'
+          : 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
       );
     } finally {
       setSubmitting(false);
@@ -633,6 +619,7 @@ function Select({
   return (
     <div className="relative select-wrap ">
       <select
+      required
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="sf-input appearance-none pr-10 ltr:pr-10 rtl:pl-10 bg-secondary"
@@ -663,6 +650,7 @@ function CurrencyInput({
 }) {
   return (
     <input
+    required
       inputMode="decimal"
       type="number"
       value={value === '' ? '' : String(value)}
