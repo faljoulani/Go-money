@@ -107,7 +107,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const IMIN = C.labels.minimumEligibleInstallments,
     IMAX = C.labels.maximumEligibleInstallments,
     ISTEP = 1,
-    IDEF = (IMAX + IMIN) / 2;
+    IDEF = IMIN;
 
   const employerChoices: Choice[] = C.choices?.employerTypes ?? [];
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
@@ -205,8 +205,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         console.error('FinanceCalculator error:', err);
         setMsg(
        dir=== 'ltr'
-         ? 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
-       : 'Something went wrong. Please try again.'
+       ? 'Something went wrong. Please try again.' :           'حدث خطأ ما. يُرجى المحاولة مرة أخرى.'
+
      );
       } finally {
         setSubmitting(false);
@@ -258,6 +258,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               return (
                 <label key={label} className="inline-flex items-center gap-2">
                   <input
+                  required
                     type="radio"
                     name="nationality"
                     value={val}
@@ -284,6 +285,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
             <input
+            required
               type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
@@ -327,8 +329,10 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
               <div className="text-xs text-gray-500">
-                {`Maximum eligible amount is ${formatSar(AMAX)} SAR`}
-              </div>
+  {dir === 'ltr'
+    ? `Maximum eligible installments is ${IMAX} months`
+    : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
+</div>
 
               <input
                 type="range"
@@ -354,9 +358,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               <div className="sf-input cursor-default flex items-center">
                 {installments} {C.labels?.installmentsPlaceholder || 'Months'}
               </div>
-              <div className="text-xs text-gray-500">
-                {`Maximum eligible installments is ${IMAX} months`}
-              </div>
+            <div className="text-xs text-gray-500">
+  {dir === 'ltr'
+    ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
+    : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
+</div>
               <input
                 type="range"
                 min={IMIN}
@@ -528,6 +534,7 @@ function CurrencyInput({
 }) {
   return (
     <input
+    required
       inputMode="decimal"
       type= "number"
       value={value === '' ? '' : String(value)}
