@@ -228,9 +228,20 @@ export default function CareersBoard({
     );
   }
 
-  const vacanciesLabel = labels?.vacanciesLabel ?? 'Available vacancies';
-  const locationLabel = labels?.locationLabel ?? 'Filter by Location';
-  const departmentLabel = labels?.departmentLabel ?? 'Filter by Department';
+  const vacanciesLabel =
+    dir === 'rtl'
+      ? (labels?.vacanciesLabel ?? 'الوظائف المتاحة')
+      : (labels?.vacanciesLabel ?? 'Available vacancies');
+
+  const locationLabel =
+    dir === 'rtl'
+      ? (labels?.locationLabel ?? 'التصفية حسب الموقع')
+      : (labels?.locationLabel ?? 'Filter by Location');
+
+  const departmentLabel =
+    dir === 'rtl'
+      ? (labels?.departmentLabel ?? 'التصفية حسب القسم')
+      : (labels?.departmentLabel ?? 'Filter by Department');
 
   const [query, setQuery] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
   const [draft, setDraft] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
