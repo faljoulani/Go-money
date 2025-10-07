@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import { SuccessResponse, FailResponse, type ResponseMessage } from './responseMessage';
 
-type Nationality = string;
+type Nationality = 'Saudi' | 'Non-Saudi';
 type ResultState = null | 'success' | 'fail';
 
 type Choice = { id: string; title: string; value: string };
@@ -15,7 +15,15 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
 
   const { post } = useSfMutation('api/default/eligibility/get');
+  function normalizeNationality(input: string): Nationality {
+    const s = (input || '').trim();
 
+    if (/non/i.test(s) || /غير\s*سعود[ىي]/i.test(s)) return 'Non-Saudi';
+
+    if (/saud/i.test(s) || /سعود[ىي]/i.test(s)) return 'Saudi';
+
+    return 'Saudi';
+  }
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
   const formatSar = (n: number) =>
@@ -248,7 +256,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           </p>
           <div className="mt-2 flex items-center gap-6">
             {nationalityOptions.map((label) => {
-              const val = /non/i.test(label) ? 'Non-Saudi' : 'Saudi';
+              const val = normalizeNationality(label);
               const checked = nationality === (val as Nationality);
               return (
                 <label key={label} className="inline-flex items-center gap-2">
