@@ -218,9 +218,9 @@ const [serviceLength, setServiceLength] = useState<string>(lengthOptions[0]?.val
     // };
 
     try {
-      // const res = await post(payload);
-      // if (res?.Data?.IsEligible) setResult('success');
-      if (requestedFinanceAmount > 7000) setResult('success');
+      const res = await post(payload);
+      if (res?.Data?.IsEligible) setResult('success');
+      // if (requestedFinanceAmount > 7000) setResult('success');
       else setResult('fail');
       window.location.hash = '#calc-result';
     } catch (err) {
