@@ -59,7 +59,7 @@ export default function ContactFormClient({
   data,
   dir = 'auto',
 }: Props) {
-  console.log('ContactFormClient data:', data);
+  // console.log('ContactFormClient data:', data);
   const FIELD =
     'w-full h-[48px] px-3 py-3 rounded-[18px] text-[#9ca3af] border border-[#9ca3af] ' +
     'bg-surface-input text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
