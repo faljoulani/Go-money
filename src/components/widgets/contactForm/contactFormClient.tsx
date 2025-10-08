@@ -159,10 +159,10 @@ export default function ContactFormClient({
       const localPhone = String(formData.get('phone') || '').trim();
       const email = String(formData.get('email') || '').trim();
       const topic = String(formData.get('topic') || '').trim();
-      const reqType =
-        String(formData.get('requestType') || '')
-          .trim()
-          .toUpperCase() || 'COMPLAINT';
+      
+ 
+      const reqType = selectedRequestType;
+
       const notes = String(formData.get('notes') || '').trim();
 
       const apiPayload = {
@@ -299,7 +299,9 @@ export default function ContactFormClient({
               placeholder={data.requestTypePlacholder ?? 'Select request type'}
               disabled={isLoading}
               onChange={(opt) => {
-                const val = String(opt.label || '').toUpperCase();
+                // FIX: Use opt.value for the API payload value (e.g., 'COMPLAINT'),
+                // instead of converting the label.
+                const val = String(opt.value || '').toUpperCase();
                 setSelectedRequestType(val);
                 console.log('Selected request type:', val);
               }}
@@ -324,12 +326,13 @@ export default function ContactFormClient({
               onChange={(opt) => {
                 const selected = dropdownOptions.find((o) => o.id === opt.id);
                 console.log('SELECTEDREQUESTYPE:', selectedRequestType);
-                if (selectedRequestType === 'Inquiry' || selectedRequestType === 'استفسار') {
+                if (selectedRequestType === 'INQUIRY') { // Changed 'Inquiry' to 'INQUIRY' to match state value
                   setSelectedTopic('');
                   return;
                 }
-                const label = String(selected?.label || '').toUpperCase();
+                const label = String(opt.value || '').toUpperCase(); // Using opt.value for selectedTopic too
                 console.log('Selected label:', label);
+                setSelectedTopic(label);
               }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -382,4 +385,5 @@ export default function ContactFormClient({
     </div>
   );
 }
+
 

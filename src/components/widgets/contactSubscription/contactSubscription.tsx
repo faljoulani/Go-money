@@ -40,6 +40,69 @@ const getVariant = (box: ContactBox): 'subscribe' | 'contact' => {
   return hasCorner ? 'contact' : box.EmailPlaceholder ? 'subscribe' : 'contact';
 };
 
+
+
+export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
+  const attrs = htmlAttributes(props);
+  const { culture, isEdit } = props.requestContext;
+
+  const properties = (props.model?.Properties || {}) as any;
+  const rawSel =
+    resolveSitefinitySelection(properties?.ContactSubscription) ?? properties?.ContactSubscription;
+  const parentId = extractSelectionId(rawSel);
+
+  if (!parentId) {
+    return isEdit ? (
+      <section {...attrs}>
+        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-default">
+          <strong>Contact Subscription</strong>
+          <div className="mt-1">Open the designer and select a Contact Subscription item.</div>
+        </div>
+      </section>
+    ) : null;
+  }
+
+  const parent = (await fetchData(
+    [parentId],
+    null,
+    culture,
+    [
+      'Id',
+      'Title',
+      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner,HasLabelCorner,Variant,Mode,Layout)',
+    ],
+    { itemType: rawSel?.Content?.[0]?.Type, single: true },
+  )) as ContactSubscriptionParent | null;
+
+  const items = Array.isArray(parent?.Box) ? parent!.Box : parent?.Box ? [parent!.Box] : [];
+  const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
+  const right = items.find((x) => x !== left) ?? items[1];
+
+  const lines = parent.Title.split('\n');
+
+  return (
+    <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16">
+      <div className="mx-auto max-w-[1240px">
+        {parent?.Title && (
+          <div className="mb-10">
+            <Title
+              color="text-primaryAlt"
+              className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px]"
+            >
+              {parent.Title}
+            </Title>
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 xs:grid-cols-1 gap-8 items-stretch">
+          {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
+          {right && <Card box={right} className="fadeRightSubscribe h-full" />}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Card({ box, className = '' }: { box: ContactBox; className?: string }) {
   const variant = getVariant(box);
   const isSubscribe = variant === 'subscribe';
@@ -148,65 +211,3 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
     </div>
   );
 }
-
-export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
-  const attrs = htmlAttributes(props);
-  const { culture, isEdit } = props.requestContext;
-
-  const properties = (props.model?.Properties || {}) as any;
-  const rawSel =
-    resolveSitefinitySelection(properties?.ContactSubscription) ?? properties?.ContactSubscription;
-  const parentId = extractSelectionId(rawSel);
-
-  if (!parentId) {
-    return isEdit ? (
-      <section {...attrs}>
-        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-default">
-          <strong>Contact Subscription</strong>
-          <div className="mt-1">Open the designer and select a Contact Subscription item.</div>
-        </div>
-      </section>
-    ) : null;
-  }
-
-  const parent = (await fetchData(
-    [parentId],
-    null,
-    culture,
-    [
-      'Id',
-      'Title',
-      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner,HasLabelCorner,Variant,Mode,Layout)',
-    ],
-    { itemType: rawSel?.Content?.[0]?.Type, single: true },
-  )) as ContactSubscriptionParent | null;
-
-  const items = Array.isArray(parent?.Box) ? parent!.Box : parent?.Box ? [parent!.Box] : [];
-  const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
-  const right = items.find((x) => x !== left) ?? items[1];
-
-  const lines = parent.Title.split('\n');
-
-  return (
-    <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16">
-      <div className="mx-auto max-w-[1240px">
-        {parent?.Title && (
-          <div className="mb-10">
-            <Title
-              color="text-primaryAlt"
-              className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px]"
-            >
-              {parent.Title}
-            </Title>
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-2 xs:grid-cols-1 gap-8 items-stretch">
-          {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
-          {right && <Card box={right} className="fadeRightSubscribe h-full" />}
-        </div>
-      </div>
-    </section>
-  );
-}
-
