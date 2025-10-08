@@ -116,13 +116,13 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
   const messageIds: string[] = (finance.RelatedMessage || []).map((x: any) => x.Id);
 
   const [employers, lengthOfServices, nationalities, messages] = await Promise.all([
-    fetchData(employerIds, null, culture, ['Id', 'Title', 'Name', 'Value'], {
+    fetchData(employerIds, null, culture, ['Id', 'Key',  'Value'], {
       itemType: EMPLOYER_TYPE,
     }),
-    fetchData(lenServIds, null, culture, ['Id', 'Title', 'Name', 'Value'], {
+    fetchData(lenServIds, null, culture, ['Id', 'Key',  'Value'], {
       itemType: LENGTH_OF_SERVICE_TYPE,
     }),
-    fetchData(nationalityIds, null, culture, ['Id', 'Title', 'Name', 'Value'], {
+    fetchData(nationalityIds, null, culture, ['Id', 'Key',  'Value'], {
       itemType: NATIONALITY_TYPE,
     }),
     fetchData(
@@ -152,11 +152,10 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       { itemType: MESSAGE_TYPE },
     ),
   ]);
-console.log("zzzzzz", messages);
   const toChoice = (x: any) => ({
     id: String(x?.Id ?? ''),
-    title: String(x?.Title ?? x?.Name ?? x?.Value ?? ''),
-    value: String(x?.Value ?? x?.Name ?? x?.Title ?? ''),
+    title: String(x?.Value?? x?.Name ?? x?.Name ?? ''),
+    value: String(x?.Key ?? x?.Value ?? x?.Name?? x?.Key ?? ''),
   });
 
   const toMessage = (m: any) => ({
@@ -242,7 +241,7 @@ console.log("zzzzzz", messages);
     messages: Array.isArray(messages) ? messages.map(toMessage) : [],
     culture,
   };
-
+console.log("zksfs", cfg.choices.employerTypes)
   return (
     <section data-sf-enhance {...attrs}>
       <FinanceCalculatorClient cfg={cfg} lang={lang} />
