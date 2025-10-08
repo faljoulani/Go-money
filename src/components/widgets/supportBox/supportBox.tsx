@@ -5,9 +5,9 @@ import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils
 import Description from '../../atoms/description/description';
 import Title from '../../atoms/title/title';
 import { CmsImage, ImgUrl as imgUrl } from '../../../types/typee';
-
 import Link from 'next/link';
 import Image from 'next/image';
+import SocialCleint from './socailClient';
 
 const firstMedia = (m: any): CmsImage => (Array.isArray(m) ? m[0] : m) ?? null;
 
@@ -58,20 +58,17 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   const socials = (item.SocialLinks || []).sort(
     (a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0),
   );
-  const getStaticSocialIcon = (title: string) => {
-  const name = title?.toLowerCase() ?? '';
-  if (name.includes('facebook')) return '/icons/facebook.svg';
-  if (name.includes('x')) return '/icons/x.svg';
-  if (name.includes('instagram')) return '/icons/instagram.svg';
-  if (name.includes('linkedin')) return '/icons/linkedin.svg';
-  return '/icons/social-default.svg';
-};
 
   return (
     <section
       {...attrs}
       className="max-w-[490px] relative flex flex-col items-start justify-between rounded-[20px] h-full bg-surface-input p-4 md:p-10 shadow-sm"
     >
+      {/* {item.HasLabel && (
+        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px] xs:ltr:rounded-tl-[30px] xs:rtl:rounded-tr-[30px]">
+          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-surface-input"></div>
+        </div>
+      )} */}
       <div className="space-y-4">
         <Title color="text-primary" className="text-2xl font-bold  md:text-28px">
           {item.Title}
@@ -117,7 +114,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
 
             return (
               <Link
-                key={social.Id ?? `social-${i}-${social.Title ?? 'x'}`}
+                key={`social-${i}-${social.Title}`}
                 href={social.Url || '#'}
                 aria-label={social.Title || 'social link'}
                 target={social.Url ? '_blank' : undefined}
@@ -125,26 +122,10 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-primaryAlt  hover:opacity-90 overflow-hidden"
                 title={social.Title}
               >
-                {sSrc && (
-                  <Image
-                    src={getStaticSocialIcon(social.Title)}
-                    alt={sImg?.AlternativeText || social.Title || 'social'}
-                    width={20}
-                    height={20}
-                    sizes="28px"
-                    className="object-contain dark:invert"
-                    unoptimized
-                  />
-                )}
+                <SocialCleint title={social.Title} />
               </Link>
             );
           })}
-        </div>
-      )}
-
-      {item.HasLabel && (
-        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px] xs:ltr:rounded-tl-[30px] xs:rtl:rounded-tr-[30px]">
-          <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-surface-input"></div>
         </div>
       )}
     </section>
