@@ -168,79 +168,75 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <hr className="border-[#FFFFFF40] mt-8" />
 
           {/* container */}
-          <div className="mx-auto w-full ">
-            <div className="md:flex md:flex-row xs:flex-col  w-auto">
-              <div className="col-span-1 mr-16 rtl:mr-0">
-                <div className="md:rtl:right-0 md:max-w-[400px] h-full xs:max-w-[310px] md:ltr:border-r md:ltr:border-white/15 md:rtl:border-l md:rtl:border-white/15 flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
-                  <div className="flex items-center gap-3 ">
-                    <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
-                      {logoSrc && (
-                        <Image
-                          src={footerData.Logo?.Urls?.[0] || logoSrc}
-                          alt={footerData.Logo?.Title || 'Footer logo'}
-                          width={100}
-                          height={45}
-                          className="
+          <div className="md:flex md:flex-row xs:flex-col  w-auto">
+            <div className="md:rtl:right-0 md:w-[50%] h-full w-[310px]  flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
+              <div className="flex items-center gap-3 ">
+                <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
+                  {logoSrc && (
+                    <Image
+                      src={footerData.Logo?.Urls?.[0] || logoSrc}
+                      alt={footerData.Logo?.Title || 'Footer logo'}
+                      width={100}
+                      height={45}
+                      className="
                             max-w-[100px] 
                             max-h-[45px] 
                             object-contain
                             invert brightness-0
                           "
-                          priority
-                          unoptimized
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {footerData.Description && (
-                    <p className="md:max-w-[400px] xs:max-w-[310px] text-14px leading-[18px] text-[#E0E0E0]">
-                      {String(footerData.Description).replace(/\s+/g, ' ').trim()}
-                    </p>
-                  )}
-
-                  {/* Social icons */}
-                  {socials?.length > 0 && (
-                    <div className="flex items-center gap-8 relative z-10">
-                      {socials.map((social, i) => {
-                        const sImg = selectPrimaryImage(social.Logo);
-                        const sRaw = getImageSrc(sImg);
-                        const sSrc = sRaw ? resolveAbsoluteUrl(sRaw, props.requestContext) : null;
-
-                        return (
-                          <Link
-                            key={social.Id ?? `social-${i}-${social.Title ?? 'x'}`}
-                            href={social.Url || '#'}
-                            aria-label={social.Title || 'social link'}
-                            className="inline-flex h-5 w-5  items-center justify-center text-gray-300 hover:border-primary/40 transition-colors overflow-hidden"
-                          >
-                            {sSrc ? (
-                              <Image
-                                src={sSrc}
-                                alt={sImg?.AlternativeText || social.Title || 'social'}
-                                width={20}
-                                height={20}
-                                sizes="20px"
-                                className="h-5 w-5 object-contain"
-                                unoptimized
-                              />
-                            ) : (
-                              <span className="text-xs">{social.Title?.[0] ?? '#'}</span>
-                            )}
-                          </Link>
-                        );
-                      })}
-                    </div>
+                      priority
+                      unoptimized
+                    />
                   )}
                 </div>
               </div>
-              {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks
-                lang={culture}
-                groups={linkGroups}
-                className=" justify-start my-8 z-30 rtl:pr-16 left-0"
-              />
+
+              {footerData.Description && (
+                <p className="md:max-w-[400px] xs:max-w-[310px] text-14px leading-[18px] text-[#E0E0E0]">
+                  {String(footerData.Description).replace(/\s+/g, ' ').trim()}
+                </p>
+              )}
+
+              {/* Social icons */}
+              {socials?.length > 0 && (
+                <div className="flex items-center gap-8 relative z-10">
+                  {socials.map((social, i) => {
+                    const sImg = selectPrimaryImage(social.Logo);
+                    const sRaw = getImageSrc(sImg);
+                    const sSrc = sRaw ? resolveAbsoluteUrl(sRaw, props.requestContext) : null;
+
+                    return (
+                      <Link
+                        key={social.Id ?? `social-${i}-${social.Title ?? 'x'}`}
+                        href={social.Url || '#'}
+                        aria-label={social.Title || 'social link'}
+                        className="inline-flex h-5 w-5  items-center justify-center text-gray-300 hover:border-primary/40 transition-colors overflow-hidden"
+                      >
+                        {sSrc ? (
+                          <Image
+                            src={sSrc}
+                            alt={sImg?.AlternativeText || social.Title || 'social'}
+                            width={20}
+                            height={20}
+                            sizes="20px"
+                            className="h-5 w-5 object-contain"
+                            unoptimized
+                          />
+                        ) : (
+                          <span className="text-xs">{social.Title?.[0] ?? '#'}</span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
+            {/* Link columns (FooterNavigation groups) */}
+            <FooterLinks
+              lang={culture}
+              groups={linkGroups}
+              className=" justify-start my-8 z-30 rtl:pr-16 left-0"
+            />
           </div>
 
           <hr className="mb-8 border-white/10 " />
