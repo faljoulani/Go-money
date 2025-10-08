@@ -18,6 +18,12 @@ function cleanSfHtml(input: string) {
   return str.trim();
 }
 
+// quick heuristic: does the HTML contain block-level tags?
+const hasBlockTags = (s: string) =>
+  /<(div|p|h[1-6]|ul|ol|li|section|article|aside|header|footer|nav|figure|blockquote|pre)[\s>]/i.test(
+    s,
+  );
+
 export default function Description({
   children,
   className = '',
@@ -26,7 +32,15 @@ export default function Description({
   html,
   as = 'p',
 }: Props) {
-  const Tag = as;
+  const cleaned = html ? cleanSfHtml(html) : undefined;
+  console.log('LATEST DESCRIPTION');
+  // pick the safest tag:
+  // - if html contains block tags and the requested tag is inline or <p>, switch to <div>
+  // - otherwise honor the 'as' prop
+  let Tag: 'p' | 'div' | 'span' = as;
+  if (cleaned && hasBlockTags(cleaned) && (as === 'p' || as === 'span')) {
+    Tag = 'div';
+  }
 
   const combinedClassName = ['text-base', 'tracking-normal', color, className]
     .filter(Boolean)
@@ -36,12 +50,12 @@ export default function Description({
     maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
   };
 
-  if (html) {
+  if (cleaned) {
     return (
-      <div
+      <Tag
         className={combinedClassName}
         style={style}
-        dangerouslySetInnerHTML={{ __html: cleanSfHtml(html) }}
+        dangerouslySetInnerHTML={{ __html: cleaned }}
       />
     );
   }
@@ -52,4 +66,3 @@ export default function Description({
     </Tag>
   );
 }
-
