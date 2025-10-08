@@ -58,6 +58,14 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   const socials = (item.SocialLinks || []).sort(
     (a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0),
   );
+  const getStaticSocialIcon = (title: string) => {
+  const name = title?.toLowerCase() ?? '';
+  if (name.includes('facebook')) return '/icons/facebook.svg';
+  if (name.includes('x')) return '/icons/x.svg';
+  if (name.includes('instagram')) return '/icons/instagram.svg';
+  if (name.includes('linkedin')) return '/icons/linkedin.svg';
+  return '/icons/social-default.svg';
+};
 
   return (
     <section
@@ -114,12 +122,12 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 aria-label={social.Title || 'social link'}
                 target={social.Url ? '_blank' : undefined}
                 rel={social.Url ? 'noopener noreferrer' : undefined}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-primaryAlt transition-colors hover:opacity-90 overflow-hidden"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-primaryAlt  hover:opacity-90 overflow-hidden"
                 title={social.Title}
               >
                 {sSrc && (
                   <Image
-                    src={sSrc}
+                    src={getStaticSocialIcon(social.Title)}
                     alt={sImg?.AlternativeText || social.Title || 'social'}
                     width={20}
                     height={20}
@@ -135,7 +143,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       )}
 
       {item.HasLabel && (
-        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt rounded-tl-[20px] rtl:rounded-tr-[200px] md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px]">
+        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt rtl:rounded-tr-[200px] md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px]">
           <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-surface-input"></div>
         </div>
       )}

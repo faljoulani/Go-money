@@ -235,7 +235,7 @@ export default function ContactFormClient({
 
             <div className="flex items-stretch gap-1">
               {/* Country pill dropdown */}
-              <div className="relative inline-block">
+              <div className="relative inline-block mx-auto">
                 <CustomDropdown
                   name="Country"
                   options={countryOptions}
@@ -244,13 +244,13 @@ export default function ContactFormClient({
                   onChange={onCountryChange}
                   className="relative inline-block"
                   buttonClassName={[
-                    'inline-flex h-[48px] min-w-[120px] w-[200px] items-center justify-center gap-2',
-                    'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 text-14px leading-[18px] text-[#2B2B2B]',
+                    'inline-flex h-[48px] max-w-[100px] items-center justify-center gap-2',
+                    'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 mx-auto text-14px leading-[18px] text-[#2B2B2B]',
                     'focus:ring-2 focus:ring-[#0B2A8E]/20',
                     isLoading ? 'opacity-50 cursor-not-allowed' : '',
                   ].join(' ')}
                   listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-surface-page p-2 shadow-xl"
-                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9] rounded-[12px]"
                   disabled={isLoading}
                 />
               </div>
@@ -320,11 +320,11 @@ export default function ContactFormClient({
               name="topic"
               options={dropdownOptionsTopics}
               placeholder={data.topicPlaceholder ?? 'Select topic'}
-              disabled={isLoading || selectedRequestType === 'INQUIRY'}
+              disabled={isLoading || selectedRequestType === 'INQUIRY' }
               onChange={(opt) => {
                 const selected = dropdownOptions.find((o) => o.id === opt.id);
                 console.log('SELECTEDREQUESTYPE:', selectedRequestType);
-                if (selectedRequestType === 'Inquiry') {
+                if (selectedRequestType === 'Inquiry' || selectedRequestType === 'استفسار') {
                   setSelectedTopic('');
                   return;
                 }
