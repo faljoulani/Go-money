@@ -151,11 +151,11 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                 <img
                   src={item.iconUrl}
                   alt={item.title}
-                  className="rounded-full w-[251px] h-[363px]"
+                  className="rounded-full w-[251px] h-[363px] xs:mx-auto"
                 />
               )}
-              <div className="text-center mt-6">
-                <h1 className="text-white md:text-[26px] xs:text-lg whitespace-[90%] md:font-bold xs:font-semibold">
+              <div className="text-center mt-6 space-y-1">
+                <h1 className="text-white md:text-[26px] md:leading-8 xs:leading-6  xs:text-lg whitespace-[90%] md:font-bold xs:font-semibold">
                   {item.title}
                 </h1>
                 <p className="text-white md:text-[20px] xs:text-base md:font-medium">
@@ -166,9 +166,9 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
           ))}
 
           {/* Last 2 items */}
-          <div className="md:col-span-3 md:flex justify-center md:gap-x-10 xs:space-y-4 md:mt-14">
+          <div className="md:col-span-3 md:flex justify-center md:gap-x-10 xs:space-y-4 md:space-y-0 md:mt-14">
             {items.slice(3, 5).map((item: any, i: number) => (
-              <div key={i} className="md:flex md:flex-col ">
+              <div key={i} className="md:flex md:flex-col md:w-[330px]">
                 {item.iconUrl && (
                   <img
                     src={item.iconUrl}
@@ -176,8 +176,8 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                     className="rounded-full w-[251px] h-[363px] xs:mx-auto xs:items-center"
                   />
                 )}
-                <div className="text-center mt-6">
-                  <h1 className="text-white md:text-[26px] xs:text-lg whitespace-nowrap md:font-bold xs:font-semibold">
+                <div className="text-center mt-6 space-y-1">
+                  <h1 className="text-white md:text-[26px] md:leading-8 xs:leading-6 xs:text-lg whitespace-nowrap md:font-bold xs:font-semibold">
                     {item.title}
                   </h1>
                   <p className="text-white md:text-[20px] xs:text-base md:font-medium xs:font-normal">

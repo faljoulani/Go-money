@@ -84,7 +84,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       </div>
 
       {/* Info */}
-      <div className="mt-10 space-y-2">
+      <div className="mt-10 space-y-4">
         {infos.map((social: any) => {
           const media =
             (Array.isArray(social.Logo) ? social.Logo[0] : social.Logo) ??
@@ -95,7 +95,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 <img
                   src={imgUrl(media)}
                   alt={media?.AlternativeText || media?.Title || social.Title}
-                  className="h-8 w-8 object-contain dark:brightness-200"
+                  className="h-8 w-8 object-contain dark:invert"
                   draggable={false}
                 />
               )}
@@ -110,7 +110,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       </div>
 
       {socials?.length > 0 && (
-        <div className="mt-10 flex items-center gap-4">
+        <div className="mt-12 flex items-center gap-4">
           {socials.map((social: any, i: number) => {
             const sImg = firstMedia(social.Logo);
             const sSrc = imgPath(sImg);
@@ -143,7 +143,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       )}
 
       {item.HasLabel && (
-        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt rtl:rounded-tr-[200px] md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px]">
+        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px] xs:ltr:rounded-tl-[30px] xs:rtl:rounded-tr-[30px]">
           <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-surface-input"></div>
         </div>
       )}
