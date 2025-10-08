@@ -13,7 +13,7 @@ type LinkLike = string | { Href?: string } | Array<{ Href?: string }>;
 export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang: string }) {
   const C = cfg ?? {};
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
-
+console.log("adfkasdf", C)
   const { post } = useSfMutation('api/default/eligibility/get');
   function normalizeNationality(input: string): Nationality {
     const s = (input || '').trim();
@@ -121,10 +121,16 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
   const nationalityChoices: Choice[] = C.choices?.nationalities ?? [];
 
-  const employerOptions = employerChoices.length ? employerChoices.map((c) => c.title) : ['GML'];
-  const lengthOptions = lengthChoices.length
-    ? lengthChoices.map((c) => c.title)
-    : ['3 Months', '6 Months', '1 Year', '2 Years', '3+ Years'];
+const employerOptions: Choice[] = employerChoices.length
+  ? employerChoices
+  : [{ id: 'GML', title: 'Government', value: 'GML' }];
+  const lengthOptions: Choice[] = lengthChoices.length
+  ? lengthChoices
+  : [
+      { id: '3', title: '3 Months', value: '3' },
+      { id: '6', title: '6 Months', value: '6' },
+      { id: '12', title: '1 Year', value: '12' },
+    ];
   const nationalityOptions = nationalityChoices.length
     ? nationalityChoices.map((c) => c.title)
     : (['Saudi', 'Non-Saudi'] as string[]);
@@ -132,8 +138,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   // ---- state ----
   const [result, setResult] = useState<ResultState>(null);
   const [nationality, setNationality] = useState<Nationality>('Saudi');
-  const [employer, setEmployer] = useState('');
-  const [serviceLength, setServiceLength] = useState(lengthOptions[0] ?? '3 Months');
+const [employer, setEmployer] = useState<string>('');
+const [serviceLength, setServiceLength] = useState<string>(lengthOptions[0]?.value ?? '3');
   const [dob, setDob] = useState('');
   const [salary, setSalary] = useState<number | ''>('');
   const [requestedFinanceAmount, setRequestedFinanceAmount] = useState<number>(ADEF);
@@ -181,8 +187,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
   const successMsg = mapMessage(rawSuccess || {});
   const failMsg = mapMessage(rawFail || {});
-  console.log('RAW messages:', C.messages);
-  console.log('Mapped failMsg:', failMsg);
+  
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -286,19 +291,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
-          {/* <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
-            <div className="relative date-wrap">
-              <input
-                required
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
-                className="sf-input bg-secondary pr-12 ltr:pr-12 rtl:pl-12"
-              />
-              <span aria-hidden className="date-icon" />
-            </div>
-          </Field> */}
+        
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
             <div className="relative date-wrap">
               <input
@@ -310,7 +303,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''}`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
-              {/* theme-aware calendar icon */}
               <span aria-hidden className="date-icon" />
             </div>
           </Field>
@@ -465,7 +457,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
       <style>{`
       :root {
-    /* control sizes from one place */
     --icon-size: 28px;
     --icon-offset: 12px;
   }
@@ -621,31 +612,32 @@ function Select({
 }: {
   value: string;
   onChange: (v: string) => void;
-  options: string[];
+  options: Choice[];
   placeholder?: string;
 }) {
   return (
-    <div className="relative select-wrap ">
+    <div className="relative select-wrap">
       <select
-      required
+        required
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}  
         className="sf-input appearance-none pr-10 ltr:pr-10 rtl:pl-10 bg-secondary"
       >
         <option value="" disabled>
           {placeholder || 'Select…'}
         </option>
         {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
+          <option key={o.id || o.value} value={o.value}>
+            {o.title}
           </option>
         ))}
       </select>
-
       <span aria-hidden className="select-caret" />
     </div>
   );
 }
+
+
 
 function CurrencyInput({
   value,

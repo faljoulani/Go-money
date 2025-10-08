@@ -186,7 +186,7 @@ export default async function ContactFormView(props: WidgetContext<FormEntity>) 
       className={mergeClasses('w-full', (props.model as any)?.CssClass, attrs.className)}
       data-sf-enhance
     >
-      <div className="w-full rounded-[24px] bg-surface-input p-6 shadow-sm ring-1 ring-black/5 min-w-[720px]">
+      <div className="w-full rounded-[24px] bg-surface-input p-6 shadow-sm md:min-w-[720px]">
         <ContactFormClient data={data} />
       </div>
     </section>
