@@ -702,8 +702,8 @@ function Select({
                 }}
                 className={clsx(
                   'p-2 text-14px leading-[18px]  cursor-pointer',
-                  'text-default hover:bg-surface-page',
-                  active && 'bg-gray-700 text-default',
+                  'text-default hover:opacity-90',
+                  active && 'bg-gray-700 text-surface-section',
                 )}
               >
                 {opt.title}
