@@ -59,20 +59,7 @@ export default function MainNavigationClientShell({
     >
       <div className="md:px-8 md:py-3 py-3 px-4">
         <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container md:px-6 xs:px-4">
-          {/* Left: Logo */}
-          {/* <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2" aria-label="Home">
-              <Image
-                src={logoUrl}
-                alt={logoAlt}
-                width={102}
-                height={45}
-                priority
-                className={scrolled ? '' : 'invert brightness-0'}
-                unoptimized
-              />
-            </Link>
-          </div> */}
+      
 
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2" aria-label="Home">
@@ -173,6 +160,7 @@ export default function MainNavigationClientShell({
               currentPath={currentPath}
               requestContext={requestContext}
               textColorWhenScrolled={scrolled ? 'text-primary' : 'text-white'}
+              logoColorWhenScrolled= {scrolled ? 'primaryAlt':'primary'}
             />
           </div>
         </div>

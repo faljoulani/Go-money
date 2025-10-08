@@ -185,6 +185,43 @@ function FacetCheckbox({
   );
 }
 
+function getScrollableRoots(): (Window | Element)[] {
+  const roots: (Window | Element)[] = [window];
+
+  // Standard roots
+  if (document.scrollingElement) roots.push(document.scrollingElement);
+  roots.push(document.documentElement, document.body);
+
+
+  try {
+    const candidates = Array.from(document.querySelectorAll<HTMLElement>('*'))
+      .filter((el) => {
+        const s = getComputedStyle(el);
+        return (
+          (s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight
+        );
+      })
+      .slice(0, 8); // cap to avoid large lists
+    roots.push(...candidates);
+  } catch {
+    /* ignore */
+  }
+
+  // de-dupe
+  return Array.from(new Set(roots.filter(Boolean)));
+}
+
+function forceScrollTop(behavior: ScrollBehavior = 'auto') {
+  for (const r of getScrollableRoots()) {
+    // Window has scrollTo; Elements have scrollTop
+    if (typeof (r as Window).scrollTo === 'function') {
+      (r as Window).scrollTo({ top: 0, left: 0, behavior });
+    } else {
+      (r as Element).scrollTop = 0;
+    }
+  }
+}
+
 export default function CareersBoard({
   labels,
   careers,
@@ -200,17 +237,33 @@ export default function CareersBoard({
 }) {
   const dir = useDirection();
   const isRtl = dir === 'rtl';
-  const topAnchorRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+
+  // Match this with the scroll-mt value on the heading (responsive if needed)
+  const SCROLL_OFFSET = 96;
 
   const scrollToBoardTop = useCallback(() => {
     if (typeof window === 'undefined') return;
+
+    const anchor = titleRef.current;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     window.requestAnimationFrame(() => {
-      const anchor = topAnchorRef.current;
       if (anchor) {
-        anchor.focus({ preventScroll: true });
-        anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const rect = anchor.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY - SCROLL_OFFSET;
+
+        window.scrollTo({
+          top: Math.max(absoluteTop, 0),
+          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        });
+
+        setTimeout(() => anchor.focus(), prefersReducedMotion ? 0 : 200);
       } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
       }
     });
   }, []);
@@ -339,7 +392,6 @@ export default function CareersBoard({
   }, [filteredItems, query.page, query.pageSize]);
 
   const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
-  console.log('JOBS ====== >>>>>> ' + JSON.stringify(jobs));
   const hasResults = totalResults > 0;
 
   const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
@@ -357,11 +409,16 @@ export default function CareersBoard({
   );
 
   const handlePage = useCallback(
-    (n: number) =>
+    (n: number) => {
       updateQuery((q) => ({
         ...q,
         page: Math.max(1, Math.min(n, Math.max(1, totalPages))),
-      })),
+      }));
+      if (typeof window !== 'undefined') {
+        // keep the URL hash synced for native anchor behavior / deep links
+        history.replaceState(null, '', '#careers-top');
+      }
+    },
     [totalPages, updateQuery],
   );
 
@@ -425,16 +482,29 @@ export default function CareersBoard({
     return () => document.documentElement.classList.remove('modal-open');
   }, [showMobileFilters]);
 
+  useEffect(() => {
+    scrollToBoardTop();
+  }, [page, query.pageSize]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+
+    forceScrollTop('auto'); // immediate
+    requestAnimationFrame(() => forceScrollTop('auto')); // next frame
+    setTimeout(() => forceScrollTop('auto'), 120); // after async layout
+  }, []);
+
   return (
     <section className={`mx-auto py-10 md:px-10 ${className ?? ''}`}>
-      <div
-        ref={topAnchorRef}
-        tabIndex={-1}
-        className="h-0 w-0 overflow-hidden focus:outline-none"
-        data-careers-board-top-anchor
-      />
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_minmax(0,1fr)]">
-        {/* Sidebar filters (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
           <FilterSection
             title={locationLabel}
@@ -474,7 +544,13 @@ export default function CareersBoard({
         {/* Main column */}
         <div className="min-w-0 max-w-[888px] flex min-h-[600px] flex-col gap-4">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-2xl md:text-28px font-semibold text-default md:text-primary">
+            <h2
+              id="careers-top"
+              ref={titleRef}
+              tabIndex={-1}
+              className="text-2xl md:text-28px font-semibold text-default md:text-primary scroll-mt-[96px]"
+              data-careers-board-top-anchor
+            >
               {vacanciesLabel}
             </h2>
             <button
@@ -518,6 +594,7 @@ export default function CareersBoard({
                   </div>
                 </div>
               )}
+
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
                 {jobs.map((job) => (
                   <div key={job.id} className="h-[218px]">
@@ -539,6 +616,7 @@ export default function CareersBoard({
           )}
         </div>
       </div>
+
       {/* Mobile filters bottom sheet */}
       {showMobileFilters && (
         <div className="md:hidden fixed inset-0 z-50">
@@ -609,4 +687,5 @@ export default function CareersBoard({
     </section>
   );
 }
+
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cleanHref, routeMatchKey, displayTitle } from '../../../utils/utils';
@@ -10,11 +10,21 @@ import { useDismissable } from '../../../utils/hooks/useDismissable';
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
   return Array.isArray((item as any)?.children);
 }
-const normalizeUrl = (url: string, stripQuery: boolean) => {
-  if (!url) return '/';
+
+function resolveItemUrl(raw: string | null | undefined): string {
+  if (!raw) return '/';
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed[0]?.href) return parsed[0].href as string;
+  } catch {
+  }
+  return raw;
+}
+
+function normalizeUrl(url: string, stripQuery: boolean) {
   const cleaned = stripQuery ? cleanHref(url) : url;
-  return routeMatchKey(cleaned);
-};
+  return routeMatchKey(cleaned || '/');
+}
 
 export default function ClientNavbar({
   items,
@@ -37,8 +47,10 @@ export default function ClientNavbar({
     setOpenIdx(null);
   }, [pathname]);
 
-  const rawPath = currentPath ?? pathname ?? '';
-  const currentMatch = normalizeUrl(rawPath, stripQuery);
+  const currentMatch = useMemo(() => {
+    const raw = currentPath ?? pathname ?? '/';
+    return normalizeUrl(raw, stripQuery);
+  }, [currentPath, pathname, stripQuery]);
 
   const isActivePath = (href: string) => {
     const target = normalizeUrl(href, stripQuery);
@@ -46,42 +58,37 @@ export default function ClientNavbar({
     return currentMatch === target || currentMatch.startsWith(`${target}/`);
   };
 
+  const baseTopItem =
+    'relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline text-sm font-medium leading-[100%] tracking-normal';
+  const activeTopColor = scrolled ? 'text-primaryAlt' : 'text-white';
+  const idleTopColor = scrolled ? 'text-default' : 'text-[#E0E0E0]';
+
+  const underlineActive =
+    'after:absolute after:bottom-0 after:left-1/2 after:h-1 after:w-[10px] after:-translate-x-1/2 after:rounded-full after:bg-current after:content-[""]';
+
   return (
     <nav ref={navRef} className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
       {items.map((item, i) => {
-        const itemHref = normalizeUrl(item.url, false);
-
-        let itemUrl: string;
-        try {
-          const parsed = JSON.parse(item.url);
-          itemUrl = Array.isArray(parsed) && parsed[0]?.href ? parsed[0].href : item.url;
-        } catch {
-          itemUrl = item.url;
-        }
-        const selfActive = isActivePath(item.url);
-        const childActive = isDropdown(item) && item.children.some((c) => isActivePath(c.url));
+        const resolvedUrl = resolveItemUrl(item.url);
+        const normalizedForKey = normalizeUrl(resolvedUrl, false); // key only
+        const selfActive = isActivePath(resolvedUrl);
+        const childActive = isDropdown(item) && item.children.some((c) => isActivePath(resolveItemUrl(c.url)));
         const active = selfActive || childActive;
 
-        const colorClass = scrolled
-          ? active
-            ? 'text-primaryAlt'
-            : 'text-default'
-          : active
-            ? 'text-white'
-            : 'text-[#E0E0E0]';
-        const underlineClass = active
-          ? 'after:absolute after:bottom-0 after:left-1/2 after:h-1 after:w-[10px] after:-translate-x-1/2 after:rounded-full after:bg-current after:content-[""]'
-          : '';
-
         return (
-          <div key={`${itemHref}-${i}`} className="relative">
+          <div key={`${normalizedForKey}-${i}`} className="relative">
             {isDropdown(item) ? (
               <button
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={openIdx === i}
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass} ${underlineClass}`}
+                data-active={active ? 'true' : 'false'}
+                className={[
+                  baseTopItem,
+                  active ? activeTopColor : idleTopColor,
+                  active ? underlineActive : '',
+                ].join(' ')}
               >
                 {displayTitle(item.title)}
                 <svg
@@ -97,8 +104,14 @@ export default function ClientNavbar({
               </button>
             ) : (
               <Link
-                href={itemUrl}
-                className={`relative px-3 py-2 inline-flex items-center gap-1 transition-colors no-underline text-sm font-medium leading-[100%] tracking-normal ${colorClass} ${underlineClass}`}
+                href={resolvedUrl}
+                aria-current={selfActive ? 'page' : undefined}
+                data-active={selfActive ? 'true' : 'false'}
+                className={[
+                  baseTopItem,
+                  selfActive ? activeTopColor : idleTopColor,
+                  selfActive ? underlineActive : '',
+                ].join(' ')}
               >
                 {displayTitle(item.title)}
               </Link>
@@ -110,8 +123,9 @@ export default function ClientNavbar({
                 className="absolute top-full left-0 mt-2 min-w-[200px] rounded-xl border border-white/20 bg-secondary backdrop-blur-md backdrop-saturate-150 shadow-xl z-50 pointer-events-auto p-2"
               >
                 {item.children.map((child) => {
-                  const childHref = stripQuery ? cleanHref(child.url || '/') : child.url || '/';
-                  const childIsActive = isActivePath(child.url);
+                  const childResolved = resolveItemUrl(child.url);
+                  const childHref = stripQuery ? cleanHref(childResolved || '/') : (childResolved || '/');
+                  const childIsActive = isActivePath(childResolved);
 
                   return (
                     <Link
@@ -119,7 +133,14 @@ export default function ClientNavbar({
                       href={childHref}
                       onClick={() => setOpenIdx(null)}
                       role="menuitem"
-                      className={`block rounded-lg px-3 py-2 no-underline text-default text-14px leading-5 transition-colors hover:text-[#000] hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9]`}
+                      aria-current={childIsActive ? 'page' : undefined}
+                      data-active={childIsActive ? 'true' : 'false'}
+                      className={[
+                        'block rounded-lg px-3 py-2 no-underline text-14px leading-5 transition-colors',
+                        childIsActive
+                          ? 'text-[#000] bg-[#E6E8FF] dark:text-white dark:bg-primary/30'
+                          : 'text-default hover:text-[#000] hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9]',
+                      ].join(' ')}
                     >
                       {displayTitle(child.title)}
                     </Link>
@@ -133,4 +154,4 @@ export default function ClientNavbar({
     </nav>
   );
 }
-
+ 
