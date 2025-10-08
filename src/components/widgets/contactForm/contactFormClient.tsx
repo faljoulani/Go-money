@@ -61,9 +61,9 @@ export default function ContactFormClient({
 }: Props) {
   console.log('ContactFormClient data:', data);
   const FIELD =
-    'w-full h-[48px] px-3 py-3 rounded-[18px] text-black border border-default ' +
+    'w-full h-[48px] px-3 py-3 rounded-[18px] text-[#9ca3af] border border-[#9ca3af] ' +
     'bg-surface-input text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
-  const LABEL = 'mb-1 text-14px text-default leading-[18px]';
+  const LABEL = 'mb-[10px] text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -86,8 +86,8 @@ export default function ContactFormClient({
         label: (
           <span className="flex items-center gap-2 text-default">
             <span className={`fi fi-${c.iso2.toLowerCase()}`} aria-hidden />
-            <span className="font-medium">{c.iso2}</span>
-            <span className="opacity-80">{c.dial}</span>
+            {/* <span className="font-medium">{c.iso2}</span> */}
+            <span className="">{c.dial}</span>
           </span>
         ),
       })),
@@ -197,7 +197,7 @@ export default function ContactFormClient({
 
       <form ref={formRef} onSubmit={handleSubmit} dir={dir} className="space-y-5">
         <input type="hidden" name="requestType" value={selectedRequestType} />
-        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 ">
+        <div className="grid min-w-0 xs:grid-cols-1 gap-5 md:grid-cols-2 ">
           {/* First Name */}
           <div className="grid grid-cols-1 min-w-0">
             <label className={LABEL}>

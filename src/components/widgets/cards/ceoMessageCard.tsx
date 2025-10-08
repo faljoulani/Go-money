@@ -134,7 +134,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     : 'bg-[#EEEEEE] w-full px-20 pb-10 mt-16';
 
   const cardShellCls = isOverlay
-    ? 'bg-bgAlt relative flex md:flex-row xs:flex-col items-center gap-8 rounded-3xl md:px-24 xs:px-4 rtl:md:px-10 rtl:xs:px-4 py-10 ring-1 ring-black/5 overflow-hidden'
+    ? 'bg-bgAlt relative flex md:flex-row xs:flex-col items-center gap-8 rounded-3xl md:px-24 xs:px-4 rtl:md:px-10 rtl:xs:px-4 py-10 overflow-hidden'
     : 'flex flex-row items-center pr-8 pl-10.5 pt-4 pb-7 bg-white rounded-3xl space-x-8 shadow-sm';
 
   const figureCls = isOverlay ? 'relative justify-start ' : 'relative justify-start';

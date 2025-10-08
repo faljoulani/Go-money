@@ -18,7 +18,7 @@ type Props = {
 };
 
 export const DROPDOWN_BUTTON_BASE = [
-  'group flex h-12 items-center justify-between overflow-hidden rounded-2xl px-4',
+  'group flex h-12 border  items-center justify-between overflow-hidden rounded-2xl px-4',
   'border border-gray-200 bg-white text-14px transition-colors duration-150',
   'hover:border-gray-300 hover:bg-gray-100 focus:border-primary focus:ring-2 focus:ring-primary/20',
   'dark:bg-transparent dark:hover:bg-white/5 dark:focus:border-primary',
