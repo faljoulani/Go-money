@@ -159,21 +159,25 @@ export default function ContactFormClient({
       const localPhone = String(formData.get('phone') || '').trim();
       const email = String(formData.get('email') || '').trim();
       const topic = String(formData.get('topic') || '').trim();
-      
- 
+
       const reqType = selectedRequestType;
 
       const notes = String(formData.get('notes') || '').trim();
 
-      const apiPayload = {
+      const apiPayload: Record<string, any> = {
         customerName: fullName,
         phone: `${countryDial}${localPhone}`,
         email,
         requestType: reqType,
-        complaintCategory: reqType === 'COMPLAINT' ? topic : selectedTopic,
         description: notes || `Request from ${fullName || email}`,
         channel: 'MOBILE.APPLICATION',
       };
+
+      // Add complaintCategory **only if requestType is COMPLAINT**
+      if (reqType === 'COMPLAINT') {
+        apiPayload.complaintCategory = topic || selectedTopic || '';
+      }
+
       await post(apiPayload);
 
       setResStatus('success');
@@ -235,7 +239,7 @@ export default function ContactFormClient({
 
             <div className="flex items-stretch gap-1">
               {/* Country pill dropdown */}
-              <div className="relative inline-block">
+              <div className="relative inline-block mx-auto">
                 <CustomDropdown
                   name="Country"
                   options={countryOptions}
@@ -244,13 +248,13 @@ export default function ContactFormClient({
                   onChange={onCountryChange}
                   className="relative inline-block"
                   buttonClassName={[
-                    'inline-flex h-[48px] min-w-[120px] w-[200px] items-center justify-center gap-2',
-                    'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 text-14px leading-[18px] text-[#2B2B2B]',
+                    'inline-flex h-[48px] max-w-[100px] items-center justify-center gap-2',
+                    'rounded-[18px] border border-[#BDBDBD] bg-surface-input px-3 mx-auto text-14px leading-[18px] text-[#2B2B2B]',
                     'focus:ring-2 focus:ring-[#0B2A8E]/20',
                     isLoading ? 'opacity-50 cursor-not-allowed' : '',
                   ].join(' ')}
                   listClassName="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 w-full overflow-auto rounded-[12px] bg-surface-page p-2 shadow-xl"
-                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+                  optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9] rounded-[12px]"
                   disabled={isLoading}
                 />
               </div>
@@ -299,8 +303,6 @@ export default function ContactFormClient({
               placeholder={data.requestTypePlacholder ?? 'Select request type'}
               disabled={isLoading}
               onChange={(opt) => {
-                // FIX: Use opt.value for the API payload value (e.g., 'COMPLAINT'),
-                // instead of converting the label.
                 const val = String(opt.value || '').toUpperCase();
                 setSelectedRequestType(val);
                 console.log('Selected request type:', val);
@@ -308,7 +310,7 @@ export default function ContactFormClient({
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-surface-page shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
-              optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+              optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px] dark:hover:bg-[#A6EFD9] dark:hover:text-whiteCta"
             />
           </div>
 
@@ -324,20 +326,17 @@ export default function ContactFormClient({
               placeholder={data.topicPlaceholder ?? 'Select topic'}
               disabled={isLoading || selectedRequestType === 'INQUIRY'}
               onChange={(opt) => {
-                const selected = dropdownOptions.find((o) => o.id === opt.id);
-                console.log('SELECTEDREQUESTYPE:', selectedRequestType);
-                if (selectedRequestType === 'INQUIRY') { // Changed 'Inquiry' to 'INQUIRY' to match state value
+                if (isLoading || selectedRequestType === 'INQUIRY') {
                   setSelectedTopic('');
                   return;
                 }
-                const label = String(opt.value || '').toUpperCase(); // Using opt.value for selectedTopic too
-                console.log('Selected label:', label);
-                setSelectedTopic(label);
+                const topicValue = String(opt.value || '').toUpperCase();
+                setSelectedTopic(topicValue);
               }}
               className="relative w-full md:max-w-full sm:max-w-[326.5px]"
               buttonClassName={`${FIELD} appearance-none text-left flex items-center justify-between ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-white shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
-              optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px]"
+              listClassName="absolute top-full left-0 right-0 mt-1 rounded-[12px] bg-surface-page shadow-xl z-50 pointer-events-auto max-h-60 overflow-auto p-2"
+              optionClassName="w-full mt-2 text-left rtl:text-right p-2 text-14px leading-[18px] text-default hover:bg-[#E6E8FF] rounded-[12px] dark:hover:bg-[#A6EFD9] dark:hover:text-whiteCta"
             />
           </div>
 
@@ -385,5 +384,4 @@ export default function ContactFormClient({
     </div>
   );
 }
-
 
