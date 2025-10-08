@@ -428,13 +428,18 @@ export default function ApplyForJob({
                   />
 
                   {/* Local phone input */}
-                  <input
+                <input
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
                     placeholder={form?.PhoneNumberPlaceholder}
                     value={data.phone}
-                    onChange={(e) => applyFieldChange('phone', e.target.value)}
+                    onChange={(e) => {
+                      const onlyNums = e.target.value.replace(/\D/g, '');
+                      applyFieldChange('phone', onlyNums);
+                    }}
                     required
-                    inputMode="tel"
                   />
                 </div>
               </InputField>

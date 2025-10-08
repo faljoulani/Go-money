@@ -111,7 +111,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const AMIN = C.labels.minimumFinanceAmount,
     AMAX = C.labels.maximumFinanceAmount,
     ASTEP = 500,
-    ADEF = (AMAX + AMIN) / 2;
+    ADEF = AMIN;
   const IMIN = C.labels.minimumEligibleInstallments,
     IMAX = C.labels.maximumEligibleInstallments,
     ISTEP = 1,
@@ -241,7 +241,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   }
 
   return (
-    <section className="w-full mt-8">
+    <section className="w-full mt-32">
       <div id="calc-result" className="pointer-events-none h-0 -mt-24" />
       <form
         onSubmit={onSubmit}
@@ -349,8 +349,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
-                  ? `Maximum eligible installments is ${IMAX} months`
-                  : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
+                  ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
+                  : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
               </div>
 
               <input
@@ -379,8 +379,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               </div>
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
-                  ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
-                  : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
+                  ? `Maximum eligible installments is ${IMAX} months`
+                  : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
               </div>
               <input
                 type="range"
@@ -627,7 +627,7 @@ function Select({
   return (
     <div className="relative select-wrap ">
       <select
-        required
+      required
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="sf-input appearance-none pr-10 ltr:pr-10 rtl:pl-10 bg-secondary"
