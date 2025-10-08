@@ -70,7 +70,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   return (
     <section
       {...attrs}
-      className="relative flex flex-col items-start justify-between overflow-hidden rounded-[20px] h-full bg-surface-input p-4 md:p-10 shadow-sm"
+      className="max-w-[490px] relative flex flex-col items-start justify-between rounded-[20px] h-full bg-surface-input p-4 md:p-10 shadow-sm"
     >
       <div className="space-y-4">
         <Title color="text-primary" className="text-2xl font-bold  md:text-28px">
@@ -95,7 +95,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                 <img
                   src={imgUrl(media)}
                   alt={media?.AlternativeText || media?.Title || social.Title}
-                  className="h-8 w-8 object-contain"
+                  className="h-8 w-8 object-contain dark:brightness-200"
                   draggable={false}
                 />
               )}
