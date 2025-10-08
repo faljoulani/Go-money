@@ -7,6 +7,8 @@ import Pagination from './pagination';
 import { daysSinceUtc } from '../../../../utils/utils';
 import { useDirection } from '../../../../utils/helpers';
 import Image from 'next/image';
+import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
 
 import type {
   Labels,
@@ -19,7 +21,7 @@ import type {
 
 const DEFAULT_SEARCH: CareersSearchBody = {
   page: 1,
-  pageSize: 9,
+  pageSize: 12,
   departmentNames: [],
   locationNames: [],
   sort: 'postedAt_desc',
@@ -35,6 +37,44 @@ const EMPLOYMENT_TYPE_LABEL: Record<'en' | 'ar', Record<string, string>> = {
 const normalizeEmploymentType = (raw?: string, lang: 'en' | 'ar' = 'en') =>
   raw ? (EMPLOYMENT_TYPE_LABEL[lang][String(raw).trim()] ?? raw) : '';
 
+// ------- Types for API response -------
+type ApiFacet = { Name: string; Count: number; Selected?: boolean };
+type ApiFacets = { Locations?: ApiFacet[]; Departments?: ApiFacet[] };
+
+type SearchApiItem = {
+  Id: string;
+  Title: string;
+  DepartmentId: string;
+  DepartmentName: string;
+  LocationName: string;
+  EmploymentType: string;
+  PostedAtUtc: string;
+  PostedAgoDays: number;
+  DetailUrl: string;
+  ApplyUrl: string;
+};
+
+type SearchApiResponse = {
+  Success: boolean;
+  Data?: {
+    ItemDefaultUrl?: string;
+    VacanciesLabel?: string;
+    LocationLabel?: string;
+    Title?: string;
+    DepartmentLabel?: string;
+    Provider?: string;
+    Page: number;
+    PageSize: number;
+    TotalResults: number;
+    TotalPages: number;
+    Facets?: ApiFacets;
+    Items: SearchApiItem[];
+  };
+  Error?: any;
+  TraceId?: string;
+};
+
+// Helpers
 function mapCareerToItem(c: ModuleCareer, lang: 'ar' | 'en'): CareersItem {
   const postedAtUtc = c.Date || '';
   return {
@@ -51,6 +91,19 @@ function mapCareerToItem(c: ModuleCareer, lang: 'ar' | 'en'): CareersItem {
   };
 }
 
+const mapApiItemToCareersItem = (it: SearchApiItem, lang: 'en' | 'ar'): CareersItem => ({
+  Id: it.Id,
+  Title: it.Title || '',
+  DepartmentId: it.DepartmentId || '',
+  DepartmentName: it.DepartmentName || '',
+  LocationName: it.LocationName || '',
+  EmploymentType: normalizeEmploymentType(it.EmploymentType, lang),
+  PostedAtUtc: it.PostedAtUtc || '',
+  PostedAgoDays: it.PostedAgoDays ?? daysSinceUtc(it.PostedAtUtc),
+  DetailUrl: it.DetailUrl || '',
+  ApplyUrl: it.ApplyUrl || '',
+});
+
 const mapItemToJob = (i: CareersItem): Job => ({
   id: i.Id,
   title: i.Title,
@@ -63,136 +116,53 @@ const mapItemToJob = (i: CareersItem): Job => ({
 
 type QueryKey = 'locationNames' | 'departmentNames';
 
-const filterItemsByQuery = (
-  items: CareersItem[],
-  query: CareersSearchBody,
-  { omit }: { omit?: QueryKey } = {},
-): CareersItem[] => {
-  const toSet = (arr: string[]) => new Set(arr.map((x) => x.toLowerCase()));
-  const inSet = (s: Set<string>, v: string) => s.has((v || '').toLowerCase());
-  const hasText = (s?: string | null) => !!s && s.trim().length > 0;
-
-  let filtered = items;
-
-  if (omit !== 'locationNames' && query.locationNames?.length) {
-    const want = toSet(query.locationNames);
-    filtered = filtered.filter((i) => inSet(want, i.LocationName));
-  }
-
-  if (omit !== 'departmentNames' && query.departmentNames?.length) {
-    const want = toSet(query.departmentNames);
-    filtered = filtered.filter((i) => inSet(want, i.DepartmentName));
-  }
-
-  if (hasText(query.search)) {
-    const needle = query.search!.toLowerCase();
-    filtered = filtered.filter(
-      (i) =>
-        i.Title.toLowerCase().includes(needle) ||
-        i.DepartmentName.toLowerCase().includes(needle) ||
-        i.LocationName.toLowerCase().includes(needle),
-    );
-  }
-
-  return filtered;
-};
-
-const buildFacetList = (
-  items: CareersItem[],
-  pick: (item: CareersItem) => string,
+// Merge full known names with latest API counts; fall back to baseline counts
+function mergeFacetDisplay(
+  allNames: string[],
+  apiArr: ApiFacet[] | undefined,
   selectedNames: string[],
-): CareersFiltration[] => {
-  const counts = new Map<string, number>();
-  for (const it of items) {
-    const name = pick(it)?.trim();
-    if (!name) continue;
-    counts.set(name, (counts.get(name) ?? 0) + 1);
+  baseline: Record<string, number>,
+): CareersFiltration[] {
+  const byName = new Map<string, { count: number; selected: boolean }>();
+
+  for (const f of apiArr ?? []) {
+    const n = (f?.Name ?? '').trim();
+    if (!n) continue;
+    byName.set(n, { count: f.Count ?? 0, selected: !!f.Selected || selectedNames.includes(n) });
   }
 
-  const base = [...counts].map(([name, count]) => ({
-    name,
-    count,
-    selected: selectedNames.includes(name),
-  }));
+  return allNames
+    .map((name) => {
+      const v = byName.get(name);
+      const apiCount = v?.count;
+      const baseCount = baseline?.[name];
+      const count =
+        typeof apiCount === 'number' ? apiCount : typeof baseCount === 'number' ? baseCount : 0;
 
-  for (const name of selectedNames) {
-    if (!name || counts.has(name)) continue;
-    base.push({ name, count: 0, selected: true });
-  }
-
-  return base.sort((a, b) => a.name.localeCompare(b.name));
-};
-
-function FilterSection({
-  title,
-  isOpen,
-  onToggle,
-  bodyId,
-  children,
-}: {
-  title: string;
-  isOpen: boolean;
-  onToggle: () => void;
-  bodyId: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl shadow-md bg-surface-section p-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold">{title}</h3>
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={isOpen}
-          aria-controls={bodyId}
-          aria-label={isOpen ? 'Collapse' : 'Expand'}
-          className="flex h-9 w-9 items-center justify-center rounded border border-primaryAlt bg-primaryAlt text-white text-lg font-bold
-                     dark:bg-transparent dark:text-primaryAlt"
-        >
-          {isOpen ? '−' : '+'}
-        </button>
-      </div>
-
-      <div id={bodyId} className={`mt-3 font-semibold ${isOpen ? 'block' : 'hidden'}`}>
-        {children}
-      </div>
-    </div>
-  );
+      return {
+        name,
+        count,
+        selected: v?.selected ?? selectedNames.includes(name),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function FacetCheckbox({
-  facet,
-  onToggle,
-}: {
-  facet: CareersFiltration;
-  onToggle: (name: string) => void;
-}) {
+// Small skeleton for filters while facets load
+function FilterSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <li className="py-1">
-      <label className="flex items-center gap-2 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={facet.selected}
-          onChange={() => onToggle(facet.name)}
-          className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
-        />
-        <span className="text-sm text-default dark:text-white">{facet.name}</span>
-        <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-          {facet.count}
-        </span>
-      </label>
-    </li>
+    <ul className="mt-3 space-y-2">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i} className="h-6 rounded bg-black/5 dark:bg-white/10 animate-pulse" />
+      ))}
+    </ul>
   );
 }
 
 function getScrollableRoots(): (Window | Element)[] {
   const roots: (Window | Element)[] = [window];
-
-  // Standard roots
   if (document.scrollingElement) roots.push(document.scrollingElement);
   roots.push(document.documentElement, document.body);
-
-
   try {
     const candidates = Array.from(document.querySelectorAll<HTMLElement>('*'))
       .filter((el) => {
@@ -201,19 +171,16 @@ function getScrollableRoots(): (Window | Element)[] {
           (s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight
         );
       })
-      .slice(0, 8); // cap to avoid large lists
+      .slice(0, 8);
     roots.push(...candidates);
   } catch {
     /* ignore */
   }
-
-  // de-dupe
   return Array.from(new Set(roots.filter(Boolean)));
 }
 
 function forceScrollTop(behavior: ScrollBehavior = 'auto') {
   for (const r of getScrollableRoots()) {
-    // Window has scrollTo; Elements have scrollTop
     if (typeof (r as Window).scrollTo === 'function') {
       (r as Window).scrollTo({ top: 0, left: 0, behavior });
     } else {
@@ -221,6 +188,42 @@ function forceScrollTop(behavior: ScrollBehavior = 'auto') {
     }
   }
 }
+
+// function getScrollableRoots(): (Window | Element)[] {
+//   const roots: (Window | Element)[] = [window];
+
+//   // Standard roots
+//   if (document.scrollingElement) roots.push(document.scrollingElement);
+//   roots.push(document.documentElement, document.body);
+
+//   try {
+//     const candidates = Array.from(document.querySelectorAll<HTMLElement>('*'))
+//       .filter((el) => {
+//         const s = getComputedStyle(el);
+//         return (
+//           (s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight
+//         );
+//       })
+//       .slice(0, 8); // cap to avoid large lists
+//     roots.push(...candidates);
+//   } catch {
+//     /* ignore */
+//   }
+
+//   // de-dupe
+//   return Array.from(new Set(roots.filter(Boolean)));
+// }
+
+// function forceScrollTop(behavior: ScrollBehavior = 'auto') {
+//   for (const r of getScrollableRoots()) {
+//     // Window has scrollTo; Elements have scrollTop
+//     if (typeof (r as Window).scrollTo === 'function') {
+//       (r as Window).scrollTo({ top: 0, left: 0, behavior });
+//     } else {
+//       (r as Element).scrollTop = 0;
+//     }
+//   }
+// }
 
 export default function CareersBoard({
   labels,
@@ -237,9 +240,29 @@ export default function CareersBoard({
 }) {
   const dir = useDirection();
   const isRtl = dir === 'rtl';
+  const lang: 'en' | 'ar' = isRtl ? 'ar' : 'en';
   const titleRef = useRef<HTMLHeadingElement | null>(null);
 
-  // Match this with the scroll-mt value on the heading (responsive if needed)
+  const { post: postSearch } = useSfMutation('api/default/careers/search');
+  const [apiResp, setApiResp] = useState<SearchApiResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Persist facet names (union of everything we've seen)
+  const [facetNames, setFacetNames] = useState<{ locations: string[]; departments: string[] }>({
+    locations: [],
+    departments: [],
+  });
+
+  // Baseline counts captured when NO filters are applied
+  const [baselineCounts, setBaselineCounts] = useState<{
+    locations: Record<string, number>;
+    departments: Record<string, number>;
+  }>({
+    locations: {},
+    departments: {},
+  });
+
   const SCROLL_OFFSET = 96;
 
   const scrollToBoardTop = useCallback(() => {
@@ -255,12 +278,10 @@ export default function CareersBoard({
       if (anchor) {
         const rect = anchor.getBoundingClientRect();
         const absoluteTop = rect.top + window.scrollY - SCROLL_OFFSET;
-
         window.scrollTo({
           top: Math.max(absoluteTop, 0),
           behavior: prefersReducedMotion ? 'auto' : 'smooth',
         });
-
         setTimeout(() => anchor.focus(), prefersReducedMotion ? 0 : 200);
       } else {
         window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
@@ -268,18 +289,11 @@ export default function CareersBoard({
     });
   }, []);
 
-  const allItems = useMemo(
+  // Local items are only a visual fallback for jobs (NOT for facets)
+  const localItems = useMemo(
     () => (careers || []).map((c) => mapCareerToItem(c, isRtl ? 'ar' : 'en')),
     [careers, isRtl],
   );
-
-  if (allItems.length === 0) {
-    return (
-      <section className={`mx-auto py-10 md:px-10 ${className ?? ''}`}>
-        <EmptyState />
-      </section>
-    );
-  }
 
   const vacanciesLabel =
     dir === 'rtl'
@@ -299,11 +313,8 @@ export default function CareersBoard({
   const [query, setQuery] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
   const [draft, setDraft] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
 
-  const [isLocationOpen, setIsLocationOpen] = useState(true);
-  const [isDepartmentOpen, setIsDepartmentOpen] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const showMobileFiltersRef = useRef(showMobileFilters);
-
   useEffect(() => {
     showMobileFiltersRef.current = showMobileFilters;
   }, [showMobileFilters]);
@@ -320,9 +331,7 @@ export default function CareersBoard({
             : updater;
 
         const shouldScroll = options?.force || !showMobileFiltersRef.current;
-        if (shouldScroll) {
-          scrollToBoardTop();
-        }
+        if (shouldScroll) scrollToBoardTop();
 
         return next;
       });
@@ -330,83 +339,155 @@ export default function CareersBoard({
     [scrollToBoardTop],
   );
 
-  const queryForFacets = useMemo(() => {
-    if (!showMobileFilters) return query;
-    return {
-      ...query,
-      locationNames: draft.locationNames,
-      departmentNames: draft.departmentNames,
-    } as CareersSearchBody;
-  }, [showMobileFilters, query, draft.locationNames, draft.departmentNames]);
+  const fetchSearch = useCallback(
+    async (body: CareersSearchBody) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const resp = (await postSearch({
+          page: body.page,
+          pageSize: body.pageSize,
+          departmentNames: body.departmentNames,
+          locationNames: body.locationNames,
+          sort: body.sort,
+          language: body.language,
+          search: body.search ?? null,
+        })) as SearchApiResponse;
 
-  const filteredItems = useMemo(() => {
-    const filtered = filterItemsByQuery(allItems, query);
-    const byDate = (date?: string) => +new Date(date || 0);
-    return filtered
-      .slice()
-      .sort((a, b) =>
-        query.sort === 'postedAt_asc'
-          ? byDate(a.PostedAtUtc) - byDate(b.PostedAtUtc)
-          : byDate(b.PostedAtUtc) - byDate(a.PostedAtUtc),
-      );
-  }, [allItems, query]);
+        setApiResp(resp);
 
+        // Persist full set of facet names (union)
+        const apiLoc =
+          (resp?.Data?.Facets?.Locations ?? [])
+            .map((f) => (f?.Name ?? '').trim())
+            .filter(Boolean) || [];
+        const apiDept =
+          (resp?.Data?.Facets?.Departments ?? [])
+            .map((f) => (f?.Name ?? '').trim())
+            .filter(Boolean) || [];
+
+        setFacetNames((prev) => {
+          const locSet = new Set([...(prev.locations || []), ...apiLoc]);
+          const depSet = new Set([...(prev.departments || []), ...apiDept]);
+          return {
+            locations: Array.from(locSet).sort((a, b) => a.localeCompare(b)),
+            departments: Array.from(depSet).sort((a, b) => a.localeCompare(b)),
+          };
+        });
+
+        // If NO filters are selected, capture baseline counts
+        const noDept = !body.departmentNames?.length;
+        const noLoc = !body.locationNames?.length;
+
+        if (noDept && noLoc) {
+          const locArr = resp?.Data?.Facets?.Locations ?? [];
+          const deptArr = resp?.Data?.Facets?.Departments ?? [];
+
+          const nextLocations: Record<string, number> = {};
+          for (const f of locArr) {
+            const n = (f?.Name ?? '').trim();
+            if (n) nextLocations[n] = Math.max(0, f?.Count ?? 0);
+          }
+
+          const nextDepartments: Record<string, number> = {};
+          for (const f of deptArr) {
+            const n = (f?.Name ?? '').trim();
+            if (n) nextDepartments[n] = Math.max(0, f?.Count ?? 0);
+          }
+
+          setBaselineCounts({
+            locations: nextLocations,
+            departments: nextDepartments,
+          });
+        }
+      } catch (e: any) {
+        setError(e?.message || 'Failed to fetch careers');
+        setApiResp(null);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [postSearch],
+  );
+
+  useEffect(() => {
+    fetchSearch(query);
+  }, [query, fetchSearch]);
+
+  // Items to render
+  const apiItems: CareersItem[] = useMemo(() => {
+    const arr = apiResp?.Data?.Items ?? [];
+    return arr.map((it) => mapApiItemToCareersItem(it, lang));
+  }, [apiResp?.Data?.Items, lang]);
+
+  const pageItems = apiItems.length ? apiItems : localItems;
+  const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
+
+  const totalResults =
+    apiResp?.Data?.TotalResults ?? (apiItems.length ? apiItems.length : localItems.length);
+  const totalPages = apiResp?.Data?.TotalPages ?? 1;
+  const page = apiResp?.Data?.Page ?? query.page;
+
+  // Selected facet names (respect draft in mobile)
   const selectedLocationNames = showMobileFilters ? draft.locationNames : query.locationNames;
   const selectedDepartmentNames = showMobileFilters ? draft.departmentNames : query.departmentNames;
 
-  const { locationFacets, departmentFacets } = useMemo(() => {
-    const baseForLocations = filterItemsByQuery(allItems, queryForFacets, {
-      omit: 'locationNames',
-    });
-    const baseForDepartments = filterItemsByQuery(allItems, queryForFacets, {
-      omit: 'departmentNames',
-    });
-
-    return {
-      locationFacets: buildFacetList(
-        baseForLocations,
-        (item) => item.LocationName,
+  // Build facets from union of known names + latest API counts with baseline fallback
+  const locationFacets = useMemo(
+    () =>
+      mergeFacetDisplay(
+        facetNames.locations,
+        apiResp?.Data?.Facets?.Locations,
         selectedLocationNames,
+        baselineCounts.locations,
       ),
-      departmentFacets: buildFacetList(
-        baseForDepartments,
-        (item) => item.DepartmentName,
+    [
+      facetNames.locations,
+      apiResp?.Data?.Facets?.Locations,
+      selectedLocationNames,
+      baselineCounts.locations,
+    ],
+  );
+
+  const departmentFacets = useMemo(
+    () =>
+      mergeFacetDisplay(
+        facetNames.departments,
+        apiResp?.Data?.Facets?.Departments,
         selectedDepartmentNames,
+        baselineCounts.departments,
       ),
-    };
-  }, [allItems, queryForFacets, selectedLocationNames, selectedDepartmentNames]);
+    [
+      facetNames.departments,
+      apiResp?.Data?.Facets?.Departments,
+      selectedDepartmentNames,
+      baselineCounts.departments,
+    ],
+  );
 
-  const { pageItems, totalResults, totalPages, page } = useMemo(() => {
-    const pageSize = Math.max(1, query.pageSize || 9);
-    const totalResults = filteredItems.length;
-    const totalPages = Math.max(1, Math.ceil(totalResults / pageSize));
-    const safePage = Math.min(Math.max(1, query.page || 1), totalPages);
-    const start = (safePage - 1) * pageSize;
-
-    return {
-      pageItems: filteredItems.slice(start, start + pageSize),
-      totalResults,
-      totalPages,
-      page: safePage,
-    };
-  }, [filteredItems, query.page, query.pageSize]);
-
-  const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
-  const hasResults = totalResults > 0;
-
-  const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
-    setDraft((d) => ({ ...d, page: 1, [key]: d[key][0] === name ? [] : [name] }));
-  }, []);
-
+  // Single-select toggle with deep copies
   const toggleFacet = useCallback(
     (key: QueryKey, name: string) => {
-      updateQuery((q) => {
-        const nextVals = q[key][0] === name ? [] : [name];
-        return { ...q, page: 1, [key]: nextVals } as CareersSearchBody;
+      updateQuery((prev) => {
+        const next = structuredClone(prev);
+        const current = next[key] ?? [];
+        next[key] = current[0] === name ? [] : [name];
+        next.page = 1;
+        return next;
       });
     },
     [updateQuery],
   );
+
+  const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
+    setDraft((prev) => {
+      const next = structuredClone(prev);
+      const current = next[key] ?? [];
+      next[key] = current[0] === name ? [] : [name];
+      next.page = 1;
+      return next;
+    });
+  }, []);
 
   const handlePage = useCallback(
     (n: number) => {
@@ -415,7 +496,6 @@ export default function CareersBoard({
         page: Math.max(1, Math.min(n, Math.max(1, totalPages))),
       }));
       if (typeof window !== 'undefined') {
-        // keep the URL hash synced for native anchor behavior / deep links
         history.replaceState(null, '', '#careers-top');
       }
     },
@@ -439,28 +519,31 @@ export default function CareersBoard({
   );
 
   const clearAllFilters = useCallback(() => {
-    setDraft((d) => ({
-      ...d,
-      page: 1,
-      locationNames: [],
-      departmentNames: [],
-      search: null,
-      sort: 'postedAt_desc',
-    }));
+    setDraft((d) => {
+      const next = structuredClone(d);
+      next.page = 1;
+      next.locationNames = [];
+      next.departmentNames = [];
+      next.search = null;
+      next.sort = 'postedAt_desc';
+      return next;
+    });
   }, []);
 
   const removeChip = useCallback(
     (key: QueryKey, name: string) => {
-      updateQuery((q) => ({
-        ...q,
-        page: 1,
-        [key]: (q[key] as string[]).filter((n) => n !== name),
-      }));
-      setDraft((d) => ({
-        ...d,
-        page: 1,
-        [key]: (d[key] as string[]).filter((n) => n !== name),
-      }));
+      updateQuery((q) => {
+        const next = structuredClone(q);
+        next.page = 1;
+        next[key] = (next[key] as string[]).filter((n) => n !== name);
+        return next;
+      });
+      setDraft((d) => {
+        const next = structuredClone(d);
+        next.page = 1;
+        next[key] = (next[key] as string[]).filter((n) => n !== name);
+        return next;
+      });
     },
     [updateQuery],
   );
@@ -484,61 +567,93 @@ export default function CareersBoard({
 
   useEffect(() => {
     scrollToBoardTop();
-  }, [page, query.pageSize]);
+  }, [page, query.pageSize, scrollToBoardTop]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
 
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-
-    if (location.hash) {
-      history.replaceState(null, '', location.pathname + location.search);
-    }
-
-    forceScrollTop('auto'); // immediate
-    requestAnimationFrame(() => forceScrollTop('auto')); // next frame
-    setTimeout(() => forceScrollTop('auto'), 120); // after async layout
+    forceScrollTop('auto');
+    requestAnimationFrame(() => forceScrollTop('auto'));
+    setTimeout(() => forceScrollTop('auto'), 120);
   }, []);
 
+  const hasResults = (totalResults ?? 0) > 0;
+
   return (
-    <section className={`mx-auto py-10 md:px-10 ${className ?? ''}`}>
+    <section className={`relative mx-auto py-10 md:px-10 ${className ?? ''}`}>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_minmax(0,1fr)]">
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
-          <FilterSection
-            title={locationLabel}
-            isOpen={isLocationOpen}
-            onToggle={() => setIsLocationOpen((v) => !v)}
-            bodyId="filter-body-locations"
-          >
-            <ul className="max-h-80 space-y-1.5 overflow-auto pr-1">
-              {locationFacets.map((f) => (
-                <FacetCheckbox
-                  key={f.name}
-                  facet={f}
-                  onToggle={(name) => toggleFacet('locationNames', name)}
-                />
-              ))}
-            </ul>
-          </FilterSection>
+          <div className="rounded-2xl shadow-md bg-surface-section p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">{locationLabel}</h3>
+              {loading && (
+                <span className="text-xs opacity-70 flex items-center gap-1">
+                  <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
+                  Loading
+                </span>
+              )}
+            </div>
 
-          <FilterSection
-            title={departmentLabel}
-            isOpen={isDepartmentOpen}
-            onToggle={() => setIsDepartmentOpen((v) => !v)}
-            bodyId="filter-body-departments"
-          >
-            <ul className="max-h-80 space-y-1.5 overflow-auto pr-1">
-              {departmentFacets.map((f) => (
-                <FacetCheckbox
-                  key={f.name}
-                  facet={f}
-                  onToggle={(name) => toggleFacet('departmentNames', name)}
-                />
-              ))}
-            </ul>
-          </FilterSection>
+            {facetNames.locations.length === 0 ? (
+              <FilterSkeleton />
+            ) : (
+              <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1">
+                {locationFacets.map((f) => (
+                  <li key={f.name} className="py-1">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={f.selected}
+                        onChange={() => toggleFacet('locationNames', f.name)}
+                        className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                      />
+                      <span className="text-sm text-default dark:text-white">{f.name}</span>
+                      <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                        {f.count}
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="rounded-2xl shadow-md bg-surface-section p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">{departmentLabel}</h3>
+              {loading && (
+                <span className="text-xs opacity-70 flex items-center gap-1">
+                  <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
+                  Loading
+                </span>
+              )}
+            </div>
+
+            {facetNames.departments.length === 0 ? (
+              <FilterSkeleton />
+            ) : (
+              <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1">
+                {departmentFacets.map((f) => (
+                  <li key={f.name} className="py-1">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={f.selected}
+                        onChange={() => toggleFacet('departmentNames', f.name)}
+                        className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                      />
+                      <span className="text-sm text-default dark:text-white">{f.name}</span>
+                      <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                        {f.count}
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </aside>
 
         {/* Main column */}
@@ -553,10 +668,17 @@ export default function CareersBoard({
             >
               {vacanciesLabel}
             </h2>
+
+            {loading ? (
+              <span className="text-sm opacity-70 flex items-center gap-2">
+                <Image src="/icons/spinner.svg" alt="" width={16} height={16} aria-hidden />{' '}
+                Loading…
+              </span>
+            ) : null}
+
             <button
               type="button"
-              className="md:hidden grid h-10 w-10 place-items-center rounded-2xl 
-             bg-primaryAlt dark:bg-primaryAlt"
+              className="md:hidden grid h-10 w-10 place-items-center rounded-2xl bg-primaryAlt dark:bg-primaryAlt"
               onClick={() => {
                 setDraft((d) => ({ ...d, ...query }));
                 setShowMobileFilters(true);
@@ -574,11 +696,15 @@ export default function CareersBoard({
             </button>
           </div>
 
-          {!hasResults ? (
+          {error ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+              {error}
+            </div>
+          ) : !hasResults ? (
             <EmptyState />
           ) : (
             <>
-              {/* Selected filter chips in mobile screen (reflect DRAFT) */}
+              {/* Selected filter chips (mobile) */}
               {selectedChips.length > 0 && (
                 <div className="-mx-2 md:mx-0 md:hidden">
                   <div className="flex flex-nowrap gap-2 overflow-x-auto px-2 pb-2">
@@ -603,7 +729,6 @@ export default function CareersBoard({
                 ))}
               </div>
 
-              {/* Pagination  */}
               <Pagination
                 page={page}
                 totalPages={totalPages}
@@ -626,39 +751,75 @@ export default function CareersBoard({
             <h3 className="mb-4 text-lg font-semibold">Filters</h3>
 
             <div className="space-y-6">
-              <FilterSection
-                title={locationLabel}
-                isOpen={isLocationOpen}
-                onToggle={() => setIsLocationOpen((v) => !v)}
-                bodyId="m-filter-body-locations"
-              >
-                <ul className="max-h-60 space-y-2 overflow-auto pr-1">
-                  {locationFacets.map((f) => (
-                    <FacetCheckbox
-                      key={`m-${f.name}`}
-                      facet={f}
-                      onToggle={(name) => toggleSingleFacet('locationNames', name)}
-                    />
-                  ))}
-                </ul>
-              </FilterSection>
+              <div className="rounded-2xl shadow-md bg-surface-section p-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">{locationLabel}</h3>
+                  {loading && (
+                    <span className="text-xs opacity-70 flex items-center gap-1">
+                      <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
+                      Loading
+                    </span>
+                  )}
+                </div>
 
-              <FilterSection
-                title={departmentLabel}
-                isOpen={isDepartmentOpen}
-                onToggle={() => setIsDepartmentOpen((v) => !v)}
-                bodyId="m-filter-body-departments"
-              >
-                <ul className="max-h-60 space-y-2 overflow-auto pr-1">
-                  {departmentFacets.map((f) => (
-                    <FacetCheckbox
-                      key={`m-${f.name}`}
-                      facet={f}
-                      onToggle={(name) => toggleSingleFacet('departmentNames', name)}
-                    />
-                  ))}
-                </ul>
-              </FilterSection>
+                {facetNames.locations.length === 0 ? (
+                  <FilterSkeleton rows={8} />
+                ) : (
+                  <ul className="mt-3 max-h-60 space-y-2 overflow-auto pr-1">
+                    {locationFacets.map((f) => (
+                      <li key={`m-${f.name}`} className="py-1">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={f.selected}
+                            onChange={() => toggleSingleFacet('locationNames', f.name)}
+                            className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                          />
+                          <span className="text-sm text-default dark:text-white">{f.name}</span>
+                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                            {f.count}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="rounded-2xl shadow-md bg-surface-section p-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">{departmentLabel}</h3>
+                  {loading && (
+                    <span className="text-xs opacity-70 flex items-center gap-1">
+                      <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
+                      Loading
+                    </span>
+                  )}
+                </div>
+
+                {facetNames.departments.length === 0 ? (
+                  <FilterSkeleton rows={8} />
+                ) : (
+                  <ul className="mt-3 max-h-60 space-y-2 overflow-auto pr-1">
+                    {departmentFacets.map((f) => (
+                      <li key={`m-${f.name}`} className="py-1">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={f.selected}
+                            onChange={() => toggleSingleFacet('departmentNames', f.name)}
+                            className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                          />
+                          <span className="text-sm text-default dark:text-white">{f.name}</span>
+                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                            {f.count}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
 
             <div className="mt-5 flex w-full flex-col items-stretch gap-3">
@@ -682,6 +843,13 @@ export default function CareersBoard({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Widget-level overlay loader (no layout shift) */}
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center">
+          <FullPageLoader />
         </div>
       )}
     </section>

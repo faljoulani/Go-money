@@ -86,7 +86,7 @@ export function MobileFeaturesCarousel({
             key={i}
             onClick={() => goTo(i)}
             aria-label={`Go to slide ${i + 1}`}
-            className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
+            className={`h-1.5 rounded-full  transition-[width,background-color] duration-300 ${
               active === i ? 'w-12 bg-white' : 'w-2 bg-[#FFFFFF80]'
             }`}
           />

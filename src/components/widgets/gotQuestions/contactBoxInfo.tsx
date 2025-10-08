@@ -158,7 +158,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-base font-semibold">{callLabel}</span>
+            <span className="text-base text-default font-semibold">{callLabel}</span>
           </div>
 
           <div className="mx-auto my-5 h-px w-3/4 bg-default" />
