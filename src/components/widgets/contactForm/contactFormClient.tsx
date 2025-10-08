@@ -350,7 +350,6 @@ export default function ContactFormClient({
               name="notes"
               placeholder={data.notesPlaceholder ?? ''}
               className={`${FIELD} h-[81px] w-full`}
-              required
               disabled={isLoading}
             />
           </div>

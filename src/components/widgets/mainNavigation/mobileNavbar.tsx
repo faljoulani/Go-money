@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { resolveAbsoluteUrl } from '../../../utils/utils';
 import { pickOneMedia } from '../../../utils/sitefinity';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
+import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon';
 
 import type { ApiNavItem as ClientNavItem } from '../../../types/typee';
 
@@ -31,6 +32,8 @@ export default function MobileNavbar({
   currentPath,
   requestContext,
   textColorWhenScrolled = 'text-white',
+  logoColorWhenScrolled = '',
+
 }: {
   logoUrl: string;
   logoAlt: string;
@@ -39,6 +42,8 @@ export default function MobileNavbar({
   currentPath: string;
   requestContext: any;
   textColorWhenScrolled?: string;
+  logoColorWhenScrolled: string;
+
 }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -135,19 +140,17 @@ export default function MobileNavbar({
         aria-label="Main menu"
         aria-hidden={!open}
         className={`transition-all duration-300 h-screen md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
-           bg-white dark:bg-[#000] shadow-xl
+           bg-white dark:bg-[#000] shadow-xl flex flex-col
           ${open ? 'translate-x-0' : isRTL ? 'translate-x-[600px]' : 'translate-x-[-600px]'}`}
       >
         {/* Header row */}
         <div className="flex items-center justify-between p-4">
-          <Link
-            href="/"
-            aria-label="Home"
-            onClick={() => setOpen(false)}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-lg"
-          >
-            <Image src={logoUrl} alt={logoAlt} width={92} height={40} unoptimized />
-          </Link>
+         <Link href="/" className="flex items-center gap-2" aria-label="Home">
+              <GoMoneyIcon
+                className={`w-[102px] h-[45px] transition-colors text-${logoColorWhenScrolled
+                }`}
+              />
+            </Link>
           <button
             className="rounded-xl p-2 text-primary hover:bg-black/5 dark:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             aria-label="Close menu"
@@ -230,7 +233,10 @@ export default function MobileNavbar({
             </div>
 
             {/* Store badges */}
-            <div className="sticky bottom-0 z-10 mt-6 px-4 pb-4 pt-3">
+       
+          </nav>
+        </div>
+             <div className="sticky bottom-0 z-10 mt-auto px-4 pb-4 pt-3 ">
               <div className="flex items-center justify-center gap-3">
                 {normalizeStores.slice(0, 3).map((s) => (
                   <a
@@ -238,7 +244,7 @@ export default function MobileNavbar({
                     href={s.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="grid h-12 w-12 place-items-center rounded-2xl ring-1 ring-black/5 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+                    className="grid h-12 w-12 place-items-center rounded-2xl bg-[#F5F5F5]  hover:bg-white transition "
                     aria-label={s.title}
                     title={s.title}
                   >
@@ -253,8 +259,6 @@ export default function MobileNavbar({
                 ))}
               </div>
             </div>
-          </nav>
-        </div>
       </div>
     </div>
   );

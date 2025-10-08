@@ -70,7 +70,7 @@ export function SuccessResponse({
         <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-primary mb-3">
           {t.title}
         </h2>
-        <p className="text-[16px] md:text-[18px] text-primary max-w-3xl mx-auto">{t.desc}</p>
+        <p className="text-[16px] md:text-[18px] text-default max-w-3xl mx-auto">{t.desc}</p>
 
         <div className="mt-8 rounded-2xl border border-[#B9D7F2] dark:border-none dark:bg-[#23242C] bg-blue-100 p-4 text-[13px] max-w-4xl mx-auto">
           <div className="flex flex-col items-start gap-2">
@@ -86,13 +86,13 @@ export function SuccessResponse({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-full border border-primaryAlt text-primaryAlt px-6 py-3 text-[15px] hover:opacity-90"
+            className="rounded-full border-2 border-primaryAlt text-primaryAlt font-semibold px-6 py-3 text-[15px] hover:opacity-90"
           >
             {t.back}
           </button>
           <a
             href="#"
-            className="rounded-full bg-primaryAlt text-secondary px-6 py-3 text-[15px] hover:opacity-90"
+            className="rounded-full bg-primaryAlt text-secondary font-bold px-6 py-3 text-[15px] hover:opacity-90"
           >
             {t.cta}
           </a>
@@ -150,7 +150,7 @@ export function FailResponse({
         </div>
 
         <h2 className="text-[32px] md:text-[40px] font-semibold text-primary mb-2">{t.title}</h2>
-        <p className="text-[16px] md:text-[18px] text-primary max-w-3xl mx-auto">{t.desc}</p>
+        <p className="text-[16px] md:text-[18px] text-default max-w-3xl mx-auto">{t.desc}</p>
 
         <div
           className={`mx-auto mt-8 w-[80%] grid grid-cols-1 gap-4 ${
@@ -186,7 +186,7 @@ export function FailResponse({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-full border-2 dark:border-primaryAlt border-[#010663] text-primaryAlt px-6 py-3 text-[15px] hover:bg-gray-50"
+            className="rounded-full border-[3px] dark:border-primaryAlt border-[#010663] font-semibold text-primaryAlt px-6 py-3 text-[15px] hover:bg-gray-50"
           >
             {t.back}
           </button>

@@ -102,9 +102,9 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
       <div className="relative md:grid md:grid-cols-2 md:items-center md:py-24 md:pl-16 md:rtl:pr-16 md:align-middle md:h-[580px] xs:h-[700px]   xs:py-16 xs:px-6 xs:flex xs:flex-col-reverse">
         {/* Left: copy */}
         <div className="flex flex-col gap-5 max-w-xl ">
-          {eyebrow && <Eyebrow className="text-default">{eyebrow}</Eyebrow>}
+          {eyebrow && <Eyebrow className="dark:text-default text-primary" >{eyebrow}</Eyebrow>}
           <Title
-            color="text-black"
+            color="text-primary"
             className="
                 text-5xl
                 font-bold     

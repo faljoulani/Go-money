@@ -1,19 +1,38 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import { SuccessResponse, FailResponse, type ResponseMessage } from './responseMessage';
+import clsx from 'clsx';
 
 type Nationality = 'Saudi' | 'Non-Saudi';
 type ResultState = null | 'success' | 'fail';
 
 type Choice = { id: string; title: string; value: string };
 type LinkLike = string | { Href?: string } | Array<{ Href?: string }>;
-
+function useOutsideClose<T extends HTMLElement>(
+  open: boolean,
+  ref: React.RefObject<T>,
+  onClose: () => void,
+) {
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    const onEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [open, ref, onClose]);
+}
 export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang: string }) {
   const C = cfg ?? {};
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
-
+  console.log('adfkasdf', C);
   const { post } = useSfMutation('api/default/eligibility/get');
   function normalizeNationality(input: string): Nationality {
     const s = (input || '').trim();
@@ -111,7 +130,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const AMIN = C.labels.minimumFinanceAmount,
     AMAX = C.labels.maximumFinanceAmount,
     ASTEP = 500,
-    ADEF = (AMAX + AMIN) / 2;
+    ADEF = AMIN;
   const IMIN = C.labels.minimumEligibleInstallments,
     IMAX = C.labels.maximumEligibleInstallments,
     ISTEP = 1,
@@ -121,10 +140,16 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
   const nationalityChoices: Choice[] = C.choices?.nationalities ?? [];
 
-  const employerOptions = employerChoices.length ? employerChoices.map((c) => c.title) : ['GML'];
-  const lengthOptions = lengthChoices.length
-    ? lengthChoices.map((c) => c.title)
-    : ['3 Months', '6 Months', '1 Year', '2 Years', '3+ Years'];
+  const employerOptions: Choice[] = employerChoices.length
+    ? employerChoices
+    : [{ id: 'GML', title: 'Government', value: 'GML' }];
+  const lengthOptions: Choice[] = lengthChoices.length
+    ? lengthChoices
+    : [
+        { id: '3', title: '3 Months', value: '3' },
+        { id: '6', title: '6 Months', value: '6' },
+        { id: '12', title: '1 Year', value: '12' },
+      ];
   const nationalityOptions = nationalityChoices.length
     ? nationalityChoices.map((c) => c.title)
     : (['Saudi', 'Non-Saudi'] as string[]);
@@ -132,8 +157,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   // ---- state ----
   const [result, setResult] = useState<ResultState>(null);
   const [nationality, setNationality] = useState<Nationality>('Saudi');
-  const [employer, setEmployer] = useState('');
-  const [serviceLength, setServiceLength] = useState(lengthOptions[0] ?? '3 Months');
+  const [employer, setEmployer] = useState<string>('');
+  const [serviceLength, setServiceLength] = useState<string>(lengthOptions[0]?.value ?? '3');
   const [dob, setDob] = useState('');
   const [salary, setSalary] = useState<number | ''>('');
   const [requestedFinanceAmount, setRequestedFinanceAmount] = useState<number>(ADEF);
@@ -181,8 +206,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
   const successMsg = mapMessage(rawSuccess || {});
   const failMsg = mapMessage(rawFail || {});
-  console.log('RAW messages:', C.messages);
-  console.log('Mapped failMsg:', failMsg);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -241,7 +265,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   }
 
   return (
-    <section className="w-full mt-8">
+    <section className="w-full mt-32">
       <div id="calc-result" className="pointer-events-none h-0 -mt-24" />
       <form
         onSubmit={onSubmit}
@@ -286,19 +310,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
-          {/* <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
-            <div className="relative date-wrap">
-              <input
-                required
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
-                className="sf-input bg-secondary pr-12 ltr:pr-12 rtl:pl-12"
-              />
-              <span aria-hidden className="date-icon" />
-            </div>
-          </Field> */}
           <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
             <div className="relative date-wrap">
               <input
@@ -310,7 +321,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''}`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
-              {/* theme-aware calendar icon */}
               <span aria-hidden className="date-icon" />
             </div>
           </Field>
@@ -349,8 +359,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
-                  ? `Maximum eligible installments is ${IMAX} months`
-                  : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
+                  ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
+                  : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
               </div>
 
               <input
@@ -379,8 +389,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               </div>
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
-                  ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
-                  : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
+                  ? `Maximum eligible installments is ${IMAX} months`
+                  : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
               </div>
               <input
                 type="range"
@@ -465,7 +475,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
       <style>{`
       :root {
-    /* control sizes from one place */
     --icon-size: 28px;
     --icon-offset: 12px;
   }
@@ -482,12 +491,10 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     height:var(--icon-size);
     pointer-events:none;
     background-color: var(--color-primary-alt);
-    /* Use mask so color comes from background-color (theme var) */
     -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.7 9.7a1 1 0 0 1 1.4 0L12 13.6l3.9-3.9a1 1 0 1 1 1.4 1.4l-4.6 4.6a1 1 0 0 1-1.4 0L6.7 11.1a1 1 0 0 1 0-1.4z'/%3E%3C/svg%3E") no-repeat center / contain;
             mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.7 9.7a1 1 0 0 1 1.4 0L12 13.6l3.9-3.9a1 1 0 1 1 1.4 1.4l-4.6 4.6a1 1 0 0 1-1.4 0L6.7 11.1a1 1 0 0 1 0-1.4z'/%3E%3C/svg%3E") no-repeat center / contain;
   }
 
-  /* RTL mirrors & moves */
   [dir='rtl'] .select-caret{
     left:var(--icon-offset);
     right:auto;
@@ -613,36 +620,98 @@ function Field({
 }
 
 // --- Select component ---
+
+
 function Select({
   value,
   onChange,
   options,
   placeholder,
+  disabled = false,
 }: {
   value: string;
   onChange: (v: string) => void;
-  options: string[];
+  options: Choice[];
   placeholder?: string;
+  disabled?: boolean;
 }) {
-  return (
-    <div className="relative select-wrap ">
-      <select
-        required
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="sf-input appearance-none pr-10 ltr:pr-10 rtl:pl-10 bg-secondary"
-      >
-        <option value="" disabled>
-          {placeholder || 'Select…'}
-        </option>
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.value === value);
+  const label = selected?.title ?? placeholder ?? 'Select…';
 
-      <span aria-hidden className="select-caret" />
+  useOutsideClose(open, wrapRef, () => setOpen(false));
+
+  const [minW, setMinW] = useState<number>(0);
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const measure = () => setMinW(el.offsetWidth);
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  return (
+    <div ref={wrapRef} className="relative select-wrap w-full">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && setOpen((v) => !v)}
+        className={clsx(
+          'sf-input bg-secondary ltr:pr-10 rtl:pl-10 flex items-center justify-between',
+          disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',
+        )}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className={clsx('truncate', selected ? 'text-default' : 'text-gray-500')}>
+          {label}
+        </span>
+        <span aria-hidden className="select-caret" />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          className={clsx(
+            'absolute z-50 top-full mt-1 max-h-60 w-full overflow-auto rounded-[12px] shadow-xl',
+            'bg-surface-page border border-black/5',
+            'ltr:left-0 rtl:right-0',
+          )}
+          style={{ minWidth: minW || undefined }}
+        >
+          {options.map((opt) => {
+            const active = opt.value === value;
+            return (
+              <li
+                key={opt.id || opt.value}
+                role="option"
+                aria-selected={active}
+                tabIndex={0}
+                onClick={() => {
+                  onChange(opt.value); 
+                  setOpen(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onChange(opt.value);
+                    setOpen(false);
+                  }
+                }}
+                className={clsx(
+                  'p-2 text-14px leading-[18px]  cursor-pointer',
+                  'text-default hover:opacity-90',
+                  active && 'bg-gray-700 text-surface-section',
+                )}
+              >
+                {opt.title}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
