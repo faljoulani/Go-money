@@ -102,7 +102,7 @@ export default async function ContentWithImage(props: WidgetContext<HighlightBlo
           {eyebrow && <Eyebrow className="md:text-lg xs:text-14px md:font-medium xs:font-normal md:leading-6 xs:leading-[18px]">{eyebrow}</Eyebrow>}
 
           {title && (
-            <Title className="font-bold md:text-[40px] xs:text-[24px] md:leading-[75px] xs:leading-8 tracking-[-0.02em] align-middle">
+            <Title className="font-bold md:text-[40px] xs:text-[24px] md:leading-[52px] xs:leading-8 tracking-[-0.02em] align-middle">
               {title}
             </Title>
           )}
