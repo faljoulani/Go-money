@@ -70,17 +70,23 @@ export default function JobCard({ job, onOpen }: Props) {
         </span>
       </div>
 
-      <div className="flex flex-col items-center justify-center ">
-        <h3 className="text-xl font-bold leading-tight">{job.title}</h3>
-        <div className="mt-1 flex w-full items-center justify-start gap-2 font-semibold text-gray-600">
+      <div className="flex flex-col items-center justify-center w-full">
+        {/* Title: up to 2 lines, then ellipsis; allow breaking long words */}
+        <h3 className="text-xl font-bold leading-tight text-center line-clamp-2 break-words">
+          {job.title}
+        </h3>
+
+        {/* Location row: allow truncation in flex by giving min-w-0 */}
+        <div className="mt-1 flex w-full min-w-0 items-center justify-center gap-2 font-semibold text-gray-600">
           <Image
             src="/icons/map-pin.png"
             alt=""
             width={16}
             height={16}
-            className="h-4 w-4 object-contain dark:invert"
+            className="h-4 w-4 object-contain dark:invert shrink-0"
           />
-          <span className="flex-1 text-default">{job.location}</span>
+          {/* Single-line ellipsis; break-words for super-long tokens; hyphenation for Arabic/long words */}
+          <span className="truncate break-words hyphens-auto text-default">{job.location}</span>
         </div>
       </div>
 

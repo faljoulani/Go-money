@@ -79,7 +79,9 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   }
 
   const responsibilitiesHtml = job.Sections?.KeyResponsibilitiesHtml;
+  console.log('responsibilitiesHtml', responsibilitiesHtml);
   const qualificationsHtml = job.Sections?.QualificationsHtml;
+  console.log('responsibilitiesHtml', responsibilitiesHtml);
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
   return (
@@ -100,28 +102,32 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
             </div>
 
             {/* Responsibilities */}
-            {responsibilitiesHtml && (
-              <div className="px-6">
-                <h3 className="mb-1 text-2xl font-semibold md:text-primary">
-                  {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
-                </h3>
-                <div className="mt-3" dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }} />
-              </div>
-            )}
+            <div
+              className="mt-3 descriptionHtml"
+              dangerouslySetInnerHTML={{
+                __html:
+                  '<ul><li>' +
+                  responsibilitiesHtml.replace(/<br\s*\/?>/gi, '</li><li>') +
+                  '</li></ul>',
+              }}
+            />
 
             {/* Qualifications */}
             {qualificationsHtml && (
-              <div className="p-5">
+              <div className="px-6">
                 <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                   {job.Sections?.QualificationsLabel || 'Qualifications'}
                 </h3>
-                <div className="mt-3" dangerouslySetInnerHTML={{ __html: qualificationsHtml }} />
+                <div
+                  className="mt-3 qualificationsAsList"
+                  dangerouslySetInnerHTML={{ __html: qualificationsHtml }}
+                />
               </div>
             )}
 
             {/* Skills */}
             {Array.isArray(job.Skills) && job.Skills.length > 0 && (
-              <div className="pb-6 px-6">
+              <div className="mt-3 pb-6 px-6">
                 <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                   {job.Sections?.SkillsLabel || 'Skills'}
                 </h3>
@@ -176,13 +182,18 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                   const iconSrc = iconFor(row.Title);
                   return (
                     <div key={`${row.Title}-${idx}`} className="flex items-start gap-3">
-                      <Image
-                        src={iconSrc}
-                        alt={row.Title}
-                        width={48}
-                        height={48}
-                        className="opacity-80"
-                      />
+                      {/* Icon wrapper: total 48px with 12px padding (24 + 12 + 12 = 48) */}
+                      <div className="h-12 w-12 flex items-center justify-center rounded-full bg-[#E6E8FF] dark:bg-[#A6EFD9] p-2">
+                        <Image
+                          src={iconSrc}
+                          alt={row.Title}
+                          width={24}
+                          height={24}
+                          className="opacity-80"
+                        />
+                      </div>
+
+                      {/* Text content */}
                       <div>
                         <div className="text-[18px] md:font-bold">{row.Title}</div>
                         <div>{row.Info}</div>
