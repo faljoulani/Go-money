@@ -676,7 +676,7 @@ function Select({
           role="listbox"
           className={clsx(
             'absolute z-50 top-full mt-1 max-h-60 w-full overflow-auto rounded-[12px] shadow-xl',
-            'bg-surface-page border border-black/5',
+            'bg-white dark:bg-[#0B1220] border border-black/5',
             'ltr:left-0 rtl:right-0',
           )}
           style={{ minWidth: minW || undefined }}
@@ -703,7 +703,8 @@ function Select({
                 className={clsx(
                   'p-2 text-14px  leading-[18px]  cursor-pointer',
                   'text-default',
-                  active && 'bg-gray-700  hover:opacity-70',
+                  'hover:bg-primaryAlt hover:text-secondary',
+                  active && 'bg-[#E9EDF7] dark:bg-[#1E2533]',
                 )}
               >
                 {opt.title}
