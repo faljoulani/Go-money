@@ -170,7 +170,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[7rem] ">
+        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[5.7rem] ">
           <div className=" translatePhone  sticky md:top-20 flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
           </div>
