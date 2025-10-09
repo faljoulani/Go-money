@@ -160,13 +160,8 @@ export default function QuestionsClient({
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
-                  <span className="font-semibold text-default">{q.Title}</span>
-                  <span
-                    className="
-                      ml-6 grid size-9 place-items-center rounded-lg
-                      bg-primaryAlt text-secondary
-                    "
-                  >
+                  <div className="font-semibold text-default flex-1">{q.Title}</div>
+                  <div className="flex w-[36px] h-[36px] items-center justify-center rounded-lg bg-primaryAlt text-secondary">
                     <svg
                       viewBox="0 0 14 14"
                       className="h-[15px] w-[15px]"
@@ -182,7 +177,7 @@ export default function QuestionsClient({
                         </>
                       )}
                     </svg>
-                  </span>
+                  </div>
                 </summary>
 
                 {q.Answer && (

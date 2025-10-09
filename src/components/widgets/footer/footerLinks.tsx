@@ -12,16 +12,22 @@ export type FooterLinksGroup = { id: string; title: string; links: FooterLink[] 
 type Props = {
   groups: FooterLinksGroup[];
   className?: string;
-  lang: string
+  lang: string;
 };
 export default function FooterLinks({ groups, className = '', lang }: Props) {
   const pathname = usePathname();
   const current = routeMatchKey(cleanHref(pathname || '/'));
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
   return (
-    <div className={`grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 ${className} rtl:grid-col-reverse `}>
+    <div
+      className={`md:ltr:border-l md:border-white/15 md:rtl:border-r  ltr:pl-[64px] rtl:pr-[64px] grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 ${className} rtl:grid-col-reverse `}
+    >
       {groups.map((group) => (
-        <nav key={group.id} aria-label={group.title} className="xs:flex xs:flex-col xs:w-full xs:-mr-12">
+        <nav
+          key={group.id}
+          aria-label={group.title}
+          className="xs:flex xs:flex-col xs:w-full xs:-mr-12"
+        >
           <h3 className="text-white md:text-[20px] xs:text-base font-semibold ">{group.title}</h3>
           <ul className="md:mt-8 xs:mt-6 space-y-2 ">
             {group.links.map((link) => {
