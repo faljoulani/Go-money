@@ -139,7 +139,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     return <HowItWorksSimple {...props} />;
   }
   return (
-    <section {...attrs} className="relative mx-4 md:mx-20">
+    <section {...attrs} className="relative xs:mx-4 md:mx-28  xxl:mx-auto max-w-[1440px]">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
         {view.SubTitle && <Eyebrow color="text-default">{view.SubTitle}</Eyebrow>}
@@ -170,7 +170,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[6.5rem] ">
+        <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[7rem] ">
           <div className=" translatePhone  sticky md:top-20 flex justify-center">
             <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
           </div>

@@ -13,6 +13,16 @@ import {
 } from '../../../utils/sitefinity';
 import Title from '../../atoms/title/title';
 
+const VIDEO_PATH = 'assets/footerAnimation.mp4'; 
+
+function normalizeAssetUrl(p: string, culture: string) {
+  let s = String(p).replace(/^url\((.*)\)$/i, '$1').trim().replace(/^['"]|['"]$/g, '');
+  if (!s.startsWith('/')) s = '/' + s;                
+  const localePrefix = `/${culture}/`;
+  if (s.startsWith(localePrefix)) s = s.slice(localePrefix.length - 1); 
+  return s;
+}
+
 type FooterGroup = {
   Id: string;
   SectionTitle: string;
@@ -132,29 +142,25 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
       href: pageHref(page),
     })),
   }));
+      const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
 
   return (
-    <section {...attrs} className="relative [perspective:1000px] overflow-x-clip  ">
+    <section {...attrs} className="relative [perspective:1000px]   xxxl:[perspective:none]  overflow-x-clip  max-w-[2000px] xxl:mx-auto ">
       <footer className=" text-gray-300 h-auto flip ">
         {/* Background gradient */}
         <div className="absolute inset-0 -z-20 bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] rounded-[30px]" />
-        {/* <img
-          src="/assets/footer.png"
-          alt=""
-          className="absolute overflow-hidden bottom-0 left-0 rounded-b-[30px] z-0"
-        />
-        <div className="md:ltr:px-20 md:ltr:py-16 md:rtl:px-20 md:rtl:py-16 xs:px-6 xs:ltr:py-6 xs:rtl:px-6 xs:rtl:py-6">
-        /> */}
-        <video
-          className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px]"
-          src="assets/footerAnimation.mp4"
-          autoPlay
-          playsInline
-          loop
-        >
-          <source src="assets/footerAnimation.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+
+<video
+  className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
+  src={videoSrc}
+  autoPlay
+  muted
+  playsInline
+  loop
+>
+  <source src={videoSrc} type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
         <div className="md:ltr:px-20 xs:ltr:px-5 md:ltr:py-16 xs:ltr:py-8 md:rtl:px-20 xs:rtl:px-5 md:rtl:py-16 xs:rtl:py-8">
           {(footerData.Title || footerData.SubTitle) && (
             <Title
@@ -238,7 +244,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               <FooterLinks
                 lang={culture}
                 groups={linkGroups}
-                className=" justify-start my-8 z-30 rtl:pr-16 left-0"
+                className=" justify-start my-8 z-60 rtl:pr-16 left-0"
               />
             </div>
           </div>

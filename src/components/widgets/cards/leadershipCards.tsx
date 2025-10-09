@@ -28,7 +28,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
     return isEdit ? (
       <section
         {...attributes}
-        className="p-6 border border-dashed rounded-lg text-center text-slate-500"
+        className="p-6 border border-dashed rounded-lg text-center text-slate-500 "
       >
         <strong>Cards</strong>
         <div className="mt-1">Open the designer and select a Card List.</div>
@@ -130,7 +130,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
   });
 
   return (
-    <section {...attributes} className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5">
+    <section {...attributes} className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5 max-w-[1440px] xxl:mx-auto">
       <div className="mb-8">
         <Title className="text-start md:leading-[63px] md:w-[650px] md:text-5xl xs:text-2xl xs:leading-8 font-bold text-primaryAlt">
           {title}

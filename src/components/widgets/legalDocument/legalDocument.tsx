@@ -119,7 +119,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
   const offset = 0;
   return (
     <div {...attrs}>
-      <div className="sf-ldoc md:mt-16 xs:my-10">
+      <div className="sf-ldoc md:mt-16 xs:my-10 max-w-[1440px] xxl:mx-auto">
         <div className="mx-auto md:grid md:gap-8 md:grid-cols-[360px_1fr]">
           <aside className="self-start sticky md:top-24 xs:top-[77px] bg-white dark:bg-[#1d1d28] md:rounded-[15px] xs:rounded-xl xs:p-2 md:p-0 xs:mb-6 md:mb-0 xs:h-16 md:h-auto">
             <nav className="md:rounded-[15px] xs:rounded-xl">
