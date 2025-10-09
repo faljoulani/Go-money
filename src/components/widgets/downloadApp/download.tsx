@@ -142,7 +142,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
     <section
       {...(attrs as any)}
       className={mergeClasses(
-        'relative md:h-[486px] xs:h-[700px] rounded-3xl md:mx-20 md:px-16 my-16 fadeup ',
+        'relative md:h-[486px] xs:h-[700px] max-w-[1440px] xxl:mx-auto rounded-3xl md:mx-20 md:px-16 my-16 fadeup ',
         'bg-[image:var(--surface-gradient)]',
         (attrs as any)?.className || '',
       )}
