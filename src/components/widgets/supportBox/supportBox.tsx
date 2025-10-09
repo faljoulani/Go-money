@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { SupportInfoBoxEntity } from './supportBox.entity';
 import { fetchData } from '../../../utils/sitefinity';
-import { resolveSitefinitySelection, firstIdFromSelection } from '../../../utils/utils';
+import { resolveSitefinitySelection, firstIdFromSelection, linkToHref } from '../../../utils/utils';
 import Description from '../../atoms/description/description';
 import Title from '../../atoms/title/title';
 import { CmsImage, ImgUrl as imgUrl } from '../../../types/typee';
@@ -44,7 +44,7 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       'Description',
       'HasLabel',
       'InfoLinks($select=Id,Title,Description,Url,StoreType,Order,IsVisible,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title),Icon($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
-      'SocialLinks($select=Id,Title,Description,Url,Order,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
+      'SocialLinks($select=Id,Title,Description,CtaLink,Order,Logo($select=Url,MediaUrl,ThumbnailUrl,AlternativeText,Title))',
     ],
     { itemType: selection?.Content?.[0]?.Type, single: true },
   )) as any | null;
@@ -55,10 +55,26 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
     .filter((x: any) => x?.IsVisible !== false)
     .sort((a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0));
 
-  const socials = (item.SocialLinks || []).sort(
-    (a: any, b: any) => (a?.Order ?? 0) - (b?.Order ?? 0),
-  );
+  let rawCtaUrl: { href?: string }[] = [];
 
+  if (Array.isArray(item.SocialLinks)) {
+    for (const social of item.SocialLinks) {
+      try {
+        if (typeof social.CtaLink === 'string') {
+          const parsed = JSON.parse(social.CtaLink);
+          if (Array.isArray(parsed)) rawCtaUrl.push(...parsed);
+        } else if (Array.isArray(social.CtaLink)) {
+          rawCtaUrl.push(...social.CtaLink);
+        }
+      } catch {
+        // ignore invalid CtaLink
+      }
+    }
+  }
+
+  // Map to only hrefs
+  const socials = rawCtaUrl.map((link) => link.href).filter(Boolean);
+  console.log('socials ---->', socials);
   return (
     <section
       {...attrs}
@@ -115,14 +131,14 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
             return (
               <Link
                 key={`social-${i}-${social.Title}`}
-                href={social.Url || '#'}
+                href={social || '#'}
                 aria-label={social.Title || 'social link'}
                 target={social.Url ? '_blank' : undefined}
                 rel={social.Url ? 'noopener noreferrer' : undefined}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-primaryAlt  hover:opacity-90 overflow-hidden"
                 title={social.Title}
               >
-                <SocialCleint title={social.Title} />
+                <SocialCleint url={social} />
               </Link>
             );
           })}
