@@ -172,6 +172,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         backgroundPosition: 'center',
       }}
     >
+      
       {/* decorative glows */}
       <div
         aria-hidden
