@@ -49,12 +49,12 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed md:mx-5 mx-4 left-0 right-0 z-[200] md:rounded-3xl   transition-surface duration-300 max-w-[2000px] xxl:mx-auto ` +
+        `fixed md:mx-5 mx-4 left-0 right-0 z-[200] md:rounded-3xl   transition-surface duration-300  xxl:mx-auto ` +
         (scrolled
           ? `top-0 bg-surface dark:bg-[#000]
              text-black
-             backdrop-blur-[70px] backdrop-saturate-150 `
-          : `bg-transparent text-white top-5 md:top-10`)
+             backdrop-blur-[70px] backdrop-saturate-150  max-w-[1440px] md:mx-auto`
+          : `bg-transparent text-white top-5 md:top-10 max-w-[2000px]`)
       }
     >
       <div className="md:px-8 md:py-3 py-3 px-4">
