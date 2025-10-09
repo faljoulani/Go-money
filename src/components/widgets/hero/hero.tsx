@@ -166,12 +166,18 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     <section
       {...attrs}
       className="relative overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
-      style={{
-        backgroundImage: `url('/assets/HeroBackground.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+   
     >
+         <video
+          className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px]"
+          src="assets/header_v.mp4"
+          autoPlay
+          playsInline
+          loop
+        >
+          <source src="assets/header_v.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       {/* decorative glows */}
       <div
         aria-hidden
