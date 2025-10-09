@@ -31,7 +31,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     return isEdit ? (
       <section
         {...attributes}
-        className="p-6 border border-dashed rounded-lg text-center text-slate-500"
+        className="p-6 border border-dashed rounded-lg text-center text-slate-500 "
       >
         <strong>Cards</strong>
         <div className="mt-1">Open the designer and select a Card List.</div>
@@ -130,7 +130,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
   });
 
   const wrapCls = toBool(isOverlay)
-    ? 'relative z-20 -mt-40 max-w-[90%] mx-auto'
+    ? 'relative z-20 -mt-40 max-w-[90%] mx-auto xxl:max-w-[1200px]'
     : 'bg-[#EEEEEE] w-full px-20 pb-10 mt-16';
 
   const cardShellCls = isOverlay

@@ -11,6 +11,8 @@ import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import { resolveSitefinitySelection, resolveAbsoluteUrl, linkToHref } from '../../../utils/utils';
 import { fetchData, pickOneMedia, getImageSrc } from '../../../utils/sitefinity';
+const VIDEO_PATH = 'assets/header_v.mp4'; 
+
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -79,6 +81,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
   let rawCtaUrl = item.CtaUrl;
+function normalizeAssetUrl(p: string, culture: string) {
+  let s = String(p).replace(/^url\((.*)\)$/i, '$1').trim().replace(/^['"]|['"]$/g, '');
+  if (!s.startsWith('/')) s = '/' + s;                
+  const localePrefix = `/${culture}/`;
+  if (s.startsWith(localePrefix)) s = s.slice(localePrefix.length - 1); 
+  return s;
+}
+const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
 
   try {
     if (typeof rawCtaUrl === 'string') {
@@ -119,7 +129,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className={`relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
+        className={` max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
              min-h-[320px] h-[450px] px-4 bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] bg-cover bg-center`}
       >
         <div
@@ -165,13 +175,21 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
-      style={{
-        backgroundImage: `url('/assets/HeroBackground.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+      className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
+    
     >
+      
+<video
+  className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
+  src={videoSrc}
+  autoPlay
+  muted
+  playsInline
+  loop
+>
+  <source src={videoSrc} type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
       {/* decorative glows */}
       <div
         aria-hidden

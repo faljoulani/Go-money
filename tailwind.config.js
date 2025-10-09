@@ -48,7 +48,8 @@ module.exports = {
         md: '768px',
         lg: '1024px',
         xl: '1280px',
-        '2xl': '1536px',
+        xxl: '1550px',
+        xxxl:'2100px'
       },
       backgroundImage: {
         'finance-banner': 'linear-gradient(97.8deg, #010663 0%, #6BE5BF 100%)',

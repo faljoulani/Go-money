@@ -81,7 +81,7 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const lines = parent.Title.split('\n');
 
   return (
-    <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16">
+    <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16 max-w-[1440px] xxl:mx-auto">
       <div className="mx-auto max-w-[1240px">
         {parent?.Title && (
           <div className="mb-10">
