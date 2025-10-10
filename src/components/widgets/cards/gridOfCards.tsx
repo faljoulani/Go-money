@@ -182,10 +182,10 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         {eyebrow && <Eyebrow color="text-primary">{eyebrow}</Eyebrow>}
         <Title
           className="
-              text-5xl
+              md:text-5xl xs:text-2xl
               font-bold     
               tracking-tight
-              leading-[63px]
+              md:leading-[63px] xs:leading-8
             "
         >
           {title}

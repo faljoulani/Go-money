@@ -155,12 +155,14 @@ html.modal-open {
   scrollbar-gutter: stable;
 }
 
-
-
 /* base helpers */
 [dir='rtl'] .cta-arrow {
   transform: scaleX(-1);
 }
+
+/* [dir='rtl'] .cta-arrow { --tw-scale-x: -1; } */
+
+
 @layer base {
   .font-lufga {
     font-family: 'Lufga', sans-serif;

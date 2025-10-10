@@ -61,7 +61,7 @@ export default function ContactFormClient({
 }: Props) {
   // console.log('ContactFormClient data:', data);
   const FIELD =
-    'w-full h-[48px] px-3 py-3 rounded-[18px] text-[#9ca3af] border border-[#9ca3af] ' +
+    'w-full h-[48px] px-3 py-3 rounded-[18px] border border-[#9ca3af] ' +
     'bg-surface-input text-14px leading-[18px] outline-none focus:ring-2 focus:ring-[#0B2A8E]/20';
   const LABEL = 'mb-[10px] text-14px text-default leading-[18px]';
   const reqStar = <span className="text-[#E53935]"> *</span>;
