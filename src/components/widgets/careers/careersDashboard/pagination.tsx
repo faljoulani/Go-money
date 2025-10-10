@@ -31,50 +31,78 @@ export default function Pagination({
       dir="ltr"
       className="w-full rounded-2xl shadow-md bg-white dark:bg-[#000000] py-3 px-4 sm:py-2 sm:px-6"
     >
-      {/* === Mobile (≤ sm) — Figma style === */}
       {/* MOBILE nav */}
       <nav
         aria-label="Pagination"
-        className="flex items-center justify-center gap-4 sm:hidden whitespace-nowrap"
+        className="sm:hidden flex items-center justify-center gap-6 py-1"
       >
         {/* Prev */}
         <button
           onClick={() => !atStart && onPage(page - 1)}
           disabled={atStart}
-          className="inline-flex items-center gap-2 px-2 py-1 text-base disabled:opacity-40"
+          className="inline-flex items-center gap-2 disabled:opacity-40"
         >
-          <Image src="/icons/arrow-single-left.png" alt="" width={16} height={16} aria-hidden />
-          <span className="text-11px text-gray-500">Prev</span>
+          <span
+            className={[
+              'h-4 w-4',
+              atStart ? 'bg-gray-300' : 'bg-gray-500',
+              "[mask-image:url('/icons/arrow-single-left.png')] [mask-repeat:no-repeat] [mask-position:center] [mask-size:contain]",
+            ].join(' ')}
+            aria-hidden
+          />
+          <span className={atStart ? 'text-gray-300' : 'text-gray-500'}>Prev</span>
         </button>
 
-        {/* Numbers (underline via ::after; no padding/border that changes height) */}
         <ul className="flex items-center gap-6">
-          {pagesNumbers.map((n) => (
-            <li key={n}>
-              <button
-                onClick={() => onPage(n)}
-                aria-current={n === page ? 'page' : undefined}
-                className={[
-                  'relative inline-flex items-center justify-center text-11px leading-none align-middle rounded-full px-3 py-2 transition-colors',
-                  n === page
-                    ? 'bg-primaryAlt text-white'
-                    : 'bg-white text-primaryAlt border border-primaryAlt hover:bg-primaryAlt/10',
-                ].join(' ')}
-              >
-                {n}
-              </button>
-            </li>
-          ))}
+          {pagesNumbers.map((n) => {
+            const isActive = n === page;
+            return (
+              <li key={n}>
+                <button
+                  onClick={() => onPage(n)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={[
+                    'relative inline-flex items-center justify-center text-base leading-none',
+
+                    'after:absolute after:left-1/2 after:-translate-x-1/2 after:-bottom-1 after:h-[2px] after:w-5 after:rounded-full',
+
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primaryAlt',
+                    'dark:focus-visible:ring-white dark:focus-visible:ring-offset-[#000]',
+
+                    isActive
+                      ? [
+                          'text-[#001a72] after:bg-[#001a72]',
+                          'dark:text-white dark:after:bg-white',
+                        ].join(' ')
+                      : [
+                          'text-gray-700 hover:text-gray-900',
+                          'dark:text-gray-300 dark:hover:text-gray-100',
+                          'after:bg-transparent dark:after:bg-transparent',
+                        ].join(' '),
+                  ].join(' ')}
+                >
+                  {n}
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Next */}
         <button
           onClick={() => !atEnd && onPage(page + 1)}
           disabled={atEnd}
-          className="inline-flex items-center gap-2 px-2 py-1 text-base disabled:opacity-40"
+          className="inline-flex items-center gap-2 disabled:opacity-40"
         >
-          <span className="text-11px text-primary">Next</span>
-          <Image src="/icons/arrow-single-right.png" alt="" width={16} height={16} aria-hidden />
+          <span className={atEnd ? 'text-gray-300' : 'text-primaryAlt'}>Next</span>
+          <span
+            className={[
+              'h-4 w-4',
+              atEnd ? 'bg-gray-300' : 'bg-primaryAlt',
+              "[mask-image:url('/icons/arrow-single-right.png')] [mask-repeat:no-repeat] [mask-position:center] [mask-size:contain]",
+            ].join(' ')}
+            aria-hidden
+          />
         </button>
       </nav>
 
@@ -124,7 +152,7 @@ export default function Pagination({
               className={`grid h-10 w-10 place-items-center rounded-full border text-base ${
                 n === page
                   ? 'border-primary bg-primaryAlt text-white dark:text-[#000]'
-                  : 'border-gray-300 text-gray-700'
+                  : 'border-gray-300 text-default'
               }`}
             >
               {n}
