@@ -46,6 +46,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
           'IntroLead',
           'IntroSubLead',
           'CTALabel',
+          'CTAURL',
           'CTAExternalUrl',
           'CTAInternalPage($select=Id,Title,DefaultUrl)',
           'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
@@ -57,7 +58,6 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       console.error('Error fetching HowItWork section:', e);
     }
   }
-
   if (!item) {
     if (props.requestContext.isEdit) {
       return (
@@ -102,7 +102,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     SubTitle: item.SubTitle,
     IntroLead: item.IntroLead,
     IntroSubLead: item.IntroSubLead,
-
+    CTAURL : item.CTAURL,
     CTALabel: item.CTALabel,
 
     CTAExternalUrl: item.CTAExternalUrl,
@@ -120,21 +120,17 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       IsVisible: s.IsVisible ?? true,
     })),
   };
-
-  let rawCtaUrl = view.CTAExternalUrl;
+  let rawCtaUrl = view.CTAURL;
 
   try {
     if (typeof rawCtaUrl === 'string') {
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
   } catch {
-    // If parsing fails, leave it as-is
   }
-
   const CTAExternalUrl = linkToHref(rawCtaUrl);
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
-
   if (selectedView === 'Simple') {
     return <HowItWorksSimple {...props} />;
   }
@@ -255,7 +251,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               {view.CTALabel && (
                 <div className="mt-12 flex justify-center fadeupButton">
                   <a
-                    href={CTAExternalUrl || view.CTAInternalPage || '#'}
+                    href={CTAExternalUrl || '#'}
                     className="group inline-flex items-center gap-2 rounded-[20px] px-6 py-3
                                text-[#F7FAFC] font-medium w-[250px] h-14 text-center justify-center
                                shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
