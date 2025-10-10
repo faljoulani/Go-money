@@ -3,6 +3,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+
+import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
 import InputField from '../../../atoms/inputField/inputField';
 import SpinnerLoader from '../../../atoms/spinnerLoader/spinnerLoader';
 import CustomDropdown, {
@@ -13,6 +15,9 @@ import CustomDropdown, {
 } from '../../../atoms/dropdown/dropdown';
 import ApplicationSuccess from './applicationSuccess';
 import { COUNTRY_LIST } from '../../../../utils/countries-emoji';
+import IndustryIcon from '../../../../../public/icons/industry_icon.svg';
+import MapIcon from '../../../../../public/icons/map_icon.svg';
+import OclockIcon from '../../../../../public/icons/oclock_icon.svg';
 
 type CareerDetails = {
   Title?: string;
@@ -75,26 +80,21 @@ export default function ApplyForJob({
   jobId,
   language = 'en',
 }: Props) {
-  // API hooks
   const { post: submitApplication } = useSfMutation('api/default/applyjob');
   const { post: fetchJobDetails } = useSfMutation('api/default/careers/details');
 
-  // Job details loading
   const [jobDetails, setJobDetails] = useState<CareerDetails | null>(null);
   const [jobError, setJobError] = useState<string | null>(null);
-  const loading = Boolean(jobId && !jobError && !jobDetails);
-
-  // Form UI state
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Refs for layout & a11y
   const successRef = useRef<HTMLDivElement | null>(null);
   const detailsRef = useRef<HTMLDivElement | null>(null);
 
-  // Form data
+  const loading = Boolean(jobId && !jobError && !jobDetails);
+
   const [data, setData] = useState<FormDataState>({
     firstName: '',
     lastName: '',
@@ -105,23 +105,19 @@ export default function ApplyForJob({
     resume: null,
   });
 
-  // Country/dial code
   const [countryIso2, setCountryIso2] = useState<string>('SA');
   const [countryDial, setCountryDial] = useState<string>('+966');
 
-  // Derived helpers
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cityChoices = useMemo(() => citiesFrom(form, cities), [form, cities]);
   const countryOptions = useMemo(makeCountryOptions, []);
   const normalizedLanguage = (language || '').toLowerCase();
   const isRtl = form?.Direction === 'rtl' || normalizedLanguage.startsWith('ar');
 
-  // Field update helper
   const applyFieldChange = <K extends keyof FormDataState>(key: K, value: FormDataState[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Resume validation
   const handleResume = (file?: File | null) => {
     if (!file) return;
     const err = !allowedTypes.includes(file.type)
@@ -285,6 +281,15 @@ export default function ApplyForJob({
     return () => window.cancelAnimationFrame(rafId);
   }, [submitted]);
 
+  const compositeKey = useMemo(() => `${jobId ?? ''}:${language ?? ''}`, [jobId, language]);
+
+  const topRef = useScrollFocus({
+    ready: !!language && !loading,
+    deps: [compositeKey],
+    behavior: 'instant',
+    label: language === 'ar' ? 'تفاصيل الوظيفة' : 'Job details',
+  });
+
   return (
     <SpinnerLoader
       show={loading}
@@ -295,6 +300,7 @@ export default function ApplyForJob({
         className={`mx-auto w-full max-w-[760px] py-10 md:px-6 md:py-10 ${className ?? ''}`}
         dir={isRtl ? 'rtl' : 'ltr'}
       >
+        <div ref={topRef} tabIndex={-1} className="outline-none" />
         {/* Error top banner */}
         {jobError && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -314,32 +320,24 @@ export default function ApplyForJob({
             {(department || location || employmentType) && (
               <div className="mt-3 flex flex-col md:flex-row justify-start md:flex-wrap md:items-center gap-4 text-sm text-neutral-600">
                 {department && (
-                  <div className="flex items-center gap-2">
-                    <Image src="/icons/industry_icon.png" alt="industry" width={20} height={20} />
+                  <div className="flex items-center gap-2 text-[#000] dark:text-white">
+                    {/* Icon inherits from parent via stroke-current; no fill classes used */}
+                    <IndustryIcon className="h-6 w-6 stroke-current stroke-[1.5] [&_*]:stroke-current" />
                     <span className="font-medium">{department}</span>
                   </div>
                 )}
                 {location && (
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/icons/map-pin.png"
-                      alt=""
-                      width={20}
-                      height={20}
-                      className="h-4 w-4 object-contain dark:invert"
-                    />
-                    <span>{location}</span>
+                  <div className="flex items-center gap-2 text-[#000] dark:text-white">
+                    <MapIcon className="h-6 w-6 stroke-current stroke-[1.5] [&_*]:stroke-current" />
+                    <span className="font-medium text-[#000] dark:text-white">{location}</span>
                   </div>
                 )}
                 {employmentType && (
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/icons/o'clock_job_icon.png"
-                      alt="Employment Type"
-                      width={20}
-                      height={20}
-                    />
-                    <span>{employmentType}</span>
+                  <div className="flex items-center gap-2 text-[#000] dark:text-white">
+                    <OclockIcon className="h-6 w-6 stroke-current stroke-[1.5] [&_*]:stroke-current" />
+                    <span className="font-medium text-[#000] dark:text-white">
+                      {employmentType}
+                    </span>
                   </div>
                 )}
               </div>
@@ -428,7 +426,7 @@ export default function ApplyForJob({
                   />
 
                   {/* Local phone input */}
-                <input
+                  <input
                     type="tel"
                     inputMode="numeric"
                     pattern="[0-9]*"
@@ -484,7 +482,7 @@ export default function ApplyForJob({
               <div className="md:col-span-2">
                 <InputField label={form?.CoverLetterLabel}>
                   <textarea
-                    className="min-h-[120px] w-full rounded-2xl border-2 border-gray-200 p-4 text-14px outline-none transition bg-surface-input focus:border-[#5F66FF]"
+                    className="min-h-[120px] w-full rounded-2xl border-2 border-gray-200 p-4 text-14px outline-none transition bg-surface-input"
                     placeholder={form?.CoverLetterPlaceholder}
                     value={data.coverLetter}
                     onChange={(e) => applyFieldChange('coverLetter', e.target.value)}

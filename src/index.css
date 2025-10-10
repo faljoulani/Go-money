@@ -99,17 +99,15 @@
   --color-primary-alt: #010663;
   --color-default: #424242;
   --color-secondary: #ffffff;
-    --color-bg-alt: #ffffff;
+  --color-bg-alt: #ffffff;
   --color-white-cta: #ffffff;
   --surface-page: #eeeeee;
   --surface-section: #ffffff;
   --surface-input: #ffffff;
   --surface-sheet: #e1f3f9;
   --surface-gradient: linear-gradient(258.38deg, #6be5bf -1.4%, #b3dfef 100%);
-    --howitworks-bg: url('/assets/Shape.png'); 
-  --range-inner-circle: #FFFFFF;
-
-    
+  --howitworks-bg: url('/assets/Shape.png');
+  --range-inner-circle: #ffffff;
 }
 html.dark {
   --color-primary: #fafafa;
@@ -117,14 +115,14 @@ html.dark {
   --color-default: #f5f5f5;
   --color-secondary: #000000;
   --surface-page: #131321;
-    --color-bg-alt: #000000;
+  --color-bg-alt: #000000;
   --color-white-cta: #010663;
   --surface-section: #44444433;
   --surface-input: #000000;
   --surface-sheet: #004c86;
   --surface-gradient: linear-gradient(258.38deg, #a6efd9 -1.4%, #006aa5 100%);
-    --howitworks-bg: url('/assets/circlesDark.png');
-  --range-inner-circle: #054E42;
+  --howitworks-bg: url('/assets/circlesDark.png');
+  --range-inner-circle: #054e42;
 }
 
 body {
@@ -154,8 +152,6 @@ html.modal-open {
   overflow: hidden;
   scrollbar-gutter: stable;
 }
-
-
 
 /* base helpers */
 [dir='rtl'] .cta-arrow {
@@ -628,5 +624,37 @@ html.modal-open {
   list-style: revert;
   margin: revert;
   padding: revert;
+}
+
+/* If CMS sends real <ul>/<ol>, use them as-is */
+.qualificationsAsList ul,
+.qualificationsAsList ol {
+  list-style: revert;
+  margin: revert;
+  padding: revert;
+}
+
+/* Bullet paragraphs (or line-divs) when no <ul>/<ol> present */
+.qualificationsAsList > p:not(:empty),
+.qualificationsAsList > div:not(:empty):not(:has(> *)) {
+  display: list-item;
+  list-style: disc;
+  margin-inline-start: 1.25rem; /* RTL/LTR smart */
+  padding-inline-start: 0.25rem;
+}
+
+.descriptionHtml ul,
+.descriptionHtml ol {
+  list-style: disc;
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+}
+
+.descriptionHtml li {
+  margin-bottom: 0.25rem;
+}
+
+.descriptionHtml li::marker {
+  color: var(--color-default);
 }
 
