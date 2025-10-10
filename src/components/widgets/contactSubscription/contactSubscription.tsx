@@ -122,7 +122,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
   const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px] border border-[#E2E5EA] bg-surface-section p-6 md:p-8 flex flex-col justify-between ${className}`}
+      className={`relative overflow-hidden rounded-[28px]  bg-surface-section p-6 md:p-8 flex flex-col justify-between ${className}`}
     >
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (

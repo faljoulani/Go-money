@@ -1,7 +1,7 @@
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import { HowItWorkEntity } from './howItWorks.entity';
 import { RestClient } from '@progress/sitefinity-nextjs-sdk/rest-sdk';
-
+import { linkToHref } from '../../../utils/utils';
 import NavyBackground from './NavyBackground.webp';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
@@ -39,6 +39,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           'IntroSubLead',
           'CTALabel',
           'CTAExternalUrl',
+          'CTAURL',
           'CTAInternalPage($select=Id,Title,DefaultUrl)',
           'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
           'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
@@ -94,7 +95,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
     SubTitle: item.SubTitle,
     IntroLead: item.IntroLead,
     IntroSubLead: item.IntroSubLead,
-
+    CTAURL: item.CTAURL,
     CTALabel: item.CTALabel,
     CTAExternalUrl: item.CTAExternalUrl,
     CTAInternalPage: item.CTAInternalPage?.DefaultUrl ?? null,
@@ -111,7 +112,15 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
       IsVisible: s.IsVisible ?? true,
     })),
   };
+  let rawCtaUrl = view.CTAURL;
 
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
+    }
+  } catch {
+  }
+  const CTAExternalUrl = linkToHref(rawCtaUrl);
   return (
     <section {...attrs} className="relative xs:flex xs:flex-col ">
       {/* Top headline block */}
@@ -192,7 +201,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
             {view.CTALabel && (
               <div className="md:mt-[68px]  xs:mt-[42px] flex justify-center ">
                 <a
-                  href={view.CTAInternalPage || view.CTAExternalUrl || '#'}
+                  href={CTAExternalUrl || '#'}
                   className="group inline-flex items-center gap-2 rounded-full px-6 py-3
                                text-white/95 font-medium
                                shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]

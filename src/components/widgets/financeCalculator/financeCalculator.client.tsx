@@ -359,8 +359,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
-                  ? `Maximum eligible amount is ${formatSar(AMAX)} SAR`
-                  : `الحد الأقصى للمبلغ المؤهل هو ${formatSar(AMAX)} ريال سعودي`}
+                  ? `Amount must be between ${formatSar(AMIN)} and ${formatSar(AMAX)} SAR`
+                  : `يرجى إدخال مبلغ يتراوح بين ${formatSar(AMIN)} و ${formatSar(AMAX)}, SAR`}
               </div>
 
               <input
