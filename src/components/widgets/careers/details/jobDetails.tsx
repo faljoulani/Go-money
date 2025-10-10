@@ -102,15 +102,22 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
             </div>
 
             {/* Responsibilities */}
-            <div
-              className="mt-3 descriptionHtml"
-              dangerouslySetInnerHTML={{
-                __html:
-                  '<ul><li>' +
-                  responsibilitiesHtml.replace(/<br\s*\/?>/gi, '</li><li>') +
-                  '</li></ul>',
-              }}
-            />
+            {responsibilitiesHtml && (
+              <div className="px-6">
+                <h3 className="mb-1 text-2xl font-semibold md:text-primary">
+                  {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
+                </h3>
+                <div
+                  className="mt-3 descriptionHtml"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      '<ul><li>' +
+                      responsibilitiesHtml.replace(/<br\s*\/?>/gi, '</li><li>') +
+                      '</li></ul>',
+                  }}
+                />
+              </div>
+            )}
 
             {/* Qualifications */}
             {qualificationsHtml && (
