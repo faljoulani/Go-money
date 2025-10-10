@@ -8,7 +8,9 @@ import { daysSinceUtc } from '../../../../utils/utils';
 import { useDirection } from '../../../../utils/helpers';
 import Image from 'next/image';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 import type {
   Labels,
@@ -37,7 +39,6 @@ const EMPLOYMENT_TYPE_LABEL: Record<'en' | 'ar', Record<string, string>> = {
 const normalizeEmploymentType = (raw?: string, lang: 'en' | 'ar' = 'en') =>
   raw ? (EMPLOYMENT_TYPE_LABEL[lang][String(raw).trim()] ?? raw) : '';
 
-// ------- Types for API response -------
 type ApiFacet = { Name: string; Count: number; Selected?: boolean };
 type ApiFacets = { Locations?: ApiFacet[]; Departments?: ApiFacet[] };
 
@@ -74,7 +75,6 @@ type SearchApiResponse = {
   TraceId?: string;
 };
 
-// Helpers
 function mapCareerToItem(c: ModuleCareer, lang: 'ar' | 'en'): CareersItem {
   const postedAtUtc = c.Date || '';
   return {
@@ -116,7 +116,6 @@ const mapItemToJob = (i: CareersItem): Job => ({
 
 type QueryKey = 'locationNames' | 'departmentNames';
 
-// Merge full known names with latest API counts; fall back to baseline counts
 function mergeFacetDisplay(
   allNames: string[],
   apiArr: ApiFacet[] | undefined,
@@ -148,7 +147,6 @@ function mergeFacetDisplay(
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-// Small skeleton for filters while facets load
 function FilterSkeleton({ rows = 6 }: { rows?: number }) {
   return (
     <ul className="mt-3 space-y-2">
@@ -158,72 +156,6 @@ function FilterSkeleton({ rows = 6 }: { rows?: number }) {
     </ul>
   );
 }
-
-function getScrollableRoots(): (Window | Element)[] {
-  const roots: (Window | Element)[] = [window];
-  if (document.scrollingElement) roots.push(document.scrollingElement);
-  roots.push(document.documentElement, document.body);
-  try {
-    const candidates = Array.from(document.querySelectorAll<HTMLElement>('*'))
-      .filter((el) => {
-        const s = getComputedStyle(el);
-        return (
-          (s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight
-        );
-      })
-      .slice(0, 8);
-    roots.push(...candidates);
-  } catch {
-    /* ignore */
-  }
-  return Array.from(new Set(roots.filter(Boolean)));
-}
-
-function forceScrollTop(behavior: ScrollBehavior = 'auto') {
-  for (const r of getScrollableRoots()) {
-    if (typeof (r as Window).scrollTo === 'function') {
-      (r as Window).scrollTo({ top: 0, left: 0, behavior });
-    } else {
-      (r as Element).scrollTop = 0;
-    }
-  }
-}
-
-// function getScrollableRoots(): (Window | Element)[] {
-//   const roots: (Window | Element)[] = [window];
-
-//   // Standard roots
-//   if (document.scrollingElement) roots.push(document.scrollingElement);
-//   roots.push(document.documentElement, document.body);
-
-//   try {
-//     const candidates = Array.from(document.querySelectorAll<HTMLElement>('*'))
-//       .filter((el) => {
-//         const s = getComputedStyle(el);
-//         return (
-//           (s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight
-//         );
-//       })
-//       .slice(0, 8); // cap to avoid large lists
-//     roots.push(...candidates);
-//   } catch {
-//     /* ignore */
-//   }
-
-//   // de-dupe
-//   return Array.from(new Set(roots.filter(Boolean)));
-// }
-
-// function forceScrollTop(behavior: ScrollBehavior = 'auto') {
-//   for (const r of getScrollableRoots()) {
-//     // Window has scrollTo; Elements have scrollTop
-//     if (typeof (r as Window).scrollTo === 'function') {
-//       (r as Window).scrollTo({ top: 0, left: 0, behavior });
-//     } else {
-//       (r as Element).scrollTop = 0;
-//     }
-//   }
-// }
 
 export default function CareersBoard({
   labels,
@@ -241,20 +173,42 @@ export default function CareersBoard({
   const dir = useDirection();
   const isRtl = dir === 'rtl';
   const lang: 'en' | 'ar' = isRtl ? 'ar' : 'en';
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
+
+  const isArabic = (s: string = '') => /[\u0600-\u06FF]/.test(s);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const urlPage = useMemo(
+    () => Math.max(1, parseInt(searchParams.get('page') || '', 10) || 1),
+    [searchParams],
+  );
+  const urlPageSize = useMemo(
+    () => Math.max(1, parseInt(searchParams.get('pageSize') || '', 10) || 12),
+    [searchParams],
+  );
+
+  const replaceUrl = useCallback(
+    (next: Partial<{ page: number; pageSize: number }>) => {
+      const sp = new URLSearchParams(searchParams.toString());
+      if (next.page != null) sp.set('page', String(next.page));
+      if (next.pageSize != null) sp.set('pageSize', String(next.pageSize));
+      router.replace(`${pathname}?${sp.toString()}#careers-top`);
+    },
+    [router, pathname, searchParams],
+  );
 
   const { post: postSearch } = useSfMutation('api/default/careers/search');
   const [apiResp, setApiResp] = useState<SearchApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Persist facet names (union of everything we've seen)
   const [facetNames, setFacetNames] = useState<{ locations: string[]; departments: string[] }>({
     locations: [],
     departments: [],
   });
 
-  // Baseline counts captured when NO filters are applied
   const [baselineCounts, setBaselineCounts] = useState<{
     locations: Record<string, number>;
     departments: Record<string, number>;
@@ -263,33 +217,6 @@ export default function CareersBoard({
     departments: {},
   });
 
-  const SCROLL_OFFSET = 96;
-
-  const scrollToBoardTop = useCallback(() => {
-    if (typeof window === 'undefined') return;
-
-    const anchor = titleRef.current;
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    window.requestAnimationFrame(() => {
-      if (anchor) {
-        const rect = anchor.getBoundingClientRect();
-        const absoluteTop = rect.top + window.scrollY - SCROLL_OFFSET;
-        window.scrollTo({
-          top: Math.max(absoluteTop, 0),
-          behavior: prefersReducedMotion ? 'auto' : 'smooth',
-        });
-        setTimeout(() => anchor.focus(), prefersReducedMotion ? 0 : 200);
-      } else {
-        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-      }
-    });
-  }, []);
-
-  // Local items are only a visual fallback for jobs (NOT for facets)
   const localItems = useMemo(
     () => (careers || []).map((c) => mapCareerToItem(c, isRtl ? 'ar' : 'en')),
     [careers, isRtl],
@@ -310,34 +237,67 @@ export default function CareersBoard({
       ? (labels?.departmentLabel ?? 'التصفية حسب القسم')
       : (labels?.departmentLabel ?? 'Filter by Department');
 
-  const [query, setQuery] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
-  const [draft, setDraft] = useState<CareersSearchBody>({ ...DEFAULT_SEARCH, ...initialBody });
+  const [query, setQuery] = useState<CareersSearchBody>(() => ({
+    ...DEFAULT_SEARCH,
+    ...initialBody,
+    page: initialBody?.page ?? urlPage,
+    pageSize: initialBody?.pageSize ?? urlPageSize,
+    language: initialBody?.language ?? lang,
+  }));
 
+  const [draft, setDraft] = useState<CareersSearchBody>(() => ({
+    ...DEFAULT_SEARCH,
+    ...initialBody,
+    page: initialBody?.page ?? urlPage,
+    pageSize: initialBody?.pageSize ?? urlPageSize,
+    language: initialBody?.language ?? lang,
+  }));
+  const [mobileSectionsOpen, setMobileSectionsOpen] = useState<{
+    locations: boolean;
+    departments: boolean;
+  }>({
+    locations: true,
+    departments: true,
+  });
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isLocationsOpen, setIsLocationsOpen] = useState(true);
+  const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(true);
   const showMobileFiltersRef = useRef(showMobileFilters);
+
   useEffect(() => {
     showMobileFiltersRef.current = showMobileFilters;
   }, [showMobileFilters]);
 
+  useEffect(() => {
+    setFacetNames({ locations: [], departments: [] });
+    setBaselineCounts({ locations: {}, departments: {} });
+
+    setQuery((prev) => {
+      if (prev.language === lang) return prev;
+      const next = structuredClone(prev);
+      next.language = lang;
+      next.page = 1;
+      return next;
+    });
+
+    setDraft((prev) => {
+      if (prev.language === lang) return prev;
+      const next = structuredClone(prev);
+      next.language = lang;
+      next.page = 1;
+      return next;
+    });
+  }, [lang]);
+
   type QueryUpdater = CareersSearchBody | ((prev: CareersSearchBody) => CareersSearchBody);
-  type UpdateOptions = { force?: boolean };
 
-  const updateQuery = useCallback(
-    (updater: QueryUpdater, options?: UpdateOptions) => {
-      setQuery((prev) => {
-        const next =
-          typeof updater === 'function'
-            ? (updater as (prev: CareersSearchBody) => CareersSearchBody)(prev)
-            : updater;
-
-        const shouldScroll = options?.force || !showMobileFiltersRef.current;
-        if (shouldScroll) scrollToBoardTop();
-
-        return next;
-      });
-    },
-    [scrollToBoardTop],
-  );
+  const updateQuery = useCallback((updater: QueryUpdater) => {
+    setQuery((prev) =>
+      typeof updater === 'function'
+        ? (updater as (prev: CareersSearchBody) => CareersSearchBody)(prev)
+        : updater,
+    );
+  }, []);
 
   const fetchSearch = useCallback(
     async (body: CareersSearchBody) => {
@@ -350,13 +310,12 @@ export default function CareersBoard({
           departmentNames: body.departmentNames,
           locationNames: body.locationNames,
           sort: body.sort,
-          language: body.language,
+          language: body.language ?? lang,
           search: body.search ?? null,
         })) as SearchApiResponse;
 
         setApiResp(resp);
 
-        // Persist full set of facet names (union)
         const apiLoc =
           (resp?.Data?.Facets?.Locations ?? [])
             .map((f) => (f?.Name ?? '').trim())
@@ -375,7 +334,6 @@ export default function CareersBoard({
           };
         });
 
-        // If NO filters are selected, capture baseline counts
         const noDept = !body.departmentNames?.length;
         const noLoc = !body.locationNames?.length;
 
@@ -407,14 +365,13 @@ export default function CareersBoard({
         setLoading(false);
       }
     },
-    [postSearch],
+    [lang, postSearch],
   );
 
   useEffect(() => {
     fetchSearch(query);
   }, [query, fetchSearch]);
 
-  // Items to render
   const apiItems: CareersItem[] = useMemo(() => {
     const arr = apiResp?.Data?.Items ?? [];
     return arr.map((it) => mapApiItemToCareersItem(it, lang));
@@ -428,85 +385,99 @@ export default function CareersBoard({
   const totalPages = apiResp?.Data?.TotalPages ?? 1;
   const page = apiResp?.Data?.Page ?? query.page;
 
-  // Selected facet names (respect draft in mobile)
   const selectedLocationNames = showMobileFilters ? draft.locationNames : query.locationNames;
   const selectedDepartmentNames = showMobileFilters ? draft.departmentNames : query.departmentNames;
 
-  // Build facets from union of known names + latest API counts with baseline fallback
-  const locationFacets = useMemo(
-    () =>
-      mergeFacetDisplay(
-        facetNames.locations,
-        apiResp?.Data?.Facets?.Locations,
-        selectedLocationNames,
-        baselineCounts.locations,
-      ),
-    [
+  const locationFacets = useMemo(() => {
+    const merged = mergeFacetDisplay(
       facetNames.locations,
       apiResp?.Data?.Facets?.Locations,
       selectedLocationNames,
       baselineCounts.locations,
-    ],
-  );
+    );
+    return merged.filter((f) => (lang === 'ar' ? isArabic(f.name) : !isArabic(f.name)));
+  }, [
+    facetNames.locations,
+    apiResp?.Data?.Facets?.Locations,
+    selectedLocationNames,
+    baselineCounts.locations,
+    lang,
+  ]);
 
-  const departmentFacets = useMemo(
-    () =>
-      mergeFacetDisplay(
-        facetNames.departments,
-        apiResp?.Data?.Facets?.Departments,
-        selectedDepartmentNames,
-        baselineCounts.departments,
-      ),
-    [
+  const departmentFacets = useMemo(() => {
+    const merged = mergeFacetDisplay(
       facetNames.departments,
       apiResp?.Data?.Facets?.Departments,
       selectedDepartmentNames,
       baselineCounts.departments,
-    ],
-  );
+    );
+    return merged.filter((f) => (lang === 'ar' ? isArabic(f.name) : !isArabic(f.name)));
+  }, [
+    facetNames.departments,
+    apiResp?.Data?.Facets?.Departments,
+    selectedDepartmentNames,
+    baselineCounts.departments,
+    lang,
+  ]);
 
-  // Single-select toggle with deep copies
   const toggleFacet = useCallback(
     (key: QueryKey, name: string) => {
+      replaceUrl({ page: 1 });
       updateQuery((prev) => {
         const next = structuredClone(prev);
         const current = next[key] ?? [];
         next[key] = current[0] === name ? [] : [name];
         next.page = 1;
+        next.language = lang;
         return next;
       });
     },
-    [updateQuery],
+    [lang, replaceUrl, updateQuery],
   );
 
-  const toggleSingleFacet = useCallback((key: QueryKey, name: string) => {
-    setDraft((prev) => {
-      const next = structuredClone(prev);
-      const current = next[key] ?? [];
-      next[key] = current[0] === name ? [] : [name];
-      next.page = 1;
-      return next;
-    });
-  }, []);
+  const toggleSingleFacet = useCallback(
+    (key: QueryKey, name: string) => {
+      setDraft((prev) => {
+        const next = structuredClone(prev);
+        const current = next[key] ?? [];
+        next[key] = current[0] === name ? [] : [name];
+        next.page = 1;
+        next.language = lang;
+        return next;
+      });
+    },
+    [lang],
+  );
+
+  const toggleMobileSection = (key: 'locations' | 'departments') =>
+    setMobileSectionsOpen((s) => ({ ...s, [key]: !s[key] }));
+
+  useEffect(() => {
+    if (!showMobileFilters) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowMobileFilters(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showMobileFilters]);
 
   const handlePage = useCallback(
     (n: number) => {
-      updateQuery((q) => ({
-        ...q,
-        page: Math.max(1, Math.min(n, Math.max(1, totalPages))),
-      }));
-      if (typeof window !== 'undefined') {
-        history.replaceState(null, '', '#careers-top');
-      }
+      const nextPage = Math.max(1, Math.min(n, Math.max(1, totalPages)));
+      replaceUrl({ page: nextPage });
+      updateQuery((q) => ({ ...q, page: nextPage }));
     },
-    [totalPages, updateQuery],
+    [totalPages, replaceUrl, updateQuery],
   );
 
   const handlePageSize = useCallback(
-    (n: number) => updateQuery((q) => ({ ...q, page: 1, pageSize: n })),
-    [updateQuery],
+    (n: number) => {
+      const nextSize = Math.max(1, n);
+      replaceUrl({ page: 1, pageSize: nextSize });
+      updateQuery((q) => ({ ...q, page: 1, pageSize: nextSize }));
+    },
+    [replaceUrl, updateQuery],
   );
-
   const selectedChips = useMemo(
     () => [
       ...(query.locationNames ?? []).map((name) => ({ key: 'locationNames' as QueryKey, name })),
@@ -526,34 +497,37 @@ export default function CareersBoard({
       next.departmentNames = [];
       next.search = null;
       next.sort = 'postedAt_desc';
+      next.language = lang;
       return next;
     });
-  }, []);
+  }, [lang]);
 
   const removeChip = useCallback(
     (key: QueryKey, name: string) => {
+      replaceUrl({ page: 1 });
       updateQuery((q) => {
         const next = structuredClone(q);
         next.page = 1;
         next[key] = (next[key] as string[]).filter((n) => n !== name);
+        next.language = lang;
         return next;
       });
       setDraft((d) => {
         const next = structuredClone(d);
         next.page = 1;
         next[key] = (next[key] as string[]).filter((n) => n !== name);
+        next.language = lang;
         return next;
       });
     },
-    [updateQuery],
+    [lang, replaceUrl, updateQuery],
   );
 
   const handleOpenJob = useCallback(
     (id: string, departmentId: string) => {
-      scrollToBoardTop();
       onOpenJob?.(id, departmentId);
     },
-    [onOpenJob, scrollToBoardTop],
+    [onOpenJob],
   );
 
   useEffect(() => {
@@ -566,102 +540,155 @@ export default function CareersBoard({
   }, [showMobileFilters]);
 
   useEffect(() => {
-    scrollToBoardTop();
-  }, [page, query.pageSize, scrollToBoardTop]);
+    setQuery((prev) => (prev.page === urlPage ? prev : { ...prev, page: urlPage }));
+  }, [urlPage]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    setQuery((prev) => (prev.pageSize === urlPageSize ? prev : { ...prev, pageSize: urlPageSize }));
+  }, [urlPageSize]);
 
-    forceScrollTop('auto');
-    requestAnimationFrame(() => forceScrollTop('auto'));
-    setTimeout(() => forceScrollTop('auto'), 120);
-  }, []);
+  const scrollDeps = useMemo(
+    () => [
+      page,
+      query.pageSize,
+      (showMobileFilters ? draft.locationNames : query.locationNames).join('|'),
+      (showMobileFilters ? draft.departmentNames : query.departmentNames).join('|'),
+    ],
+    [
+      page,
+      query.pageSize,
+      showMobileFilters,
+      draft.locationNames,
+      draft.departmentNames,
+      query.locationNames,
+      query.departmentNames,
+    ],
+  );
+
+  const topRef = useScrollFocus({
+    ready: !loading,
+    deps: scrollDeps,
+    behavior: 'instant',
+    label: isRtl ? 'قائمة الوظائف' : 'Job list',
+  });
 
   const hasResults = (totalResults ?? 0) > 0;
 
   return (
     <section className={`relative mx-auto py-10 md:px-10 ${className ?? ''}`}>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_minmax(0,1fr)]">
+        {/* Sidebar (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
           <div className="rounded-2xl shadow-md bg-surface-section p-4">
+            {/* Header row */}
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">{locationLabel}</h3>
+
+              {/* Collapse / Expand Button */}
+              <button
+                type="button"
+                onClick={() => setIsLocationsOpen((prev) => !prev)}
+                className="w-6 h-6 flex items-center justify-center text-14px font-bold text-white dark:text-[#010663] bg-primaryAlt rounded-lg"
+                aria-label={isLocationsOpen ? 'Collapse section' : 'Expand section'}
+              >
+                {isLocationsOpen ? '−' : '+'}
+              </button>
+
               {loading && (
-                <span className="text-xs opacity-70 flex items-center gap-1">
+                <span className="text-xs opacity-70 flex items-center gap-1 ml-2">
                   <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
                   Loading
                 </span>
               )}
             </div>
 
-            {facetNames.locations.length === 0 ? (
-              <FilterSkeleton />
-            ) : (
-              <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1">
-                {locationFacets.map((f) => (
-                  <li key={f.name} className="py-1">
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={f.selected}
-                        onChange={() => toggleFacet('locationNames', f.name)}
-                        className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
-                      />
-                      <span className="text-sm text-default dark:text-white">{f.name}</span>
-                      <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                        {f.count}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
+            {/* Collapsible content */}
+            {isLocationsOpen && (
+              <>
+                {facetNames.locations.length === 0 ? (
+                  <FilterSkeleton />
+                ) : (
+                  <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1 transition-all duration-300 ease-in-out">
+                    {locationFacets.map((f) => (
+                      <li key={f.name} className="py-1">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={f.selected}
+                            onChange={() => toggleFacet('locationNames', f.name)}
+                            className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                          />
+                          <span className="text-sm text-default dark:text-white">{f.name}</span>
+                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                            {f.count}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
             )}
           </div>
 
           <div className="rounded-2xl shadow-md bg-surface-section p-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">{departmentLabel}</h3>
-              {loading && (
-                <span className="text-xs opacity-70 flex items-center gap-1">
-                  <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
-                  Loading
-                </span>
-              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDepartmentsOpen((prev) => !prev)}
+                  className="w-6 h-6 flex items-center justify-center text-14px font-bold text-white dark:text-[#010663] bg-primaryAlt rounded-lg"
+                  aria-label={isLocationsOpen ? 'Collapse section' : 'Expand section'}
+                >
+                  {isDepartmentsOpen ? '−' : '+'}
+                </button>
+
+                {loading && (
+                  <span className="text-xs opacity-70 flex items-center gap-1">
+                    <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
+                    Loading
+                  </span>
+                )}
+              </div>
             </div>
 
-            {facetNames.departments.length === 0 ? (
-              <FilterSkeleton />
-            ) : (
-              <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1">
-                {departmentFacets.map((f) => (
-                  <li key={f.name} className="py-1">
-                    <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={f.selected}
-                        onChange={() => toggleFacet('departmentNames', f.name)}
-                        className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
-                      />
-                      <span className="text-sm text-default dark:text-white">{f.name}</span>
-                      <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                        {f.count}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
+            {isDepartmentsOpen && (
+              <>
+                {facetNames.departments.length === 0 ? (
+                  <FilterSkeleton />
+                ) : (
+                  <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1 transition-all duration-300 ease-in-out">
+                    {departmentFacets.map((f) => (
+                      <li key={f.name} className="py-1">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={f.selected}
+                            onChange={() => toggleFacet('departmentNames', f.name)}
+                            className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                          />
+                          <span className="text-sm text-default dark:text-white">{f.name}</span>
+                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                            {f.count}
+                          </span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
             )}
           </div>
         </aside>
 
         {/* Main column */}
         <div className="min-w-0 max-w-[888px] flex min-h-[600px] flex-col gap-4">
+          <div ref={topRef} tabIndex={-1} className="outline-none" />
           <div className="flex items-center justify-between gap-3">
             <h2
               id="careers-top"
-              ref={titleRef}
               tabIndex={-1}
               className="text-2xl md:text-28px font-semibold text-default md:text-primary scroll-mt-[96px]"
               data-careers-board-top-anchor
@@ -745,101 +772,180 @@ export default function CareersBoard({
       {/* Mobile filters bottom sheet */}
       {showMobileFilters && (
         <div className="md:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0" onClick={() => setShowMobileFilters(false)} />
-          <div className="absolute bottom-0 left-0 right-0 max-h-[75vh] overflow-auto rounded-t-2xl bg-surface-page p-5">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowMobileFilters(false)}
+            aria-label="Close filters backdrop"
+            role="button"
+            tabIndex={0}
+          />
+
+          {/* Sheet */}
+          <div
+            className="absolute bottom-0 left-0 right-0 max-h-[75vh] overflow-auto rounded-t-2xl bg-surface-page p-5 shadow-2xl"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-filters-title"
+          >
+            {/* Drag handle + header */}
             <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-200" />
-            <h3 className="mb-4 text-lg font-semibold">Filters</h3>
+            <div className="mb-2 flex items-center justify-between gap-4">
+              <h3 id="mobile-filters-title" className="text-lg font-semibold">
+                {isRtl ? 'التصفية' : 'Filters'}
+              </h3>
 
-            <div className="space-y-6">
-              <div className="rounded-2xl shadow-md bg-surface-section p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{locationLabel}</h3>
-                  {loading && (
-                    <span className="text-xs opacity-70 flex items-center gap-1">
-                      <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
-                      Loading
-                    </span>
-                  )}
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={() => setShowMobileFilters(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-black/5 text-default"
+                aria-label={isRtl ? 'إغلاق' : 'Close'}
+              >
+                {/* X icon (inline SVG to avoid extra imports) */}
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+                  <path
+                    d="M6 6l12 12M18 6L6 18"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="space-y-4">
+              {/* LOCATIONS */}
+              <div className="rounded-2xl shadow-md bg-surface-section">
+                <button
+                  type="button"
+                  onClick={() => toggleMobileSection('locations')}
+                  className="flex w-full items-center justify-between p-4"
+                  aria-expanded={mobileSectionsOpen.locations}
+                  aria-controls="mobile-locations-panel"
+                >
+                  <span className="font-semibold">{locationLabel}</span>
+
+                  {/* Toggle icon (+ / -) */}
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-lg bg-primaryAlt text-white dark:text-[#010663] font-bold transition-transform duration-200"
+                    aria-hidden="true"
+                  >
+                    {mobileSectionsOpen.locations ? '−' : '+'}
+                  </span>
+                </button>
+
+                <div
+                  id="mobile-locations-panel"
+                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
+                    mobileSectionsOpen.locations ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    {facetNames.locations.length === 0 ? (
+                      <div className="px-4 pb-4">
+                        <FilterSkeleton rows={8} />
+                      </div>
+                    ) : (
+                      <ul className="mx-4 mb-4 mt-1 max-h-60 space-y-2 overflow-auto pr-1">
+                        {locationFacets.map((f) => (
+                          <li key={`m-${f.name}`} className="py-1">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={f.selected}
+                                onChange={() => toggleSingleFacet('locationNames', f.name)}
+                                className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                              />
+                              <span className="text-sm text-default dark:text-white">{f.name}</span>
+                              <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                                {f.count}
+                              </span>
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
-
-                {facetNames.locations.length === 0 ? (
-                  <FilterSkeleton rows={8} />
-                ) : (
-                  <ul className="mt-3 max-h-60 space-y-2 overflow-auto pr-1">
-                    {locationFacets.map((f) => (
-                      <li key={`m-${f.name}`} className="py-1">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={f.selected}
-                            onChange={() => toggleSingleFacet('locationNames', f.name)}
-                            className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
-                          />
-                          <span className="text-sm text-default dark:text-white">{f.name}</span>
-                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                            {f.count}
-                          </span>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
 
-              <div className="rounded-2xl shadow-md bg-surface-section p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{departmentLabel}</h3>
-                  {loading && (
-                    <span className="text-xs opacity-70 flex items-center gap-1">
-                      <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
-                      Loading
-                    </span>
-                  )}
-                </div>
+              {/* DEPARTMENTS */}
+              <div className="rounded-2xl shadow-md bg-surface-section">
+                <button
+                  type="button"
+                  onClick={() => toggleMobileSection('departments')}
+                  className="flex w-full items-center justify-between p-4"
+                  aria-expanded={mobileSectionsOpen.departments}
+                  aria-controls="mobile-departments-panel"
+                >
+                  <span className="font-semibold">{departmentLabel}</span>
 
-                {facetNames.departments.length === 0 ? (
-                  <FilterSkeleton rows={8} />
-                ) : (
-                  <ul className="mt-3 max-h-60 space-y-2 overflow-auto pr-1">
-                    {departmentFacets.map((f) => (
-                      <li key={`m-${f.name}`} className="py-1">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={f.selected}
-                            onChange={() => toggleSingleFacet('departmentNames', f.name)}
-                            className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
-                          />
-                          <span className="text-sm text-default dark:text-white">{f.name}</span>
-                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                            {f.count}
-                          </span>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-lg bg-primaryAlt text-white dark:text-[#010663] font-bold transition-transform duration-200"
+                    aria-hidden="true"
+                  >
+                    {mobileSectionsOpen.departments ? '−' : '+'}
+                  </span>
+                </button>
+
+                <div
+                  id="mobile-departments-panel"
+                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
+                    mobileSectionsOpen.departments ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    {facetNames.departments.length === 0 ? (
+                      <div className="px-4 pb-4">
+                        <FilterSkeleton rows={8} />
+                      </div>
+                    ) : (
+                      <ul className="mx-4 mb-4 mt-1 max-h-60 space-y-2 overflow-auto pr-1">
+                        {departmentFacets.map((f) => (
+                          <li key={`m-${f.name}`} className="py-1">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={f.selected}
+                                onChange={() => toggleSingleFacet('departmentNames', f.name)}
+                                className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
+                              />
+                              <span className="text-sm text-default dark:text-white">{f.name}</span>
+                              <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                                {f.count}
+                              </span>
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
+            {/* Footer buttons */}
             <div className="mt-5 flex w-full flex-col items-stretch gap-3">
               <button
                 type="button"
                 onClick={clearAllFilters}
                 className="w-full rounded-2xl px-4 py-2 text-primary"
               >
-                Clear
+                {isRtl ? 'مسح' : 'Clear'}
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  updateQuery((q) => ({ ...q, ...draft, page: 1 }), { force: true });
                   setShowMobileFilters(false);
+                  replaceUrl({ page: 1 });
+                  updateQuery((q) => ({ ...q, ...draft, page: 1 }));
                 }}
                 className="w-full rounded-2xl bg-primaryAlt px-4 py-2 text-secondary"
               >
-                Apply
+                {isRtl ? 'تطبيق' : 'Apply'}
               </button>
             </div>
           </div>
@@ -855,5 +961,4 @@ export default function CareersBoard({
     </section>
   );
 }
-
 
