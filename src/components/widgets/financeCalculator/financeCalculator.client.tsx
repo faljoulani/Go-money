@@ -49,7 +49,35 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     new Intl.NumberFormat('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
       n,
     );
+const MIN_AGE =  18;
+const MAX_MATURITY_AGE = 70;
 
+const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
+
+function validateAges(dobStr: string, tenureMonths: number) {
+  if (!dobStr) return t('Enter your date of birth.', 'أدخل تاريخ الميلاد.');
+  const dob = new Date(dobStr);
+  const now = new Date();
+  if (Number.isNaN(dob.getTime())) return t('Enter a valid date of birth.', 'أدخل تاريخ ميلاد صالحًا.');
+  if (dob > now) return t('Date of birth cannot be in the future.', 'لا يمكن أن يكون تاريخ الميلاد في المستقبل.');
+
+  const appAge = Number(calcAge(dobStr));
+  const matAge = Number(calcAgeAtMaturity(dobStr, tenureMonths));
+
+  if (appAge < MIN_AGE) return t(`You must be at least ${MIN_AGE} years old.`, `يجب ألا يقل عمرك عن ${MIN_AGE} عامًا.`);
+  if (matAge > MAX_MATURITY_AGE) return t(
+    `Your age at the end of the financing cannot exceed ${MAX_MATURITY_AGE} years.`,
+    `يجب ألا يزيد عمرك عند نهاية التمويل عن ${MAX_MATURITY_AGE} عامًا.`
+  );
+
+  return null;
+}
+  function apiErrorMessage() {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      return t('You appear to be offline. Please reconnect and try again.', 'يبدو أنك غير متصل بالإنترنت. يُرجى إعادة الاتصال والمحاولة مرة أخرى.');
+    }
+    return t('We couldn’t submit your request right now. Please try again.', 'تعذّر إرسال طلبك الآن. يُرجى المحاولة مرة أخرى.');
+  }
   function useRangeVars(value: number, min: number, max: number, fill: string, rest: string) {
     const pct = useMemo(() => ((value - min) * 100) / (max - min), [value, min, max]);
     return useMemo(
@@ -168,6 +196,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const [monthlyFinancialLiabilities, setMonthlyFinancialLiabilities] = useState<number | ''>('');
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string>('');
+  const [apiDown, setApiDown] = useState(false);
+  const lastPayloadRef = useRef<any>(null);
 
   const amountFill = useRangeVars(
     requestedFinanceAmount,
@@ -211,6 +241,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     e.preventDefault();
     setSubmitting(true);
     setMsg('');
+    setApiDown(false);
 
     const payload = {
       EmployerType: employer || 'GML',
@@ -224,49 +255,53 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     };
 
-    // const payload = {
-    //   EmployerType: 'GML',
-    //   Nationality: 'Saudi',
-    //   Gender: 'Male',
-    //   FinanceAmt: String(requestedFinanceAmount),
-    //   Tenure: '12',
-    //   MonthlyIncome: '50000',
-    //   lenOfService: '5',
-    //   ageAtApplication: '28',
-    //   AgeAtMaturity: '29',
-    // };
+    const ageErr = validateAges(dob, installments);
+    if (ageErr) {
+      setMsg(ageErr);
+      setSubmitting(false);
+      return;
+    }
+
+    lastPayloadRef.current = payload;
 
     try {
       const res = await post(payload);
       if (res?.Data?.IsEligible) setResult('success');
-      // if (requestedFinanceAmount > 7000) setResult('success');
       else setResult('fail');
-      window.location.hash = '#calc-result';
     } catch (err) {
-      console.error('FinanceCalculator error:', err);
-      setMsg(
-        dir === 'ltr'
-          ? 'Something went wrong. Please try again.'
-          : 'حدث خطأ ما. يُرجى المحاولة مرة أخرى.',
-      );
+      setApiDown(true);
+      setMsg(apiErrorMessage());
     } finally {
       setSubmitting(false);
     }
   }
-
   const success: ResponseMessage = successMsg;
   const fail: ResponseMessage = failMsg;
-  if (result === 'success') {
-    return <SuccessResponse msg={success} dir={dir} onBack={() => setResult(null)} />;
-  }
+        
+function ScrollTopOnMount({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    window.scrollTo({ top: 450, behavior: 'smooth' });
+  }, []);
+  return <>{children}</>;
+}
+if (result === 'success') {
+  return (
+    <ScrollTopOnMount>
+      <SuccessResponse msg={success} dir={dir} onBack={() => setResult(null)} />
+    </ScrollTopOnMount>
+  );
+}
 
-  if (result === 'fail') {
-    return <FailResponse msg={fail} dir={dir} onBack={() => setResult(null)} />;
-  }
+if (result === 'fail') {
+  return (
+    <ScrollTopOnMount>
+      <FailResponse msg={fail} dir={dir} onBack={() => setResult(null)} />
+    </ScrollTopOnMount>
+  );
+}
 
   return (
     <section className="w-full mt-32">
-      <div id="calc-result" className="pointer-events-none h-0 -mt-24" />
       <form
         onSubmit={onSubmit}
         className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm"
@@ -621,7 +656,6 @@ function Field({
 
 // --- Select component ---
 
-
 function Select({
   value,
   onChange,
@@ -690,7 +724,7 @@ function Select({
                 aria-selected={active}
                 tabIndex={0}
                 onClick={() => {
-                  onChange(opt.value); 
+                  onChange(opt.value);
                   setOpen(false);
                 }}
                 onKeyDown={(e) => {
