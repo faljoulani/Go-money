@@ -62,6 +62,7 @@ export function SuccessResponse({
 
   return (
     <section className="w-full" dir={dir}>
+      
       <div className="mx-auto max-w-[1240px] rounded-3xl bg-surface-section mt-16 p-8 text-center">
         <div className="mx-auto mb-6 grid place-items-center">
           <img src="/assets/success.png" alt="success" className="h-24 w-24 object-contain" />

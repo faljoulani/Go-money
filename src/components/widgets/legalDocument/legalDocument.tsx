@@ -114,7 +114,6 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
       </div>
     );
   }
-  console.log('zzzz', sections);
 
   const offset = 0;
   return (
