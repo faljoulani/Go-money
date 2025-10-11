@@ -41,6 +41,8 @@ export default function QuestionsClient({
     setOpenId(questions[0]?.Id ?? null);
   }, [active, questions]);
 
+  const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
+
   return (
     <section
       className="
@@ -70,7 +72,7 @@ export default function QuestionsClient({
                   'border-t border-line first:border-t-0 dark:border-white/10',
                   isActive
                     ? 'bg-primaryAlt text-secondary'
-                    : 'bg-surface-section text-default hover:opacity-90',
+                    : 'bg-white dark:bg-[#1d1d29] text-default hover:opacity-90',
                 ].join(' ')}
               >
                 <span className={isActive ? 'font-medium' : 'font-normal'}>{cat.Title}</span>
@@ -138,7 +140,11 @@ export default function QuestionsClient({
           {isLoading && <div className="p-6 text-default/70">Loading…</div>}
           {error && <div className="p-6 text-rose-500">Failed to load FAQs</div>}
           {!isLoading && !error && questions.length === 0 && (
-            <div className="p-6 text-default/70">No questions in this category yet.</div>
+            <div className="p-6 text-default/70" dir={dir}>
+              {lang === 'ar'
+                ? 'لا توجد أسئلة في هذه الفئة بعد.'
+                : 'No questions in this category yet.'}
+            </div>
           )}
 
           {questions.map((q) => {
@@ -147,7 +153,7 @@ export default function QuestionsClient({
               <details
                 key={q.Id}
                 className="
-                  group mb-4 rounded-xl border bg-surface-section
+                  group mb-4 rounded-xl border bg-white dark:bg-[#1d1d29]
                   border-line dark:border-white/10
                   p-6
                 "
@@ -160,7 +166,9 @@ export default function QuestionsClient({
                     setOpenId((prev) => (prev === q.Id ? null : q.Id));
                   }}
                 >
-                  <div className="font-semibold text-default flex-1">{q.Title}</div>
+                  <div className="font-semibold text-default leading-5 rtl:leading-8 flex-1 mr-3 rtl:mr-0 rtl:ml-3">
+                    {q.Title}
+                  </div>
                   <div className="flex w-[36px] h-[36px] items-center justify-center rounded-lg bg-primaryAlt text-secondary">
                     <svg
                       viewBox="0 0 14 14"
@@ -181,7 +189,10 @@ export default function QuestionsClient({
                 </summary>
 
                 {q.Answer && (
-                  <Description className="mt-6 text-14px leading-5 text-default" html={q.Answer} />
+                  <Description
+                    className="mt-9 text-14px leading-[18px] text-default"
+                    html={q.Answer}
+                  />
                 )}
               </details>
             );

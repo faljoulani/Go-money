@@ -80,12 +80,12 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
         {rootData?.Title && (
           <Title
             className="
-                      md:text-[48px]    
-                      xs:text-[28px]
+                      md:text-[48px] rtl:md:text-[40px]   
+                      xs:text-[24px]
                       tracking-[-0.02em]
                       font-bold
-                      md:leading-[63px]
-                      xs:leading-[30px]
+                      md:leading-[63px] rtl:md:leading-[75px]
+                      xs:leading-[31px] rtl:xs:leading-[45px]
                     "
           >
             {rootData.Title}
