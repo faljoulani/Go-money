@@ -118,40 +118,36 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
     if (typeof rawCtaUrl === 'string') {
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
-  } catch {
-  }
+  } catch {}
   const CTAExternalUrl = linkToHref(rawCtaUrl);
   return (
     <section {...attrs} className="relative xs:flex xs:flex-col ">
       {/* Top headline block */}
       <div className="mx-auto max-w-4xl text-center px-6">
         {view.SubTitle && (
-          <p className="text-sm  uppercase tracking-0 text-primary">
-            {view.SubTitle}
-          </p>
+          <p className="text-sm  uppercase tracking-0 text-primary">{view.SubTitle}</p>
         )}
         {view.Title && (
-          <h1 className="mt-3 md:text-[48px]  xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
+          <h1 className="mt-3 md:text-[48px] rtl:md:text-[40px] md:leading-[75px] xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
             {view.Title}
           </h1>
         )}
         {view.HeaderText && (
-          <p className="mt-3 text-base text-default max-w-[750px] mx-auto justify-center">{view.HeaderText}</p>
+          <p className="mt-3 text-base text-default max-w-[750px] mx-auto justify-center">
+            {view.HeaderText}
+          </p>
         )}
       </div>
 
-      <section className="relative mx-auto w-full mb-10 xs:px-4">
-        <div
-          className="flex flex-col items-center relative rounded-3xl mt-10"
-          style={{
-            backgroundImage: "url('/assets/NavyBackground.webp')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-        
-          }}
-        >
+      <section className="relative mx-auto w-full mb-10 xs:px-4 max-w-[1240px]">
+        <div className="flex flex-col items-center relative rounded-3xl mt-10 bg-[linear-gradient(111.49deg,#000000_14.92%,#010552_46.49%,#0F148C_100.01%)] bg-cover bg-center dark:bg-[#131321] dark:bg-none">
+          <img
+            src="/assets/Vector.png"
+            alt=""
+            className="absolute object-cover bottom-0 left-0 z-0 pointer-events-none"
+          />
           {/* Content */}
-          <div className="relative z-[70] md:p-16 xs:p-4">
+          <div className="relative z-[70] md:p-16 xs:p-6">
             {view.IntroLead && (
               <h2 className="text-center text-white md:text-[36px] xs:text-[1.3rem]">
                 {view.IntroLead}
@@ -184,12 +180,14 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                       )}
                     </div>
 
-                    <h3 className="text-center md:text-2xl xs:text-[1.4rem]">{s.Title}</h3>
+                    <h3 className="text-center md:text-2xl xs:text-xl">{s.Title}</h3>
                     {s.Description && (
-                      <p className="mt-3 text-center text-[16px] text-[#E0E0E0] mb-4">{s.Description}</p>
+                      <p className="mt-2 text-center text-[16px] text-[#E0E0E0] mb-4">
+                        {s.Description}
+                      </p>
                     )}
 
-                    <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 text-primary text-[16px] ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                    <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 dark:bg-[#A6EFD9] text-[#010663] text-[16px] ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                       {stepNo}
                     </div>
                   </div>
@@ -199,23 +197,26 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
             {/* CTA */}
             {view.CTALabel && (
-              <div className="md:mt-[68px]  xs:mt-[42px] flex justify-center ">
+              <div className="md:mt-[68px]  xs:mt-12 flex justify-center">
                 <a
                   href={CTAExternalUrl || '#'}
-                  className="group inline-flex items-center gap-2 rounded-full px-6 py-3
-                               text-white/95 font-medium
-                               shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
-                               backdrop-blur-[2px] hover:bg-white/10 transition"
+                  className="group xs:max-w-[265px] inline-flex items-center gap-2 rounded-[20px] md:px-6 py-3
+                          text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
+                            border dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-12"
                 >
-                  <span>{view.CTALabel}</span>
+                  <span className="mx-auto">{view.CTALabel}</span>
                   <svg
-                    viewBox="0 0 20 20"
-                    className="cta-arrow size-4 translate-x-0 transition-transform group-hover:translate-x-0.5"
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1.5"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="cta-arrow size-4 translate-x-0 transition-transform "
+                    aria-hidden="true"
                   >
-                    <path d="M7 4l6 6-6 6M12 10H3" />
+                    <path d="M9 18l6-6-6-6" />
                   </svg>
                 </a>
               </div>

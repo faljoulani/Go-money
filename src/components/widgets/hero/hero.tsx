@@ -11,8 +11,7 @@ import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import { resolveSitefinitySelection, resolveAbsoluteUrl, linkToHref } from '../../../utils/utils';
 import { fetchData, pickOneMedia, getImageSrc } from '../../../utils/sitefinity';
-const VIDEO_PATH = 'assets/header_v.mp4'; 
-
+const VIDEO_PATH = 'assets/header_v.mp4';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
   const attrs = htmlAttributes(props);
@@ -81,14 +80,17 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
   let rawCtaUrl = item.CtaUrl;
-function normalizeAssetUrl(p: string, culture: string) {
-  let s = String(p).replace(/^url\((.*)\)$/i, '$1').trim().replace(/^['"]|['"]$/g, '');
-  if (!s.startsWith('/')) s = '/' + s;                
-  const localePrefix = `/${culture}/`;
-  if (s.startsWith(localePrefix)) s = s.slice(localePrefix.length - 1); 
-  return s;
-}
-const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
+  function normalizeAssetUrl(p: string, culture: string) {
+    let s = String(p)
+      .replace(/^url\((.*)\)$/i, '$1')
+      .trim()
+      .replace(/^['"]|['"]$/g, '');
+    if (!s.startsWith('/')) s = '/' + s;
+    const localePrefix = `/${culture}/`;
+    if (s.startsWith(localePrefix)) s = s.slice(localePrefix.length - 1);
+    return s;
+  }
+  const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
 
   try {
     if (typeof rawCtaUrl === 'string') {
@@ -132,14 +134,7 @@ const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
         className={` max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
              min-h-[320px] h-[450px] px-4 bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] bg-cover bg-center`}
       >
-        <div
-        // className="text-center w-[1040px] h-[370px] max-xs:w-[375px] align-middle"
-        // style={{
-        //   backgroundImage: `url('/assets/cyrcls.png')`,
-        //   backgroundSize: 'cover',
-        //   backgroundPosition: 'center',
-        // }}
-        >
+        <div>
           <div className="mx-auto px-6">
             <div className="mb-5" data-sfcontainer="Breadcrumb">
               {breadcrumbs.map((y) =>
@@ -158,13 +153,13 @@ const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
           {subtitle && (
             <Description
               html={subtitle}
-              className="text-white md:w-[485px] mx-auto text-center md:font-semibold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
+              className="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
             />
           )}
           {description && (
             <Description
               html={description}
-              className="text-white md:w-[485px] mx-auto text-center md:leading-7 xs:leading-5 xs:w-[295px]"
+              className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
             />
           )}
         </div>
@@ -176,20 +171,18 @@ const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
     <section
       {...attrs}
       className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
-    
     >
-      
-<video
-  className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
-  src={videoSrc}
-  autoPlay
-  muted
-  playsInline
-  loop
->
-  <source src={videoSrc} type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
+      <video
+        className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
+        src={videoSrc}
+        autoPlay
+        muted
+        playsInline
+        loop
+      >
+        <source src={videoSrc} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       {/* decorative glows */}
       <div
         aria-hidden
@@ -278,3 +271,4 @@ const videoSrc = normalizeAssetUrl(VIDEO_PATH, props.requestContext.culture);
 }
 
 export default Hero;
+

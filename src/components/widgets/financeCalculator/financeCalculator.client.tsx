@@ -49,34 +49,50 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     new Intl.NumberFormat('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
       n,
     );
-const MIN_AGE =  18;
-const MAX_MATURITY_AGE = 70;
+  const MIN_AGE = 18;
+  const MAX_MATURITY_AGE = 70;
 
-const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
+  const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
 
-function validateAges(dobStr: string, tenureMonths: number) {
-  if (!dobStr) return t('Enter your date of birth.', 'أدخل تاريخ الميلاد.');
-  const dob = new Date(dobStr);
-  const now = new Date();
-  if (Number.isNaN(dob.getTime())) return t('Enter a valid date of birth.', 'أدخل تاريخ ميلاد صالحًا.');
-  if (dob > now) return t('Date of birth cannot be in the future.', 'لا يمكن أن يكون تاريخ الميلاد في المستقبل.');
+  function validateAges(dobStr: string, tenureMonths: number) {
+    if (!dobStr) return t('Enter your date of birth.', 'أدخل تاريخ الميلاد.');
+    const dob = new Date(dobStr);
+    const now = new Date();
+    if (Number.isNaN(dob.getTime()))
+      return t('Enter a valid date of birth.', 'أدخل تاريخ ميلاد صالحًا.');
+    if (dob > now)
+      return t(
+        'Date of birth cannot be in the future.',
+        'لا يمكن أن يكون تاريخ الميلاد في المستقبل.',
+      );
 
-  const appAge = Number(calcAge(dobStr));
-  const matAge = Number(calcAgeAtMaturity(dobStr, tenureMonths));
+    const appAge = Number(calcAge(dobStr));
+    const matAge = Number(calcAgeAtMaturity(dobStr, tenureMonths));
 
-  if (appAge < MIN_AGE) return t(`You must be at least ${MIN_AGE} years old.`, `يجب ألا يقل عمرك عن ${MIN_AGE} عامًا.`);
-  if (matAge > MAX_MATURITY_AGE) return t(
-    `Your age at the end of the financing cannot exceed ${MAX_MATURITY_AGE} years.`,
-    `يجب ألا يزيد عمرك عند نهاية التمويل عن ${MAX_MATURITY_AGE} عامًا.`
-  );
+    if (appAge < MIN_AGE)
+      return t(
+        `You must be at least ${MIN_AGE} years old.`,
+        `يجب ألا يقل عمرك عن ${MIN_AGE} عامًا.`,
+      );
+    if (matAge > MAX_MATURITY_AGE)
+      return t(
+        `Your age at the end of the financing cannot exceed ${MAX_MATURITY_AGE} years.`,
+        `يجب ألا يزيد عمرك عند نهاية التمويل عن ${MAX_MATURITY_AGE} عامًا.`,
+      );
 
-  return null;
-}
+    return null;
+  }
   function apiErrorMessage() {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      return t('You appear to be offline. Please reconnect and try again.', 'يبدو أنك غير متصل بالإنترنت. يُرجى إعادة الاتصال والمحاولة مرة أخرى.');
+      return t(
+        'You appear to be offline. Please reconnect and try again.',
+        'يبدو أنك غير متصل بالإنترنت. يُرجى إعادة الاتصال والمحاولة مرة أخرى.',
+      );
     }
-    return t('We couldn’t submit your request right now. Please try again.', 'تعذّر إرسال طلبك الآن. يُرجى المحاولة مرة أخرى.');
+    return t(
+      'We couldn’t submit your request right now. Please try again.',
+      'تعذّر إرسال طلبك الآن. يُرجى المحاولة مرة أخرى.',
+    );
   }
   function useRangeVars(value: number, min: number, max: number, fill: string, rest: string) {
     const pct = useMemo(() => ((value - min) * 100) / (max - min), [value, min, max]);
@@ -277,28 +293,28 @@ function validateAges(dobStr: string, tenureMonths: number) {
   }
   const success: ResponseMessage = successMsg;
   const fail: ResponseMessage = failMsg;
-        
-function ScrollTopOnMount({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    window.scrollTo({ top: 450, behavior: 'smooth' });
-  }, []);
-  return <>{children}</>;
-}
-if (result === 'success') {
-  return (
-    <ScrollTopOnMount>
-      <SuccessResponse msg={success} dir={dir} onBack={() => setResult(null)} />
-    </ScrollTopOnMount>
-  );
-}
 
-if (result === 'fail') {
-  return (
-    <ScrollTopOnMount>
-      <FailResponse msg={fail} dir={dir} onBack={() => setResult(null)} />
-    </ScrollTopOnMount>
-  );
-}
+  function ScrollTopOnMount({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+      window.scrollTo({ top: 450, behavior: 'smooth' });
+    }, []);
+    return <>{children}</>;
+  }
+  if (result === 'success') {
+    return (
+      <ScrollTopOnMount>
+        <SuccessResponse msg={success} dir={dir} onBack={() => setResult(null)} />
+      </ScrollTopOnMount>
+    );
+  }
+
+  if (result === 'fail') {
+    return (
+      <ScrollTopOnMount>
+        <FailResponse msg={fail} dir={dir} onBack={() => setResult(null)} />
+      </ScrollTopOnMount>
+    );
+  }
 
   return (
     <section className="w-full mt-32">
@@ -395,7 +411,7 @@ if (result === 'fail') {
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
                   ? `Amount must be between ${formatSar(AMIN)} and ${formatSar(AMAX)} SAR`
-                  : `يرجى إدخال مبلغ يتراوح بين ${formatSar(AMIN)} و ${formatSar(AMAX)}, SAR`}
+                  : `يرجى إدخال مبلغ يتراوح بين ${formatSar(AMIN)} و ${formatSar(AMAX)} SAR`}
               </div>
 
               <input

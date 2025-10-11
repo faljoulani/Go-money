@@ -142,33 +142,35 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
     <section
       {...(attrs as any)}
       className={mergeClasses(
-        'relative md:h-[486px] xs:h-[700px] max-w-[1440px] xxl:mx-auto rounded-3xl md:mx-20 md:px-16 my-16 fadeup ',
-        'bg-[image:var(--surface-gradient)]',
+        'relative md:h-[486px] xs:h-[700px] max-w-[1440px] xxl:mx-auto rounded-3xl md:mx-20 md:px-16 my-16 scaleC',
+        'bg-[linear-gradient(258.38deg,_#6BE5BF,_#B3DFEF)] dark:bg-[linear-gradient(258.38deg,_#A6EFD9,_#006AA5)] ',
         (attrs as any)?.className || '',
       )}
-      style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
+      // style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center">
+      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center justify-center xs:pb-6 xs:px-4">
         {/* Left: phone image */}
-        <div className="flex h-full md:w-[40%] xs:w-[70%] fadeLeftDownload ">
+        <div className="flex h-full md:w-[40%] xs:w-[70%] fadeLeftDownload justify-center items-center">
           {!!phoneUrl && (
             <Image
               src={phoneUrl}
               alt={phoneAlt}
-              width={507}
+              width={506}
               height={528}
               priority
-              className="md:w-[90%] xs:absolute md:h-[525px] xs:w-[500px] pointer-events-none select-none md:object-fill xs:object-contain  xs:-top-8 md:-top-2 md:animate-float"
+              className="md:w-[506px] xs:absolute md:h-[525px] xs:w-[290px] pointer-events-none 
+              select-none md:object-fill xs:object-contain  xs:-top-8 md:-top-5 md:animate-float"
             />
           )}
         </div>
 
-        <div className="flex xs:w-[90%] md:h-full md:w-1/2 md:items-center md:my-16 md:fadeRightDownload">
+        <div className="flex xs:w-[90%] md:h-full md:w-1/2 md:items-center md:my-16 fadeRightDownload">
           <div className="w-full max-w-[560px]">
             {!!title && (
               <Title
                 color="text-primary"
-                className="font-bold tracking-tight md:text-5xl xs:text-2xl leading-snug"
+                className="font-bold rtl:tracking-[-0.05em] tracking-[-0.02em] md:text-5xl xs:text-2xl 
+                md:ltr:leading-[63px] md:rtl:leading-[90px] xs:ltr:leading-8 xs:rtl:leading-[45px]"
               >
                 {title}
               </Title>
@@ -184,13 +186,13 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                     className={` flex items-start gap-3 ${index == 1 ? 'md:pl-6 md:rtl:pr-6 md:rtl:pl-0' : 'md:rtl:pl-6 md:rtl:pr-0 md:pr-6'}`}
                   >
                     {/* Logo */}
-                    <div className="rounded-2xl bg-primaryAlt flex items-center justify-center w-16 h-16 p-2">
+                    <div className="rounded-2xl bg-[#0023F5] dark:bg-[#A6EFD9] flex items-center justify-center w-12 h-12 p-2">
                       <Image
                         src={card.logoUrl}
                         alt={card.logoAlt}
                         width={24}
                         height={24}
-                        className="h-12 w-12 object-contain"
+                        className="h-6 w-6 object-contain dark:invert"
                       />
                     </div>
 
@@ -199,7 +201,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                       <div className="text-[16px] font-bold text-black">{card.title}</div>
                       {!!card.desc && (
                         <div
-                          className="text-sm text-default descriptionHtml"
+                          className="text-sm text-default descriptionHtml "
                           dangerouslySetInnerHTML={{ __html: card.desc }}
                         />
                       )}

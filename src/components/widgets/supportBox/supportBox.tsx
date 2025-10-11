@@ -74,7 +74,6 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
 
   // Map to only hrefs
   const socials = rawCtaUrl.map((link) => link.href).filter(Boolean);
-  console.log('socials ---->', socials);
   return (
     <section
       {...attrs}

@@ -157,6 +157,10 @@ html.modal-open {
 [dir='rtl'] .cta-arrow {
   transform: scaleX(-1);
 }
+
+/* [dir='rtl'] .cta-arrow { --tw-scale-x: -1; } */
+
+
 @layer base {
   .font-lufga {
     font-family: 'Lufga', sans-serif;
@@ -366,7 +370,7 @@ html.modal-open {
 @keyframes fadeRightDownload {
   from {
     opacity: 0;
-    transform: translate(-75px);
+    transform: translate(-50px);
   }
   to {
     opacity: 1;
@@ -376,10 +380,10 @@ html.modal-open {
 
 @keyframes fadeLeftDownload {
   from {
-    transform: translateX(0px) translateY(100px);
+    transform: translate(50px) 
   }
   to {
-    transform: translate(0) translateY(0px);
+    transform: translate(0) 
   }
 }
 
