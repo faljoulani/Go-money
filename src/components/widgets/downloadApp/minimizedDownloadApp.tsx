@@ -95,10 +95,10 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
   });
 
   return (
-    <section {...attrs} className="flex justify-center">
+    <section {...attrs} className="relative w-full md:mx-auto rounded-3xl md:mb-16 xs:mb-10 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px] bg-[linear-gradient(258.38deg,_#6be5bf,_#b3dfef)]
+        dark:bg-[linear-gradient(258.38deg,_#a6efd9,_#006aa5)]">
       <div
-        className="relative w-full md:mx-auto rounded-3xl mb-16 mt-10 md:mt-[164px] md:h-[184px] md:w-[1240px] bg-[linear-gradient(258.38deg,_#6be5bf,_#b3dfef)]
-        dark:bg-[linear-gradient(258.38deg,_#a6efd9,_#006aa5)]"
+        className=""
       >
         <div className="relative flex flex-col md:flex-row items-center md:place-items-start gap-6 pt-8 md:py-0 px-6 md:px-16">
           {/* TEXT — order 1 on xs, middle on md+ */}
