@@ -120,7 +120,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           <p className="text-sm  uppercase tracking-0 text-primary">{view.SubTitle}</p>
         )}
         {view.Title && (
-          <h1 className="mt-3 md:text-[48px]  xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
+          <h1 className="mt-3 md:text-[48px] rtl:md:text-[40px] md:leading-[75px] xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
             {view.Title}
           </h1>
         )}
@@ -172,9 +172,9 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                       )}
                     </div>
 
-                    <h3 className="text-center md:text-2xl xs:text-[1.4rem]">{s.Title}</h3>
+                    <h3 className="text-center md:text-2xl xs:text-xl">{s.Title}</h3>
                     {s.Description && (
-                      <p className="mt-3 text-center text-[16px] text-[#E0E0E0] mb-4">
+                      <p className="mt-2 text-center text-[16px] text-[#E0E0E0] mb-4">
                         {s.Description}
                       </p>
                     )}
