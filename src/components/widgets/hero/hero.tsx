@@ -41,6 +41,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     'Eyebrow',
     'CtaText',
     'CtaUrl',
+    'FullTitle',
     'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
   ];
 
@@ -76,6 +77,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
+  const fulltitle = item.FullTitle || '';
   const subtitle = item.Subtitle || '';
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
@@ -131,42 +133,42 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className={` max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
-             min-h-[320px] h-[450px] px-4 bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] bg-cover bg-center`}
+        className={`max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white 
+              flex flex-col items-center justify-start rounded-2xl
+              min-h-[320px] h-[450px] px-4 
+              bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] 
+              bg-cover bg-center`}
       >
-        <div>
-          <div className="mx-auto px-6">
-            <div className="mb-5" data-sfcontainer="Breadcrumb">
-              {breadcrumbs.map((y) =>
-                RenderWidgetService.createComponent(y.model, props.requestContext),
-              )}
-            </div>
+        <div className="mx-auto px-6 xs:mt-44 md:mt-32">
+          <div className="mb-5" data-sfcontainer="Breadcrumb">
+            {breadcrumbs.map((y) =>
+              RenderWidgetService.createComponent(y.model, props.requestContext),
+            )}
           </div>
-
-          {title && (
-            <Title>
-              <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
-                {title}
-              </p>
-            </Title>
-          )}
-          {subtitle && (
-            <Description
-              html={subtitle}
-              className="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
-            />
-          )}
-          {description && (
-            <Description
-              html={description}
-              className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
-            />
-          )}
         </div>
+        {title && (
+          <Title>
+            <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
+              {title}
+            </p>
+          </Title>
+        )}
+        {subtitle && (
+          <Description
+            html={subtitle}
+            className="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
+          />
+        )}
+        {description && (
+          <Description
+            html={description}
+            className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
+          />
+        )}
       </section>
     );
   }
-
+  console.log('fulltitle', fulltitle);
   return (
     <section
       {...attrs}
@@ -203,6 +205,15 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               {eyebrow}
             </Eyebrow>
           )}
+
+          {/* {fulltitle && (
+            <Title
+              color="text-white"
+              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] xs:leading-8 rtl:xs:leading-[45px] mb-4"
+            >
+              {fulltitle}
+            </Title>
+          )} */}
 
           {title && (
             <Title
