@@ -125,15 +125,15 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
       {/* Top headline block */}
       <div className="mx-auto max-w-4xl text-center px-6">
         {view.SubTitle && (
-          <p className="text-sm  uppercase tracking-0 text-primary">{view.SubTitle}</p>
+          <p className="xs:text-sm md:text-lg tracking-0 text-primary">{view.SubTitle}</p>
         )}
         {view.Title && (
-          <h1 className="mt-3 md:text-[48px] rtl:md:text-[40px] md:leading-[75px] xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
+          <h1 className="mt-3 md:text-[48px] rtl:md:text-[40px]  xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
             {view.Title}
           </h1>
         )}
         {view.HeaderText && (
-          <p className="mt-3 text-base text-default max-w-[750px] mx-auto justify-center">
+          <p className="mt-3 text-[16px] text-default max-w-[650px] mx-auto justify-center">
             {view.HeaderText}
           </p>
         )}
@@ -187,7 +187,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                       </p>
                     )}
 
-                    <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 dark:bg-[#A6EFD9] text-[#010663] text-[16px] ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                    <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 dark:bg-[#A6EFD9] text-[#010663] text-[16px]  shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                       {stepNo}
                     </div>
                   </div>
@@ -213,7 +213,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                     strokeWidth={2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="cta-arrow size-4 translate-x-0 transition-transform "
+                    className="cta-arrow size-6 translate-x-0 transition-transform "
                     aria-hidden="true"
                   >
                     <path d="M9 18l6-6-6-6" />

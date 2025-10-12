@@ -6,6 +6,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import { linkToHref } from '../../../utils/utils';
+import CTA from '../../atoms/cta/cta';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
@@ -102,7 +103,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     SubTitle: item.SubTitle,
     IntroLead: item.IntroLead,
     IntroSubLead: item.IntroSubLead,
-    CTAURL : item.CTAURL,
+    CTAURL: item.CTAURL,
     CTALabel: item.CTALabel,
 
     CTAExternalUrl: item.CTAExternalUrl,
@@ -126,8 +127,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     if (typeof rawCtaUrl === 'string') {
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
-  } catch {
-  }
+  } catch {}
   const CTAExternalUrl = linkToHref(rawCtaUrl);
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
@@ -138,7 +138,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     <section {...attrs} className="relative xs:mx-4 md:mx-28  xxl:mx-auto max-w-[1440px]">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
-        {view.SubTitle && <Eyebrow color="text-default">{view.SubTitle}</Eyebrow>}
+        {view.SubTitle && <Eyebrow color="text-primary">{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title
             color="text-black"
@@ -148,6 +148,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               font-bold     
               tracking-[-0.02em]
               md:leading-[75px]
+              text-primary
             "
           >
             {view.Title}
@@ -203,63 +204,63 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 xs:pt-24 xs:pb-20 md:pb-28 md:pt-32 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light md:pt-10 xs:pt-28 xs:pb-5 xs:text-[22px] md:text-[28px] md:fadeupText">
+                <h2 className="text-center text-white font-bold md:pt-10 xs:pt-28 xs:pb-5 xs:text-[22px] md:text-[28px] md:fadeupText">
                   {view.IntroLead}
                 </h2>
               )}
 
-              <div className="md:mt-12  grid gap-8 xs:grid-cols-1 md:grid-cols-3 md:fadeup">
-                {view.Steps.map((s, i) => {
-                  const logoSrc = mediaSrc(s.Logo);
-                  const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
-                  const stepNo = String(s.StepNumber ?? i + 1).padStart(2, '0');
+              <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-12 md:grid-cols-3 xs:grid-cols-1">
+              {view.Steps.map((s, i) => {
+                const logoSrc = mediaSrc(s.Logo);
+                const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
+                const stepNo = String(s.StepNumber ?? i + 1).padStart(2, '0');
 
-                  return (
-                    <div
-                      key={s.Id || `${s.Title}-${i}`}
-                      className="relative rounded-[28px] p-10 text-white
+                return (
+                  <div
+                    key={s.Id || `${s.Title}-${i}`}
+                    className="relative rounded-[32px] md:p-12 xs:p-8 rtl:p-14 text-white 
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
-                                 border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]
                                  before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"
-                    >
-                      <div className="mx-auto mb-6 grid h-12 w-12 place-items-center">
-                        {logoSrc ? (
-                          <img src={logoSrc} alt={logoAlt} className="h-12 w-12" loading="lazy" />
-                        ) : (
-                          <span className="text-2xl" aria-hidden></span>
-                        )}
-                      </div>
-
-                      <h3 className="text-center text-2xl">{s.Title}</h3>
-                      {s.Description && (
-                        <p className="mt-3 text-center text-[#E0E0E0] mb-4 text-base">
-                          {s.Description}
-                        </p>
+                  >
+                    <div className="mx-auto mb-6 grid h-16 w-16 place-items-center">
+                      {logoSrc ? (
+                        <img src={logoSrc} alt={logoAlt} className="h-16 w-16" />
+                      ) : (
+                        <span className="text-2xl" aria-hidden>
+                          🖼️
+                        </span>
                       )}
+                    </div>
 
-                      <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid h-12 w-12 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm font-bold ring-1 ring-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                    <h3 className="text-center md:text-2xl xs:text-xl">{s.Title}</h3>
+                    {s.Description && (
+                      <p className="mt-2 text-center text-[16px] text-[#E0E0E0] mb-4">
+                        {s.Description}
+                      </p>
+                    )}
+
+                      <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid h-12 w-12 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm font-bold  shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                         {stepNo}
                       </div>
                     </div>
                   );
                 })}
               </div>
-
-              {/* CTA */}
               {view.CTALabel && (
-                <div className="mt-12 flex justify-center fadeupButton">
-                  <a
-                    href={CTAExternalUrl || '#'}
-                    className="group inline-flex items-center gap-2 rounded-[20px] px-6 py-3
-                               text-[#F7FAFC] font-medium w-[250px] h-14 text-center justify-center
-                               shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
-                               backdrop-blur-[2px] hover:bg-white/10 transition"
+                <div className="mt-16 flex justify-center fadeupButton">
+                  <CTA
+                    href={(CTAExternalUrl || '').trim() || '#'}
+                    colorText="text-primaryAlt"
+                    borderColor="border-primaryAlt"
+                    bgColor="transparent"
+                    variant="outline"
+                    icon="arrow"
+                    className="w-[248px] h-14"
                   >
-                    <span>{view.CTALabel}</span>
-                    <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
-                  </a>
+                    {view.CTALabel}
+                  </CTA>
                 </div>
               )}
             </div>

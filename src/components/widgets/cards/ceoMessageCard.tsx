@@ -148,7 +148,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     : 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-bgAlt rounded-[16px] px-6 py-4 w-[90%] text-start';
 
   const textColCls = isOverlay
-    ? 'text-start w-auto space-y-3'
+    ? 'text-start w-auto space-y-3 '
     : 'text-start w-[522px] space-y-3';
   // ------------------------------------
 
@@ -177,7 +177,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           <div className="space-y-3">
             {eyebrow && <Eyebrow className='xs:text-14px xs:leading-[18px] text-primaryAlt'>{eyebrow}</Eyebrow>}
             {title && (
-              <Title className="text-primary md:text-3xl xs:text-2xl font-bold tracking-[-0.02em]">{title}</Title>
+              <Title className="text-primary md:text-[36px] xs:text-2xl font-bold tracking-[-0.02em]">{title}</Title>
             )}
           </div>
           {subtitle && (

@@ -99,6 +99,7 @@
   --color-primary-alt: #010663;
   --color-default: #424242;
   --color-secondary: #ffffff;
+  --color-accent: #ffffff;
   --color-bg-alt: #ffffff;
   --color-white-cta: #ffffff;
   --surface-page: #eeeeee;
@@ -114,6 +115,7 @@ html.dark {
   --color-primary-alt: #a6efd9;
   --color-default: #f5f5f5;
   --color-secondary: #000000;
+  --color-accent: #a6efd9;
   --surface-page: #131321;
   --color-bg-alt: #000000;
   --color-white-cta: #010663;
@@ -159,7 +161,6 @@ html.modal-open {
 }
 
 /* [dir='rtl'] .cta-arrow { --tw-scale-x: -1; } */
-
 
 @layer base {
   .font-lufga {
@@ -380,10 +381,10 @@ html.modal-open {
 
 @keyframes fadeLeftDownload {
   from {
-    transform: translate(50px) 
+    transform: translate(50px);
   }
   to {
-    transform: translate(0) 
+    transform: translate(0);
   }
 }
 

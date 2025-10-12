@@ -76,7 +76,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   return (
     <section {...attrs} className="md:px-0 px-4 max-w-[1440px] xxl:mx-auto">
       <div className="md:mx-auto w-full flex flex-col gap-2 text-center justify-center xs:mt-4 items-center md:px-6 md:pt-12 md:pb-4 fadeupText">
-        {rootData?.Eyebrow && <Eyebrow>{rootData.Eyebrow}</Eyebrow>}
+        {rootData?.Eyebrow && <Eyebrow className="text-primary">{rootData.Eyebrow}</Eyebrow>}
         {rootData?.Title && (
           <Title
             className="

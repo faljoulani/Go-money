@@ -134,10 +134,10 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
       <div className="mx-auto max-w-[1240px]">
         <div className="relative">
           <div className="md:sticky md:top-20 md:px-0 px-16 flex flex-col gap-2 text-center md:h-[600px] fadeupText">
-            {eyebrow && <Eyebrow color="text-default">{eyebrow}</Eyebrow>}
+            {eyebrow && <Eyebrow color="text-primary">{eyebrow}</Eyebrow>}
             <Title
-              color="text-black"
-              className="text-[40px] font-bold tracking-[-0.02em] leading-[75px]"
+              color="text-primary"
+              className="text-[40px] font-bold tracking-[-0.02em] "
             >
               {title}
             </Title>
@@ -191,12 +191,15 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
                     </div>
 
                     <div className={isRight ? 'order-1 mr-8' : 'order-2 ml-8'}>
-                      <div className="w-[468px]">
-                        <h3 className="text-32px tracking-[-0.02em] leading-10 font-medium text-primary">
+                      <div className="flex flex-col gap-2 w-[468px]">
+                        <h3 className="text-32px tracking-[-0.02em] leading-normal font-medium text-primary">
                           {card.title}
                         </h3>
                         {card.description && (
-                            <Description className="mt-3 leading-5 text-default" html={card.description} />
+                          <Description
+                            className="mt-3 leading-5 text-default"
+                            html={card.description}
+                          />
                         )}
                       </div>
                     </div>
@@ -214,7 +217,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
               variant="outline"
               colorText="text-primaryAlt"
               fontWeight="font-medium"
-              borderColor="border-primary"
+              borderColor="border-primaryAlt"
               align="center"
               icon="arrow"
               bgColor="transparent"

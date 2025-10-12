@@ -41,6 +41,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     'Eyebrow',
     'CtaText',
     'CtaUrl',
+    'FullTitle',
     'BackgroundImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Provider,Urls)',
   ];
 
@@ -76,6 +77,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
+  const fulltitle = item.FullTitle || '';
   const subtitle = item.Subtitle || '';
   const description = item.Description || '';
   const ctaText = item.CtaText || 'Learn more';
@@ -131,48 +133,53 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className={` max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white flex items-center justify-center flex-col rounded-2xl
-             min-h-[320px] h-[450px] px-4 bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] bg-cover bg-center`}
+        className={`max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white 
+              flex flex-col items-center justify-start rounded-2xl
+              min-h-[320px] h-[450px] px-4 
+              bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] 
+              bg-cover bg-center`}
       >
-        <div>
-          <div className="mx-auto px-6">
-            <div className="mb-5" data-sfcontainer="Breadcrumb">
-              {breadcrumbs.map((y) =>
-                RenderWidgetService.createComponent(y.model, props.requestContext),
-              )}
-            </div>
+        <div className="mx-auto px-6 xs:mt-44 md:mt-32">
+          <div className="mb-5" data-sfcontainer="Breadcrumb">
+            {breadcrumbs.map((y) =>
+              RenderWidgetService.createComponent(y.model, props.requestContext),
+            )}
           </div>
-
-          {title && (
-            <Title>
-              <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
-                {title}
-              </p>
-            </Title>
-          )}
-          {subtitle && (
-            <Description
-              html={subtitle}
-              className="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
-            />
-          )}
-          {description && (
-            <Description
-              html={description}
-              className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
-            />
-          )}
         </div>
+        {title && (
+          <Title>
+            <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
+              {title}
+            </p>
+          </Title>
+        )}
+        {subtitle && (
+          <Description
+            html={subtitle}
+            className="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
+          />
+        )}
+        {description && (
+          <Description
+            html={description}
+            className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
+          />
+        )}
       </section>
     );
   }
-
+  console.log('fulltitle', fulltitle);
   return (
     <section
       {...attrs}
-      className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
+      className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white rounded-[32px] 
+      md:h-[700px] xs:flex xs:flex-col xs:h-[752px] 
+      dark:bg-[linear-gradient(130deg,#001a52_15%,#010e4a_40%,#1DB5B3_100%)]
+"
     >
+      <img src='/assets/HeroBackground.jpg'   className="video-background absolute inset-0 -z-20 w-full h-full object-cover rounded-[30px] pointer-events-none" ></img>
       <video
+                            suppressHydrationWarning
         className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
         src={videoSrc}
         autoPlay
@@ -196,25 +203,31 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <div className="relative md:grid md:grid-cols-2 md:gap-16 md:max-w-7xl md:px-20 md:py-24 xs:flex xs:flex-col xs:px-4 xs:pt-28">
         <div className="flex flex-col items-start justify-center md:mt-20 fadeLeftHero xs:mb-4">
           {eyebrow && (
-            <Eyebrow
-              className="md:font-medium xs:font-normal md:text-lg xs:text-sm md:leading-6 xs:leading-[18px]"
-              color="white"
-            >
+            <Eyebrow className="md:text-lg xs:text-sm md:leading-6 xs:leading-[18px]" color="white">
               {eyebrow}
             </Eyebrow>
           )}
 
+          {/* {fulltitle && (
+            <Title
+              color="text-white"
+              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] xs:leading-8 rtl:xs:leading-[45px] mb-4"
+            >
+              {fulltitle}
+            </Title>
+          )} */}
+
           {title && (
             <Title
               color="text-white"
-              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[90px] tracking-[-0.02em] xs:leading-8 mb-4"
+              className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] xs:leading-8 rtl:xs:leading-[45px] mb-4"
             >
               {title}
             </Title>
           )}
 
           {description && (
-            <Description html={description} className="text-white mb-4 xs:leading-5" />
+            <Description html={description} className="text-white mb-4 leading-5 rtl:leading-8" />
           )}
 
           {ctaText && (
@@ -237,11 +250,8 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       <div
         className={`
     xs:absolute xs:inset-x-0 xs:bottom-0 xs:flex xs:justify-center xs:h-[330px] xs:w-auto
-
-    md:absolute  ${isAr ? 'md:mr-[32%] lg:ml-[37%] xl:mr-[55%] ' : 'md:ml-[32%] lg:ml-[37%] xl:ml-[55%]'}
-    md:flex 
-    md:-bottom-8 md:w-[700px] md:h-[650px]
-    fadeupHero
+    md:absolute ${isAr ? 'md:mr-[32%] lg:ml-[37%] xl:mr-[50%] ' : 'md:ml-[32%] lg:ml-[37%] xl:ml-[50%]'}
+    md:flex md:-bottom-8 md:w-[700px] md:h-[650px] fadeupHero
   `}
       >
         {/* <div
