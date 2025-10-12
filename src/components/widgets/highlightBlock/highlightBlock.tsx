@@ -125,7 +125,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           )}
 
           {ctaText && (
-            <div className="w-full md:w-auto">
+            <div className="w-full xs:max-w-[280px] md:w-auto">
               <CTA
                 href={(ctaHref || '').trim() || '#'}
                 colorText="text-primaryAlt"
@@ -143,7 +143,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
 
         {/* Right: artwork / image panel */}
         <div
-          className="md:absolute md:h-[392px] md:w-[490px] md:fadeRight duration-1000 md:right-0 
+          className="xs:flex xs:justify-center md:absolute md:h-[392px] md:w-[490px] md:fadeRight duration-1000 md:right-0 
         md:mr-[87px] md:rtl:ml-[87px] md:rtl:left-0 md:rtl:right-auto"
         >
           <div className="md:absolute md:h-[392px]  md:w-[490px] xs:right-10  rounded-[20px] overflow-hidden">
