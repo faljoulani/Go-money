@@ -117,8 +117,8 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     >
       <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
         <div
-          className="md:h-24 md:w-24 xs:w-[68px] xs:h-[68px] md:rounded-bl-[40px] xs:rounded-bl-[25px] 
-        bg-primaryAlt rtl:rounded-br-[40px] rtl:rounded-bl-none xs:rtl:rounded-br-[25px] xs:rtl:rounded-bl-none"
+          className="md:h-24 md:w-24 xs:w-[68px] xs:h-[68px] md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-[#0023F5]
+        dark:bg-primaryAlt rtl:rounded-br-[40px] rtl:rounded-bl-none xs:rtl:rounded-br-[25px] xs:rtl:rounded-bl-none"
         />
 
         <div
@@ -133,7 +133,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
         </h2>
 
         {subtitle && (
-          <p className="mt-3 text-base leading-relaxed text-[#9E9E9E] font-medium">{subtitle}</p>
+          <p className="mt-8 text-base leading-relaxed text-[#9E9E9E] font-medium">{subtitle}</p>
         )}
 
         <div className="mt-12 flex flex-wrap xs:flex-col md:flex-row items-center justify-center gap-4 ">
@@ -158,7 +158,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
               <path
                 d="M9 18l6-6-6-6"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -167,7 +167,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
           <a
             href={faqurl}
-            className="group transition-colors inline-flex md:w-auto xs:w-[90%] 
+            className="group transition-colors inline-flex md:w-[200px] md:max-w-[300px] xs:w-[90%] 
             text-lg tracking-tight items-center justify-center gap-2 
             rounded-[20px] border-2 border-primaryAlt px-6 py-3 text-primaryAlt font-medium 
             hover:bg-primary hover:text-white hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663]"
@@ -186,7 +186,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
               <path
                 d="M9 18l6-6-6-6"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />

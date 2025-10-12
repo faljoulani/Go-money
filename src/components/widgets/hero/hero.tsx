@@ -170,9 +170,12 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px]"
+      className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white rounded-[32px] md:h-[700px] xs:flex xs:flex-col xs:h-[752px] "
+    
     >
+      <img src='/assets/HeroBackground.jpg'   className="video-background absolute inset-0 -z-20 w-full h-full object-cover rounded-[30px] pointer-events-none" ></img>
       <video
+                            suppressHydrationWarning
         className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
         src={videoSrc}
         autoPlay

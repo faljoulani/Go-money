@@ -108,7 +108,7 @@ export default function QuestionsClient({
           className="
             flex snap-x snap-mandatory items-center gap-3 overflow-x-auto md:rounded-2xl md:border
             border-line md:dark:border-white/10 md:bg-surface-section md:px-8 py-4 pb-4
-            [scrollbar-width:none] [-ms-overflow-style:none] h-[3.4rem]
+            [scrollbar-width:none] [-ms-overflow-style:none] h-[3.4rem] 
           "
         >
           <style>{`ul::-webkit-scrollbar{display:none}`}</style>
