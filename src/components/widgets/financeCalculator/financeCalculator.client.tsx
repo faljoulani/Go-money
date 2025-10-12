@@ -495,11 +495,13 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
-          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4 text-[13px] text-primaryAlt">
-            <div className="flex items-start gap-2">
+          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4  text-[14px] text-primaryAlt">
+            <div className="flex flex-col">
+              <div className="flex gap-2">
               <InfoIcon />
-              <div>
-                <strong>{C.popups?.note?.title || 'Important Note'}</strong>
+                              <strong className="text-[#0045AB] dark:text-primaryAlt">{C.popups?.note?.title || 'Important Note'}</strong>
+                    </div>
+              <div className="ml-6">
                 <p className="mt-1 text-default">
                   {C.popups?.note?.description ||
                     'This calculation is for guidance only. The results do not constitute a final offer and have no legal effect.'}
@@ -516,9 +518,22 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             className="inline-flex items-center gap-2 rounded-full bg-primaryAlt px-6 py-3 text-secondary hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Submitting…' : C.cta?.text || 'Check your eligibility Now'}
-            <span aria-hidden className="rtl:rotate-180">
-              ➜
-            </span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              className="cta-arrow "
+            >
+              <path
+                d="M9 18l6-6-6-6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         </div>
 
@@ -811,7 +826,7 @@ function Tooltip({ content, children }: { content: string; children: React.React
 
 export function InfoIcon({ className = '' }: { className?: string }) {
   return (
-    <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="none">
+    <svg aria-hidden className={`h-[20px] w-[20px] ${className}`} viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="12" fill="var(--color-primary-alt)" />
 
       <circle cx="12" cy="7" r="1.3" fill="var(--color-secondary)" />
