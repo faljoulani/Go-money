@@ -6,6 +6,7 @@ import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
 import { linkToHref } from '../../../utils/utils';
+import CTA from '../../atoms/cta/cta';
 
 const SECTION_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.HowItWorks.Howitworkssection';
 
@@ -102,7 +103,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     SubTitle: item.SubTitle,
     IntroLead: item.IntroLead,
     IntroSubLead: item.IntroSubLead,
-    CTAURL : item.CTAURL,
+    CTAURL: item.CTAURL,
     CTALabel: item.CTALabel,
 
     CTAExternalUrl: item.CTAExternalUrl,
@@ -126,8 +127,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     if (typeof rawCtaUrl === 'string') {
       rawCtaUrl = JSON.parse(rawCtaUrl);
     }
-  } catch {
-  }
+  } catch {}
   const CTAExternalUrl = linkToHref(rawCtaUrl);
   const phoneSrc = mediaSrc(view.PhoneMockup) ?? '';
   const phoneAlt = view.PhoneMockup?.AlternativeText || view.PhoneMockup?.Title || 'Phone preview';
@@ -203,7 +203,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 xs:pt-24 xs:pb-20 md:pb-28 md:pt-32 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-light md:pt-10 xs:pt-28 xs:pb-5 xs:text-[22px] md:text-[28px] md:fadeupText">
+                <h2 className="text-center text-white font-bold md:pt-10 xs:pt-28 xs:pb-5 xs:text-[22px] md:text-[28px] md:fadeupText">
                   {view.IntroLead}
                 </h2>
               )}
@@ -246,20 +246,19 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                   );
                 })}
               </div>
-
-              {/* CTA */}
               {view.CTALabel && (
-                <div className="mt-12 flex justify-center fadeupButton">
-                  <a
-                    href={CTAExternalUrl || '#'}
-                    className="group inline-flex items-center gap-2 rounded-[20px] px-6 py-3
-                               text-[#F7FAFC] font-medium w-[250px] h-14 text-center justify-center
-                               shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)]
-                               backdrop-blur-[2px] hover:bg-white/10 transition"
+                <div className="mt-16 flex justify-center fadeupButton">
+                  <CTA
+                    href={(CTAExternalUrl || '').trim() || '#'}
+                    colorText="text-primaryAlt"
+                    borderColor="border-primaryAlt"
+                    bgColor="transparent"
+                    variant="outline"
+                    icon="arrow"
+                    className="w-[248px] h-14"
                   >
-                    <span>{view.CTALabel}</span>
-                    <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
-                  </a>
+                    {view.CTALabel}
+                  </CTA>
                 </div>
               )}
             </div>

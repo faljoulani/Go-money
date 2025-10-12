@@ -177,7 +177,10 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   });
 
   return (
-    <section {...attributes} className="w-full md:py-16 md:px-20 xs:py-12 max-w-[1440px] xxl:mx-auto">
+    <section
+      {...attributes}
+      className="w-full md:py-16 md:px-20 xs:py-12 max-w-[1440px] xxl:mx-auto"
+    >
       <div className="flex flex-col items-center gap-2 text-center fadeupText">
         {eyebrow && <Eyebrow color="text-primary">{eyebrow}</Eyebrow>}
         <Title
@@ -250,7 +253,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             variant="outline"
             colorText="text-primaryAlt"
             fontWeight="font-medium"
-            borderColor="border-primary"
+            borderColor="border-primaryAlt"
             align="center"
             icon="arrow"
             bgColor="transparent"
