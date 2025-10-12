@@ -146,9 +146,8 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
         'bg-[linear-gradient(258.38deg,_#6BE5BF,_#B3DFEF)] dark:bg-[linear-gradient(258.38deg,_#A6EFD9,_#006AA5)] ',
         (attrs as any)?.className || '',
       )}
-      // style={{ background: 'linear-gradient(258.38deg, #6BE5BF -1.4%, #B3DFEF 100%)' }}
     >
-      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center justify-center xs:pb-6 xs:px-4">
+      <div className="relative z-10 flex md:flex-row xs:flex-col h-full w-full items-center justify-center xs:pb-6 xs:px-4 md:p-0">
         {/* Left: phone image */}
         <div className="flex h-full md:w-[40%] xs:w-[70%] fadeLeftDownload justify-center items-center">
           {!!phoneUrl && (
@@ -170,7 +169,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
               <Title
                 color="text-primary"
                 className="font-bold rtl:tracking-[-0.05em] tracking-[-0.02em] md:text-5xl xs:text-2xl 
-                md:ltr:leading-[63px] md:rtl:leading-[90px] xs:ltr:leading-8 xs:rtl:leading-[45px]"
+                md:ltr:leading-[63px] md:rtl:leading-[90px] xs:ltr:leading-8 xs:rtl:leading-[45px] "
               >
                 {title}
               </Title>

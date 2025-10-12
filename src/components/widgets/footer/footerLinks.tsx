@@ -20,13 +20,14 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
   return (
     <div
-      className={`md:ltr:border-l md:border-white/15 md:rtl:border-r  ltr:pl-[64px] rtl:pr-[64px] grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 ${className} rtl:grid-col-reverse `}
+      className={`md:ltr:border-l md:border-white/15 md:rtl:border-r md:ltr:pl-[64px] 
+        md:rtl:pr-[64px] grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 ${className} rtl:grid-col-reverse `}
     >
       {groups.map((group) => (
         <nav
           key={group.id}
           aria-label={group.title}
-          className="xs:flex xs:flex-col xs:w-full xs:-mr-12"
+          className="xs:flex xs:flex-col xs:w-full md:rtl:mr-0 xs:-mr-12"
         >
           <h3 className="text-white md:text-[20px] xs:text-base font-semibold ">{group.title}</h3>
           <ul className="md:mt-8 xs:mt-6 space-y-2 ">
@@ -37,7 +38,7 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
                 <li key={link.id}>
                   <Link
                     href={link.href}
-                    className={` md:text-base xs:text-[12px] md:leading-5 xs:leading-4 no-underline transition-colors ${'text-[#E0E0E0]'}`}
+                    className={`md:text-base xs:text-[12px] md:leading-5 xs:leading-4 no-underline transition-colors ${'text-[#E0E0E0]'}`}
                   >
                     {link.title}
                   </Link>

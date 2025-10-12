@@ -252,10 +252,10 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
             </div>
           </div>
 
-          <hr className="mb-8 border-white/10" />
+          <hr className="mb-8 border-white/10"/>
 
           {/* Bottom row: certifications | copyright | extra */}
-          <div className="relative gap-6 md:grid md:grid-cols-3 md:items-center xs:grid-cols-2">
+          <div className="relative gap-6 md:grid md:grid-cols-3 md:items-center xs:grid-cols-2 xs:space-y-2">
             {/* Certifications */}
             <div className="flex items-center gap-6 md:w-[614px] md:flex-wrap">
               {certifications.map((info, i) => {
@@ -283,12 +283,12 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                     />
                     <div className="flex flex-col gap-2 leading-[100%] justify-start">
                       {info.Title && (
-                        <div className="font-bold text-[14px] leading-[100%] text-white">
+                        <div className="font-bold md:text-[14px] xs:text-[10px]  leading-[100%] text-white">
                           {info.Title}
                         </div>
                       )}
                       {text && (
-                        <div className="font-normal text-[12px] leading-[100%] text-white">
+                        <div className="md:text-[12px] xs:text-[8px] leading-[100%] text-white">
                           {text}
                         </div>
                       )}
@@ -299,8 +299,8 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
             </div>
 
             {/* Copyright */}
-            <div className="md:text-center xs:m-2">
-              <p className="font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
+            <div className="md:text-center">
+              <p className=" md:text-xs xs:text-[10px] leading-[100%] tracking-[0] text-[#E0E0E0]">
                 {footerData.CopyrightText}
               </p>
             </div>
@@ -308,7 +308,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
             {/* Right side (extra note) */}
             <div className="md:justify-self-end">
               {footerData.ExtraNote && (
-                <div className="font-normal text-[12px] leading-[100%] tracking-[0] text-[#E0E0E0]">
+                <div className=" md:text-xs xs:text-[10px] leading-[100%] tracking-[0] text-[#E0E0E0]">
                   {String(footerData.ExtraNote).replace(/"+$/, '')}
                 </div>
               )}
