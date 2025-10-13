@@ -709,7 +709,6 @@ display:none
   position: absolute;
 }
 .date-input:not(.has-value)::before{
-  content: attr(data-placeholder);
   position: absolute;
   inset-block-start: 50%;
   transform: translateY(-50%);
