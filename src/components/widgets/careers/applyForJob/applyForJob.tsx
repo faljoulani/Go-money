@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+import { emitCareersActiveJob } from '../../../../utils/careersEvents';
 
 import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
 import InputField from '../../../atoms/inputField/inputField';
@@ -42,7 +43,7 @@ type CityItem = { Key?: string; Value?: string };
 type FormDataState = {
   firstName: string;
   lastName: string;
-  phone: string; // local part (without dial code)
+  phone: string;
   email: string;
   city: string;
   coverLetter: string;
@@ -113,6 +114,16 @@ export default function ApplyForJob({
   const countryOptions = useMemo(makeCountryOptions, []);
   const normalizedLanguage = (language || '').toLowerCase();
   const isRtl = form?.Direction === 'rtl' || normalizedLanguage.startsWith('ar');
+  const heroLang: 'en' | 'ar' = isRtl ? 'ar' : 'en';
+
+  useEffect(() => {
+    const heroTitle = heroLang === 'ar' ? 'التقدم لهذه الوظيفة' : 'Apply for this job';
+    emitCareersActiveJob({ lang: heroLang, title: heroTitle, mode: 'apply' });
+
+    return () => {
+      emitCareersActiveJob({ lang: heroLang, title: null, mode: 'list' });
+    };
+  }, [heroLang]);
 
   const applyFieldChange = <K extends keyof FormDataState>(key: K, value: FormDataState[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
@@ -297,7 +308,7 @@ export default function ApplyForJob({
     >
       {/* PAGE WRAP — mobile first */}
       <section
-        className={`mx-auto w-full max-w-[760px] py-10 md:px-6 md:py-10 ${className ?? ''}`}
+        className={`mx-auto w-full py-10 md:px-20 md:py-10 ${className ?? ''}`}
         dir={isRtl ? 'rtl' : 'ltr'}
       >
         <div ref={topRef} tabIndex={-1} className="outline-none" />

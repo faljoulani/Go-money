@@ -42,7 +42,7 @@ export function MobileCardsCarousel({
   const goTo = (i: number) => {
     const root = trackRef.current;
     const el = root?.querySelector<HTMLElement>(`[data-slide="${i}"]`);
-    if (root && el) root.scrollTo({ left: el.offsetLeft - 16, behavior: 'smooth' }); // 16 = gap padding
+    if (root && el) root.scrollTo({ left: el.offsetLeft - 16, behavior: 'smooth' });
   };
 
   return (
@@ -50,44 +50,66 @@ export function MobileCardsCarousel({
       <div
         ref={trackRef}
         className={`flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth
-                   [-ms-overflow-style:none] [scrollbar-width:none] ${target == 'scrollableCards' ? '' : '-mx-4'}`}
+                   [-ms-overflow-style:none] [scrollbar-width:none] ${target === 'scrollableCards' ? '' : '-mx-4'}`}
       >
         <style>{`.no-scrollbar::-webkit-scrollbar{display:none}`}</style>
 
-        {items.map((card, i) => (
-          <article
-            key={card.id ?? i}
-            data-slide={i}
-            data-index={i}
-            className={`
-              ${i == 0 ? 'ltr:ml-4 rtl:mr-4' : ''}
-              ${i == items.length - 1 ? 'ltr:mr-4 rtl:ml-4' : ''}
-             snap-center shrink-0 w-[85%] max-w-[360px] rounded-xl bg-surface-section`}
-          >
-            {card.imgUrl && (
-              <div className="relative overflow-hidden rounded-xl w-full h-[250px]">
-                <img
-                  src={card.imgUrl}
-                  alt={card.title || 'card image'}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-            )}
-            {card.icon && (
-              <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12`}>{card.icon}</div>
-            )}
-            <div className="pt-4 pb-6 px-3">
-              <h3 className="text-[20px] leading-7 font-medium text-primaryAlt">{card.title}</h3>
-              {card.description && (
-                <p
-                  className="mt-2 text-default text-sm leading-5"
-                  dangerouslySetInnerHTML={{ __html: card.description }}
-                />
+        {items.map((card, i) => {
+          const isOdd = i % 2 === 1; // <-- use index parity
+          return (
+            <article
+              key={card.id ?? i}
+              data-slide={i}
+              data-index={i}
+              className={`
+                ${i === 0 ? 'ltr:ml-4 rtl:mr-4' : ''}
+                ${i === items.length - 1 ? 'ltr:mr-4 rtl:ml-4' : ''}
+                relative snap-center shrink-0 w-[85%] max-w-[360px] rounded-xl bg-surface-section`}
+            >
+              {card.imgUrl && (
+                <div className="relative overflow-hidden rounded-xl w-full h-[250px]">
+
+              {target === 'scrollableCards' && (
+                <div className={`absolute   ${isOdd ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}>
+                  <div
+                    className={`relative w-[72px]  h-[72px] border-none  ${
+                      isOdd ? 'bg-[#0DF9C4] border rounded-tr-3xl ' : 'bg-[#1919E5] rounded-tl-3xl'
+                    }`}
+                  >
+                    <div
+                      className={`absolute w-10 h-10  bg-white   dark:bg-[#1D1D28] ${
+                        isOdd ? 'left-0 -bottom-0 rounded-bl-xl' : 'right-0 -bottom-0'
+                      }`}
+                    />
+                  </div>
+                </div>
               )}
-            </div>
-          </article>
-        ))}
+                  <img
+                    src={card.imgUrl}
+                    alt={card.title || 'card image'}
+                    className="w-full h-full object-cover border-none"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+
+
+              {card.icon && (
+                <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12`}>{card.icon}</div>
+              )}
+
+              <div className="pt-4 pb-6 px-3">
+                <h3 className="text-[20px] leading-7 font-medium text-primaryAlt">{card.title}</h3>
+                {card.description && (
+                  <p
+                    className="mt-2 text-default text-sm leading-5"
+                    dangerouslySetInnerHTML={{ __html: card.description }}
+                  />
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
 
       <div className="mt-4 flex items-center justify-center gap-2">
@@ -105,4 +127,3 @@ export function MobileCardsCarousel({
     </div>
   );
 }
-

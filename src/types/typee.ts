@@ -34,8 +34,6 @@ export interface ApiNavDropdown extends ApiNavLink {
 }
 export type ApiNavItem = ApiNavLink | ApiNavDropdown;
 
-// src/components/widgets/careers/types.ts
-
 /** Shared labels for UI copy */
 export type Labels = {
   vacanciesLabel?: string;

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSfMutation } from '../../../utils/hooks/useSfMutation';
 import { useDirection, formatDaysAgo } from '../../../utils/helpers';
+import { emitCareersActiveJob } from '../../../utils/careersEvents';
 import BreifCasiIcon from '../../../../public/icons/breif-case.svg';
 
 type Job = {
@@ -29,7 +30,11 @@ export default function JobCard({ job, onOpen }: Props) {
   const dir = useDirection();
   const isRtl = dir === 'rtl';
 
+  const jobLang: 'en' | 'ar' = isRtl ? 'ar' : 'en';
+
   const goToDetails = async () => {
+    emitCareersActiveJob({ lang: jobLang, title: job.title, mode: 'details' });
+
     if (onOpen) return onOpen(job.id);
 
     try {
@@ -101,4 +106,3 @@ export default function JobCard({ job, onOpen }: Props) {
     </article>
   );
 }
-
