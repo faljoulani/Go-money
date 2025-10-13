@@ -7,6 +7,7 @@ import Pagination from './pagination';
 import { daysSinceUtc } from '../../../../utils/utils';
 import { useDirection } from '../../../../utils/helpers';
 import Image from 'next/image';
+import { emitCareersActiveJob } from '../../../../utils/careersEvents';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
@@ -269,6 +270,10 @@ export default function CareersBoard({
   }, [showMobileFilters]);
 
   useEffect(() => {
+    emitCareersActiveJob({ lang, title: null, mode: 'list' });
+  }, [lang]);
+
+  useEffect(() => {
     setFacetNames({ locations: [], departments: [] });
     setBaselineCounts({ locations: {}, departments: {} });
 
@@ -378,8 +383,9 @@ export default function CareersBoard({
   }, [apiResp?.Data?.Items, lang]);
 
   const pageItems = apiItems.length ? apiItems : localItems;
+  //
   const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
-
+  //const jobs = [];
   const totalResults =
     apiResp?.Data?.TotalResults ?? (apiItems.length ? apiItems.length : localItems.length);
   const totalPages = apiResp?.Data?.TotalPages ?? 1;
@@ -574,6 +580,10 @@ export default function CareersBoard({
 
   const hasResults = (totalResults ?? 0) > 0;
 
+  if (jobs.length === 0 && !loading) {
+    return <EmptyState />;
+  }
+
   return (
     <section className={`relative mx-auto py-10 md:px-10 ${className ?? ''}`}>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_minmax(0,1fr)]">
@@ -611,16 +621,21 @@ export default function CareersBoard({
                   <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1 transition-all duration-300 ease-in-out">
                     {locationFacets.map((f) => (
                       <li key={f.name} className="py-1">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <label className="flex items-center font-semibold jus gap-2 cursor-pointer select-none">
                           <input
                             type="checkbox"
                             checked={f.selected}
                             onChange={() => toggleFacet('locationNames', f.name)}
                             className="h-4 w-4 cursor-pointer accent-primaryAlt dark:accent-primary"
                           />
-                          <span className="text-sm text-default dark:text-white">{f.name}</span>
-                          <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                            {f.count}
+                          <span
+                            className="text-sm text-default dark:text-white flex-1 truncate"
+                            title={f.name}
+                          >
+                            {f.name}
+                          </span>
+                          <span className="ml-auto text-xs tabular-nums text-default dark:text-gray-400">
+                            ({f.count})
                           </span>
                         </label>
                       </li>
@@ -662,7 +677,7 @@ export default function CareersBoard({
                   <ul className="mt-3 max-h-80 space-y-1.5 overflow-auto pr-1 transition-all duration-300 ease-in-out">
                     {departmentFacets.map((f) => (
                       <li key={f.name} className="py-1">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <label className="flex items-center font-semibold gap-2 cursor-pointer select-none">
                           <input
                             type="checkbox"
                             checked={f.selected}
@@ -671,7 +686,7 @@ export default function CareersBoard({
                           />
                           <span className="text-sm text-default dark:text-white">{f.name}</span>
                           <span className="ml-auto text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                            {f.count}
+                            ({f.count})
                           </span>
                         </label>
                       </li>
@@ -686,7 +701,7 @@ export default function CareersBoard({
         {/* Main column */}
         <div className="min-w-0 max-w-[888px] flex min-h-[600px] flex-col gap-4">
           <div ref={topRef} tabIndex={-1} className="outline-none" />
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3  mb-8">
             <h2
               id="careers-top"
               tabIndex={-1}
@@ -961,4 +976,3 @@ export default function CareersBoard({
     </section>
   );
 }
-

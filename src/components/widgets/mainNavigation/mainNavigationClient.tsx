@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cleanHref, displayTitle } from '../../../utils/utils';
+import { cleanHref, displayTitle, resolveItemUrl } from '../../../utils/utils';
 import { ApiNavItem, ApiNavDropdown } from '../../../types/typee';
 import { useDismissable } from '../../../utils/hooks/useDismissable';
 
@@ -11,15 +11,6 @@ import { useDirection } from '../../../utils/helpers';
 
 function isDropdown(item: ApiNavItem): item is ApiNavDropdown {
   return Array.isArray((item as any)?.children);
-}
-
-function resolveItemUrl(raw: string | null | undefined): string {
-  if (!raw) return '';
-  try {
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed[0]?.href) return parsed[0].href as string;
-  } catch {}
-  return raw;
 }
 
 function safeDecode(p: string): string {
@@ -74,6 +65,7 @@ export default function ClientNavbar({
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
   const navRef = useDismissable<HTMLDivElement>(openIdx !== null, () => setOpenIdx(null));
+  console.log('ITEMS IN DESKTOP:  ', items);
 
   useEffect(() => {
     setOpenIdx(null);
@@ -118,7 +110,9 @@ export default function ClientNavbar({
     <nav ref={navRef} className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
       {items.map((item, i) => {
         const rawUrl = resolveItemUrl(item.url);
+        console.log('RAW URL:  ', rawUrl);
         const parentPath = normalizePath(rawUrl);
+        console.log('parentPath:  ', parentPath);
         const keyForItem = parentPath || `__empty-${i}`;
 
         const selfActive = isDropdown(item)
@@ -214,3 +208,4 @@ export default function ClientNavbar({
     </nav>
   );
 }
+

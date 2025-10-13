@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { resolveAbsoluteUrl } from '../../../utils/utils';
+import { resolveAbsoluteUrl, resolveItemUrl } from '../../../utils/utils';
 import { pickOneMedia } from '../../../utils/sitefinity';
 import ModeSwitcher from '../../customComponents/modeSwitcher/modeSwitcher';
 import GoMoneyIcon from '../../../components/atoms/icons/goMoneyIcon';
@@ -33,7 +33,6 @@ export default function MobileNavbar({
   requestContext,
   textColorWhenScrolled = 'text-white',
   logoColorWhenScrolled = '',
-
 }: {
   logoUrl: string;
   logoAlt: string;
@@ -43,7 +42,6 @@ export default function MobileNavbar({
   requestContext: any;
   textColorWhenScrolled?: string;
   logoColorWhenScrolled: string;
-
 }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -145,12 +143,11 @@ export default function MobileNavbar({
       >
         {/* Header row */}
         <div className="flex items-center justify-between p-4">
-         <Link href="/" className="flex items-center gap-2" aria-label="Home">
-              <GoMoneyIcon
-                className={`w-[102px] h-[45px] transition-colors text-${logoColorWhenScrolled
-                }`}
-              />
-            </Link>
+          <Link href="/" className="flex items-center gap-2" aria-label="Home">
+            <GoMoneyIcon
+              className={`w-[102px] h-[45px] transition-colors text-${logoColorWhenScrolled}`}
+            />
+          </Link>
           <button
             className="rounded-xl p-2 text-primary hover:bg-black/5 dark:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             aria-label="Close menu"
@@ -173,12 +170,13 @@ export default function MobileNavbar({
             {items?.map((item, idx) => {
               const hasChildren = isDropdown(item) && item.children.length > 0;
               const active = flatIsActive(item.url);
+              const rawUrl = resolveItemUrl(item.url);
 
               if (!hasChildren) {
                 return (
                   <Link
                     key={idx}
-                    href={item.url || '#'}
+                    href={rawUrl || '#'}
                     onClick={() => setOpen(false)}
                     className={`block rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
                       ${
@@ -233,32 +231,31 @@ export default function MobileNavbar({
             </div>
 
             {/* Store badges */}
-       
           </nav>
         </div>
-             <div className="sticky bottom-0 z-10 mt-auto px-4 pb-4 pt-3 ">
-              <div className="flex items-center justify-center gap-3">
-                {normalizeStores.slice(0, 3).map((s) => (
-                  <a
-                    key={s.key}
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="grid h-12 w-12 place-items-center rounded-2xl bg-[#F5F5F5]  hover:bg-white transition "
-                    aria-label={s.title}
-                    title={s.title}
-                  >
-                    {s.iconSrc ? (
-                      <Image src={s.iconSrc} alt={s.alt} width={20} height={20} unoptimized />
-                    ) : (
-                      <span className="text-[10px] text-[#0A1B2E] dark:text-neutral-300">
-                        {s.title}
-                      </span>
-                    )}
-                  </a>
-                ))}
-              </div>
-            </div>
+        <div className="sticky bottom-0 z-10 mt-auto px-4 pb-4 pt-3 ">
+          <div className="flex items-center justify-center gap-3">
+            {normalizeStores.slice(0, 3).map((s) => (
+              <a
+                key={s.key}
+                href={s.href}
+                target="_blank"
+                rel="noreferrer"
+                className="grid h-12 w-12 place-items-center rounded-2xl bg-[#F5F5F5]  hover:bg-white transition "
+                aria-label={s.title}
+                title={s.title}
+              >
+                {s.iconSrc ? (
+                  <Image src={s.iconSrc} alt={s.alt} width={20} height={20} unoptimized />
+                ) : (
+                  <span className="text-[10px] text-[#0A1B2E] dark:text-neutral-300">
+                    {s.title}
+                  </span>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
