@@ -62,6 +62,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'Description',
     'CtaText',
     'CtaUrl',
+    'DarkImage($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText)',
     'Image($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText)',
   ];
 
