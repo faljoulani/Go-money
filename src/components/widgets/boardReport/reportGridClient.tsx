@@ -15,7 +15,7 @@ type ODataList<T> = {
 
 export default function ReportGridClient({
   lang,
-  files, 
+  files,
   pageSize,
   initialOffset,
   allowPagination,
@@ -24,7 +24,7 @@ export default function ReportGridClient({
   description,
 }: {
   lang?: string;
-  files: Array<{ Id: string; Title: string; UrlName?: string }>; 
+  files: Array<{ Id: string; Title: string; UrlName?: string }>;
   pageSize: number;
   initialOffset: number;
   allowPagination: boolean;
@@ -45,19 +45,18 @@ export default function ReportGridClient({
       $filter: `Year eq ${activeYear}`,
       $orderby: 'Title asc',
       $count: 'true',
-
     };
   }, [activeYear]);
 
   const { data, error, isLoading } = useSf<ODataList<ReportedFile>>(
-     'api/default/reportedfiles',
-   {
-          ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
-          ...(params ? params : {}), 
-   },
+    'api/default/reportedfiles',
+    {
+      ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
+      ...(params ? params : {}),
+    },
     {
       revalidateOnFocus: false,
-      keepPreviousData: true, 
+      keepPreviousData: true,
     },
   );
 
@@ -74,8 +73,8 @@ export default function ReportGridClient({
     <div className="w-full md:mt-16">
       {(title || description) && (
         <header className="mb-6">
-          {title && <h2 className="md:text-5xl xs:text-2xl font-bold text-primary">{title}</h2>}
-          {description && <p className="mt-4 text-default">{description}</p>}
+          {title && <h2 className="md:text-5xl rtl:md:text-[40px] md:leading-[63px] rtl:md:leading-[75px] xs:text-2xl xs:leading-8 font-bold text-primary">{title}</h2>}
+          {description && <p className="mt-4 text-default md:leading-5 rtl:md:leading-8 xs:leading-5">{description}</p>}
         </header>
       )}
 
@@ -105,7 +104,7 @@ export default function ReportGridClient({
           })}
         </div>
       )}
-      
+
       {/* add atom later for loading */}
       {isLoading && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -133,22 +132,25 @@ export default function ReportGridClient({
             {pageItems.map((f) => (
               <article
                 key={f.Id}
-                className="rounded-2xl border border-slate-200 dark:border-none bg-white dark:bg-[#131321] shadow-sm px-6 py-8 flex flex-col items-center justify-center"
+                className="rounded-2xl border border-slate-200 dark:border-none bg-white dark:bg-[#131321] 
+                shadow-sm px-6 pb-6 pt-10 flex flex-col items-center justify-center"
               >
-                <div className="mb-5 grid place-items-center w-16 h-16 rounded-2xl bg-[#f5f6ff] dark:bg-[#a6efd9]">
+                <div className="mb-6 grid place-items-center w-16 h-16 rounded-2xl bg-[#f5f6ff] dark:bg-[#a6efd9]">
                   <svg
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
                     fill="none"
-                    className='stroke-[#212121] dark:stroke-[#010663]'
+                    className="stroke-[#212121] dark:stroke-[#010663]"
                     strokeWidth="2"
                   >
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <path d="M14 2v6h6" />
                   </svg>
                 </div>
-                <h3 className="text-center text-[17px] font-semibold text-[#212121] dark:text-[#fafafa]">{f.Title}</h3>
+                <h3 className="text-center text-[16px] font-semibold text-[#212121] dark:text-[#fafafa]">
+                  {f.Title}
+                </h3>
               </article>
             ))}
           </div>

@@ -103,7 +103,7 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
         <div className="relative flex flex-col md:flex-row items-center md:place-items-start gap-6 pt-8 md:py-0 px-6 md:px-16">
           {/* TEXT — order 1 on xs, middle on md+ */}
           <div className="order-1 md:order-2 w-full md:flex-1 text-[#0A1B2E] justify-start min-w-0 md:my-10">
-            <h2 className="text-2xl md:text-4xl font-bold leading-tight md:leading-[67px] tracking-[-0.02em] text-primaryAlt">
+            <h2 className="xs:text-2xl md:text-4xl font-bold leading-tight md:leading-[67px] tracking-[-0.02em] text-primaryAlt xs:mb-1">
               {title}
             </h2>
 
@@ -124,10 +124,10 @@ export default async function MinimizedDownloadApp(props: WidgetContext<Download
                     <div
                       className={`flex items-center justify-center h-[56px] w-[56px] rounded-full bg-[#000000] dark:bg-white border-2 border-[#6BE5BF] ${
                         index === 0
-                          ? 'absolute right-[95px] top-0 z-30'
+                          ? 'absolute md:right-[95px] xs:right-[100px] rtl:xs:-right-[46px] rtl:md:right-[95px] top-0 z-30'
                           : index === 1
-                            ? 'absolute right-12 top-0'
-                            : ''
+                            ? 'absolute md:right-12 xs:right-[53px] rtl:xs:-right-[93px] rtl:md:right-12 top-0 z-20'
+                            : 'relative xs:right-[6px] rtl:xs:-right-[140px] md:right-[1px] rtl:md:right-[1px]'
                       }`}
                     >
                       {index === 0 ? (

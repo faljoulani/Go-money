@@ -156,16 +156,16 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
 
         <div className="text-start md:max-w-[790px] space-y-3">
           <div className="space-y-3">
-            {eyebrow && <Eyebrow className="xs:text-14px xs:leading-[18px]">{eyebrow}</Eyebrow>}
+            {eyebrow && <Eyebrow className="xs:text-14px md:text-base xs:leading-[18px] md:leading-6">{eyebrow}</Eyebrow>}
             {title && (
-              <Title className="text-[#001081] md:text-3xl xs:text-2xl font-bold tracking-[-0.02em]">
+              <Title className="text-[#001081] md:text-5xl xs:text-2xl font-bold tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px] xs:leading-8">
                 {title}
               </Title>
             )}
           </div>
           {subtitle && (
             <Description
-              className="text[16px] tracking-wider xs:leading-[28px]"
+              className="text-base tracking-normal leading-5 rtl:md:leading-8"
               html={subtitle}
             ></Description>
           )}
