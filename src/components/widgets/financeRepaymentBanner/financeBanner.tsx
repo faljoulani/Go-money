@@ -178,20 +178,43 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
           </div>
 
           {!!financeRepaymentBanner.ctaLabel && (
-            <div className="md:mt-6 xs:mt-5">
-              <CTA
-                variant="outline"
-                colorText="text-accent"
-                fontWeight="font-light"
-                borderColor="border-accent"
-                align="center"
-                icon="slot"
-                bgColor="transparent"
-                href={financeRepaymentBanner.ctaHref}
-                className="md:w-auto xs:w-full xs:h-12 xs:rounded-xl xs:py-6 fadeRightFinanceButton"
+            // <div className="md:mt-6 xs:mt-5">
+            //   <CTA
+            //     variant="outline"
+            //     colorText="text-accent"
+            //     fontWeight="font-light"
+            //     borderColor="border-accent"
+            //     align="center"
+            //     icon="slot"
+            //     bgColor="transparent"
+            //     href={financeRepaymentBanner.ctaHref}
+            //     className="md:w-auto xs:w-full xs:h-12 xs:rounded-xl xs:py-6 fadeRightFinanceButton"
+            //   >
+            //     {financeRepaymentBanner.ctaLabel}
+            //   </CTA>
+            // </div>
+            <div className="md:mt-[68px]  xs:mt-12 flex justify-center fadeupButton">
+              <a
+                href={financeRepaymentBanner.ctaHref || '#'}
+                className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
+                          text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
+                            border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-auto"
               >
-                {financeRepaymentBanner.ctaLabel}
-              </CTA>
+                <span className="mx-auto">{financeRepaymentBanner.ctaLabel}</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="cta-arrow size-6 translate-x-0 transition-transform "
+                  aria-hidden="true"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </a>
             </div>
           )}
         </div>

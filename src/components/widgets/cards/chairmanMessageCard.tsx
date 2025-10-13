@@ -165,7 +165,7 @@ export default async function ChairmanMessage(props: WidgetContext<CardSectionEn
           </div>
           {subtitle && (
             <Description
-              className="text[16px] tracking-wider xs:leading-5"
+              className="text[16px] tracking-wider xs:leading-[28px]"
               html={subtitle}
             ></Description>
           )}
