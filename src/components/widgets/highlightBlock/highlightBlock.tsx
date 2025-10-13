@@ -93,6 +93,15 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     (Array.isArray(data.Image) ? data.Image?.[0]?.AlternativeText : data.Image?.AlternativeText) ||
     title ||
     'illustration';
+  const darkImgSrc: string | undefined = pickImageUrl(
+    Array.isArray(data.DarkImage) ? data.DarkImage[0] : data.DarkImage,
+  );
+  const darkImgAlt: string =
+    (Array.isArray(data.DarkImage)
+      ? data.DarkImage?.[0]?.AlternativeText
+      : data.DarkImage?.AlternativeText) ||
+    title ||
+    'illustration';
 
   return (
     <section className="md:mx-20 relative xs:flex xs:flex-col xs:mx-2 ">
@@ -145,18 +154,31 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
         {/* Right: artwork / image panel */}
         <div
           className="xs:flex xs:justify-center md:absolute md:h-[392px] md:w-[490px] md:fadeRight duration-1000 md:right-0 
-        md:mr-[87px] md:rtl:ml-[87px] md:rtl:left-0 md:rtl:right-auto"
+    md:mr-[87px] md:rtl:ml-[87px] md:rtl:left-0 md:rtl:right-auto"
         >
-          <div className="md:absolute md:h-[392px]  md:w-[490px] xs:right-10  rounded-[20px] overflow-hidden">
+          <div className="md:absolute md:h-[392px] md:w-[490px] xs:right-10 rounded-[20px] overflow-hidden">
+            {/* Light mode image */}
             {imgSrc ? (
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="md:h-[392px] md:w-[490px] object-contain xs:h-[250px] xs:w-[280px]"
+                className="block dark:hidden md:h-[392px] md:w-[490px] object-contain xs:h-[250px] xs:w-[280px]"
                 draggable={false}
               />
             ) : (
-              <div className="h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100" />
+              <div className="block dark:hidden h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100" />
+            )}
+
+            {/* Dark mode image */}
+            {darkImgSrc ? (
+              <img
+                src={darkImgSrc}
+                alt={darkImgAlt}
+                className="hidden dark:block md:h-[392px] md:w-[490px] object-contain xs:h-[250px] xs:w-[280px]"
+                draggable={false}
+              />
+            ) : (
+              <div className="hidden dark:block h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-[#1a1a1f] to-[#0f0f15]" />
             )}
           </div>
         </div>

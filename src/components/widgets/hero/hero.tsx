@@ -211,23 +211,22 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
             </Eyebrow>
           )}
 
-          {/* {fulltitle && (
-            <Title
+          {fulltitle && (
+            <Title html={fulltitle}
               color="text-white"
               className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] xs:leading-8 rtl:xs:leading-[45px] mb-4"
-            >
-              {fulltitle}
-            </Title>
-          )} */}
+            />
+             
+          )}
           
-          {title && (
+          {/* {title && (
             <Title
               color="text-white"
               className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] xs:leading-8 rtl:xs:leading-[45px] mb-4"
             >
               {title}
             </Title>
-          )}
+          )} */}
 
           {description && (
             <Description html={description} className="text-white mb-4 leading-5 rtl:leading-8" />
