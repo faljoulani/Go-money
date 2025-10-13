@@ -266,8 +266,9 @@ export default function ContactFormClient({
                   inputMode="tel"
                   autoComplete="tel"
                   required
-                  placeholder={data.phoneNumberPlaceholder ?? ''}
-                  className={FIELD}
+                  dir={dir}
+                  className={`${FIELD} rtl:text-right`}
+                  placeholder={data.phoneNumberPlaceholder || ''}
                   disabled={isLoading}
                 />
               </div>
