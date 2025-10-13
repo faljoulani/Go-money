@@ -29,10 +29,63 @@ function useOutsideClose<T extends HTMLElement>(
     };
   }, [open, ref, onClose]);
 }
+
 export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang: string }) {
   const C = cfg ?? {};
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
-  console.log('adfkasdf', C);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const root = formRef.current;
+    if (!root) return;
+
+    const replaceAttrs = (el: Element) => {
+      const a = el as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
+
+      if ('placeholder' in a && a.placeholder)
+        a.placeholder = normalizeCurrencyText(a.placeholder, dir);
+      if (a.title) a.title = normalizeCurrencyText(a.title, dir);
+      const aria = a.getAttribute('aria-label');
+      if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria, dir));
+
+      if (a instanceof HTMLElement) {
+        if (
+          ['LABEL', 'SMALL', 'SPAN', 'DIV', 'P'].includes(a.tagName) &&
+          a.childElementCount === 0
+        ) {
+          const t = a.textContent ?? '';
+          const newT = normalizeCurrencyText(t, dir);
+          if (newT !== t) a.textContent = newT;
+        }
+      }
+    };
+
+    root.querySelectorAll('input, textarea, label, small, span, p, div').forEach(replaceAttrs);
+
+    const mo = new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (m.type === 'attributes' && m.target) replaceAttrs(m.target as Element);
+        if (m.type === 'childList') {
+          m.addedNodes.forEach((n) => {
+            if (n.nodeType === 1) {
+              const el = n as Element;
+              replaceAttrs(el);
+              el.querySelectorAll('input, textarea, label, small, span, p, div').forEach(
+                replaceAttrs,
+              );
+            }
+          });
+        }
+      }
+    });
+    mo.observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['placeholder', 'title', 'aria-label'],
+    });
+    return () => mo.disconnect();
+  }, [dir]);
   const { post } = useSfMutation('api/default/eligibility/get');
   function normalizeNationality(input: string): Nationality {
     const s = (input || '').trim();
@@ -49,8 +102,19 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     new Intl.NumberFormat('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
       n,
     );
-  const MIN_AGE = 18;
-  const MAX_MATURITY_AGE = 70;
+  const MIN_AGE = 21;
+  const MAX_AGE = 70;
+  const MAX_MATURITY_AGE = 150;
+  const RIYAL_SYMBOL = '\u{FDFC}';
+
+  console.log('RIYAL_SYMBOL', RIYAL_SYMBOL);
+  const SAR_PAT = /(?:\bSAR\b|ريال(?:\s*سعودي)?|ر\.?\s*س|﷼)/gi;
+
+  function normalizeCurrencyText(s: string, dir: 'ltr' | 'rtl') {
+    console.log('ssssss', s);
+    if (!s) return s;
+    return s.replace(SAR_PAT, `${RIYAL_SYMBOL}`);
+  }
 
   const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
 
@@ -74,6 +138,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         `You must be at least ${MIN_AGE} years old.`,
         `يجب ألا يقل عمرك عن ${MIN_AGE} عامًا.`,
       );
+    if (appAge > MAX_AGE)
+      return t(
+        `You must be at maximum ${MAX_AGE} years old.`,
+        `يجب ألا يزيد عمرك عن ${MAX_AGE} عامًا.`,
+      );
     if (matAge > MAX_MATURITY_AGE)
       return t(
         `Your age at the end of the financing cannot exceed ${MAX_MATURITY_AGE} years.`,
@@ -83,12 +152,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     return null;
   }
   function apiErrorMessage() {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      return t(
-        'You appear to be offline. Please reconnect and try again.',
-        'يبدو أنك غير متصل بالإنترنت. يُرجى إعادة الاتصال والمحاولة مرة أخرى.',
-      );
-    }
     return t(
       'We couldn’t submit your request right now. Please try again.',
       'تعذّر إرسال طلبك الآن. يُرجى المحاولة مرة أخرى.',
@@ -201,7 +264,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   // ---- state ----
   const [result, setResult] = useState<ResultState>(null);
   const [nationality, setNationality] = useState<Nationality>('Saudi');
-  const [employer, setEmployer] = useState<string>('');
+  const [employer, setEmployer] = useState<string>(employerOptions[0]?.value);
   const [serviceLength, setServiceLength] = useState<string>(lengthOptions[0]?.value ?? '3');
   const [dob, setDob] = useState('');
   const [salary, setSalary] = useState<number | ''>('');
@@ -236,10 +299,15 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   }
   function calcAgeAtMaturity(dobStr: string, tenureMonths: number) {
     if (!dobStr) return '';
-    const d = new Date(dobStr);
-    const mat = new Date(d);
-    mat.setMonth(mat.getMonth() + Number(tenureMonths || 0));
-    return calcAge(mat.toISOString().slice(0, 10));
+    const dob = new Date(dobStr);
+    const maturity = new Date();
+    maturity.setMonth(maturity.getMonth() + Number(tenureMonths || 0));
+
+    let age = maturity.getFullYear() - dob.getFullYear();
+    const m = maturity.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && maturity.getDate() < dob.getDate())) age--;
+
+    return String(age);
   }
   function mapLenOfService(choice: string) {
     const m = /(\d+)/.exec(choice || '');
@@ -319,10 +387,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   return (
     <section className="w-full mt-32">
       <form
+        ref={formRef}
         onSubmit={onSubmit}
-        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm"
+        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm "
       >
-        <h2 className="text-[28px] font-semibold text-primary">
+        <h2 className="xs:text-[24px] md:text-[28px] font-bold text-primary">
           {C.title || 'Enter your Finance details'}
         </h2>
         <div className="mt-4">
@@ -354,6 +423,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <Field label={C.labels?.employerType || 'Employer Type'}>
             <Select
+              className="riyals-font"
               value={employer}
               onChange={setEmployer}
               placeholder={C.labels?.employerPlaceholder || 'Select Employer Type'}
@@ -369,7 +439,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
-                className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''}`}
+                className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
               <span aria-hidden className="date-icon" />
@@ -408,10 +478,16 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 onChange={(v) => setRequestedFinanceAmount(clamp(Number(v || 0), AMIN, AMAX))}
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
-              <div className="text-xs text-gray-500">
-                {dir === 'ltr'
-                  ? `Amount must be between ${formatSar(AMIN)} and ${formatSar(AMAX)} SAR`
-                  : `يرجى إدخال مبلغ يتراوح بين ${formatSar(AMIN)} و ${formatSar(AMAX)} SAR`}
+              <div className="text-xs text-gray-500 riyals-font">
+                {dir === 'ltr' ? (
+                  <>
+                    Amount must be between {formatSar(AMIN)} and {formatSar(AMAX)} {RIYAL_SYMBOL}
+                  </>
+                ) : (
+                  <>
+                    يرجى إدخال مبلغ يتراوح بين {formatSar(AMIN)} و {formatSar(AMAX)} {RIYAL_SYMBOL}
+                  </>
+                )}
               </div>
 
               <input
@@ -490,11 +566,15 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             />
           </Field>
 
-          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4 text-[13px] text-primaryAlt">
-            <div className="flex items-start gap-2">
-              <InfoIcon />
-              <div>
-                <strong>{C.popups?.note?.title || 'Important Note'}</strong>
+          <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4  text-[14px] text-primaryAlt">
+            <div className="flex flex-col">
+              <div className="flex gap-2">
+                <InfoIcon />
+                <strong className="text-[#0045AB] dark:text-primaryAlt">
+                  {C.popups?.note?.title || 'Important Note'}
+                </strong>
+              </div>
+              <div className="ml-6">
                 <p className="mt-1 text-default">
                   {C.popups?.note?.description ||
                     'This calculation is for guidance only. The results do not constitute a final offer and have no legal effect.'}
@@ -511,9 +591,22 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             className="inline-flex items-center gap-2 rounded-full bg-primaryAlt px-6 py-3 text-secondary hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Submitting…' : C.cta?.text || 'Check your eligibility Now'}
-            <span aria-hidden className="rtl:rotate-180">
-              ➜
-            </span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+              className="cta-arrow "
+            >
+              <path
+                d="M9 18l6-6-6-6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         </div>
 
@@ -678,7 +771,9 @@ function Select({
   options,
   placeholder,
   disabled = false,
+  className,
 }: {
+  className?: string;
   value: string;
   onChange: (v: string) => void;
   options: Choice[];
@@ -711,6 +806,7 @@ function Select({
         className={clsx(
           'sf-input bg-secondary ltr:pr-10 rtl:pl-10 flex items-center justify-between',
           disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',
+          `${className}`,
         )}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -768,10 +864,12 @@ function Select({
 }
 
 function CurrencyInput({
+  className,
   value,
   onChange,
   placeholder,
 }: {
+  className?: string;
   value: number | '';
   onChange: (v: number | '') => void;
   placeholder?: string;
@@ -787,7 +885,7 @@ function CurrencyInput({
         onChange(v === '' ? '' : Number(v));
       }}
       placeholder={placeholder || '0.00 ﷼'}
-      className="sf-input bg-secondary"
+      className="sf-input bg-secondary riyals-font"
     />
   );
 }
@@ -806,7 +904,7 @@ function Tooltip({ content, children }: { content: string; children: React.React
 
 export function InfoIcon({ className = '' }: { className?: string }) {
   return (
-    <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="none">
+    <svg aria-hidden className={`h-[20px] w-[20px] ${className}`} viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="12" fill="var(--color-primary-alt)" />
 
       <circle cx="12" cy="7" r="1.3" fill="var(--color-secondary)" />

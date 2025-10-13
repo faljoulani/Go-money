@@ -41,8 +41,7 @@ export function SuccessResponse({
     dir === 'rtl'
       ? {
           title: '🎉 أنت مؤهل للحصول على تمويلنا !',
-          desc:
-            'خطوتك التالية هي إكمال التسجيل لنقوم بتصميم عرض بمعدل ربح وشروط تناسب احتياجاتك.',
+          desc: 'خطوتك التالية هي إكمال التسجيل لنقوم بتصميم عرض بمعدل ربح وشروط تناسب احتياجاتك.',
           noteTitle: 'الشروط والأحكام',
           noteDesc:
             'سيتم تحديد معدل الربح والشروط النهائية بعد إتمام التسجيل ومراجعة سجلك الائتماني.',
@@ -51,8 +50,7 @@ export function SuccessResponse({
         }
       : {
           title: "🎉 You're Eligible for Our Financing !",
-          desc:
-            'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!',
+          desc: 'Based on the information you provided, you are preliminarily eligible for financing. Complete your registration now to discover your tailored offer!',
           noteTitle: 'Important Note',
           noteDesc:
             'The eligible amount is an estimate and may change based on the confirmation of your salary and credit score.',
@@ -62,22 +60,19 @@ export function SuccessResponse({
 
   return (
     <section className="w-full" dir={dir}>
-      
       <div className="mx-auto max-w-[1240px] rounded-3xl bg-surface-section mt-16 p-8 text-center">
         <div className="mx-auto mb-6 grid place-items-center">
           <img src="/assets/success.png" alt="success" className="h-24 w-24 object-contain" />
         </div>
 
-        <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-primary mb-3">
-          {t.title}
-        </h2>
+        <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-primary mb-3">{t.title}</h2>
         <p className="text-[16px] md:text-[18px] text-default max-w-3xl mx-auto">{t.desc}</p>
 
-        <div className="mt-8 rounded-2xl border border-[#B9D7F2] dark:border-none dark:bg-[#23242C] bg-blue-100 p-4 text-[13px] max-w-4xl mx-auto">
+        <div className="mt-8 rounded-2xl border border-[#B9D7F2] dark:border-none dark:bg-[#23242C] bg-blue-100 p-4 text-[14px] max-w-4xl mx-auto">
           <div className="flex flex-col items-start gap-2">
-            <div className="flex gap-2 text-primaryAlt">
+            <div className="flex gap-2">
               <InfoIcon />
-              <strong>{t.noteTitle}</strong>
+              <strong className="text-[#0045AB] dark:text-primaryAlt">{t.noteTitle}</strong>
             </div>
             <p className="mt-1 ml-6 text-default">{t.noteDesc}</p>
           </div>
@@ -130,16 +125,14 @@ export function FailResponse({
         }
       : {
           title: 'Not Eligible Yet',
-          desc:
-            'Unfortunately, we are unable to proceed with your application at this time',
+          desc: 'Unfortunately, we are unable to proceed with your application at this time',
           reasonsTitle: 'This could be due to one or more of the following reasons:',
           reasonsHtml:
             '• Your verified information does not meet our internal policy requirements.<br/>• Your credit history does not currently meet our eligibility criteria.',
-          actionsTitle:
-            "But don’t worry — this isn’t permanent! Here’s what you can do:",
+          actionsTitle: 'But don’t worry — this isn’t permanent! Here’s what you can do:',
           actionsHtml:
             '• Use Go Money regularly<br/>• Repay any pending dues<br/>• Try again in 30 days',
-          foot: "We’re here when you’re ready.",
+          foot: 'We’re here when you’re ready.',
           back: 'Back to Calculator',
         };
 
@@ -197,7 +190,6 @@ export function FailResponse({
   );
 }
 
-
 function InfoIcon({ className = '' }: { className?: string }) {
   return (
     <svg aria-hidden className={`h-4 w-4 ${className}`} viewBox="0 0 24 24" fill="none">
@@ -207,3 +199,4 @@ function InfoIcon({ className = '' }: { className?: string }) {
     </svg>
   );
 }
+
