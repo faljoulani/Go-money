@@ -83,6 +83,15 @@ export function extractHref(raw?: any): string {
 
 export const cleanHref = (href: string) => href.split('#')[0].split('?')[0];
 
+export function resolveItemUrl(raw: string | null | undefined): string {
+  if (!raw) return '';
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed[0]?.href) return parsed[0].href as string;
+  } catch {}
+  return raw;
+}
+
 export function routeMatchKey(urlOrPath?: string): string {
   if (!urlOrPath) return '/';
 
