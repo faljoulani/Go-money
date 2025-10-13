@@ -6,7 +6,6 @@ import Description from '../../atoms/description/description';
 import Title from '../../atoms/title/title';
 import { CmsImage, ImgUrl as imgUrl } from '../../../types/typee';
 import Link from 'next/link';
-import Image from 'next/image';
 import SocialCleint from './socailClient';
 
 const firstMedia = (m: any): CmsImage => (Array.isArray(m) ? m[0] : m) ?? null;
@@ -79,11 +78,11 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
       {...attrs}
       className="max-w-[490px] relative flex flex-col items-start justify-between rounded-[20px] h-full bg-surface-input p-4 md:p-10 shadow-sm"
     >
-      {/* {item.HasLabel && (
+      {item.HasLabel && (
         <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px] xs:ltr:rounded-tl-[30px] xs:rtl:rounded-tr-[30px]">
           <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-surface-input"></div>
         </div>
-      )} */}
+      )}
       <div className="space-y-4">
         <Title color="text-primary" className="text-2xl font-bold  md:text-28px">
           {item.Title}
@@ -101,6 +100,8 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
           const media =
             (Array.isArray(social.Logo) ? social.Logo[0] : social.Logo) ??
             (Array.isArray(social.Icon) ? social.Icon[0] : social.Icon);
+          const isNumber = /^\s*[+0-9]/.test(social.Description ?? '');
+
           return (
             <div key={social.Id} className="flex items-center gap-4">
               {imgUrl(media) && (
@@ -111,11 +112,13 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
                   draggable={false}
                 />
               )}
-              <Description
-                color="text-default"
-                className="font-semibold leading-[100%] tracking-[0]"
-                html={social.Description}
-              />
+
+              <div
+                dir={isNumber ? 'ltr' : undefined}
+                className="font-semibold leading-[100%] tracking-[0] text-start"
+              >
+                <Description color="text-default" html={social.Description} />
+              </div>
             </div>
           );
         })}
