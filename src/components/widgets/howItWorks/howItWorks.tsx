@@ -256,7 +256,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                   className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
                           text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
                             border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
-                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-[275px] md:max-w-[325px]"
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-auto"
                 >
                   <span className="mx-auto">{view.CTALabel}</span>
                   <svg

@@ -70,10 +70,10 @@ export function MobileCardsCarousel({
                 <div className="relative overflow-hidden rounded-xl w-full h-[250px]">
 
               {target === 'scrollableCards' && (
-                <div className={`absolute  border-none overflow-hidden ${isOdd ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}>
+                <div className={`absolute   ${isOdd ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}>
                   <div
-                    className={`relative w-[72px]  h-[72px]  ${
-                      isOdd ? 'bg-[#0DF9C4] rounded-tr-3xl ' : 'bg-[#1919E5] rounded-tl-3xl'
+                    className={`relative w-[72px]  h-[72px] border-none  ${
+                      isOdd ? 'bg-[#0DF9C4] border rounded-tr-3xl ' : 'bg-[#1919E5] rounded-tl-3xl'
                     }`}
                   >
                     <div
