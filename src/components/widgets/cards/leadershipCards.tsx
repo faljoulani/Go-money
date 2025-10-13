@@ -130,7 +130,10 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
   });
 
   return (
-    <section {...attributes} className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5 max-w-[1440px] xxl:mx-auto">
+    <section
+      {...attributes}
+      className="w-full md:px-20 pt-10 md:pb-10 xs:pb-5 max-w-[1440px] xxl:mx-auto"
+    >
       <div className="mb-8">
         <Title className="text-start md:leading-[63px] md:w-[650px] md:text-5xl xs:text-2xl xs:leading-8 font-bold text-primaryAlt">
           {title}
@@ -167,7 +170,7 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
 
           {/* Last 2 items */}
           <div className="md:col-span-3 md:flex justify-center md:gap-x-10 xs:space-y-4 md:space-y-0 md:mt-14">
-            {items.slice(3, 5).map((item: any, i: number) => (
+            {items.slice(3, 6).map((item: any, i: number) => (
               <div key={i} className="md:flex md:flex-col md:w-[330px]">
                 {item.iconUrl && (
                   <img
