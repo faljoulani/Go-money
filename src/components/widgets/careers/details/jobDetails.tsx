@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 import SimilarJobs from './similarJobs';
+import { emitCareersActiveJob } from '../../../../utils/careersEvents';
 
 import type { DetailsResponse, JobDetailsProps } from '../../../../types/typee';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
@@ -65,9 +66,28 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
     };
   }, [key, id, language]);
 
-  if (loading || !language) return <FullPageLoader />;
+  const job = data?.Data ?? null;
 
-  const job = data?.Data;
+  useEffect(() => {
+    if (!language) return;
+
+    emitCareersActiveJob({ lang: language, title: job?.Title ?? null, mode: 'details' });
+
+    return () => {
+      emitCareersActiveJob({ lang: language, title: null, mode: 'list' });
+    };
+  }, [language, job?.Title]);
+
+  const handleApplyClick = () => {
+    if (language) {
+      const heroTitle = language === 'ar' ? 'التقدم لهذه الوظيفة' : 'Apply for this job';
+      emitCareersActiveJob({ lang: language, title: heroTitle, mode: 'apply' });
+    }
+
+    onApply?.(id);
+  };
+
+  if (loading || !language) return <FullPageLoader />;
   if (error || !job) {
     return (
       <section className="w-full mx-20 py-10">
@@ -223,7 +243,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
               ) : (
                 <button
                   type="button"
-                  onClick={() => onApply?.(id)}
+                  onClick={handleApplyClick}
                   className="mt-6 w-full rounded-2xl bg-primaryAlt px-4 py-3 text-center font-medium text-secondary hover:opacity-90"
                 >
                   {job.ButtonLabel ||
@@ -250,4 +270,3 @@ function iconFor(title: string) {
   if (key.includes('posted')) return "/icons/o'clock_job_icon.png";
   return '/icons/job_icon.png';
 }
-

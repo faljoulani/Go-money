@@ -133,11 +133,11 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
     <section {...attributes} className="w-full">
       <div className="mx-auto max-w-[1240px]">
         <div className="relative">
-          <div className="md:sticky md:top-20 md:px-0 px-16 flex flex-col gap-2 text-center md:h-[600px] fadeupText">
-            {eyebrow && <Eyebrow color="text-primary">{eyebrow}</Eyebrow>}
+          <div className="md:sticky md:top-20 md:px-16 xs:px-0 flex flex-col gap-2 text-center md:h-[600px] fadeupText">
+            {eyebrow && <Eyebrow color="text-primary" className="xs:text-[14px] md:text-[18px">{eyebrow}</Eyebrow>}
             <Title
               color="text-primary"
-              className="text-[40px] font-bold tracking-[-0.02em] "
+              className="md:text-[40px] xs:text-[24px] font-bold tracking-[-0.02em] "
             >
               {title}
             </Title>
