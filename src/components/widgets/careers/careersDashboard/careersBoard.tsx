@@ -585,8 +585,8 @@ export default function CareersBoard({
   }
 
   return (
-    <section className={`relative mx-auto py-10 md:px-10 ${className ?? ''}`}>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_minmax(0,1fr)]">
+    <section className={` py-10 md:px-10 ${className ?? ''}`}>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_1fr]">
         {/* Sidebar (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
           <div className="rounded-2xl shadow-md bg-surface-section p-4">
@@ -699,7 +699,7 @@ export default function CareersBoard({
         </aside>
 
         {/* Main column */}
-        <div className="min-w-0 max-w-[888px] flex min-h-[600px] flex-col gap-4">
+        <div className="min-w-[854px] flex min-h-[600px] flex-col gap-4">
           <div ref={topRef} tabIndex={-1} className="outline-none" />
           <div className="flex items-center justify-between gap-3  mb-8">
             <h2
@@ -742,8 +742,6 @@ export default function CareersBoard({
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
               {error}
             </div>
-          ) : !hasResults ? (
-            <EmptyState />
           ) : (
             <>
               {/* Selected filter chips (mobile) */}
@@ -763,22 +761,44 @@ export default function CareersBoard({
                 </div>
               )}
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
-                {jobs.map((job) => (
-                  <div key={job.id} className="h-[218px]">
-                    <JobCard job={job} onOpen={() => handleOpenJob(job.id, job.departmentId)} />
+              {/* RESULTS AREA — reserve height so the column never collapses */}
+              <div className="flex-1 min-h-[820px]">
+                {loading ? (
+                  /* optional skeleton that matches your grid height */
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
+                    {Array.from({ length: query.pageSize }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-[218px] rounded-2xl bg-black/5 dark:bg-white/10 animate-pulse"
+                      />
+                    ))}
                   </div>
-                ))}
+                ) : hasResults ? (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
+                    {jobs.map((job) => (
+                      <div key={job.id} className="h-[218px]">
+                        <JobCard job={job} onOpen={() => handleOpenJob(job.id, job.departmentId)} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid h-full place-content-center">
+                    <EmptyState />
+                  </div>
+                )}
               </div>
 
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                totalResults={totalResults}
-                pageSize={query.pageSize}
-                onPage={handlePage}
-                onPageSize={handlePageSize}
-              />
+              {/* PAGINATION — always rendered and pinned to bottom of this column */}
+              <div className="mt-auto pt-4">
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  totalResults={totalResults}
+                  pageSize={query.pageSize}
+                  onPage={handlePage}
+                  onPageSize={handlePageSize}
+                />
+              </div>
             </>
           )}
         </div>
@@ -976,3 +996,4 @@ export default function CareersBoard({
     </section>
   );
 }
+

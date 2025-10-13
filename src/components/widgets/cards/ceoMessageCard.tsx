@@ -63,7 +63,6 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
   const ctaText = parent?.CtaText ?? '';
   const isOverlay = parent?.isOverlay ?? true;
 
-
   const ctaUrlRaw = parent?.CtaUrl;
   const ctaHref =
     typeof ctaUrlRaw === 'string'
@@ -147,9 +146,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
     ? 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-bgAlt rounded-[16px] md:p-6 xs:p-[18px] md:w-[90%] md:h-[115px] xs:w-[255px] xs:h-[86px] text-start shadow-md'
     : 'absolute bottom-4 left-1/2 -translate-x-1/2 bg-bgAlt rounded-[16px] px-6 py-4 w-[90%] text-start';
 
-  const textColCls = isOverlay
-    ? 'text-start w-auto space-y-3 '
-    : 'text-start w-[522px] space-y-3';
+  const textColCls = isOverlay ? 'text-start w-auto space-y-3 ' : 'text-start w-[522px] space-y-3';
   // ------------------------------------
 
   return (
@@ -166,22 +163,34 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
             <img src={items[0].iconUrl} alt={items[0]?.title || ''} className={imageCls} />
           )}
           <div className={overlayPanelCls}>
-            {items[0]?.description && <Description className='xs:text-14px xs:leading-[18px]'>{items[0].description}</Description>}
+            {items[0]?.description && (
+              <Description className="xs:text-14px xs:leading-[18px]">
+                {items[0].description}
+              </Description>
+            )}
             {items[0]?.title && (
-              <Title className="md:text-2xl xs:text-[18px] font-medium md:mt-3 xs:mt-2 text-primaryAlt">{items[0].title}</Title>
+              <Title className="md:text-2xl xs:text-[18px] font-medium md:mt-3 xs:mt-2 text-primaryAlt">
+                {items[0].title}
+              </Title>
             )}
           </div>
         </div>
 
         <div className={textColCls}>
           <div className="space-y-3">
-            {eyebrow && <Eyebrow className='xs:text-14px xs:leading-[18px] text-primaryAlt'>{eyebrow}</Eyebrow>}
+            {eyebrow && (
+              <Eyebrow className="xs:text-14px xs:leading-[18px] text-primaryAlt">
+                {eyebrow}
+              </Eyebrow>
+            )}
             {title && (
-              <Title className="text-primary md:text-[36px] xs:text-2xl font-bold tracking-[-0.02em]">{title}</Title>
+              <Title className="text-primary md:text-[36px] xs:text-2xl font-bold tracking-[-0.02em]">
+                {title}
+              </Title>
             )}
           </div>
           {subtitle && (
-            <Description className="text[16px] tracking-wider xs:leading-5" html={subtitle}></Description>
+            <Description className="text[16px]  xs:leading-[28px]" html={subtitle}></Description>
           )}
           {!!ctaText && !!ctaHref && (
             <div className="pt-2">
