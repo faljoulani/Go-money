@@ -172,7 +172,7 @@ export default async function Careers(props: WidgetContext<any>) {
   });
 
   return (
-    <section {...attrs} className="flex justify-center mx-auto">
+    <section {...attrs} className="flex justify-center">
       <CareersRouting
         language={culture || 'en'}
         labels={labels}
