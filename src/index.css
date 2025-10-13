@@ -93,6 +93,14 @@
     url('/assets/fonts/lufga/LufgaExtraBold.woff2') format('woff2'),
     url('/assets/fonts/lufga/LufgaExtraBold.woff') format('woff');
 }
+@font-face{
+  font-family: 'UrpayAR';
+  src: url('/assets/fonts/lufga/UrpayAR.ttf') format('truetype'); 
+  font-display: swap;
+}
+.riyals-font { font-family: 'UrpayAR' }
+
+
 
 :root {
   --color-primary: #010663;

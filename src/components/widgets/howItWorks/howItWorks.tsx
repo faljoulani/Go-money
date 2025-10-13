@@ -138,13 +138,13 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
     <section {...attrs} className="relative xs:mx-4 md:mx-28  xxl:mx-auto max-w-[1440px]">
       {/* Top headline block */}
       <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
-        {view.SubTitle && <Eyebrow color="text-primary">{view.SubTitle}</Eyebrow>}
+        {view.SubTitle && <Eyebrow color="text-primary" className="md:text-[18px] xs:text-[14px]">{view.SubTitle}</Eyebrow>}
         {view.Title && (
           <Title
             color="text-black"
             className="
               md:text-[40px]
-              xs:text-[1.6rem]
+              xs:text-[24px]
               font-bold     
               tracking-[-0.02em]
               md:leading-[75px]
@@ -159,7 +159,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
       {/* Rings background + sticky phone */}
       <div
-        className="relative md:mt-10 md:h-[1390px] xs:mt-24 xs:h-[1400px] flex flex-col justify-center items-center"
+        className="relative md:mt-10 md:h-[1390px] xs:mt-24 xs:h-[1600px] flex flex-col justify-center items-center"
         style={{
           backgroundImage: 'var(--howitworks-bg)',
           backgroundSize: '1380px',
@@ -176,7 +176,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1330px]">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1200px]">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
               src="/assets/BlackCurve.webp"
@@ -222,9 +222,9 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
                                  before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
-                                 before:pointer-events-none"
+                                 before:pointer-events-none md:h-[265px] xs:h-[220px]"
                   >
-                    <div className="mx-auto mb-6 grid h-16 w-16 place-items-center">
+                    <div className="mx-auto md:mb-6  xs:mb-0 xs:-mt-8 grid h-16 w-16 place-items-center">
                       {logoSrc ? (
                         <img src={logoSrc} alt={logoAlt} className="h-16 w-16" />
                       ) : (
@@ -248,21 +248,32 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                   );
                 })}
               </div>
-              {view.CTALabel && (
-                <div className="mt-16 flex justify-center fadeupButton">
-                  <CTA
-                    href={(CTAExternalUrl || '').trim() || '#'}
-                    colorText="text-primaryAlt"
-                    borderColor="border-primaryAlt"
-                    bgColor="transparent"
-                    variant="outline"
-                    icon="arrow"
-                    className="w-[248px] h-14"
+          
+                    {view.CTALabel && (
+              <div className="md:mt-[68px]  xs:mt-12 flex justify-center fadeupButton">
+                <a
+                  href={CTAExternalUrl || '#'}
+                  className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
+                          text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
+                            border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-[275px] md:max-w-[325px]"
+                >
+                  <span className="mx-auto">{view.CTALabel}</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="cta-arrow size-6 translate-x-0 transition-transform "
+                    aria-hidden="true"
                   >
-                    {view.CTALabel}
-                  </CTA>
-                </div>
-              )}
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </a>
+              </div>
+            )}
             </div>
           </div>
         </section>

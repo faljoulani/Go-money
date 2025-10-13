@@ -182,7 +182,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
       className="w-full md:py-16 md:px-20 xs:py-12 max-w-[1440px] xxl:mx-auto"
     >
       <div className="flex flex-col items-center gap-2 text-center fadeupText">
-        {eyebrow && <Eyebrow color="text-primary">{eyebrow}</Eyebrow>}
+        {eyebrow && <Eyebrow color="text-primary" className="md:text-[18px] xs:text-[14px]">{eyebrow}</Eyebrow>}
         <Title
           className="
               md:text-5xl xs:text-2xl

@@ -29,10 +29,63 @@ function useOutsideClose<T extends HTMLElement>(
     };
   }, [open, ref, onClose]);
 }
+
 export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang: string }) {
   const C = cfg ?? {};
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
+  const formRef = useRef<HTMLFormElement>(null);
 
+  useEffect(() => {
+    const root = formRef.current;
+    if (!root) return;
+
+    const replaceAttrs = (el: Element) => {
+      const a = el as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
+
+      if ('placeholder' in a && a.placeholder)
+        a.placeholder = normalizeCurrencyText(a.placeholder, dir);
+      if (a.title) a.title = normalizeCurrencyText(a.title, dir);
+      const aria = a.getAttribute('aria-label');
+      if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria, dir));
+
+      if (a instanceof HTMLElement) {
+        if (
+          ['LABEL', 'SMALL', 'SPAN', 'DIV', 'P'].includes(a.tagName) &&
+          a.childElementCount === 0
+        ) {
+          const t = a.textContent ?? '';
+          const newT = normalizeCurrencyText(t, dir);
+          if (newT !== t) a.textContent = newT;
+        }
+      }
+    };
+
+    root.querySelectorAll('input, textarea, label, small, span, p, div').forEach(replaceAttrs);
+
+    const mo = new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (m.type === 'attributes' && m.target) replaceAttrs(m.target as Element);
+        if (m.type === 'childList') {
+          m.addedNodes.forEach((n) => {
+            if (n.nodeType === 1) {
+              const el = n as Element;
+              replaceAttrs(el);
+              el.querySelectorAll('input, textarea, label, small, span, p, div').forEach(
+                replaceAttrs,
+              );
+            }
+          });
+        }
+      }
+    });
+    mo.observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['placeholder', 'title', 'aria-label'],
+    });
+    return () => mo.disconnect();
+  }, [dir]);
   const { post } = useSfMutation('api/default/eligibility/get');
   function normalizeNationality(input: string): Nationality {
     const s = (input || '').trim();
@@ -52,6 +105,16 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const MIN_AGE = 21;
   const MAX_AGE = 70;
   const MAX_MATURITY_AGE = 150;
+  const RIYAL_SYMBOL = '\u{FDFC}';
+
+  console.log('RIYAL_SYMBOL', RIYAL_SYMBOL);
+  const SAR_PAT = /(?:\bSAR\b|ريال(?:\s*سعودي)?|ر\.?\s*س|﷼)/gi;
+
+  function normalizeCurrencyText(s: string, dir: 'ltr' | 'rtl') {
+    console.log('ssssss', s);
+    if (!s) return s;
+    return s.replace(SAR_PAT, `${RIYAL_SYMBOL}`);
+  }
 
   const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
 
@@ -324,8 +387,9 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   return (
     <section className="w-full mt-32">
       <form
+        ref={formRef}
         onSubmit={onSubmit}
-        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm"
+        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm "
       >
         <h2 className="xs:text-[24px] md:text-[28px] font-bold text-primary">
           {C.title || 'Enter your Finance details'}
@@ -359,6 +423,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           <Field label={C.labels?.employerType || 'Employer Type'}>
             <Select
+              className="riyals-font"
               value={employer}
               onChange={setEmployer}
               placeholder={C.labels?.employerPlaceholder || 'Select Employer Type'}
@@ -374,7 +439,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
-                className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''}`}
+                className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
               <span aria-hidden className="date-icon" />
@@ -413,10 +478,16 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 onChange={(v) => setRequestedFinanceAmount(clamp(Number(v || 0), AMIN, AMAX))}
                 placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
               />
-              <div className="text-xs text-gray-500">
-                {dir === 'ltr'
-                  ? `Amount must be between ${formatSar(AMIN)} and ${formatSar(AMAX)} SAR`
-                  : `يرجى إدخال مبلغ يتراوح بين ${formatSar(AMIN)} و ${formatSar(AMAX)} SAR`}
+              <div className="text-xs text-gray-500 riyals-font">
+                {dir === 'ltr' ? (
+                  <>
+                    Amount must be between {formatSar(AMIN)} and {formatSar(AMAX)} {RIYAL_SYMBOL}
+                  </>
+                ) : (
+                  <>
+                    يرجى إدخال مبلغ يتراوح بين {formatSar(AMIN)} و {formatSar(AMAX)} {RIYAL_SYMBOL}
+                  </>
+                )}
               </div>
 
               <input
@@ -498,9 +569,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           <div className="md:col-span-2 mt-2 rounded-2xl border border-[#B9D7F2] dark:border-none  dark:bg-[#23242C] bg-blue-100 p-4  text-[14px] text-primaryAlt">
             <div className="flex flex-col">
               <div className="flex gap-2">
-              <InfoIcon />
-                              <strong className="text-[#0045AB] dark:text-primaryAlt">{C.popups?.note?.title || 'Important Note'}</strong>
-                    </div>
+                <InfoIcon />
+                <strong className="text-[#0045AB] dark:text-primaryAlt">
+                  {C.popups?.note?.title || 'Important Note'}
+                </strong>
+              </div>
               <div className="ml-6">
                 <p className="mt-1 text-default">
                   {C.popups?.note?.description ||
@@ -698,7 +771,9 @@ function Select({
   options,
   placeholder,
   disabled = false,
+  className,
 }: {
+  className?: string;
   value: string;
   onChange: (v: string) => void;
   options: Choice[];
@@ -731,6 +806,7 @@ function Select({
         className={clsx(
           'sf-input bg-secondary ltr:pr-10 rtl:pl-10 flex items-center justify-between',
           disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',
+          `${className}`,
         )}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -788,10 +864,12 @@ function Select({
 }
 
 function CurrencyInput({
+  className,
   value,
   onChange,
   placeholder,
 }: {
+  className?: string;
   value: number | '';
   onChange: (v: number | '') => void;
   placeholder?: string;
@@ -807,7 +885,7 @@ function CurrencyInput({
         onChange(v === '' ? '' : Number(v));
       }}
       placeholder={placeholder || '0.00 ﷼'}
-      className="sf-input bg-secondary"
+      className="sf-input bg-secondary riyals-font"
     />
   );
 }
