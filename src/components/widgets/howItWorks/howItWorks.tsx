@@ -158,7 +158,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
             {view.Title}
           </Title>
         )}
-        {view.HeaderText && <Description className="md:whitespace-nowrap xs:whitespace-normal">{view.HeaderText}</Description>}
+        {view.HeaderText && <Description>{view.HeaderText}</Description>}
       </div>
 
       {/* Rings background + sticky phone */}
