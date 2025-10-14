@@ -63,9 +63,9 @@ export default function JobCard({ job, onOpen }: Props) {
       onClick={goToDetails}
       onKeyDown={onKey}
       className="
-        mx-auto w-full md:w-[274px] md:h-[218px] p-6 rounded-xl bg-surface-section 
+        mx-auto w-[336.67px] h-[218px] md:w-[274px] md:h-[218px] p-6 rounded-xl bg-surface-section
         shadow-md hover:shadow-md transition overflow-hidden
-        flex flex-col items-center justify-between gap-4"
+        flex flex-col items-center gap-4 "
       aria-busy={loading}
       aria-label={`${job.title} - ${job.location}`}
     >
@@ -77,12 +77,12 @@ export default function JobCard({ job, onOpen }: Props) {
 
       <div className="flex flex-col items-center justify-center w-full">
         {/* Title: up to 2 lines, then ellipsis; allow breaking long words */}
-        <h3 className="text-xl font-bold leading-tight text-center line-clamp-2 break-words">
+        <h3 className="text-[20px] leading-[28px] font-bold text-center line-clamp-2 break-words font-lufga">
           {job.title}
         </h3>
 
         {/* Location row: allow truncation in flex by giving min-w-0 */}
-        <div className="mt-1 flex w-full min-w-0 items-center justify-center gap-2 font-semibold text-gray-600">
+        <div className="mt-1 flex w-full min-w-0 items-center justify-center gap-2 font-semibold text-gray-600 text-[14px] leading-[20px] font-lufga">
           <Image
             src="/icons/map-pin.png"
             alt=""
@@ -95,14 +95,17 @@ export default function JobCard({ job, onOpen }: Props) {
         </div>
       </div>
 
-      <div className={`flex items-center gap-2 text-14px ${isRtl ? 'flex-row-reverse' : ''}`}>
-        <span className="rounded-full px-3 py-2 bg-surface-sheet dark:text-white">
+      <div
+        className={`mt-auto flex items-center gap-2 text-[14px] leading-[20px] ${isRtl ? 'flex-row-reverse' : ''}`}
+      >
+        <span className="rounded-full px-3 py-2 bg-surface-sheet dark:text-white whitespace-nowrap font-lufga">
           {job.workType}
         </span>
-        <span className="rounded-full px-3 py-2 bg-surface-sheet dark:text-white">
+        <span className="rounded-full px-3 py-2 bg-surface-sheet dark:text-white whitespace-nowrap font-lufga">
           {formatDaysAgo(job.postedDaysAgo, isRtl ? 'ar' : 'en')}
         </span>
       </div>
     </article>
   );
 }
+

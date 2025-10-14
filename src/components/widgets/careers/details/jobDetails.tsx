@@ -128,25 +128,19 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                   {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
                 </h3>
                 <div
-                  className="mt-3 descriptionHtml"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      '<ul><li>' +
-                      responsibilitiesHtml.replace(/<br\s*\/?>/gi, '</li><li>') +
-                      '</li></ul>',
-                  }}
+                  className="mt-3 cms-bullets descriptionHtml"
+                  dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }}
                 />
               </div>
             )}
 
-            {/* Qualifications */}
             {qualificationsHtml && (
               <div className="px-6">
                 <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                   {job.Sections?.QualificationsLabel || 'Qualifications'}
                 </h3>
                 <div
-                  className="mt-3 qualificationsAsList"
+                  className="mt-3 cms-bullets qualificationsAsList"
                   dangerouslySetInnerHTML={{ __html: qualificationsHtml }}
                 />
               </div>
@@ -270,3 +264,4 @@ function iconFor(title: string) {
   if (key.includes('posted')) return "/icons/o'clock_job_icon.png";
   return '/icons/job_icon.png';
 }
+

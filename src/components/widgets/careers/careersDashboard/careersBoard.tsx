@@ -11,7 +11,7 @@ import { emitCareersActiveJob } from '../../../../utils/careersEvents';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import type {
   Labels,
@@ -117,37 +117,6 @@ const mapItemToJob = (i: CareersItem): Job => ({
 
 type QueryKey = 'locationNames' | 'departmentNames';
 
-function mergeFacetDisplay(
-  allNames: string[],
-  apiArr: ApiFacet[] | undefined,
-  selectedNames: string[],
-  baseline: Record<string, number>,
-): CareersFiltration[] {
-  const byName = new Map<string, { count: number; selected: boolean }>();
-
-  for (const f of apiArr ?? []) {
-    const n = (f?.Name ?? '').trim();
-    if (!n) continue;
-    byName.set(n, { count: f.Count ?? 0, selected: !!f.Selected || selectedNames.includes(n) });
-  }
-
-  return allNames
-    .map((name) => {
-      const v = byName.get(name);
-      const apiCount = v?.count;
-      const baseCount = baseline?.[name];
-      const count =
-        typeof apiCount === 'number' ? apiCount : typeof baseCount === 'number' ? baseCount : 0;
-
-      return {
-        name,
-        count,
-        selected: v?.selected ?? selectedNames.includes(name),
-      };
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
 function FilterSkeleton({ rows = 6 }: { rows?: number }) {
   return (
     <ul className="mt-3 space-y-2">
@@ -177,28 +146,28 @@ export default function CareersBoard({
 
   const isArabic = (s: string = '') => /[\u0600-\u06FF]/.test(s);
 
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const urlPage = useMemo(
     () => Math.max(1, parseInt(searchParams.get('page') || '', 10) || 1),
     [searchParams],
   );
+
   const urlPageSize = useMemo(
     () => Math.max(1, parseInt(searchParams.get('pageSize') || '', 10) || 12),
     [searchParams],
   );
 
-  const replaceUrl = useCallback(
-    (next: Partial<{ page: number; pageSize: number }>) => {
-      const sp = new URLSearchParams(searchParams.toString());
-      if (next.page != null) sp.set('page', String(next.page));
-      if (next.pageSize != null) sp.set('pageSize', String(next.pageSize));
-      router.replace(`${pathname}?${sp.toString()}#careers-top`);
-    },
-    [router, pathname, searchParams],
-  );
+  const replaceUrl = useCallback((next: Partial<{ page: number; pageSize: number }>) => {
+    if (typeof window === 'undefined') return;
+    const current = new URL(window.location.href);
+    if (next.page != null) current.searchParams.set('page', String(next.page));
+    if (next.pageSize != null) current.searchParams.set('pageSize', String(next.pageSize));
+
+    const qs = current.searchParams.toString();
+    const relative = `${current.pathname}${qs ? `?${qs}` : ''}#careers-top`;
+    window.history.replaceState(null, '', relative);
+  }, []);
 
   const { post: postSearch } = useSfMutation('api/default/careers/search');
   const [apiResp, setApiResp] = useState<SearchApiResponse | null>(null);
@@ -208,14 +177,6 @@ export default function CareersBoard({
   const [facetNames, setFacetNames] = useState<{ locations: string[]; departments: string[] }>({
     locations: [],
     departments: [],
-  });
-
-  const [baselineCounts, setBaselineCounts] = useState<{
-    locations: Record<string, number>;
-    departments: Record<string, number>;
-  }>({
-    locations: {},
-    departments: {},
   });
 
   const localItems = useMemo(
@@ -253,6 +214,7 @@ export default function CareersBoard({
     pageSize: initialBody?.pageSize ?? urlPageSize,
     language: initialBody?.language ?? lang,
   }));
+
   const [mobileSectionsOpen, setMobileSectionsOpen] = useState<{
     locations: boolean;
     departments: boolean;
@@ -260,10 +222,12 @@ export default function CareersBoard({
     locations: true,
     departments: true,
   });
+
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [isLocationsOpen, setIsLocationsOpen] = useState(true);
   const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(true);
   const showMobileFiltersRef = useRef(showMobileFilters);
+  const skipFetchRef = useRef(false);
 
   useEffect(() => {
     showMobileFiltersRef.current = showMobileFilters;
@@ -275,7 +239,6 @@ export default function CareersBoard({
 
   useEffect(() => {
     setFacetNames({ locations: [], departments: [] });
-    setBaselineCounts({ locations: {}, departments: {} });
 
     setQuery((prev) => {
       if (prev.language === lang) return prev;
@@ -338,31 +301,6 @@ export default function CareersBoard({
             departments: Array.from(depSet).sort((a, b) => a.localeCompare(b)),
           };
         });
-
-        const noDept = !body.departmentNames?.length;
-        const noLoc = !body.locationNames?.length;
-
-        if (noDept && noLoc) {
-          const locArr = resp?.Data?.Facets?.Locations ?? [];
-          const deptArr = resp?.Data?.Facets?.Departments ?? [];
-
-          const nextLocations: Record<string, number> = {};
-          for (const f of locArr) {
-            const n = (f?.Name ?? '').trim();
-            if (n) nextLocations[n] = Math.max(0, f?.Count ?? 0);
-          }
-
-          const nextDepartments: Record<string, number> = {};
-          for (const f of deptArr) {
-            const n = (f?.Name ?? '').trim();
-            if (n) nextDepartments[n] = Math.max(0, f?.Count ?? 0);
-          }
-
-          setBaselineCounts({
-            locations: nextLocations,
-            departments: nextDepartments,
-          });
-        }
       } catch (e: any) {
         setError(e?.message || 'Failed to fetch careers');
         setApiResp(null);
@@ -374,6 +312,10 @@ export default function CareersBoard({
   );
 
   useEffect(() => {
+    if (skipFetchRef.current) {
+      skipFetchRef.current = false;
+      return;
+    }
     fetchSearch(query);
   }, [query, fetchSearch]);
 
@@ -382,53 +324,168 @@ export default function CareersBoard({
     return arr.map((it) => mapApiItemToCareersItem(it, lang));
   }, [apiResp?.Data?.Items, lang]);
 
-  const pageItems = apiItems.length ? apiItems : localItems;
-  //
+  const baseItems = useMemo(() => {
+    if (!localItems.length) return apiItems;
+    if (!apiItems.length) return localItems;
+
+    const byId = new Map<string, CareersItem>();
+    for (const item of localItems) {
+      if (item?.Id) byId.set(item.Id, item);
+    }
+    for (const item of apiItems) {
+      if (item?.Id) byId.set(item.Id, item);
+    }
+    return Array.from(byId.values());
+  }, [apiItems, localItems]);
+  //const baseItems = [];
+
+  const filteredItems = useMemo(() => {
+    const searchTerm = (query.search ?? '').trim().toLowerCase();
+
+    return baseItems.filter((item) => {
+      const matchesLocation =
+        !query.locationNames?.length || query.locationNames.includes(item.LocationName);
+      const matchesDepartment =
+        !query.departmentNames?.length || query.departmentNames.includes(item.DepartmentName);
+
+      if (!matchesLocation || !matchesDepartment) return false;
+
+      if (!searchTerm) return true;
+
+      const haystack = `${item.Title} ${item.DepartmentName} ${item.LocationName}`.toLowerCase();
+      return haystack.includes(searchTerm);
+    });
+  }, [baseItems, query.departmentNames, query.locationNames, query.search]);
+
+  const sortedItems = useMemo(() => {
+    const items = [...filteredItems];
+    if (query.sort === 'postedAt_asc') {
+      items.sort(
+        (a, b) => new Date(a.PostedAtUtc || 0).getTime() - new Date(b.PostedAtUtc || 0).getTime(),
+      );
+    } else {
+      items.sort(
+        (a, b) => new Date(b.PostedAtUtc || 0).getTime() - new Date(a.PostedAtUtc || 0).getTime(),
+      );
+    }
+    return items;
+  }, [filteredItems, query.sort]);
+
+  const pageSize = Math.max(1, query.pageSize);
+  const totalResults = sortedItems.length;
+  const totalPages = Math.max(1, Math.ceil(totalResults / pageSize));
+  const page = Math.min(Math.max(1, query.page), totalPages);
+  const sliceStart = (page - 1) * pageSize;
+  const pageItems = useMemo(
+    () => sortedItems.slice(sliceStart, sliceStart + pageSize),
+    [sortedItems, sliceStart, pageSize],
+  );
+
   const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
   //const jobs = [];
-  const totalResults =
-    apiResp?.Data?.TotalResults ?? (apiItems.length ? apiItems.length : localItems.length);
-  const totalPages = apiResp?.Data?.TotalPages ?? 1;
-  const page = apiResp?.Data?.Page ?? query.page;
+
+  useEffect(() => {
+    if (!baseItems.length) return;
+
+    setFacetNames((prev) => {
+      const locSet = new Set(prev.locations ?? []);
+      const depSet = new Set(prev.departments ?? []);
+
+      for (const item of baseItems) {
+        const loc = item.LocationName?.trim();
+        if (loc) locSet.add(loc);
+        const dep = item.DepartmentName?.trim();
+        if (dep) depSet.add(dep);
+      }
+
+      const nextLocations = Array.from(locSet).sort((a, b) => a.localeCompare(b));
+      const nextDepartments = Array.from(depSet).sort((a, b) => a.localeCompare(b));
+
+      const locationsChanged =
+        nextLocations.length !== prev.locations.length ||
+        nextLocations.some((name, idx) => name !== prev.locations[idx]);
+      const departmentsChanged =
+        nextDepartments.length !== prev.departments.length ||
+        nextDepartments.some((name, idx) => name !== prev.departments[idx]);
+
+      if (!locationsChanged && !departmentsChanged) return prev;
+
+      return {
+        locations: nextLocations,
+        departments: nextDepartments,
+      };
+    });
+  }, [baseItems]);
 
   const selectedLocationNames = showMobileFilters ? draft.locationNames : query.locationNames;
   const selectedDepartmentNames = showMobileFilters ? draft.departmentNames : query.departmentNames;
 
+  const searchTerm = (query.search ?? '').trim().toLowerCase();
+
+  const locationCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    baseItems
+      .filter(
+        (item) =>
+          (!query.departmentNames?.length || query.departmentNames.includes(item.DepartmentName)) &&
+          (!searchTerm ||
+            `${item.Title} ${item.DepartmentName} ${item.LocationName}`
+              .toLowerCase()
+              .includes(searchTerm)),
+      )
+      .forEach((item) => {
+        const name = item.LocationName?.trim();
+        if (!name) return;
+        counts.set(name, (counts.get(name) ?? 0) + 1);
+      });
+    return counts;
+  }, [baseItems, query.departmentNames, searchTerm]);
+
+  const departmentCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    baseItems
+      .filter(
+        (item) =>
+          (!query.locationNames?.length || query.locationNames.includes(item.LocationName)) &&
+          (!searchTerm ||
+            `${item.Title} ${item.DepartmentName} ${item.LocationName}`
+              .toLowerCase()
+              .includes(searchTerm)),
+      )
+      .forEach((item) => {
+        const name = item.DepartmentName?.trim();
+        if (!name) return;
+        counts.set(name, (counts.get(name) ?? 0) + 1);
+      });
+    return counts;
+  }, [baseItems, query.locationNames, searchTerm]);
+
   const locationFacets = useMemo(() => {
-    const merged = mergeFacetDisplay(
-      facetNames.locations,
-      apiResp?.Data?.Facets?.Locations,
-      selectedLocationNames,
-      baselineCounts.locations,
-    );
-    return merged.filter((f) => (lang === 'ar' ? isArabic(f.name) : !isArabic(f.name)));
-  }, [
-    facetNames.locations,
-    apiResp?.Data?.Facets?.Locations,
-    selectedLocationNames,
-    baselineCounts.locations,
-    lang,
-  ]);
+    return facetNames.locations
+      .filter((name) => (lang === 'ar' ? isArabic(name) : !isArabic(name)))
+      .map((name) => ({
+        name,
+        count: locationCounts.get(name) ?? 0,
+        selected: selectedLocationNames.includes(name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [facetNames.locations, lang, locationCounts, selectedLocationNames]);
 
   const departmentFacets = useMemo(() => {
-    const merged = mergeFacetDisplay(
-      facetNames.departments,
-      apiResp?.Data?.Facets?.Departments,
-      selectedDepartmentNames,
-      baselineCounts.departments,
-    );
-    return merged.filter((f) => (lang === 'ar' ? isArabic(f.name) : !isArabic(f.name)));
-  }, [
-    facetNames.departments,
-    apiResp?.Data?.Facets?.Departments,
-    selectedDepartmentNames,
-    baselineCounts.departments,
-    lang,
-  ]);
+    return facetNames.departments
+      .filter((name) => (lang === 'ar' ? isArabic(name) : !isArabic(name)))
+      .map((name) => ({
+        name,
+        count: departmentCounts.get(name) ?? 0,
+        selected: selectedDepartmentNames.includes(name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [facetNames.departments, lang, departmentCounts, selectedDepartmentNames]);
 
   const toggleFacet = useCallback(
     (key: QueryKey, name: string) => {
       replaceUrl({ page: 1 });
+      skipFetchRef.current = true;
       updateQuery((prev) => {
         const next = structuredClone(prev);
         const current = next[key] ?? [];
@@ -471,6 +528,7 @@ export default function CareersBoard({
     (n: number) => {
       const nextPage = Math.max(1, Math.min(n, Math.max(1, totalPages)));
       replaceUrl({ page: nextPage });
+      skipFetchRef.current = true;
       updateQuery((q) => ({ ...q, page: nextPage }));
     },
     [totalPages, replaceUrl, updateQuery],
@@ -480,10 +538,12 @@ export default function CareersBoard({
     (n: number) => {
       const nextSize = Math.max(1, n);
       replaceUrl({ page: 1, pageSize: nextSize });
+      skipFetchRef.current = true;
       updateQuery((q) => ({ ...q, page: 1, pageSize: nextSize }));
     },
     [replaceUrl, updateQuery],
   );
+
   const selectedChips = useMemo(
     () => [
       ...(query.locationNames ?? []).map((name) => ({ key: 'locationNames' as QueryKey, name })),
@@ -511,6 +571,7 @@ export default function CareersBoard({
   const removeChip = useCallback(
     (key: QueryKey, name: string) => {
       replaceUrl({ page: 1 });
+      skipFetchRef.current = true;
       updateQuery((q) => {
         const next = structuredClone(q);
         next.page = 1;
@@ -580,7 +641,12 @@ export default function CareersBoard({
 
   const hasResults = (totalResults ?? 0) > 0;
 
-  if (jobs.length === 0 && !loading) {
+  const hasActiveFilters =
+    Boolean((query.search ?? '').trim()) ||
+    (query.locationNames?.length ?? 0) > 0 ||
+    (query.departmentNames?.length ?? 0) > 0;
+
+  if (!loading && baseItems.length === 0 && !hasActiveFilters) {
     return <EmptyState />;
   }
 
@@ -699,7 +765,7 @@ export default function CareersBoard({
         </aside>
 
         {/* Main column */}
-        <div className="min-w-[854px] flex min-h-[600px] flex-col gap-4">
+        <div className="md:min-w-[854px] flex min-h-[600px] flex-col gap-4">
           <div ref={topRef} tabIndex={-1} className="outline-none" />
           <div className="flex items-center justify-between gap-3  mb-8">
             <h2
@@ -762,10 +828,10 @@ export default function CareersBoard({
               )}
 
               {/* RESULTS AREA — reserve height so the column never collapses */}
-              <div className="flex-1 min-h-[820px]">
+              <div className="flex-1">
                 {loading ? (
                   /* optional skeleton that matches your grid height */
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3 auto-rows-[218px]">
                     {Array.from({ length: query.pageSize }).map((_, i) => (
                       <div
                         key={i}
@@ -774,7 +840,7 @@ export default function CareersBoard({
                     ))}
                   </div>
                 ) : hasResults ? (
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3 auto-rows-[218px]">
                     {jobs.map((job) => (
                       <div key={job.id} className="h-[218px]">
                         <JobCard job={job} onOpen={() => handleOpenJob(job.id, job.departmentId)} />
@@ -782,7 +848,9 @@ export default function CareersBoard({
                     ))}
                   </div>
                 ) : (
-                  <div className="grid h-full place-content-center">
+                  // No results for current filters/search → inline EmptyState,
+                  // but keep the layout (filters + pagination remain visible)
+                  <div className="h-full grid place-items-center">
                     <EmptyState />
                   </div>
                 )}
@@ -976,6 +1044,7 @@ export default function CareersBoard({
                 onClick={() => {
                   setShowMobileFilters(false);
                   replaceUrl({ page: 1 });
+                  skipFetchRef.current = true;
                   updateQuery((q) => ({ ...q, ...draft, page: 1 }));
                 }}
                 className="w-full rounded-2xl bg-primaryAlt px-4 py-2 text-secondary"
@@ -996,4 +1065,3 @@ export default function CareersBoard({
     </section>
   );
 }
-
