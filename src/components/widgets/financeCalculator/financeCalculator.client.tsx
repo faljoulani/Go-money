@@ -438,7 +438,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
-                placeholder={C.labels?.dateOfBirthPlaceholder || 'Day/Month/Year'}
                 className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
@@ -695,15 +694,33 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           box-shadow:0 0 0 3px rgba(11,42,142,.1);cursor:pointer;
         }
 
-.date-input::-webkit-datetime-edit { color: transparent; }
+.date-input::-webkit-datetime-edit { color: transparent; !important }
+.date-input:invalid:focus::-webkit-datetime-edit { color: transparent !important; }
+.date-input:invalid::-webkit-datetime-edit-day-field {color:transparent; !important}
+
 .date-input:focus::-webkit-datetime-edit,
-.date-input.has-value::-webkit-datetime-edit { color: inherit; }
+.date-input.has-value::-webkit-datetime-edit { color: inherit; !important }
 
 /* Firefox (date can fall back to text) */
 .date-input::-moz-placeholder { opacity: 0; }
 .date-input::-ms-input-placeholder { opacity: 0; }
 .date-input::placeholder { opacity: 0; }
 
+.date-input:not(.has-value)::before {
+  color: #9AA3B2;           /* soft gray */
+  /* or: color: rgba(0,0,0,.45); */
+}
+
+
+
+/* dark theme */
+.dark .date-input:not(.has-value)::before {
+  color: #7B8190;        
+}
+
+.date-input:invalid:not(.has-value)::before {
+  color: #9AA3B2;          
+}
 .date-input{
 display:none
   position: absolute;

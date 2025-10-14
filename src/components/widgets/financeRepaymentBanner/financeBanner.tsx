@@ -193,7 +193,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             //     {financeRepaymentBanner.ctaLabel}
             //   </CTA>
             // </div>
-            <div className="md:mt-[68px]  xs:mt-12 flex justify-center fadeupButton">
+            <div className="md:mt-[68px]  xs:mt-12 flex  fadeupButton">
               <a
                 href={financeRepaymentBanner.ctaHref || '#'}
                 className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
