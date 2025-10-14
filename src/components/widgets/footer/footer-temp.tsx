@@ -173,7 +173,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           {(footerData.Title || footerData.SubTitle) && (
             <Title
               color="text-white"
-              className="md:text-40px md:max-w-[500px] xs:max-w-[270px] md:leading-[60px] tracking-[-0.02em] xs:text-lg xs:leading-6 mb-4"
+              className="md:text-40px md:max-w-full xs:max-w-full md:leading-[60px] tracking-[-0.02em] xs:text-lg xs:leading-6 mb-4"
             >
               {footerData.Title || footerData.SubTitle}
             </Title>
@@ -203,7 +203,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
                 </div>
 
                 {footerData.Description && (
-                  <p className="md:max-w-[400px] xs:max-w-[310px] text-14px leading-[18px] text-[#E0E0E0]">
+                  <p className="md:max-w-[400px] xs:max-w-[310px] text-14px leading-[18px] rtl:leading-6 text-[#E0E0E0]">
                     {String(footerData.Description).replace(/\s+/g, ' ').trim()}
                   </p>
                 )}
