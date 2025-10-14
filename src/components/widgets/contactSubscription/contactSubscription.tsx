@@ -129,14 +129,14 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
         <div
           className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[30px] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] xs:h-[75px] xs:w-[75px] bg-primaryAlt md:h-[90px] md:w-[90px]`}
         >
-          <div className={`absolute h-[52px] w-[52px] bg-[#FFFFFF] dark:bg-[#1d1d28]`} />
+          <div className={`absolute md:h-[52px] md:w-[52px] xs:h-[45px] xs:w-[45px] bg-[#FFFFFF] dark:bg-[#1d1d28]`} />
         </div>
       )}
 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primaryAlt" className="text-[26px] font-bold tracking-[-0.02em]">
+            <Title color="text-primaryAlt" className="xs:text-[24px] md:text-[28px] font-bold tracking-[-0.02em]">
               {box.Title}
             </Title>
           )}
