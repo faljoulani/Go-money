@@ -135,7 +135,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           )}
 
           {ctaText && (
-            <div className="w-full xs:max-w-[285px] md:w-auto xs:mx-auto">
+            <div className="w-full xs:max-w-[285px] md:w-auto xs:mx-auto md:mx-0">
               <CTA
                 href={(ctaHref || '').trim() || '#'}
                 colorText="text-primaryAlt"
