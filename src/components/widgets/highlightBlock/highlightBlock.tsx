@@ -104,7 +104,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
     'illustration';
 
   return (
-    <section className="md:mx-20 relative xs:flex xs:flex-col xs:mx-2 ">
+    <section className="md:mx-20 relative xs:flex xs:flex-col ">
       {/* Background div that scales */}
       <div className="absolute inset-0 rounded-3xl bg-[#B3DFEF] dark:bg-[#0F0F15]"></div>
 
@@ -135,7 +135,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           )}
 
           {ctaText && (
-            <div className="w-full  xs:mx-auto  md:mx-0 md:w-auto">
+            <div className="w-full xs:max-w-[285px] md:w-auto xs:mx-auto">
               <CTA
                 href={(ctaHref || '').trim() || '#'}
                 colorText="text-primaryAlt"

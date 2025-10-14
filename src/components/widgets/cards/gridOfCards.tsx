@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId, pickImageUrl } from '../../../utils/sitefinity';
 import { resolveAbsoluteUrl, extractHref } from '../../../utils/utils';
-import { MobileCardsCarousel } from './mobileCards';
+import {  MobileGridCarousel } from './mobileGrid';
 
 import ScrollableCards from './scrollableCards';
 import FeatureCards from './featuresCards';
@@ -20,7 +20,7 @@ import CTA from '../../atoms/cta/cta';
 interface ExpandBoxItem {
   Id: string;
   Title?: string;
-  SubTitle?: string;
+  Subtitle?: string;
   Eyebrow?: string;
   Description?: string;
   CtaText?: string;
@@ -87,7 +87,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
       'Id',
       'Title',
       'Description',
-      'SubTitle',
+      'Subtitle',
       'Eyebrow',
       'CtaText',
       'CtaUrl',
@@ -102,7 +102,8 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
   const parentCardData = parentCardPayload as ExpandBoxItem;
   const eyebrow = parentCardData?.Eyebrow ?? '';
   const title = parentCardData?.Title ?? 'Cards';
-  const subtitle = parentCardData?.Description ?? parentCardData?.SubTitle ?? '';
+  const description = parentCardData?.Description ?? '';
+  const subtitle = parentCardData?.Subtitle ?? '';
   const ctaText = parentCardData?.CtaText ?? '';
   let ctaHref = undefined;
   if (parentCardData?.CtaUrl) {
@@ -182,7 +183,11 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
       className="w-full md:py-16 md:px-20 xs:py-12 max-w-[1440px] xxl:mx-auto"
     >
       <div className="flex flex-col items-center gap-2 text-center fadeupText">
-        {eyebrow && <Eyebrow color="text-primary" className="md:text-[18px] xs:text-[14px]">{eyebrow}</Eyebrow>}
+        {eyebrow && (
+          <Eyebrow color="text-primary" className="md:text-[18px] xs:text-[14px]">
+            {eyebrow}
+          </Eyebrow>
+        )}
         <Title
           className="
               md:text-5xl xs:text-2xl
@@ -193,9 +198,10 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
         >
           {title}
         </Title>
-        {subtitle && <Description html={subtitle} />}
+        {subtitle && <Description className="font-bold" html={subtitle} />}
+        {description && <Description html={description} />}
       </div>
-      <MobileCardsCarousel items={childCardData} dir={dir} />
+      <MobileGridCarousel items={childCardData} dir={dir} />
 
       <div className="xs:hidden md:block">
         <div className="mt-12">

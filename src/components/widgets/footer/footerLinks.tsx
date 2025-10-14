@@ -20,8 +20,8 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
   return (
     <div
-      className={`md:ltr:border-l md:border-white/15 md:rtl:border-r md:ltr:pl-[64px] 
-        md:rtl:pr-[64px] grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 ${className} rtl:grid-col-reverse `}
+      className={`flex-1 md:ltr:border-l md:border-white/15 md:rtl:border-r md:ltr:pl-[64px] 
+        md:rtl:pr-[64px] grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 justify-start my-8 z-60 rtl:pr-16 left-0 rtl:grid-col-reverse `}
     >
       {groups.map((group) => (
         <nav
