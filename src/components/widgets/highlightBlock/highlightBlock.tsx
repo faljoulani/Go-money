@@ -174,7 +174,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
               <img
                 src={darkImgSrc}
                 alt={darkImgAlt}
-                className="hidden dark:block md:h-[392px] md:w-[490px] object-contain xs:h-[250px] xs:w-[280px]"
+                className="hidden dark:block md:h-[600px] md:w-[525px] object-cover xs:h-[300px] xs:w-[300px]"
                 draggable={false}
               />
             ) : (
