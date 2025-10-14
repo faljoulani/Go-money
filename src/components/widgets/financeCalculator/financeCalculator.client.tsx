@@ -43,10 +43,10 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       const a = el as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
 
       if ('placeholder' in a && a.placeholder)
-        a.placeholder = normalizeCurrencyText(a.placeholder, dir);
-      if (a.title) a.title = normalizeCurrencyText(a.title, dir);
+        a.placeholder = normalizeCurrencyText(a.placeholder);
+      if (a.title) a.title = normalizeCurrencyText(a.title);
       const aria = a.getAttribute('aria-label');
-      if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria, dir));
+      if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria));
 
       if (a instanceof HTMLElement) {
         if (
@@ -54,7 +54,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           a.childElementCount === 0
         ) {
           const t = a.textContent ?? '';
-          const newT = normalizeCurrencyText(t, dir);
+          const newT = normalizeCurrencyText(t);
           if (newT !== t) a.textContent = newT;
         }
       }
