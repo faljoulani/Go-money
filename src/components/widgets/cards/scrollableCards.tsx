@@ -2,7 +2,7 @@ import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { CardSectionEntity } from './card.entity';
 import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
 import { extractHref } from '../../../utils/utils';
-import { MobileCardsCarousel } from './mobileCards';
+import { MobileScrollableCarousel } from './mobileScrollable';
 import Eyebrow from '../../atoms/eyebrow/eyebrow';
 import Title from '../../atoms/title/title';
 import Description from '../../atoms/description/description';
@@ -134,7 +134,11 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
       <div className="mx-auto max-w-[1240px]">
         <div className="relative">
           <div className="md:sticky md:top-20 md:px-16 xs:px-0 flex flex-col gap-2 text-center md:h-[600px] fadeupText">
-            {eyebrow && <Eyebrow color="text-primary" className="xs:text-[14px] md:text-[18px">{eyebrow}</Eyebrow>}
+            {eyebrow && (
+              <Eyebrow color="text-primary" className="xs:text-[14px] md:text-[18px">
+                {eyebrow}
+              </Eyebrow>
+            )}
             <Title
               color="text-primary"
               className="md:text-[40px] xs:text-[24px] font-bold tracking-[-0.02em] "
@@ -143,7 +147,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
             </Title>
             {subtitle && <Description className="mx-auto">{subtitle}</Description>}
           </div>
-          <MobileCardsCarousel items={childCardData} dir="" target="scrollableCards" />
+          <MobileScrollableCarousel items={childCardData} dir="" target="scrollableCards" />
 
           <div className="mt-10 px-[205px] xs:hidden md:block">
             <div className="space-y-16">
@@ -213,7 +217,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         {ctaText && (
           <div className="mt-12 mx-auto text-center justify-center">
             <CTA
-              className="w-[248px] h-14"
+              className="md:w-[248px] xs:max-w-[311px] xs:w-full h-14"
               variant="outline"
               colorText="text-primaryAlt"
               fontWeight="font-medium"

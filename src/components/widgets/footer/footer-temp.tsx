@@ -185,7 +185,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
           <div className="mx-auto w-full">
             <div className="md:flex md:flex-row xs:flex-col w-auto">
               {/* Left column */}
-              <div className="md:rtl:right-0 md:w-[50%] h-full w-[310px] flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
+              <div className="md:rtl:right-0 w-full md:w-[50%] h-full flex flex-col gap-8 md:ltr:pr-14 md:rtl:pl-14">
                 <div className="flex items-center gap-3">
                   <div className="h-[45px] w-[102px] rounded-md flex items-center justify-center bg-gradient-to-b from-[#0A0F15] via-[#0B1220] to-[#0A0F15] mt-8">
                     {logoSrc && (
@@ -244,15 +244,11 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
               </div>
 
               {/* Link columns (FooterNavigation groups) */}
-              <FooterLinks
-                lang={culture}
-                groups={linkGroups}
-                className="justify-start my-8 z-60 rtl:pr-16 left-0"
-              />
+              <FooterLinks lang={culture} groups={linkGroups} />
             </div>
           </div>
 
-          <hr className="mb-8 border-white/10"/>
+          <hr className="mb-8 border-white/10" />
 
           {/* Bottom row: certifications | copyright | extra */}
           <div className="relative gap-6 md:grid md:grid-cols-3 md:items-center xs:grid-cols-2 xs:space-y-2">
