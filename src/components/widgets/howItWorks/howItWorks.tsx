@@ -137,7 +137,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative xs:mx-4 md:mx-28  xxl:mx-auto max-w-[1440px]">
       {/* Top headline block */}
-      <div className="flex flex-col items-center text-center md:gap-1 md:fadeupText">
+      <div className="flex flex-col  items-center text-center md:gap-1 md:fadeupText">
         {view.SubTitle && (
           <Eyebrow color="text-primary" className="md:text-[18px] xs:text-[14px]">
             {view.SubTitle}
@@ -213,7 +213,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                 </h2>
               )}
 
-              <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-12 md:grid-cols-3 xs:grid-cols-1">
+              <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-8 md:grid-cols-3 xs:grid-cols-1">
                 {view.Steps.map((s, i) => {
                   const logoSrc = mediaSrc(s.Logo);
                   const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
@@ -222,13 +222,13 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                   return (
                     <div
                       key={s.Id || `${s.Title}-${i}`}
-                      className="relative rounded-[32px] md:p-12 xs:p-8 rtl:p-14 text-white 
+                      className="relative rounded-[32px] md:p-12 xs:px-8 rtl:px-14 xs:rtl:p-4 text-white 
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
                                  before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none md:h-[265px] xs:h-[220px]"
                     >
-                      <div className="mx-auto md:mb-6  xs:mb-0 xs:-mt-8 grid h-16 w-16 place-items-center">
+                      <div className="mx-auto md:mb-6  xs:mb-0  place-items-center">
                         {logoSrc ? (
                           <img src={logoSrc} alt={logoAlt} className="h-16 w-16" />
                         ) : (
@@ -259,8 +259,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                     href={CTAExternalUrl || '#'}
                     className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
                           text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
-                            border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
-                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-auto"
+                            border dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-[248px]"
                   >
                     <span className="mx-auto">{view.CTALabel}</span>
                     <svg
