@@ -1,0 +1,24 @@
+.simple-hero-overlay-root {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .simple-hero-overlay-root {
+    padding: 0 3rem;
+  }
+}
+
+.simple-hero-overlay-content {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 48rem;
+  display: flex;
+  justify-content: center;
+}

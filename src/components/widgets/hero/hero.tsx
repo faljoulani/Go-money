@@ -11,6 +11,8 @@ import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import { resolveSitefinitySelection, resolveAbsoluteUrl, linkToHref } from '../../../utils/utils';
 import { fetchData, pickOneMedia, getImageSrc } from '../../../utils/sitefinity';
+import SimpleHeroActiveTitle from './simpleHeroActiveTitle.client';
+
 const VIDEO_PATH = 'assets/header_v.mp4';
 
 export async function Hero(props: WidgetContext<HeroEntity>) {
@@ -20,6 +22,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   if (lang === 'ar') {
     isAr = true;
   }
+  const heroLang: 'en' | 'ar' = lang === 'ar' ? 'ar' : 'en';
   const selectedView =
     (props.model as any)?.ViewName ||
     (props.model?.Properties as any)?.ViewName ||
@@ -77,9 +80,9 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
   const eyebrow = item.Eyebrow || '';
   const title = item.Title || '';
-  const fulltitle = item.FullTitle || '';
   const subtitle = item.Subtitle || '';
   const description = item.Description || '';
+  const fulltitle = item.FullTitle || '';
   const ctaText = item.CtaText || 'Learn more';
   let rawCtaUrl = item.CtaUrl;
   function normalizeAssetUrl(p: string, culture: string) {
@@ -165,10 +168,10 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
             className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
           />
         )}
+        <SimpleHeroActiveTitle lang={heroLang} defaultTitle={title || ''} />
       </section>
     );
   }
-  console.log('fulltitle', fulltitle);
   return (
     <section
       {...attrs}

@@ -135,7 +135,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
           )}
 
           {ctaText && (
-            <div className="w-full xs:max-w-[285px] md:w-auto xs:mx-auto">
+            <div className="w-full xs:max-w-[285px] md:w-auto xs:mx-auto md:mx-0">
               <CTA
                 href={(ctaHref || '').trim() || '#'}
                 colorText="text-primaryAlt"
@@ -174,7 +174,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
               <img
                 src={darkImgSrc}
                 alt={darkImgAlt}
-                className="hidden dark:block md:h-[392px] md:w-[490px] object-contain xs:h-[250px] xs:w-[280px]"
+                className="hidden dark:block md:h-[600px] md:w-[525px] object-cover xs:h-[300px] xs:w-[300px]"
                 draggable={false}
               />
             ) : (

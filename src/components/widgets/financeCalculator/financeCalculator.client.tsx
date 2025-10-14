@@ -42,8 +42,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     const replaceAttrs = (el: Element) => {
       const a = el as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
 
-      if ('placeholder' in a && a.placeholder)
-        a.placeholder = normalizeCurrencyText(a.placeholder);
+      if ('placeholder' in a && a.placeholder) a.placeholder = normalizeCurrencyText(a.placeholder);
       if (a.title) a.title = normalizeCurrencyText(a.title);
       const aria = a.getAttribute('aria-label');
       if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria));
@@ -98,10 +97,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   }
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
-  const formatSar = (n: number) =>
-    new Intl.NumberFormat('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-      n,
-    );
+  const formatSar = (n: number) => new Intl.NumberFormat('en-SA').format(n);
   const MIN_AGE = 21;
   const MAX_AGE = 70;
   const MAX_MATURITY_AGE = 150;
