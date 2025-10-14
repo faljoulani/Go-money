@@ -112,6 +112,6 @@ export default function CareersRouting({ labels, careers, entity, language }: Pr
     return <CareersBoard labels={labels} careers={careers} onOpenJob={openJob} />;
   }, [jobId, isApplying, labels, careers, entity, language, buildUrl, goToApply, openJob]);
 
-  return <section className="flex">{content}</section>;
+  return <section className="flex mx-auto">{content}</section>;
 }
 

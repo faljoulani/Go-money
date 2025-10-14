@@ -651,7 +651,7 @@ export default function CareersBoard({
   }
 
   return (
-    <section className={` py-10 md:px-10 ${className ?? ''}`}>
+    <section className={`w-[1240px] py-10 ${className ?? ''}`}>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_1fr]">
         {/* Sidebar (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
