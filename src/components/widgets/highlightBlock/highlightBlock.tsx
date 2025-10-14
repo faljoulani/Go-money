@@ -153,16 +153,16 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
 
         {/* Right: artwork / image panel */}
         <div
-          className="xs:flex xs:justify-center md:absolute md:h-[392px] md:w-[490px] md:fadeRight duration-1000 md:right-0 
+          className="xs:flex xs:justify-center md:absolute md:h-[600px] md:w-[490px] md:fadeRight duration-1000 md:right-0 
     md:mr-[87px] md:rtl:ml-[87px] md:rtl:left-0 md:rtl:right-auto"
         >
-          <div className="md:absolute md:h-[392px] md:w-[490px] xs:right-10 rounded-[20px] overflow-hidden">
+          <div className="md:absolute md:h-[600px] md:w-[525px] xs:right-10 rounded-[20px] overflow-hidden">
             {/* Light mode image */}
             {imgSrc ? (
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="block dark:hidden md:h-[392px] md:w-[490px] object-contain xs:h-[250px] xs:w-[280px]"
+                className="block dark:hidden md:h-[600px] md:w-[525px] object-cover xs:h-[300px] xs:w-[300px]"
                 draggable={false}
               />
             ) : (
