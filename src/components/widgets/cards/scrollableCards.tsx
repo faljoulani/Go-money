@@ -215,7 +215,7 @@ export default async function ScrollableCards(props: WidgetContext<CardSectionEn
         </div>
 
         {ctaText && (
-          <div className="mt-12 mx-auto text-center justify-center">
+          <div className="mt-12  mx-auto text-center justify-center">
             <CTA
               className="md:w-[248px] xs:max-w-[311px] xs:w-full h-14"
               variant="outline"

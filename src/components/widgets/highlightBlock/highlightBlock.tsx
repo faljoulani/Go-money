@@ -143,7 +143,7 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
                 bgColor="transparent"
                 variant="outline"
                 icon="arrow"
-                className="w-full md:w-[248px] h-12 md:h-14"
+                className="xs:w-full md:w-[248px] h-12 md:h-14"
               >
                 {ctaText}
               </CTA>
