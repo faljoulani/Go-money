@@ -82,6 +82,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const title = item.Title || '';
   const subtitle = item.Subtitle || '';
   const description = item.Description || '';
+  const fulltitle = item.FullTitle || '';
   const ctaText = item.CtaText || 'Learn more';
   let rawCtaUrl = item.CtaUrl;
   function normalizeAssetUrl(p: string, culture: string) {
