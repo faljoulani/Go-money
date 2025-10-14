@@ -105,8 +105,8 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
   return (
-    <section className="flex mx-auto">
-      <div className={`w-full py-6 md:px-20 md:py-16 ${className ?? ''}`}>
+    <section className="flex md:w-[1240px]">
+      <div className={`w-full py-6 md:py-16 ${className ?? ''}`}>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr,1fr] text-default">
           {/* Left column */}
           <div className="w-full rounded-3xl shadow-xl bg-surface-section px-4 md:px-8 text-default">

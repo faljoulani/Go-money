@@ -585,7 +585,7 @@ export default function CareersBoard({
   }
 
   return (
-    <section className={` py-10 md:px-10 ${className ?? ''}`}>
+    <section className={`w-[1240px] py-10 ${className ?? ''}`}>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_1fr]">
         {/* Sidebar (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
@@ -699,7 +699,7 @@ export default function CareersBoard({
         </aside>
 
         {/* Main column */}
-        <div className="min-w-[854px] flex min-h-[600px] flex-col gap-4">
+        <div className="min-w-[854px] flex flex-col gap-4">
           <div ref={topRef} tabIndex={-1} className="outline-none" />
           <div className="flex items-center justify-between gap-3  mb-8">
             <h2
@@ -762,7 +762,7 @@ export default function CareersBoard({
               )}
 
               {/* RESULTS AREA — reserve height so the column never collapses */}
-              <div className="flex-1 min-h-[820px]">
+              <div className="flex-1">
                 {loading ? (
                   /* optional skeleton that matches your grid height */
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3">
