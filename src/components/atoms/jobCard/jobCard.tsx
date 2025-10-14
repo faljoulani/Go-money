@@ -77,7 +77,13 @@ export default function JobCard({ job, onOpen }: Props) {
 
       <div className="flex flex-col items-center justify-center w-full">
         {/* Title: up to 2 lines, then ellipsis; allow breaking long words */}
-        <h3 className="text-[20px] leading-[28px] font-bold text-center line-clamp-2 break-words font-lufga">
+        <h3
+          className="
+            text-[20px] leading-[28px] font-bold text-center font-lufga 
+            truncate whitespace-nowrap overflow-hidden
+            max-w-full
+          "
+        >
           {job.title}
         </h3>
 

@@ -10,6 +10,26 @@ import { emitCareersActiveJob } from '../../../../utils/careersEvents';
 import type { DetailsResponse, JobDetailsProps } from '../../../../types/typee';
 import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
 
+type ContactInfoItem = {
+  Title: string;
+  Info?: string;
+  IconUrl?: string;
+  IconThumbnailUrl?: string;
+  IconEmbedUrl?: string;
+};
+
+function iconFromRow(row: Partial<ContactInfoItem>): string | null {
+  const candidate =
+    (row.IconUrl && row.IconUrl.trim()) ||
+    (row.IconThumbnailUrl && row.IconThumbnailUrl.trim()) ||
+    (row.IconEmbedUrl && row.IconEmbedUrl.trim()) ||
+    '';
+
+  if (!candidate) return null;
+  if (candidate.startsWith('http') || candidate.startsWith('/')) return candidate;
+  return `/${candidate.replace(/^\/+/, '')}`;
+}
+
 export default function JobDetails({ id, className, onOpenJob, onApply }: JobDetailsProps) {
   const { post: postDetails } = useSfMutation('api/default/careers/details');
   const postDetailsRef = useRef(postDetails);
@@ -67,6 +87,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   }, [key, id, language]);
 
   const job = data?.Data ?? null;
+  console.log('JOB DETAILS:  ', job);
 
   useEffect(() => {
     if (!language) return;
@@ -87,6 +108,10 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
     onApply?.(id);
   };
 
+  // useEffect(() => {
+  //   console.log(job?.ContactInfo);
+  // }, []);
+
   if (loading || !language) return <FullPageLoader />;
   if (error || !job) {
     return (
@@ -99,9 +124,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   }
 
   const responsibilitiesHtml = job.Sections?.KeyResponsibilitiesHtml;
-  console.log('responsibilitiesHtml', responsibilitiesHtml);
   const qualificationsHtml = job.Sections?.QualificationsHtml;
-  console.log('responsibilitiesHtml', responsibilitiesHtml);
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
   return (
@@ -109,7 +132,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
       <div className={`w-full py-6 md:px-20 md:py-16 ${className ?? ''}`}>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr,1fr] text-default">
           {/* Left column */}
-          <div className="w-full rounded-3xl shadow-xl bg-surface-section px-4 md:px-8 text-default">
+          <div className="w-full rounded-3xl shadow-xl bg-surface-section py-4 md:p-8 text-default">
             {/* Overview */}
             <div className="p-6">
               <h3 className="mb-1 text-xl md:text-2xl font-semibold md:text-primary">
@@ -123,7 +146,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
 
             {/* Responsibilities */}
             {responsibilitiesHtml && (
-              <div className="px-6">
+              <div className="p-6">
                 <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                   {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
                 </h3>
@@ -135,7 +158,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
             )}
 
             {qualificationsHtml && (
-              <div className="px-6">
+              <div className="p-6">
                 <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                   {job.Sections?.QualificationsLabel || 'Qualifications'}
                 </h3>
@@ -148,7 +171,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
 
             {/* Skills */}
             {Array.isArray(job.Skills) && job.Skills.length > 0 && (
-              <div className="mt-3 pb-6 px-6">
+              <div className="p-6">
                 <h3 className="mb-1 text-2xl font-semibold md:text-primary">
                   {job.Sections?.SkillsLabel || 'Skills'}
                 </h3>
@@ -200,7 +223,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                       { Title: 'Posted', Info: '' },
                     ]
                 ).map((row, idx) => {
-                  const iconSrc = iconFor(row.Title);
+                  const iconSrc = iconFromRow(row) ?? iconFor(row.Title);
                   return (
                     <div key={`${row.Title}-${idx}`} className="flex items-start gap-3">
                       {/* Icon wrapper: total 48px with 12px padding (24 + 12 + 12 = 48) */}
