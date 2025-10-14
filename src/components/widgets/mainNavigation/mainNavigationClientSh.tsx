@@ -54,10 +54,10 @@ export default function MainNavigationClientShell({
           ? `top-0 bg-surface dark:bg-[#000]
              text-black
              backdrop-blur-[70px] backdrop-saturate-150  max-w-[1440px] md:mx-auto`
-          : `bg-transparent text-white top-5 md:top-10 max-w-[2000px]`)
+          : `bg-transparent text-white top-5 md:top-10 max-w-[1800px]`)
       }
     >
-      <div className="md:px-8 md:py-3 py-3 px-4">
+      <div className="md:px-8 md:py-3 py-3 ">
         <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container md:px-6 xs:px-4">
       
 

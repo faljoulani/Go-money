@@ -193,7 +193,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             //     {financeRepaymentBanner.ctaLabel}
             //   </CTA>
             // </div>
-            <div className="md:mt-[68px]  xs:mt-12 flex  fadeupButton">
+            <div className="md:mt-[24px]  xs:mt-6 flex  fadeupButton">
               <a
                 href={financeRepaymentBanner.ctaHref || '#'}
                 className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
@@ -201,7 +201,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                             border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
                           hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-auto"
               >
-                <span className="mx-auto">{financeRepaymentBanner.ctaLabel}</span>
+                <div className="mx-auto flex gap-4">
+                   <span className="">{financeRepaymentBanner.ctaLabel}</span>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -214,6 +215,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                 >
                   <path d="M9 18l6-6-6-6" />
                 </svg>
+                </div>
+               
               </a>
             </div>
           )}
