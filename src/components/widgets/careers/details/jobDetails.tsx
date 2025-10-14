@@ -270,3 +270,4 @@ function iconFor(title: string) {
   if (key.includes('posted')) return "/icons/o'clock_job_icon.png";
   return '/icons/job_icon.png';
 }
+
