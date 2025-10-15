@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 
-export function MobileScrollableCarousel({
+export function MobileCardsCarousel({
   items,
   dir,
   target,
@@ -62,27 +62,28 @@ export function MobileScrollableCarousel({
               data-slide={i}
               data-index={i}
               className={`
+                ${i === 0 ? 'ltr:ml-4 rtl:mr-4' : ''}
+                ${i === items.length - 1 ? 'ltr:mr-4 rtl:ml-4' : ''}
                 relative snap-center shrink-0 w-[85%] max-w-[360px] rounded-xl bg-surface-section`}
             >
               {card.imgUrl && (
-                <div className={`relative rounded-[20px] w-full h-[250px]}`}>
-                  {target === 'scrollableCards' && (
+                <div className="relative overflow-hidden rounded-xl w-full h-[250px]">
+
+              {target === 'scrollableCards' && (
+                <div className={`absolute   ${isOdd ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}>
+                  <div
+                    className={`relative w-[72px]  h-[72px] border-none  ${
+                      isOdd ? 'bg-[#0DF9C4] border rounded-tr-3xl ' : 'bg-[#1919E5] rounded-tl-3xl'
+                    }`}
+                  >
                     <div
-                      className={`absolute   ${isOdd ? 'left-0 -bottom-0' : 'right-0 -bottom-0'}`}
-                    >
-                      <div
-                        className={`relative w-[72px]  h-[72px] ${
-                          isOdd ? 'bg-[#0DF9C4] rounded-tr-3xl ' : 'bg-[#1919E5] rounded-tl-3xl'
-                        }`}
-                      >
-                        <div
-                          className={`absolute w-10 h-10  bg-white   dark:bg-[#25252f] ${
-                            isOdd ? 'left-0 -bottom-0' : 'right-0 -bottom-0'
-                          }`}
-                        />
-                      </div>
-                    </div>
-                  )}
+                      className={`absolute w-10 h-10  bg-white   dark:bg-[#1D1D28] ${
+                        isOdd ? 'left-0 -bottom-0 rounded-bl-xl' : 'right-0 -bottom-0'
+                      }`}
+                    />
+                  </div>
+                </div>
+              )}
                   <img
                     src={card.imgUrl}
                     alt={card.title || 'card image'}
@@ -92,12 +93,13 @@ export function MobileScrollableCarousel({
                 </div>
               )}
 
-              {card.icon && <div>{card.icon}</div>}
 
-              <div className="mt-4">
-                <h3 className="text-[20px] leading-6 rtl:leading-9 font-bold text-primaryAlt">
-                  {card.title}
-                </h3>
+              {card.icon && (
+                <div className={`${dir === 'rtl' ? 'mr-8' : 'ml-8'} mt-12`}>{card.icon}</div>
+              )}
+
+              <div className="pt-4 pb-6 px-3">
+                <h3 className="text-[20px] leading-7 font-medium text-primaryAlt">{card.title}</h3>
                 {card.description && (
                   <p
                     className="mt-2 text-default text-sm leading-5"
@@ -125,4 +127,3 @@ export function MobileScrollableCarousel({
     </div>
   );
 }
-

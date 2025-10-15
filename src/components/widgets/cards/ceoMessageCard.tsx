@@ -164,9 +164,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           )}
           <div className={overlayPanelCls}>
             {items[0]?.description && (
-              <Description className="xs:text-14px xs:leading-[18px]">
-                {items[0].description}
-              </Description>
+              <Description html={items[0].description} className="xs:text-14px xs:leading-[18px]"/>
             )}
             {items[0]?.title && (
               <Title className="md:text-2xl xs:text-[18px] font-medium md:mt-3 xs:mt-2 text-primaryAlt">
