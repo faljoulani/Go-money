@@ -98,7 +98,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
     return 'Saudi';
   }
-   function normalizeCurrencyText(s: string) {
+  function normalizeCurrencyText(s: string) {
     if (!s) return s;
     return s.replace(SAR_ONLY, RIYAL_SYMBOL).replace(RIYAL_ONLY, RIYAL_SYMBOL);
   }
@@ -113,8 +113,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const SAR_ONLY = /\bSAR\b/gi;
 
   const RIYAL_ONLY = /(?<!\p{Script=Arabic})ريال(?!\p{Script=Arabic})/gu;
-
- 
 
   const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
 
@@ -480,7 +478,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               <div className="text-xs text-gray-500 riyals-font">
                 {dir === 'ltr' ? (
                   <>
-                    Amount must be between {formatSar(AMIN)} {RIYAL_SYMBOL} and {formatSar(AMAX)}
+                    Amount must be between {formatSar(AMIN)} {RIYAL_SYMBOL} and {formatSar(AMAX)}{' '}
+                    {RIYAL_SYMBOL}
                   </>
                 ) : (
                   <>
