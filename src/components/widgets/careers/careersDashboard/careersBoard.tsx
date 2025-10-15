@@ -620,10 +620,13 @@ export default function CareersBoard({
 
   const topRef = useScrollFocus({
     ready: !loading,
+
     deps: scrollDeps,
-    behavior: 'instant',
-    container: () => widgetRef.current,
-    offset: 8,
+
+    behavior: 'smooth',
+    target: () => widgetRef.current!,
+    offset: 80,
+
     label: isRtl ? 'قائمة الوظائف' : 'Job list',
   });
 
