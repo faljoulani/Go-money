@@ -3,63 +3,75 @@
 import { useEffect, useRef } from 'react';
 
 type Options = {
-  /** When this becomes true, we scroll & focus */
   ready: boolean;
-  /** Extra deps that should also trigger scroll+focus (e.g. key/language) */
   deps?: any[];
-  /** 'auto' | 'smooth' | 'instant' (default) */
   behavior?: ScrollBehavior | 'instant';
-  /** Return a custom scroll container (defaults to window) */
   container?: () => Window | HTMLElement | null | undefined;
-  /** Optional ARIA label to set on the focus target */
+  target?: () => HTMLElement | null | undefined;
+  offset?: number;
   label?: string;
 };
 
-/**
- * Scroll to top and move keyboard focus to a hidden anchor when `ready` flips true,
- * or when any of the `deps` change.
- *
- * Returns a ref you attach to any element at the top of your content.
- */
+function getScrollParent(el: HTMLElement | null): HTMLElement | Window {
+  if (!el || typeof window === 'undefined') return window;
+  let node: HTMLElement | null = el.parentElement;
+  while (node) {
+    const style = getComputedStyle(node);
+    const canScroll =
+      (style.overflowY === 'auto' || style.overflowY === 'scroll') &&
+      node.scrollHeight > node.clientHeight;
+    if (canScroll) return node;
+    node = node.parentElement;
+  }
+  return window;
+}
+
 export function useScrollFocus({
   ready,
   deps = [],
   behavior = 'instant',
   container,
+  target,
+  offset = 0,
   label,
 }: Options) {
   const focusRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!ready) return;
+    if (typeof window === 'undefined' || !ready) return;
 
-    const scroller = container?.() ?? window;
+    const tgt = target?.() ?? focusRef.current;
+    if (!tgt) return;
 
-    // Scroll to top (prefer non-animated to avoid layout jumps after data load)
+    const scroller = container?.() ?? getScrollParent(tgt);
+
     try {
-      (scroller as any).scrollTo?.({ top: 0, behavior: behavior as ScrollBehavior });
+      if (scroller === window) {
+        const rect = tgt.getBoundingClientRect();
+        const to = window.pageYOffset + rect.top - offset;
+        window.scrollTo({ top: Math.max(0, to), behavior: behavior as ScrollBehavior });
+      } else {
+        const s = scroller as HTMLElement;
+        const sRect = s.getBoundingClientRect();
+        const tRect = tgt.getBoundingClientRect();
+        const delta = tRect.top - sRect.top;
+        const to = s.scrollTop + delta - offset;
+        s.scrollTo({ top: Math.max(0, to), behavior: behavior as ScrollBehavior });
+      }
     } catch {
-      // Fallback for environments without ScrollToOptions
       (scroller as any).scrollTo?.(0, 0);
     }
-
-    // Ensure the focus target is focusable, then focus it without re-scrolling
-    const node = focusRef.current;
+    const node = focusRef.current ?? tgt;
     if (node) {
       const prevTabIndex = node.getAttribute('tabindex');
       if (prevTabIndex == null) node.setAttribute('tabindex', '-1');
       if (label && !node.getAttribute('aria-label')) node.setAttribute('aria-label', label);
-
       node.focus({ preventScroll: true });
-
-      // Cleanup: restore tabindex if we temporarily added it
       return () => {
         if (prevTabIndex == null) node.removeAttribute('tabindex');
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, behavior, container, ...deps]);
+  }, [ready, behavior, container, target, offset, label, ...deps]);
 
   return focusRef;
 }
