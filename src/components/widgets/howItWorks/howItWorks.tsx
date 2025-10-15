@@ -208,7 +208,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 xs:pt-24 xs:pb-20 md:pb-28 md:pt-32 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white font-bold md:pt-10 xs:pt-28 xs:pb-5 xs:text-[22px] md:text-[28px] md:fadeupText">
+                <h2 className="text-center text-white md:pt-10 xs:pt-28 xs:pb-5 xs:text-lg md:text-[36px] 
+                xs:leading-6 md:leading-9 rtl:xs:leading-7 md:fadeupText">
                   {view.IntroLead}
                 </h2>
               )}

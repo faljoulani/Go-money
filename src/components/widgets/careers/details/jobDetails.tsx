@@ -108,10 +108,6 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
     onApply?.(id);
   };
 
-  // useEffect(() => {
-  //   console.log(job?.ContactInfo);
-  // }, []);
-
   if (loading || !language) return <FullPageLoader />;
   if (error || !job) {
     return (
@@ -127,6 +123,8 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
   const qualificationsHtml = job.Sections?.QualificationsHtml;
   const overviewHtml = job.Sections?.OverviewHtml || '';
 
+  console.log('RESPONSIBILITIES:  ', responsibilitiesHtml);
+  console.log('QUALIFICATIONS:  ', qualificationsHtml);
   return (
     <section className="flex md:w-[1240px]">
       <div className={`w-full py-6 md:py-16 ${className ?? ''}`}>
@@ -151,7 +149,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                   {job.Sections?.KeyResponsibilitiesLabel || 'Key Responsibilities'}
                 </h3>
                 <div
-                  className="mt-3 cms-bullets descriptionHtml"
+                  className="mt-3 cms-bullets"
                   dangerouslySetInnerHTML={{ __html: responsibilitiesHtml }}
                 />
               </div>
@@ -163,7 +161,7 @@ export default function JobDetails({ id, className, onOpenJob, onApply }: JobDet
                   {job.Sections?.QualificationsLabel || 'Qualifications'}
                 </h3>
                 <div
-                  className="mt-3 cms-bullets qualificationsAsList"
+                  className="mt-3 cms-bullets"
                   dangerouslySetInnerHTML={{ __html: qualificationsHtml }}
                 />
               </div>

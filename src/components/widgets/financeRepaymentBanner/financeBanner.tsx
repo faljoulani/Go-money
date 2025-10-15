@@ -136,8 +136,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
     >
       <div className="flex xs:flex-col md:h-[550px] xs:h-[700px] md:w-[90%] rounded-2xl md:mx-auto flip overflow-clip">
         {/* Layer 1: gradient + main background image */}
-        <div className="absolute inset-0 z-0 rtl:scale-x-[-1] rounded-2xl">
-          <div className="absolute inset-0 bg-finance-banner dark:bg-finance-banner-dark rounded-3xl" />
+        <div className="absolute inset-0 z-0 rtl:scale-x-[-1] md:rounded-[32px] xs:rounded-2xl">
+          <div className="absolute inset-0 bg-finance-banner dark:bg-finance-banner-dark md:rounded-[32px] xs:rounded-2xl" />
 
           {financeRepaymentBanner.images.backgroundUrl.url && (
             <Image
@@ -168,8 +168,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
           <div className="fadeRightFinanceDetails ">
             {!!financeRepaymentBanner.title && (
               <Title
-                className="md:text-5xl  md:font-bold md:tracking-[-0.02em] md:leading-[60px]  xs:max-w-none xs:text-[24px] xs:leading-9 xs:font-semibold
-"
+                className="md:text-5xl  font-bold md:tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px]  
+                md:max-w-[365px] xs:max-w-none xs:text-[24px] xs:leading-8 rtl:xs:leading-[45px]"
                 color="text-white"
               >
                 {financeRepaymentBanner.title}
@@ -193,7 +193,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             //     {financeRepaymentBanner.ctaLabel}
             //   </CTA>
             // </div>
-            <div className="md:mt-[24px]  xs:mt-6 flex  fadeupButton">
+            <div className="md:mt-[24px]  xs:mt-6 flex  fadeRightFinanceDetails">
               <a
                 href={financeRepaymentBanner.ctaHref || '#'}
                 className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
@@ -202,21 +202,20 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
                           hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-auto"
               >
                 <div className="mx-auto flex gap-4">
-                   <span className="">{financeRepaymentBanner.ctaLabel}</span>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="cta-arrow size-6 translate-x-0 transition-transform "
-                  aria-hidden="true"
-                >
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
+                  <span className="">{financeRepaymentBanner.ctaLabel}</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="cta-arrow size-6 translate-x-0 transition-transform "
+                    aria-hidden="true"
+                  >
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
                 </div>
-               
               </a>
             </div>
           )}

@@ -93,6 +93,7 @@ export default function ApplyForJob({
 
   const successRef = useRef<HTMLDivElement | null>(null);
   const detailsRef = useRef<HTMLDivElement | null>(null);
+  const widgetRef = useRef<HTMLDivElement | null>(null);
 
   const loading = Boolean(jobId && !jobError && !jobDetails);
 
@@ -297,7 +298,9 @@ export default function ApplyForJob({
   const topRef = useScrollFocus({
     ready: !!language && !loading,
     deps: [compositeKey],
-    behavior: 'instant',
+    behavior: 'smooth',
+    target: () => widgetRef.current!,
+    offset: 80,
     label: language === 'ar' ? 'تفاصيل الوظيفة' : 'Job details',
   });
 
@@ -308,6 +311,7 @@ export default function ApplyForJob({
     >
       {/* PAGE WRAP — mobile first */}
       <section
+        ref={widgetRef}
         className={`mx-auto md:w-[1240px] py-10 md:py-10 ${className ?? ''}`}
         dir={isRtl ? 'rtl' : 'ltr'}
       >
