@@ -184,21 +184,6 @@ export default function CareersBoard({
     [careers, isRtl],
   );
 
-  const vacanciesLabel =
-    dir === 'rtl'
-      ? (labels?.vacanciesLabel ?? 'الوظائف المتاحة')
-      : (labels?.vacanciesLabel ?? 'Available vacancies');
-
-  const locationLabel =
-    dir === 'rtl'
-      ? (labels?.locationLabel ?? 'التصفية حسب الموقع')
-      : (labels?.locationLabel ?? 'Filter by Location');
-
-  const departmentLabel =
-    dir === 'rtl'
-      ? (labels?.departmentLabel ?? 'التصفية حسب القسم')
-      : (labels?.departmentLabel ?? 'Filter by Department');
-
   const [query, setQuery] = useState<CareersSearchBody>(() => ({
     ...DEFAULT_SEARCH,
     ...initialBody,
@@ -228,6 +213,7 @@ export default function CareersBoard({
   const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(true);
   const showMobileFiltersRef = useRef(showMobileFilters);
   const skipFetchRef = useRef(false);
+  const widgetRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     showMobileFiltersRef.current = showMobileFilters;
@@ -337,6 +323,7 @@ export default function CareersBoard({
     }
     return Array.from(byId.values());
   }, [apiItems, localItems]);
+
   //const baseItems = [];
 
   const filteredItems = useMemo(() => {
@@ -382,7 +369,6 @@ export default function CareersBoard({
   );
 
   const jobs = useMemo(() => pageItems.map(mapItemToJob), [pageItems]);
-  //const jobs = [];
 
   useEffect(() => {
     if (!baseItems.length) return;
@@ -636,6 +622,8 @@ export default function CareersBoard({
     ready: !loading,
     deps: scrollDeps,
     behavior: 'instant',
+    container: () => widgetRef.current,
+    offset: 8,
     label: isRtl ? 'قائمة الوظائف' : 'Job list',
   });
 
@@ -651,14 +639,17 @@ export default function CareersBoard({
   }
 
   return (
-    <section className={`w-[1240px] py-10 ${className ?? ''}`}>
+    <section
+      ref={widgetRef}
+      className={`w-full max-w-[1240px] mx-auto md:px-4 py-10 ${className ?? ''}`}
+    >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_1fr]">
         {/* Sidebar (md+) */}
         <aside className="hidden md:flex md:flex-col basis-1/4 min-w-0 space-y-6">
           <div className="rounded-2xl shadow-md bg-surface-section p-4">
             {/* Header row */}
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">{locationLabel}</h3>
+              <h3 className="font-semibold">{labels?.locationLabel}</h3>
 
               {/* Collapse / Expand Button */}
               <button
@@ -714,7 +705,7 @@ export default function CareersBoard({
 
           <div className="rounded-2xl shadow-md bg-surface-section p-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">{departmentLabel}</h3>
+              <h3 className="font-semibold">{labels?.departmentLabel}</h3>
 
               <div className="flex items-center gap-2">
                 <button
@@ -767,41 +758,43 @@ export default function CareersBoard({
         {/* Main column */}
         <div className="md:min-w-[854px] flex min-h-[600px] flex-col gap-4">
           <div ref={topRef} tabIndex={-1} className="outline-none" />
-          <div className="flex items-center justify-between gap-3  mb-8">
+          <div className="flex items-center justify-between gap-3 mb-6 md:mb-8 md:px-6">
             <h2
               id="careers-top"
               tabIndex={-1}
-              className="text-2xl md:text-28px font-semibold text-default md:text-primary scroll-mt-[96px]"
+              className="text-2xl md:text-28px font-semibold text-default md:text-primary"
               data-careers-board-top-anchor
             >
-              {vacanciesLabel}
+              {labels?.vacanciesLabel}
             </h2>
 
-            {loading ? (
-              <span className="text-sm opacity-70 flex items-center gap-2">
-                <Image src="/icons/spinner.svg" alt="" width={16} height={16} aria-hidden />{' '}
-                Loading…
-              </span>
-            ) : null}
+            <div className="flex items-center gap-3">
+              {loading ? (
+                <span className="text-sm opacity-70 flex items-center gap-2">
+                  <Image src="/icons/spinner.svg" alt="" width={16} height={16} aria-hidden />{' '}
+                  Loading…
+                </span>
+              ) : null}
 
-            <button
-              type="button"
-              className="md:hidden grid h-10 w-10 place-items-center rounded-2xl bg-primaryAlt dark:bg-primaryAlt"
-              onClick={() => {
-                setDraft((d) => ({ ...d, ...query }));
-                setShowMobileFilters(true);
-              }}
-              aria-label="Open filters"
-            >
-              <Image
-                src="/icons/filtration_button.png"
-                alt=""
-                width={48}
-                height={48}
-                aria-hidden="true"
-                className="dark:invert invert-0 transition-all"
-              />
-            </button>
+              <button
+                type="button"
+                className="md:hidden grid h-10 w-10 place-items-center rounded-2xl bg-primaryAlt dark:bg-primaryAlt"
+                onClick={() => {
+                  setDraft((d) => ({ ...d, ...query }));
+                  setShowMobileFilters(true);
+                }}
+                aria-label={isRtl ? 'فتح المرشحات' : 'Open filters'}
+              >
+                <Image
+                  src="/icons/filtration_button.png"
+                  alt=""
+                  width={48}
+                  height={48}
+                  aria-hidden="true"
+                  className="dark:invert invert-0 transition-all"
+                />
+              </button>
+            </div>
           </div>
 
           {error ? (
@@ -813,14 +806,16 @@ export default function CareersBoard({
               {/* Selected filter chips (mobile) */}
               {selectedChips.length > 0 && (
                 <div className="-mx-2 md:mx-0 md:hidden">
-                  <div className="flex flex-nowrap gap-2 overflow-x-auto px-2 pb-2">
+                  <div className="flex flex-nowrap gap-[6px] overflow-x-auto px-2 pb-2">
                     {selectedChips.map((c) => (
                       <button
                         key={`${c.key}:${c.name}`}
                         onClick={() => removeChip(c.key, c.name)}
-                        className="shrink-0 rounded-full border border-primary/20 bg-[#E6F3F8] px-4 py-2 text-14px text-[#0045AB]"
+                        className="inline-flex items-center justify-between max-w-[191px] h-[32px] px-[12px] py-[6px] gap-[6px]
+                 rounded-[32px] border border-primary/20 bg-[#E6F3F8] text-[14px] text-[#0045AB] whitespace-nowrap truncate"
                       >
-                        {c.name} <span className="pl-1.5">×</span>
+                        <span className="truncate">{c.name}</span>
+                        <span className="text-lg leading-none">×</span>
                       </button>
                     ))}
                   </div>
@@ -848,8 +843,6 @@ export default function CareersBoard({
                     ))}
                   </div>
                 ) : (
-                  // No results for current filters/search → inline EmptyState,
-                  // but keep the layout (filters + pagination remain visible)
                   <div className="h-full grid place-items-center">
                     <EmptyState />
                   </div>
@@ -928,7 +921,7 @@ export default function CareersBoard({
                   aria-expanded={mobileSectionsOpen.locations}
                   aria-controls="mobile-locations-panel"
                 >
-                  <span className="font-semibold">{locationLabel}</span>
+                  <span className="font-semibold">{labels?.locationLabel}</span>
 
                   {/* Toggle icon (+ / -) */}
                   <span
@@ -983,7 +976,7 @@ export default function CareersBoard({
                   aria-expanded={mobileSectionsOpen.departments}
                   aria-controls="mobile-departments-panel"
                 >
-                  <span className="font-semibold">{departmentLabel}</span>
+                  <span className="font-semibold">{labels?.departmentLabel}</span>
 
                   <span
                     className="flex h-6 w-6 items-center justify-center rounded-lg bg-primaryAlt text-white dark:text-[#010663] font-bold transition-transform duration-200"
@@ -1065,3 +1058,4 @@ export default function CareersBoard({
     </section>
   );
 }
+

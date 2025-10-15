@@ -11,7 +11,7 @@ import Description from '../../atoms/description/description';
 import CTA from '../../atoms/cta/cta';
 import { resolveSitefinitySelection, resolveAbsoluteUrl, linkToHref } from '../../../utils/utils';
 import { fetchData, pickOneMedia, getImageSrc } from '../../../utils/sitefinity';
-import SimpleHeroActiveTitle from './simpleHeroActiveTitle.client';
+import SimpleHeroDynamic from './simpleHeroDynamic.client';
 
 const VIDEO_PATH = 'assets/header_v.mp4';
 
@@ -133,6 +133,16 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   const isSimple = selectedView === 'Simple';
 
   if (isSimple) {
+    const breadcrumbSlot = (
+      <div className="mx-auto px-6 xs:mt-44 md:mt-32">
+        <div className="mb-5" data-sfcontainer="Breadcrumb">
+          {breadcrumbs.map((y) =>
+            RenderWidgetService.createComponent(y.model, props.requestContext),
+          )}
+        </div>
+      </div>
+    );
+
     return (
       <section
         {...attrs}
@@ -142,33 +152,16 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
               bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] 
               bg-cover bg-center`}
       >
-        <div className="mx-auto px-6 xs:mt-44 md:mt-32">
-          <div className="mb-5" data-sfcontainer="Breadcrumb">
-            {breadcrumbs.map((y) =>
-              RenderWidgetService.createComponent(y.model, props.requestContext),
-            )}
-          </div>
-        </div>
-        {title && (
-          <Title>
-            <p className="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center">
-              {title}
-            </p>
-          </Title>
-        )}
-        {subtitle && (
-          <Description
-            html={subtitle}
-            className="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
-          />
-        )}
-        {description && (
-          <Description
-            html={description}
-            className="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
-          />
-        )}
-        <SimpleHeroActiveTitle lang={heroLang} defaultTitle={title || ''} />
+        <SimpleHeroDynamic
+          lang={heroLang}
+          defaultTitle={title || ''}
+          subtitleHtml={subtitle ?? undefined}
+          descriptionHtml={description ?? undefined}
+          breadcrumbs={breadcrumbSlot}
+          titleClassName="md:text-[40px] font-bold mb-3 text-white tracking-tight md:leading-[52px] xs:text-2xl xs:leading-8 w-auto text-center"
+          subtitleClassName="text-white md:w-[485px] mx-auto text-center md:font-bold md:leading-7 xs:font-normal xs:leading-5 mb-1 xs:w-[295px]"
+          descriptionClassName="text-white md:w-[485px] mx-auto text-center rtl:leading-7 leading-5 xs:w-[295px]"
+        />
       </section>
     );
   }
@@ -286,4 +279,3 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 }
 
 export default Hero;
-
