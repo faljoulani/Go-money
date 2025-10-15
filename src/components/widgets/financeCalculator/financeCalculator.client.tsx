@@ -42,11 +42,10 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     const replaceAttrs = (el: Element) => {
       const a = el as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
 
-      if ('placeholder' in a && a.placeholder)
-        a.placeholder = normalizeCurrencyText(a.placeholder, dir);
-      if (a.title) a.title = normalizeCurrencyText(a.title, dir);
+      if ('placeholder' in a && a.placeholder) a.placeholder = normalizeCurrencyText(a.placeholder);
+      if (a.title) a.title = normalizeCurrencyText(a.title);
       const aria = a.getAttribute('aria-label');
-      if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria, dir));
+      if (aria) a.setAttribute('aria-label', normalizeCurrencyText(aria));
 
       if (a instanceof HTMLElement) {
         if (
@@ -54,7 +53,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           a.childElementCount === 0
         ) {
           const t = a.textContent ?? '';
-          const newT = normalizeCurrencyText(t, dir);
+          const newT = normalizeCurrencyText(t);
           if (newT !== t) a.textContent = newT;
         }
       }
@@ -98,22 +97,19 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   }
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
-  const formatSar = (n: number) =>
-    new Intl.NumberFormat('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-      n,
-    );
+  const formatSar = (n: number) => new Intl.NumberFormat('en-SA').format(n);
   const MIN_AGE = 21;
   const MAX_AGE = 70;
   const MAX_MATURITY_AGE = 150;
   const RIYAL_SYMBOL = '\u{FDFC}';
 
-  console.log('RIYAL_SYMBOL', RIYAL_SYMBOL);
-  const SAR_PAT = /(?:\bSAR\b|ريال(?:\s*سعودي)?|ر\.?\s*س|﷼)/gi;
+  const SAR_ONLY = /\bSAR\b/gi;
 
-  function normalizeCurrencyText(s: string, dir: 'ltr' | 'rtl') {
-    console.log('ssssss', s);
+  const RIYAL_ONLY = /(?<!\p{Script=Arabic})ريال(?!\p{Script=Arabic})/gu;
+
+  function normalizeCurrencyText(s: string) {
     if (!s) return s;
-    return s.replace(SAR_PAT, `${RIYAL_SYMBOL}`);
+    return s.replace(SAR_ONLY, RIYAL_SYMBOL).replace(RIYAL_ONLY, RIYAL_SYMBOL);
   }
 
   const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);

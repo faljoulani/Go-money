@@ -308,7 +308,7 @@ export default function ApplyForJob({
     >
       {/* PAGE WRAP — mobile first */}
       <section
-        className={`mx-auto w-full py-10 md:px-20 md:py-10 ${className ?? ''}`}
+        className={`mx-auto md:w-[1240px] py-10 md:py-10 ${className ?? ''}`}
         dir={isRtl ? 'rtl' : 'ltr'}
       >
         <div ref={topRef} tabIndex={-1} className="outline-none" />
