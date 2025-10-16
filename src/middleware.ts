@@ -34,7 +34,10 @@ export async function middleware(request: NextRequest) {
     return resultBackend;
   }
 
-  return NextResponse.next();
+  // Add pathname to headers for RTL detection in layout
+  const response = NextResponse.next();
+  response.headers.set('x-pathname', request.nextUrl.pathname);
+  return response;
 }
 
 async function middlewareFrontend(request: NextRequest) {

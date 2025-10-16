@@ -66,6 +66,22 @@ export default function MobileNavbar({
     };
   }, [open]);
 
+  // Focus management: move focus into the panel when opened
+  useEffect(() => {
+    if (!open || !panelRef.current) return;
+    
+    // Small delay to ensure the transition has started
+    const timeoutId = setTimeout(() => {
+      // Focus the first focusable element in the panel (the close button)
+      const firstFocusable = panelRef.current?.querySelector<HTMLElement>(
+        'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      firstFocusable?.focus();
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [open]);
+
   const flatIsActive = (href?: string | null) =>
     !!href && (currentPath === href || currentPath?.startsWith(href));
 
@@ -134,16 +150,16 @@ export default function MobileNavbar({
         ref={panelRef}
         dir={dir}
         role="dialog"
-        aria-modal="true"
+        aria-modal={open ? 'true' : undefined}
         aria-label="Main menu"
-        aria-hidden={!open}
+        inert={!open ? true : undefined}
         className={`transition-all duration-300 h-screen md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
            bg-white dark:bg-[#000] shadow-xl flex flex-col
           ${open ? 'translate-x-0' : isRTL ? 'translate-x-[600px]' : 'translate-x-[-600px]'}`}
       >
         {/* Header row */}
         <div className="flex items-center justify-between p-4">
-          <Link href="/" className="flex items-center gap-2" aria-label="Home">
+          <Link href="/" prefetch={false} className="flex items-center gap-2" aria-label="Home">
             <GoMoneyIcon
               className={`w-[102px] h-[45px] transition-colors text-${logoColorWhenScrolled}`}
             />
@@ -173,21 +189,22 @@ export default function MobileNavbar({
               const rawUrl = resolveItemUrl(item.url);
 
               if (!hasChildren) {
-                return (
-                  <Link
-                    key={idx}
-                    href={rawUrl || '#'}
-                    onClick={() => setOpen(false)}
-                    className={`block rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
-                      ${
-                        active
-                          ? 'bg-primary/5 text-primary dark:bg-white/10 dark:text-white'
-                          : 'text-[#0A1B2E] hover:bg-black/5 dark:text-white dark:hover:bg-white/10'
-                      }`}
-                  >
-                    {item.title}
-                  </Link>
-                );
+              return (
+                <Link
+                  key={idx}
+                  href={rawUrl || '#'}
+                  prefetch={false}
+                  onClick={() => setOpen(false)}
+                  className={`block rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                    ${
+                      active
+                        ? 'bg-primary/5 text-primary dark:bg-white/10 dark:text-white'
+                        : 'text-[#0A1B2E] hover:bg-black/5 dark:text-white dark:hover:bg-white/10'
+                    }`}
+                >
+                  {item.title}
+                </Link>
+              );
               }
 
               // Accordion group
@@ -200,6 +217,7 @@ export default function MobileNavbar({
                         <Link
                           key={cIdx}
                           href={child.url || '#'}
+                          prefetch={false}
                           onClick={() => setOpen(false)}
                           className={`block border-b border-dashed border-[#DCE6EE] dark:border-white/10 py-3 text-[14px] last:border-b-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
                             ${

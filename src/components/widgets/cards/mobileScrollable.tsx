@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
+import Description from '../../atoms/description/description';
 
 export function MobileScrollableCarousel({
   items,
@@ -99,10 +100,9 @@ export function MobileScrollableCarousel({
                   {card.title}
                 </h3>
                 {card.description && (
-                  <p
-                    className="mt-2 text-default text-sm leading-5"
-                    dangerouslySetInnerHTML={{ __html: card.description }}
-                  />
+                  <div className="mt-2 text-sm leading-5">
+                    <Description html={card.description} />
+                  </div>
                 )}
               </div>
             </article>

@@ -64,8 +64,8 @@ export default function SimpleHeroDynamic({
   return (
     <>
       {breadcrumbs}
-      <Title>
-        <p className={headingClass}>{currentTitle}</p>
+      <Title className={headingClass}>
+        {currentTitle}
       </Title>
       {showExtras && subtitleHtml && subtitleClassName && (
         <Description html={subtitleHtml} className={subtitleClassName} />

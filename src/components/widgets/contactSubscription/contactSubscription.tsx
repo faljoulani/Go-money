@@ -78,8 +78,6 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
   const right = items.find((x) => x !== left) ?? items[1];
 
-  const lines = parent.Title.split('\n');
-
   return (
     <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16 max-w-[1440px] xxl:mx-auto">
       <div className="mx-auto max-w-[1240px">

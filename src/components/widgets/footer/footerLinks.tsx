@@ -38,6 +38,7 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
                 <li key={link.id}>
                   <Link
                     href={link.href}
+                    prefetch={false}
                     className={`md:text-base xs:text-[12px] md:leading-5 xs:leading-4 no-underline transition-colors ${'text-[#E0E0E0]'}`}
                   >
                     {link.title}

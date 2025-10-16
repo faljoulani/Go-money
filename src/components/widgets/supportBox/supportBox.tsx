@@ -96,14 +96,14 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
 
       {/* Info */}
       <div className="mt-10 space-y-4">
-        {infos.map((social: any) => {
+        {infos.map((social: any, idx: number) => {
           const media =
             (Array.isArray(social.Logo) ? social.Logo[0] : social.Logo) ??
             (Array.isArray(social.Icon) ? social.Icon[0] : social.Icon);
           const isNumber = /^\s*[+0-9]/.test(social.Description ?? '');
 
           return (
-            <div key={social.Id} className="flex items-center gap-4">
+            <div key={social.Id || `info-${idx}`} className="flex items-center gap-4">
               {imgUrl(media) && (
                 <img
                   src={imgUrl(media)}
