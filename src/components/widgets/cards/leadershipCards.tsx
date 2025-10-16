@@ -161,9 +161,8 @@ export default async function Leadership(props: WidgetContext<CardSectionEntity>
                 <h1 className="text-white md:text-[26px] md:leading-8 xs:leading-6  xs:text-lg whitespace-[90%] md:font-bold xs:font-semibold">
                   {item.title}
                 </h1>
-                <p className="text-white md:text-[20px] xs:text-base md:font-medium">
-                  {item.description}
-                </p>
+                              <Description html={item.description} className="text-white md:text-[20px] xs:text-base md:font-medium xs:font-normal"/>
+
               </div>
             </div>
           ))}

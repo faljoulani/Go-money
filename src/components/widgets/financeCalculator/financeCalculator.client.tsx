@@ -10,6 +10,7 @@ type ResultState = null | 'success' | 'fail';
 
 type Choice = { id: string; title: string; value: string };
 type LinkLike = string | { Href?: string } | Array<{ Href?: string }>;
+
 function useOutsideClose<T extends HTMLElement>(
   open: boolean,
   ref: React.RefObject<T>,
@@ -85,7 +86,9 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     });
     return () => mo.disconnect();
   }, [dir]);
+
   const { post } = useSfMutation('api/default/eligibility/get');
+
   function normalizeNationality(input: string): Nationality {
     const s = (input || '').trim();
 
@@ -94,6 +97,10 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     if (/saud/i.test(s) || /سعود[ىي]/i.test(s)) return 'Saudi';
 
     return 'Saudi';
+  }
+  function normalizeCurrencyText(s: string) {
+    if (!s) return s;
+    return s.replace(SAR_ONLY, RIYAL_SYMBOL).replace(RIYAL_ONLY, RIYAL_SYMBOL);
   }
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
@@ -106,11 +113,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const SAR_ONLY = /\bSAR\b/gi;
 
   const RIYAL_ONLY = /(?<!\p{Script=Arabic})ريال(?!\p{Script=Arabic})/gu;
-
-  function normalizeCurrencyText(s: string) {
-    if (!s) return s;
-    return s.replace(SAR_ONLY, RIYAL_SYMBOL).replace(RIYAL_ONLY, RIYAL_SYMBOL);
-  }
 
   const t = (en: string, ar: string) => (dir === 'ltr' ? en : ar);
 
@@ -324,7 +326,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     setApiDown(false);
 
     const payload = {
-      EmployerType: employer || 'GML',
+      EmployerType: employer,
       Nationality: nationality,
       Gender: 'Male',
       FinanceAmt: String(requestedFinanceAmount),
@@ -379,7 +381,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       </ScrollTopOnMount>
     );
   }
-
+  console.log('ccccccc', C);
   return (
     <section className="w-full mt-32">
       <form
@@ -476,11 +478,13 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               <div className="text-xs text-gray-500 riyals-font">
                 {dir === 'ltr' ? (
                   <>
-                    Amount must be between {formatSar(AMIN)} and {formatSar(AMAX)} {RIYAL_SYMBOL}
+                    Amount must be between {formatSar(AMIN)} {RIYAL_SYMBOL} and {formatSar(AMAX)}{' '}
+                    {RIYAL_SYMBOL}
                   </>
                 ) : (
                   <>
-                    يرجى إدخال مبلغ يتراوح بين {formatSar(AMIN)} و {formatSar(AMAX)} {RIYAL_SYMBOL}
+                    يرجى إدخال مبلغ يتراوح بين {RIYAL_SYMBOL} {formatSar(AMIN)} و {RIYAL_SYMBOL}{' '}
+                    {formatSar(AMAX)}
                   </>
                 )}
               </div>

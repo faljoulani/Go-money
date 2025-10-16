@@ -190,7 +190,8 @@ export default function ContactFormClient({
     }
   };
   const Dir = useDir();
-
+const toAsciiDigits = (s: string) =>
+  s.replace(/[٠-٩]/g, (d) => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]);
   return (
     <div>
       {isLoading && <FullPageLoader />}
@@ -261,16 +262,28 @@ export default function ContactFormClient({
 
               {/* Local number only */}
               <div className="flex-1">
-                <input
-                  name="phone"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  required
-                  dir={dir}
-                  className={`${FIELD} rtl:text-right`}
-                  placeholder={data.phoneNumberPlaceholder || ''}
-                  disabled={isLoading}
-                />
+           <input
+  name="phone"
+  type="tel"
+  inputMode="numeric"           
+  autoComplete="tel-national"
+  required
+  dir={dir}
+  className={`${FIELD} rtl:text-right`}
+  placeholder={data.phoneNumberPlaceholder || ''}
+  maxLength={9}
+  pattern="^5\d{8}$"
+  title={dir === 'rtl'
+    ? 'أدخل رقم جوال سعودي صحيح يبدأ بـ 5 ويتكون من 9 أرقام'
+    : 'Enter a valid Saudi mobile number: 9 digits starting with 5'}
+
+  onInput={(e) => {
+    const el = e.currentTarget as HTMLInputElement;
+    el.value = toAsciiDigits(el.value).replace(/[^\d]/g, '').slice(0, 9);
+  }}
+
+  disabled={isLoading}
+/>
               </div>
             </div>
           </div>

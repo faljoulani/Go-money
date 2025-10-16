@@ -6,7 +6,6 @@ import {
 } from '../../../utils/sitefinity';
 import { resolveSitefinitySelection } from '../../../utils/utils';
 import CareersRouting from './careersRouting';
-import { useEffect } from 'react';
 
 const T_FORM_LABEL = 'Telerik.Sitefinity.DynamicTypes.Model.CareersFormLabel.CareersFormLabel';
 
@@ -92,7 +91,7 @@ export default async function Careers(props: WidgetContext<any>) {
   const cityChoiceIds = extractItemIdsFromSelection(selCityChoices);
 
   const settingsTask = fetchData(
-    [moduleId],
+    moduleId,
     undefined as any,
     culture as any,
     SELECTS.careersPage as any,
@@ -167,9 +166,6 @@ export default async function Careers(props: WidgetContext<any>) {
       </section>
     );
   }
-  console.log({
-    applyForm: JSON.stringify(applyForm),
-  });
 
   return (
     <section {...attrs} className="flex justify-center">
