@@ -45,7 +45,7 @@ export function SuccessResponse({
           noteTitle: 'الشروط والأحكام',
           noteDesc:
             'سيتم تحديد معدل الربح والشروط النهائية بعد إتمام التسجيل ومراجعة سجلك الائتماني.',
-          back: 'العودة إلى الحاسبة',
+          back: 'العودة إلى الآلة الحاسبة',
           cta: 'تنزيل التطبيق',
         }
       : {
@@ -116,22 +116,22 @@ export function FailResponse({
           desc: 'للأسف، لا يمكننا المضي قدمًا في طلبك في الوقت الحالي',
           reasonsTitle: 'قد يكون ذلك بسبب واحد أو أكثر من الأسباب التالية:',
           reasonsHtml:
-            '• المعلومات التي تم التحقق منها لا تتوافق مع متطلبات سياساتنا الداخلية.<br/>• التزاماتك المالية الحالية مرتفعة جدًا ولا تتيح لنا إمكانية منح التمويل في هذا الوقت.',
+            '• المعلومات التي تم التحقق منها لا تتوافق مع متطلبات سياساتنا الداخلية.<br/>• المعلومات التي تم التحقق منها لا تتوافق مع متطلبات سياساتنا الداخلية.<br/>• سجلّك الائتماني لا يفي حاليًا بمعايير الأهلية لدينا.',
           actionsTitle: 'لكن لا تقلق - هذا وضع مؤقت! إليك ما يمكنك فعله:',
           actionsHtml:
-            '• استخدم Go Money بانتظام<br/>• سدد أي مستحقات معلقة<br/>• حاول مرة أخرى بعد 30 يوماً',
+            '• استخدم Go Money بانتظام<br/>• سدد أي مستحقات معلقة<br/>• حاول مرة أخرى لاحقًا ',
           foot: 'نحن هنا عندما تكون جاهزًا.',
-          back: 'العودة إلى الحاسبة',
+          back: 'العودة إلى الآلة الحاسبة',
         }
       : {
           title: 'Not Eligible Yet',
           desc: 'Unfortunately, we are unable to proceed with your application at this time',
           reasonsTitle: 'This could be due to one or more of the following reasons:',
           reasonsHtml:
-            '• Your verified information does not meet our internal policy requirements.<br/>• Your credit history does not currently meet our eligibility criteria.',
+            '• Your verified information does not meet our internal policy requirements.<br/>• Your current financial obligations are too high for us to offer a loan at this time.<br/>• Your credit history does not currently meet our eligibility criteria.',
           actionsTitle: 'But don’t worry — this isn’t permanent! Here’s what you can do:',
           actionsHtml:
-            '• Use Go Money regularly<br/>• Repay any pending dues<br/>• Try again in 30 days',
+            '• Use Go Money regularly<br/>• Repay any pending dues<br/>• Try again later',
           foot: 'We’re here when you’re ready.',
           back: 'Back to Calculator',
         };

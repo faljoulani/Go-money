@@ -63,9 +63,9 @@ export default function JobCard({ job, onOpen }: Props) {
       onClick={goToDetails}
       onKeyDown={onKey}
       className="
-        mx-auto w-[336.67px] h-[218px] md:w-[274px] md:h-[218px] p-6 rounded-xl bg-surface-section
-        shadow-md hover:shadow-md transition overflow-hidden
-        flex flex-col items-center gap-4 "
+        w-[336.67px] h-[218px] md:w-[274px] md:h-[218px] p-6 rounded-xl bg-surface-section
+        shadow-md transition overflow-hidden
+        flex flex-col items-center gap-4"
       aria-busy={loading}
       aria-label={`${job.title} - ${job.location}`}
     >
