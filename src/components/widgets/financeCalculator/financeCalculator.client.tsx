@@ -102,6 +102,9 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     if (!s) return s;
     return s.replace(SAR_ONLY, RIYAL_SYMBOL).replace(RIYAL_ONLY, RIYAL_SYMBOL);
   }
+  const roundToStep = (n: number, step: number) => Math.round(n / step) * step;
+  const clampStep = (n: number, min: number, max: number, step: number) =>
+    clamp(roundToStep(n, step), min, max);
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
   const formatSar = (n: number) => new Intl.NumberFormat('en-SA').format(n);
@@ -234,12 +237,12 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
 
   const AMIN = C.labels.minimumFinanceAmount,
     AMAX = C.labels.maximumFinanceAmount,
-    ASTEP = 500,
-    ADEF = AMIN;
+    ASTEP = 100,
+    ADEF = Math.trunc((AMIN + AMAX) / 2);
   const IMIN = C.labels.minimumEligibleInstallments,
     IMAX = C.labels.maximumEligibleInstallments,
     ISTEP = 1,
-    IDEF = IMIN;
+    IDEF = Math.trunc((IMIN + IMAX) / 2);
 
   const employerChoices: Choice[] = C.choices?.employerTypes ?? [];
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
@@ -267,7 +270,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const [dob, setDob] = useState('');
   const [salary, setSalary] = useState<number | ''>('');
   const [requestedFinanceAmount, setRequestedFinanceAmount] = useState<number>(ADEF);
+  const [reqAmtField, setReqAmtField] = useState<string>(String(ADEF));
+
   const [installments, setInstallments] = useState<number>(IDEF);
+  const [instField, setInstField] = useState<string>(String(IDEF));
+
   const [expenses, setExpenses] = useState<number | ''>('');
   const [mortgageLiabilities, setMortgageLiabilities] = useState<number | ''>('');
   const [monthlyFinancialLiabilities, setMonthlyFinancialLiabilities] = useState<number | ''>('');
@@ -336,7 +343,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       ageAtApplication: calcAge(dob),
       AgeAtMaturity: calcAgeAtMaturity(dob, installments),
     };
-
     const ageErr = validateAges(dob, installments);
     if (ageErr) {
       setMsg(ageErr);
@@ -381,7 +387,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       </ScrollTopOnMount>
     );
   }
-  console.log('ccccccc', C);
   return (
     <section className="w-full mt-32">
       <form
@@ -393,9 +398,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           {C.title || 'Enter your Finance details'}
         </h2>
         <div className="mt-4">
-          <p className="text-[15px] font-medium text-default">
-            {C.labels?.nationality || 'Choose nationality'}
-          </p>
+          <p className="text-[15px] font-medium text-default">{C.labels?.nationality}</p>
           <div className="mt-2 flex items-center gap-6">
             {nationalityOptions.map((label) => {
               const val = normalizeNationality(label);
@@ -419,62 +422,82 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Field label={C.labels?.employerType || 'Employer Type'}>
+          <Field label={C.labels?.employerType}>
             <Select
-              className="riyals-font"
               value={employer}
               onChange={setEmployer}
-              placeholder={C.labels?.employerPlaceholder || 'Select Employer Type'}
+              placeholder={C.labels?.employerPlaceholder}
               options={employerOptions}
             />
           </Field>
 
-          <Field label={C.labels?.dateOfBirth || 'Date of Birth'} tooltip={C.popups?.dateOfBirth}>
+          <Field label={C.labels?.dateOfBirth} tooltip={C.popups?.dateOfBirth}>
             <div className="relative date-wrap">
               <input
                 required
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
-                className={`sf-input bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
+                className={`sf-input  value-accent bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
               <span aria-hidden className="date-icon" />
             </div>
           </Field>
-          <Field
-            label={C.labels?.lengthOfServices || 'Length of Services'}
-            tooltip={C.popups?.lengthOfServices}
-          >
+          <Field label={C.labels?.lengthOfServices} tooltip={C.popups?.lengthOfServices}>
             <Select
               value={serviceLength}
               onChange={setServiceLength}
-              placeholder={C.labels?.lengthOfServicesPlaceholder || 'Select length'}
+              placeholder={C.labels?.lengthOfServicesPlaceholder}
               options={lengthOptions}
             />
           </Field>
 
-          <Field
-            label={C.labels?.monthlySalary || 'Monthly Salary'}
-            tooltip={C.popups?.monthlySalary}
-          >
+          <Field label={C.labels?.monthlySalary} tooltip={C.popups?.monthlySalary}>
             <CurrencyInput
               value={salary}
               onChange={setSalary}
-              placeholder={C.labels?.monthlySalaryPlaceholder || '0.00 ﷼'}
+              placeholder={C.labels?.monthlySalaryPlaceholder}
             />
           </Field>
 
-          <Field
-            label={C.labels?.requestedAmount || 'Requested Finance Amount'}
-            tooltip={C.popups?.requestedAmount}
-          >
+          <Field label={C.labels?.requestedAmount} tooltip={C.popups?.requestedAmount}>
             <div className="space-y-2">
-              <CurrencyInput
-                value={requestedFinanceAmount}
-                onChange={(v) => setRequestedFinanceAmount(clamp(Number(v || 0), AMIN, AMAX))}
-                placeholder={C.labels?.requestedAmountPlaceholder || '0.00 ﷼'}
+              <input
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={AMIN}
+                max={AMAX}
+                step={ASTEP}
+                value={reqAmtField}
+                onChange={(e) => {
+                  const raw = e.target.value;
+
+                  if (raw === '') {
+                    setReqAmtField('');
+                    return;
+                  }
+
+                  if (!/^\d+$/.test(raw)) return;
+
+                  setReqAmtField(raw);
+                }}
+                onBlur={(e) => {
+                  const n = Number(e.target.value);
+                  const safe = Number.isFinite(n) ? n : AMIN;
+                  const clamped = clamp(safe, AMIN, AMAX);
+                  setRequestedFinanceAmount(clamped);
+                  setReqAmtField(String(clamped));
+                }}
+                className="sf-input bg-secondary riyals-font value-accent"
+                aria-label={C.labels?.requestedAmount}
+                placeholder={C.labels?.requestedAmountPlaceholder || 'ريال'}
+                onKeyDown={(e) => {
+                  if (['e', 'E', '+', '-', '.'].includes(e.key)) e.preventDefault();
+                }}
               />
+
               <div className="text-xs text-gray-500 riyals-font">
                 {dir === 'ltr' ? (
                   <>
@@ -495,9 +518,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 max={AMAX}
                 step={ASTEP}
                 value={requestedFinanceAmount}
-                onChange={(e) =>
-                  setRequestedFinanceAmount(clamp(Number(e.target.value), AMIN, AMAX))
-                }
+                onChange={(e) => {
+                  const n = clampStep(Number(e.target.value), AMIN, AMAX, ASTEP);
+                  setRequestedFinanceAmount(n);
+                  setReqAmtField(String(n));
+                }}
                 className="sf-range bg-primaryAlt"
                 style={amountFill as any}
                 aria-label="Requested amount"
@@ -505,26 +530,54 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             </div>
           </Field>
 
-          <Field
-            label={C.labels?.installments || 'Number of Installments'}
-            tooltip={C.popups?.installments}
-          >
+          <Field label={C.labels?.installments} tooltip={C.popups?.installments}>
             <div className="space-y-2">
-              <div className="sf-input cursor-default flex items-center">
-                {installments} {C.labels?.installmentsPlaceholder || 'Months'}
-              </div>
+              <input
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={IMIN}
+                max={IMAX}
+                value={instField}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === '') {
+                    setInstField('');
+                    return;
+                  }
+                  if (!/^\d+$/.test(raw)) return;
+                  setInstField(raw);
+                }}
+                onBlur={(e) => {
+                  const n = Number(e.target.value);
+                  const clamped = clamp(Number.isFinite(n) ? n : IMIN, IMIN, IMAX);
+                  setInstallments(clamped);
+                  setInstField(String(clamped));
+                }}
+                className="sf-input bg-secondary value-accent"
+                aria-label={C.labels?.installments}
+                onKeyDown={(e) => {
+                  if (['e', 'E', '+', '-', '.'].includes(e.key)) e.preventDefault();
+                }}
+              />
+
               <div className="text-xs text-gray-500">
                 {dir === 'ltr'
                   ? `Maximum eligible installments is ${IMAX} months`
                   : `الحد الأقصى لعدد الأقساط هو ${IMAX} شهرًا`}
               </div>
+
               <input
                 type="range"
                 min={IMIN}
                 max={IMAX}
                 step={ISTEP}
                 value={installments}
-                onChange={(e) => setInstallments(clamp(Number(e.target.value), IMIN, IMAX))}
+                onChange={(e) => {
+                  const n = clamp(Number(e.target.value), IMIN, IMAX);
+                  setInstallments(n);
+                  setInstField(String(n));
+                }}
                 className="sf-range"
                 style={instFill as any}
                 aria-label="Installments"
@@ -532,36 +585,30 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
             </div>
           </Field>
 
-          <Field
-            label={C.labels?.totalMonthlyExpenses || 'Total Monthly Expenses'}
-            tooltip={C.popups?.totalMonthlyExpenses}
-          >
+          <Field label={C.labels?.totalMonthlyExpenses} tooltip={C.popups?.totalMonthlyExpenses}>
             <CurrencyInput
               value={expenses}
               onChange={setExpenses}
-              placeholder={C.labels?.totalMonthlyExpensesPlaceholder || '0.00 ﷼'}
+              placeholder={C.labels?.totalMonthlyExpensesPlaceholder}
             />
           </Field>
 
-          <Field
-            label={C.labels?.mortgageLiabilities || 'Mortgage Liabilities'}
-            tooltip={C.popups?.mortgageLiabilities}
-          >
+          <Field label={C.labels?.mortgageLiabilities} tooltip={C.popups?.mortgageLiabilities}>
             <CurrencyInput
               value={mortgageLiabilities}
               onChange={setMortgageLiabilities}
-              placeholder={C.labels?.mortgageLiabilitiesPlaceholder || '0.00 ﷼'}
+              placeholder={C.labels?.mortgageLiabilitiesPlaceholder}
             />
           </Field>
 
           <Field
-            label={C.labels?.monthlyFinancialLiabilities || 'Monthly Financial Liabilities'}
+            label={C.labels?.monthlyFinancialLiabilities}
             tooltip={C.popups?.monthlyFinancialLiabilities}
           >
             <CurrencyInput
               value={monthlyFinancialLiabilities}
               onChange={setMonthlyFinancialLiabilities}
-              placeholder={C.labels?.monthlyFinancialLiabilitiesPlaceholder || '0.00 ﷼'}
+              placeholder={C.labels?.monthlyFinancialLiabilitiesPlaceholder}
             />
           </Field>
 
@@ -740,7 +787,14 @@ display:none
   inset-inline-start: 1rem;     
   inset-inline-end: 2.5rem;    
   text-align: left;
-}
+}.value-accent { color: #010663; }
+
+/* While placeholder is showing, keep your normal placeholder color */
+.value-accent:placeholder-shown { color: var(--color-default); }
+
+/* Dark theme: do NOT change anything */
+.dark .value-accent { color: inherit; }
+.dark .value-accent:placeholder-shown { color: var(--color-default); }
 
 .date-input:dir(rtl):not(.has-value)::before{
   inset-inline-end: 1rem;      
@@ -902,7 +956,10 @@ function CurrencyInput({
         onChange(v === '' ? '' : Number(v));
       }}
       placeholder={placeholder || '0.00 ﷼'}
-      className="sf-input bg-secondary riyals-font"
+      className="sf-input bg-secondary riyals-font value-accent "
+      onKeyDown={(e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
+      }}
     />
   );
 }

@@ -192,7 +192,7 @@ export default function ClientNavbar({
                       className={[
                         'block rounded-lg px-3 py-2 no-underline text-14px leading-5 transition-colors',
                         childIsActive
-                          ? 'text-[#000] bg-[#E6E8FF] dark:text-white dark:bg-primary/30'
+                          ? 'text-[#000] bg-[#E6E8FF] dark:bg-primary/30 dark:bg-[#A6EFD9]'
                           : 'text-default hover:text-[#000] hover:bg-[#E6E8FF] dark:hover:bg-[#A6EFD9]',
                       ].join(' ')}
                     >
