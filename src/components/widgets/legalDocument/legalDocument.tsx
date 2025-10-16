@@ -131,6 +131,9 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
               >
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
+
+                  const cleanHeader = s.SectionHeader?.replace(/^\d+[\.\-\s]+/, '') || '';
+
                   return (
                     <li
                       key={s.Id}
@@ -139,12 +142,12 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
                       <a
                         suppressHydrationWarning
                         className={`sf-ldoc__link xs:rounded-xl flex items-center justify-between px-6 py-5 
-                          xs:h-12 md:h-16 text-[15px] border-b transition last:border-b-0 border-white/10`}
+          xs:h-12 md:h-16 text-[15px] border-b transition last:border-b-0 border-white/10`}
                         href={`#${slug}`}
                         data-target={slug}
                         data-index={i + 1}
                       >
-                        <span className="truncate">{s.SectionHeader}</span>
+                        <span className="truncate">{cleanHeader}</span>
                         <svg
                           viewBox="0 0 24 24"
                           fill="none"
