@@ -102,7 +102,7 @@ export async function sfFetch<T>(
     return !!(ctor && val instanceof ctor);
   };
 
-  async function call(fresh = false): Promise<T> {
+  async function call(fresh = false, retryCount = 0): Promise<T> {
     if (fresh) cachedToken = null;
     const token = await getSfToken();
 
@@ -151,23 +151,65 @@ export async function sfFetch<T>(
       }
     }
 
-    const res = await fetch(u.toString(), {
-      method: opts.method || 'GET',
-      headers,
-      body: preparedBody,
-      cache: 'no-store',
-      redirect: 'manual',
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    let res: Response;
+    try {
+      res = await fetch(u.toString(), {
+        method: opts.method || 'GET',
+        headers,
+        body: preparedBody,
+        cache: 'no-store',
+        redirect: 'manual',
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      
+      // Retry on network errors or timeouts (max 3 attempts)
+      if (retryCount < 2 && (err.name === 'AbortError' || err.code === 'ECONNREFUSED' || err.code === 'ECONNRESET')) {
+        console.warn(`[sfFetch] Network error (attempt ${retryCount + 1}/3), retrying...`, {
+          url: u.toString(),
+          error: err.message,
+        });
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000)); // exponential backoff
+        return call(fresh, retryCount + 1);
+      }
+      
+      if (err.name === 'AbortError') {
+        throw new Error(`sfFetch timeout after 30s: ${u}`);
+      }
+      throw err;
+    }
 
     if (
       res.status === 401 &&
       (res.headers.get('www-authenticate') || '').toLowerCase().includes('invalid_token')
     ) {
-      return call(true);
+      return call(true, retryCount);
+    }
+
+    // Retry on 502, 503, 504 (server temporarily unavailable)
+    if ((res.status === 502 || res.status === 503 || res.status === 504) && retryCount < 2) {
+      console.warn(`[sfFetch] Server error ${res.status} (attempt ${retryCount + 1}/3), retrying...`, {
+        url: u.toString(),
+      });
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000)); // exponential backoff
+      return call(fresh, retryCount + 1);
     }
 
     const text = await res.text();
     if (!res.ok) {
+      // Add more context to error for debugging
+      console.error(`[sfFetch Error]`, {
+        status: res.status,
+        statusText: res.statusText,
+        url: u.toString(),
+        retryCount,
+        response: text.slice(0, 500),
+      });
       throw new Error(`sfFetch ${res.status} ${res.statusText} ${u}\n${text.slice(0, 500)}`);
     }
     if (!text) return null as T;
@@ -177,6 +219,6 @@ export async function sfFetch<T>(
       return text as unknown as T;
     }
   }
-  return call(false);
+  return call(false, 0);
 }
 
