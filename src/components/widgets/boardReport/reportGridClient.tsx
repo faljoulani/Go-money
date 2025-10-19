@@ -19,6 +19,7 @@ export default function ReportGridClient({
   pageSize,
   initialOffset,
   allowPagination,
+  urlName,
   title,
   years,
   description,
@@ -31,6 +32,7 @@ export default function ReportGridClient({
   title?: string;
   years?: string[];
   description?: string;
+  urlName?: string;
 }) {
   const [activeYear, setActiveYear] = useState<string | undefined>(
     years && years.length ? years[0] : undefined,
@@ -73,8 +75,16 @@ export default function ReportGridClient({
     <div className="w-full md:mt-16">
       {(title || description) && (
         <header className="mb-6">
-          {title && <h2 className="md:text-5xl rtl:md:text-[40px] md:leading-[63px] rtl:md:leading-[75px] xs:text-2xl xs:leading-8 font-bold text-primary">{title}</h2>}
-          {description && <p className="mt-4 text-default md:leading-5 rtl:md:leading-8 xs:leading-5">{description}</p>}
+          {title && (
+            <h2 className="md:text-5xl rtl:md:text-[40px] md:leading-[63px] rtl:md:leading-[75px] xs:text-2xl xs:leading-8 font-bold text-primary">
+              {title}
+            </h2>
+          )}
+          {description && (
+            <p className="mt-4 text-default md:leading-5 rtl:md:leading-8 xs:leading-5">
+              {description}
+            </p>
+          )}
         </header>
       )}
 
@@ -136,17 +146,12 @@ export default function ReportGridClient({
                 shadow-sm px-6 pb-6 pt-10 flex flex-col items-center justify-center"
               >
                 <div className="mb-6 grid place-items-center w-16 h-16 rounded-2xl bg-[#f5f6ff] dark:bg-[#a6efd9]">
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    className="stroke-[#212121] dark:stroke-[#010663]"
-                    strokeWidth="2"
-                  >
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <path d="M14 2v6h6" />
-                  </svg>
+                  <a href={`/docs/default-source/default-document-library/${urlName}.pdf`}>
+                    <span
+                      className="pdf-icon text-[#212121] dark:text-[#010663]"
+                      aria-hidden="true"
+                    ></span>
+                  </a>
                 </div>
                 <h3 className="text-center text-[16px] font-semibold text-[#212121] dark:text-[#fafafa]">
                   {f.Title}

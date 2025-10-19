@@ -40,8 +40,6 @@ const getVariant = (box: ContactBox): 'subscribe' | 'contact' => {
   return hasCorner ? 'contact' : box.EmailPlaceholder ? 'subscribe' : 'contact';
 };
 
-
-
 export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
   const attrs = htmlAttributes(props);
   const { culture, isEdit } = props.requestContext;
@@ -125,16 +123,25 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
         <div
-          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[30px] rtl:rounded-bl-[30px] ltr:rotate-90 rtl:rotate-[270deg] xs:h-[75px] xs:w-[75px] bg-primaryAlt md:h-[90px] md:w-[90px]`}
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[24px] rtl:rounded-bl-[24px] 
+                      ltr:rotate-90 rtl:rotate-[270deg] 
+                      xs:h-[55px] xs:w-[55px] md:h-[90px] md:w-[90px] 
+                      bg-primaryAlt`}
         >
-          <div className={`absolute md:h-[52px] md:w-[52px] xs:h-[45px] xs:w-[45px] bg-[#FFFFFF] dark:bg-[#1d1d28]`} />
+          <div
+            className={`absolute md:h-[52px] md:w-[52px] xs:h-[35px] xs:w-[35px] 
+                      bg-[#FFFFFF] dark:bg-[#1d1d28]`}
+          />
         </div>
       )}
 
       {(box.Title || box.SubTitle) && (
         <div className="flex flex-col gap-3">
           {box.Title && (
-            <Title color="text-primaryAlt" className="xs:text-[24px] md:text-[28px] font-bold tracking-[-0.02em]">
+            <Title
+              color="text-primaryAlt"
+              className="xs:text-[24px] md:text-[28px] font-bold tracking-[-0.02em]"
+            >
               {box.Title}
             </Title>
           )}
@@ -177,7 +184,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
               </div>
               <div className="mt-2 h-px bg-lineMuted" />
               <div className="mt-2 text-xs text-default">
-                {box.CallUsText || '+966 11 123 4567'}
+                <span dir="ltr">{box.CallUsText || '+966 11 123 4567'}</span>
               </div>
             </div>
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
@@ -209,3 +216,4 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
     </div>
   );
 }
+

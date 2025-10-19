@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 import { emitCareersActiveJob } from '../../../../utils/careersEvents';
@@ -109,6 +109,7 @@ export default function ApplyForJob({
 
   const [countryIso2, setCountryIso2] = useState<string>('SA');
   const [countryDial, setCountryDial] = useState<string>('+966');
+  const [hasFormInteraction, setHasFormInteraction] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cityChoices = useMemo(() => citiesFrom(form, cities), [form, cities]);
@@ -127,11 +128,13 @@ export default function ApplyForJob({
   }, [heroLang]);
 
   const applyFieldChange = <K extends keyof FormDataState>(key: K, value: FormDataState[K]) => {
+    setHasFormInteraction(true);
     setData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleResume = (file?: File | null) => {
     if (!file) return;
+    setHasFormInteraction(true);
     const err = !allowedTypes.includes(file.type)
       ? isRtl
         ? 'الأنواع المدعومة: PDF, JPG, PNG.'
@@ -191,6 +194,7 @@ export default function ApplyForJob({
     const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
     setCountryIso2(iso2);
     setCountryDial(info?.dial ?? '');
+    setHasFormInteraction(true);
   };
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -295,11 +299,17 @@ export default function ApplyForJob({
 
   const compositeKey = useMemo(() => `${jobId ?? ''}:${language ?? ''}`, [jobId, language]);
 
+  useEffect(() => {
+    setHasFormInteraction(false);
+  }, [compositeKey]);
+
+  const getWidgetTarget = useCallback(() => widgetRef.current, []);
+
   const topRef = useScrollFocus({
-    ready: !!language && !loading,
+    ready: !!language && !loading && !hasFormInteraction,
     deps: [compositeKey],
     behavior: 'smooth',
-    target: () => widgetRef.current!,
+    target: getWidgetTarget,
     offset: 80,
     label: language === 'ar' ? 'تفاصيل الوظيفة' : 'Job details',
   });
@@ -601,4 +611,3 @@ export default function ApplyForJob({
     </SpinnerLoader>
   );
 }
-

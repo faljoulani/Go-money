@@ -103,8 +103,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     return s.replace(SAR_ONLY, RIYAL_SYMBOL).replace(RIYAL_ONLY, RIYAL_SYMBOL);
   }
   const roundToStep = (n: number, step: number) => Math.round(n / step) * step;
-  const clampStep = (n: number, min: number, max: number, step: number) =>
-    clamp(roundToStep(n, step), min, max);
+  const clampStep = (n: number, min: number, max: number, step: number) => clamp(n, min, max);
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
   const parseNum = (v: number | '') => (v === '' ? null : Number(v));
   const formatSar = (n: number) => new Intl.NumberFormat('en-SA').format(n);
@@ -497,7 +496,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 pattern="[0-9]*"
                 min={AMIN}
                 max={AMAX}
-                step={ASTEP}
                 value={reqAmtField}
                 onChange={(e) => {
                   const raw = e.target.value;
@@ -544,7 +542,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 type="range"
                 min={AMIN}
                 max={AMAX}
-                
+                step={ASTEP}
                 value={requestedFinanceAmount}
                 onChange={(e) => {
                   const n = clampStep(Number(e.target.value), AMIN, AMAX, ASTEP);

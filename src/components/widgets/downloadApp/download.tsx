@@ -212,7 +212,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
 
             {/* Store badges (ordered as provided) */}
             {orderedStores.length > 0 && (
-              <div className="mt-6 flex items-center rtl:justify-end gap-3 rtl:flex-row-reverse">
+              <div className="mt-6 flex md:flex-wrap items-center md:justify-start rtl:justify-end gap-3 rtl:flex-row-reverse">
                 {orderedStores.map((store, idx) =>
                   store.iconUrl ? (
                     <a key={idx} href={store.href}>
@@ -222,14 +222,14 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                         width={173}
                         height={52}
                         priority
-                        className="w-[173px] h-[52px] object-contain"
+                        className="md:w-auto h-[52px] object-contain"
                       />
                     </a>
                   ) : (
                     <a
                       key={idx}
                       href={store.href}
-                      className="px-4 py-2 rounded-xl bg-white/20 text-sm font-semibold"
+                      className="px-4 py-2 rounded-xl bg-white/20 text-sm font-semibold flex-shrink-0"
                     >
                       {store.title}
                     </a>
