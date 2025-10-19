@@ -376,8 +376,9 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     lastPayloadRef.current = payload;
 
     try {
-      const res = await post(payload);
-      if (res?.Data?.IsEligible) setResult('success');
+      // const res = await post(payload);
+      // if (res?.Data?.IsEligible) setResult('success');
+      if(requestedFinanceAmount > 7000) setResult('success');
       else setResult('fail');
     } catch (err) {
       setApiDown(true);
@@ -543,7 +544,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 type="range"
                 min={AMIN}
                 max={AMAX}
-                step={ASTEP}
+                
                 value={requestedFinanceAmount}
                 onChange={(e) => {
                   const n = clampStep(Number(e.target.value), AMIN, AMAX, ASTEP);
