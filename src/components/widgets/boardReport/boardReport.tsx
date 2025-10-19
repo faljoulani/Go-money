@@ -92,6 +92,7 @@ let lang = props.requestContext.culture || 'en';
       <ReportGridClient
       lang={lang}
         title={view.Title}
+        urlName={view.UrlName}
         description={view.Description}
         files={view.Files}
         pageSize={view.PageSize}
