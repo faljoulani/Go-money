@@ -134,7 +134,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
         (attrs as any)?.className || '',
       )}
     >
-      <div className="flex xs:flex-col md:h-[550px] xs:h-[700px] md:w-[90%] rounded-2xl md:mx-auto flip overflow-clip">
+      <div className="flex xs:flex-col md:h-[550px] xs:h-[700px] md:w-[90%] md:rounded-[32px] xs:rounded-2xl md:mx-auto flip overflow-clip">
         {/* Layer 1: gradient + main background image */}
         <div className="absolute inset-0 z-0 rtl:scale-x-[-1] md:rounded-[32px] xs:rounded-2xl">
           <div className="absolute inset-0 bg-finance-banner dark:bg-finance-banner-dark md:rounded-[32px] xs:rounded-2xl" />
@@ -152,9 +152,9 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         {/* Layer 2: content */}
 
-        <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 flex-col  md:pl-24 md:rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:mx-auto">
+        <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 flex-col  md:pl-24 md:rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:mx-auto fadeRightFinance">
           {financeRepaymentBanner.images.floatUrl.url && (
-            <div className="relative  w-full xs:h-[125px]  md:-ml-[22px] md:mr-[16px] md:rtl:-right-12  rounded-lg fadeRightFinanceDetails  xs:m-auto  ">
+            <div className="relative  w-full xs:h-[125px]  md:-ml-[22px] md:mr-[16px] md:rtl:-right-12  rounded-lg  xs:m-auto  ">
               <Image
                 src={financeRepaymentBanner.images.floatUrl.url}
                 alt={financeRepaymentBanner.images.floatUrl.alt}
@@ -165,7 +165,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             </div>
           )}
 
-          <div className="fadeRightFinanceDetails ">
+          <div className=" ">
             {!!financeRepaymentBanner.title && (
               <Title
                 className="md:text-5xl  font-bold md:tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px]  
@@ -193,7 +193,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             //     {financeRepaymentBanner.ctaLabel}
             //   </CTA>
             // </div>
-            <div className="md:mt-[24px]  xs:mt-6 flex  fadeRightFinanceDetails">
+            <div className="md:mt-[24px]  xs:mt-6 flex">
               <a
                 href={financeRepaymentBanner.ctaHref || '#'}
                 className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
@@ -225,8 +225,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         {financeRepaymentBanner.images.foregroundUrl.url && (
           <div
-            className="md:absolute xs:mt-auto xs:absolute xs:bottom-10 md:z-20 xs:rtl:left-0 xs:ltr:right-0 md:ltr:right-0 md:ltr:left-auto md:rtl:left-0 md:rtl:right-auto fadeRightFinance
-                    "
+            className="md:absolute xs:mt-auto xs:absolute xs:bottom-10 md:z-20 
+            xs:rtl:left-0 xs:ltr:right-0 md:ltr:right-0 md:ltr:left-auto md:rtl:left-0 md:rtl:right-auto fadeRightFinance"
           >
             <Image
               src={financeRepaymentBanner.images.foregroundUrl.url}

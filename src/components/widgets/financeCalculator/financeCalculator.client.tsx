@@ -388,11 +388,11 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     );
   }
   return (
-    <section className="w-full mt-32">
+    <section className="w-full md:mt-16 xs:mt-10">
       <form
         ref={formRef}
         onSubmit={onSubmit}
-        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary mt-16 p-8 shadow-sm "
+        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary p-8 shadow-sm "
       >
         <h2 className="xs:text-[24px] md:text-[28px] font-bold text-primary">
           {C.title || 'Enter your Finance details'}
