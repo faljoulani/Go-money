@@ -244,11 +244,6 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     ISTEP = 1,
     IDEF = Math.trunc((IMIN + IMAX) / 2);
 
-  const employerSectorChoices: Choice[] = C.choices?.employerSectorChoices ?? [];
-  const employerChoices: Choice[] = C.choices?.employerTypes ?? [];
-  const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
-  const nationalityChoices: Choice[] = C.choices?.nationalities ?? [];
-
   const employerSectorOptions: Choice[] = Array.isArray(C.choices?.employerSectorChoices)
     ? C.choices.employerSectorChoices
     : [];
@@ -458,7 +453,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               options={employerSectorOptions}
             />
           </Field>
-          {isGovSector && (
+          {isGovSector ? (
             <Field label={C.labels?.employerType}>
               <Select
                 value={employer}
@@ -467,6 +462,8 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 options={employerOptions}
               />
             </Field>
+          ) : (
+            <div aria-hidden className="md:col-span-1" />
           )}
 
           <Field label={C.labels?.dateOfBirth} tooltip={C.popups?.dateOfBirth}>
@@ -490,15 +487,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               options={lengthOptions}
             />
           </Field>
-
-          <Field label={C.labels?.monthlySalary} tooltip={C.popups?.monthlySalary}>
-            <CurrencyInput
-              value={salary}
-              onChange={setSalary}
-              placeholder={C.labels?.monthlySalaryPlaceholder}
-            />
-          </Field>
-
+     
           <Field label={C.labels?.requestedAmount} tooltip={C.popups?.requestedAmount}>
             <div className="space-y-2">
               <input
@@ -567,7 +556,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
             </div>
           </Field>
-
+   
           <Field label={C.labels?.installments} tooltip={C.popups?.installments}>
             <div className="space-y-2">
               <input
@@ -622,7 +611,13 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
             </div>
           </Field>
-
+  <Field label={C.labels?.monthlySalary} tooltip={C.popups?.monthlySalary}>
+            <CurrencyInput
+              value={salary}
+              onChange={setSalary}
+              placeholder={C.labels?.monthlySalaryPlaceholder}
+            />
+          </Field>
           <Field label={C.labels?.totalMonthlyExpenses} tooltip={C.popups?.totalMonthlyExpenses}>
             <CurrencyInput
               value={expenses}
