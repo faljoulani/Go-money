@@ -23,6 +23,10 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   const faqRoot = resolveSitefinitySelection(model?.FaqRoot);
   const selectedCategories = resolveSitefinitySelection(model?.FaqCategories);
 
+  // Get current path to determine if we're on faq page
+  const currentPath = (props.requestContext as any)?.url ?? '';
+  const isFaqPage = currentPath.toLowerCase().includes('faq');
+
   let rootData: any = undefined;
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
 
@@ -76,7 +80,13 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   return (
     <section {...attrs} className="md:px-0 px-4 max-w-[1440px] xxl:mx-auto">
       <div className="md:mx-auto w-full flex flex-col gap-2 text-center justify-center xs:mt-4 items-center md:px-6 md:pt-12 md:pb-4 fadeupText">
-        {rootData?.Eyebrow && <Eyebrow className="text-primary">{rootData.Eyebrow}</Eyebrow>}
+        {rootData?.Eyebrow && (
+          <Eyebrow
+            className={`text-primary ${!isFaqPage ? 'hidden' : ''}`}
+          >
+            {rootData.Eyebrow}
+          </Eyebrow>
+        )}
         {rootData?.Title && (
           <Title
             className="
@@ -92,7 +102,13 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
           </Title>
         )}
 
-        {rootData?.Description && <Description>{rootData.Description}</Description>}
+        {rootData?.Description && (
+          <Description
+            className={!isFaqPage ? 'hidden' : ''}
+          >
+            {rootData.Description}
+          </Description>
+        )}
       </div>
 
       {categories.length > 0 && <QuestionsClient lang={lang} categories={categories} />}
