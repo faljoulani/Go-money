@@ -249,34 +249,21 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
   const nationalityChoices: Choice[] = C.choices?.nationalities ?? [];
 
-  const employerSectorOptions: Choice[] = employerSectorChoices.length
-    ? employerSectorChoices
-    : [
-        { id: 'GOVERNMENT', title: 'Government', value: 'GOVERNMENT' },
-        { id: 'PRV', title: 'Private', value: 'PRV' },
-        { id: 'PNS', title: 'Retired', value: 'PNS' },
-      ];
+  const employerSectorOptions: Choice[] = Array.isArray(C.choices?.employerSectorChoices)
+    ? C.choices.employerSectorChoices
+    : [];
 
-  const employerOptions: Choice[] = employerChoices.length
-    ? employerChoices
-    : [
-        { id: 'GOV', title: 'Civilian', value: 'GOV' },
-        { id: 'GML', title: 'Military', value: 'GML' },
-        { id: 'MOE', title: 'Ministry Of Education', value: 'MOE' },
-        { id: 'SMG', title: 'Semi Government', value: 'SMG' },
-      ];
+  const employerOptions: Choice[] = Array.isArray(C.choices?.employerTypes)
+    ? C.choices.employerTypes
+    : [];
 
-  const lengthOptions: Choice[] = lengthChoices.length
-    ? lengthChoices
-    : [
-        { id: '3', title: 'Less than 3 Months', value: '3' },
-        { id: '6', title: '3 - 6 Months', value: '6' },
-        { id: '12', title: 'More than 6 Months', value: '12' },
-      ];
+  const lengthOptions: Choice[] = Array.isArray(C.choices?.lengthOfServices)
+    ? C.choices.lengthOfServices
+    : [];
 
-  const nationalityOptions = nationalityChoices.length
-    ? nationalityChoices.map((c) => c.title)
-    : (['Saudi', 'Non-Saudi'] as string[]);
+  const nationalityOptions: string[] = Array.isArray(C.choices?.nationalities)
+    ? C.choices.nationalities.map((c: Choice) => c.title)
+    : [];
 
   // ---- state ----
   const [result, setResult] = useState<ResultState>(null);
