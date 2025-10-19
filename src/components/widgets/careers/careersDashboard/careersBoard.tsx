@@ -214,6 +214,7 @@ export default function CareersBoard({
   const showMobileFiltersRef = useRef(showMobileFilters);
   const skipFetchRef = useRef(false);
   const widgetRef = useRef<HTMLDivElement | null>(null);
+  const hasInteractedRef = useRef(false);
 
   useEffect(() => {
     showMobileFiltersRef.current = showMobileFilters;
@@ -470,6 +471,7 @@ export default function CareersBoard({
 
   const toggleFacet = useCallback(
     (key: QueryKey, name: string) => {
+      hasInteractedRef.current = true;
       replaceUrl({ page: 1 });
       skipFetchRef.current = true;
       updateQuery((prev) => {
@@ -512,6 +514,7 @@ export default function CareersBoard({
 
   const handlePage = useCallback(
     (n: number) => {
+      hasInteractedRef.current = true;
       const nextPage = Math.max(1, Math.min(n, Math.max(1, totalPages)));
       replaceUrl({ page: nextPage });
       skipFetchRef.current = true;
@@ -522,6 +525,7 @@ export default function CareersBoard({
 
   const handlePageSize = useCallback(
     (n: number) => {
+      hasInteractedRef.current = true;
       const nextSize = Math.max(1, n);
       replaceUrl({ page: 1, pageSize: nextSize });
       skipFetchRef.current = true;
@@ -556,6 +560,7 @@ export default function CareersBoard({
 
   const removeChip = useCallback(
     (key: QueryKey, name: string) => {
+      hasInteractedRef.current = true;
       replaceUrl({ page: 1 });
       skipFetchRef.current = true;
       updateQuery((q) => {
@@ -619,14 +624,11 @@ export default function CareersBoard({
   );
 
   const topRef = useScrollFocus({
-    ready: !loading,
-
+    ready: hasInteractedRef.current && !loading,
     deps: scrollDeps,
-
     behavior: 'smooth',
     target: () => widgetRef.current!,
     offset: 80,
-
     label: isRtl ? 'قائمة الوظائف' : 'Job list',
   });
 
@@ -664,10 +666,7 @@ export default function CareersBoard({
                 {isLocationsOpen ? '−' : '+'}
               </button>
 
-              {loading && (
-                <LoaderIcon />
-
-              )}
+              {loading && <LoaderIcon />}
             </div>
 
             {/* Collapsible content */}
@@ -935,8 +934,9 @@ export default function CareersBoard({
 
                 <div
                   id="mobile-locations-panel"
-                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${mobileSectionsOpen.locations ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                    }`}
+                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
+                    mobileSectionsOpen.locations ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
                 >
                   <div className="overflow-hidden">
                     {facetNames.locations.length === 0 ? (
@@ -988,8 +988,9 @@ export default function CareersBoard({
 
                 <div
                   id="mobile-departments-panel"
-                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${mobileSectionsOpen.departments ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                    }`}
+                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
+                    mobileSectionsOpen.departments ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
                 >
                   <div className="overflow-hidden">
                     {facetNames.departments.length === 0 ? (
@@ -1034,6 +1035,7 @@ export default function CareersBoard({
               <button
                 type="button"
                 onClick={() => {
+                  hasInteractedRef.current = true;
                   setShowMobileFilters(false);
                   replaceUrl({ page: 1 });
                   skipFetchRef.current = true;
@@ -1057,4 +1059,3 @@ export default function CareersBoard({
     </section>
   );
 }
-

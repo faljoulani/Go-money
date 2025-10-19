@@ -154,7 +154,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 flex-col  md:pl-24 md:rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:mx-auto">
           {financeRepaymentBanner.images.floatUrl.url && (
-            <div className="relative  w-full xs:h-[125px]  md:-ml-[22px] md:mr-[16px] md:rtl:-right-12  rounded-lg fadeRightFinanceDetails  xs:m-auto  ">
+            <div className="relative w-full xs:h-[125px] md:-ml-[22px] md:mr-[16px] md:rtl:-right-12  rounded-lg fadeRightFinanceDetails  xs:m-auto  ">
               <Image
                 src={financeRepaymentBanner.images.floatUrl.url}
                 alt={financeRepaymentBanner.images.floatUrl.alt}
@@ -168,8 +168,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
           <div className="fadeRightFinanceDetails ">
             {!!financeRepaymentBanner.title && (
               <Title
-                className="md:text-5xl  font-bold md:tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px]  
-                md:max-w-[365px] xs:max-w-none xs:text-[24px] xs:leading-8 rtl:xs:leading-[45px]"
+                className="md:text-5xl font-bold md:tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px]  
+                md:max-w-[450px] xs:max-w-none xs:text-[24px] xs:leading-8 rtl:xs:leading-[45px]"
                 color="text-white"
               >
                 {financeRepaymentBanner.title}
@@ -178,22 +178,7 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
           </div>
 
           {!!financeRepaymentBanner.ctaLabel && (
-            // <div className="md:mt-6 xs:mt-5">
-            //   <CTA
-            //     variant="outline"
-            //     colorText="text-accent"
-            //     fontWeight="font-light"
-            //     borderColor="border-accent"
-            //     align="center"
-            //     icon="slot"
-            //     bgColor="transparent"
-            //     href={financeRepaymentBanner.ctaHref}
-            //     className="md:w-auto xs:w-full xs:h-12 xs:rounded-xl xs:py-6 fadeRightFinanceButton"
-            //   >
-            //     {financeRepaymentBanner.ctaLabel}
-            //   </CTA>
-            // </div>
-            <div className="md:mt-[24px]  xs:mt-6 flex  fadeRightFinanceDetails">
+            <div className="md:mt-[24px] xs:mt-6 flex fadeRightFinanceDetails">
               <a
                 href={financeRepaymentBanner.ctaHref || '#'}
                 className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
