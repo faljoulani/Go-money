@@ -46,8 +46,7 @@ export default function QuestionsClient({
   return (
     <section
       className="
-        md:mx-20 overflow-clip
-         xs:flex-col xs:gap-2 xs:pt-[30px]
+        md:mx-20 overflow-clip xs:flex-col xs:gap-2 xs:pt-[30px]
         md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16
       "
     >
