@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { emitCareersActiveJob } from '../../../../utils/careersEvents';
 import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
 import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
-import FullPageLoader from '../../../atoms/fullPageLoader/fullPageLoader';
+import FullPageLoader, { LoaderIcon } from '../../../atoms/fullPageLoader/fullPageLoader';
 import { useSearchParams } from 'next/navigation';
 
 import type {
@@ -665,10 +665,8 @@ export default function CareersBoard({
               </button>
 
               {loading && (
-                <span className="text-xs opacity-70 flex items-center gap-1 ml-2">
-                  <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
-                  Loading
-                </span>
+                <LoaderIcon />
+
               )}
             </div>
 
@@ -722,7 +720,7 @@ export default function CareersBoard({
 
                 {loading && (
                   <span className="text-xs opacity-70 flex items-center gap-1">
-                    <Image src="/icons/spinner.svg" alt="" width={14} height={14} aria-hidden />{' '}
+                    <LoaderIcon />
                     Loading
                   </span>
                 )}
@@ -774,7 +772,7 @@ export default function CareersBoard({
             <div className="flex items-center gap-3">
               {loading ? (
                 <span className="text-sm opacity-70 flex items-center gap-2">
-                  <Image src="/icons/spinner.svg" alt="" width={16} height={16} aria-hidden />{' '}
+                  <LoaderIcon />
                   Loading…
                 </span>
               ) : null}
@@ -937,9 +935,8 @@ export default function CareersBoard({
 
                 <div
                   id="mobile-locations-panel"
-                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
-                    mobileSectionsOpen.locations ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                  }`}
+                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${mobileSectionsOpen.locations ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                    }`}
                 >
                   <div className="overflow-hidden">
                     {facetNames.locations.length === 0 ? (
@@ -991,9 +988,8 @@ export default function CareersBoard({
 
                 <div
                   id="mobile-departments-panel"
-                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
-                    mobileSectionsOpen.departments ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                  }`}
+                  className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${mobileSectionsOpen.departments ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                    }`}
                 >
                   <div className="overflow-hidden">
                     {facetNames.departments.length === 0 ? (

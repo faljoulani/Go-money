@@ -62,7 +62,7 @@ export default function MainNavigationClientShell({
       
 
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2" aria-label="Home">
+            <Link href="/" prefetch={false} className="flex items-center gap-2" aria-label="Home">
               <GoMoneyIcon
                 className={`w-[102px] h-[45px] transition-colors ${
                   scrolled ? 'text-primaryAlt' : 'text-white'

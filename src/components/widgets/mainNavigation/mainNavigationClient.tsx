@@ -65,7 +65,6 @@ export default function ClientNavbar({
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const pathname = usePathname();
   const navRef = useDismissable<HTMLDivElement>(openIdx !== null, () => setOpenIdx(null));
-  console.log('ITEMS IN DESKTOP:  ', items);
 
   useEffect(() => {
     setOpenIdx(null);
@@ -110,9 +109,7 @@ export default function ClientNavbar({
     <nav ref={navRef} className={`flex items-center gap-4 pointer-events-auto ${className || ''}`}>
       {items.map((item, i) => {
         const rawUrl = resolveItemUrl(item.url);
-        console.log('RAW URL:  ', rawUrl);
         const parentPath = normalizePath(rawUrl);
-        console.log('parentPath:  ', parentPath);
         const keyForItem = parentPath || `__empty-${i}`;
 
         const selfActive = isDropdown(item)
@@ -157,6 +154,7 @@ export default function ClientNavbar({
             ) : (
               <Link
                 href={stripQuery ? cleanHref(rawUrl || '/') : rawUrl || '/'}
+                prefetch={false}
                 aria-current={selfActive ? 'page' : undefined}
                 data-active={String(selfActive)}
                 className={[

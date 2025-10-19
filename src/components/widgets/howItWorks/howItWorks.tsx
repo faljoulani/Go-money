@@ -31,32 +31,38 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
     const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
-    try {
-      item = await RestClient.getItem({
-        id,
-        provider,
-        type: SECTION_TYPE,
-        culture: props.requestContext.culture,
-        traceContext: props.traceContext,
-        fields: [
-          'Id',
-          'Title',
-          'UrlName',
-          'SubTitle',
-          'HeaderText',
-          'IntroLead',
-          'IntroSubLead',
-          'CTALabel',
-          'CTAURL',
-          'CTAExternalUrl',
-          'CTAInternalPage($select=Id,Title,DefaultUrl)',
-          'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
-          'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
-            'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
-        ],
-      });
-    } catch (e) {
-      console.error('Error fetching HowItWork section:', e);
+    
+    if (!id) {
+      console.warn('HowItWork: No item ID found in selection');
+    } else {
+      try {
+        item = await RestClient.getItem({
+          id,
+          provider,
+          type: SECTION_TYPE,
+          culture: props.requestContext.culture,
+          traceContext: props.traceContext,
+          fields: [
+            'Id',
+            'Title',
+            'UrlName',
+            'SubTitle',
+            'HeaderText',
+            'IntroLead',
+            'IntroSubLead',
+            'CTALabel',
+            'CTAURL',
+            'CTAExternalUrl',
+            'CTAInternalPage($select=Id,Title,DefaultUrl)',
+            'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
+            'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
+              'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
+          ],
+        });
+      } catch (e) {
+        console.error('Error fetching HowItWork section:', e);
+        // Don't throw - allow page to render without this widget
+      }
     }
   }
   if (!item) {

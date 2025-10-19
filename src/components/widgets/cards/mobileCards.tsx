@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
+import Description from '../../atoms/description/description';
 
 export function MobileCardsCarousel({
   items,
@@ -101,10 +102,9 @@ export function MobileCardsCarousel({
               <div className="pt-4 pb-6 px-3">
                 <h3 className="text-[20px] leading-7 font-medium text-primaryAlt">{card.title}</h3>
                 {card.description && (
-                  <p
-                    className="mt-2 text-default text-sm leading-5"
-                    dangerouslySetInnerHTML={{ __html: card.description }}
-                  />
+                  <div className="mt-2 text-sm leading-5">
+                    <Description html={card.description} />
+                  </div>
                 )}
               </div>
             </article>

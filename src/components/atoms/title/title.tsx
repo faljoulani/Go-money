@@ -32,7 +32,6 @@ export default function Title({
   as = 'p',
 }: Props) {
   const cleaned = html ? cleanSfHtml(html) : undefined;
-  console.log('LATEST DESCRIPTION');
   // pick the safest tag:
   // - if html contains block tags and the requested tag is inline or <p>, switch to <div>
   // - otherwise honor the 'as' prop
