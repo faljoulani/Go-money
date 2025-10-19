@@ -355,7 +355,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       ? employer || 'GOV'
       : sectorToEmployerType[sectorKey] || '';
     const payload = {
-      employerTypeForPayload,
+      EmployerType: employerTypeForPayload || undefined,
       Nationality: nationality,
 
       Gender: 'Male',
@@ -487,7 +487,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               options={lengthOptions}
             />
           </Field>
-     
+
           <Field label={C.labels?.requestedAmount} tooltip={C.popups?.requestedAmount}>
             <div className="space-y-2">
               <input
@@ -556,7 +556,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
             </div>
           </Field>
-   
+
           <Field label={C.labels?.installments} tooltip={C.popups?.installments}>
             <div className="space-y-2">
               <input
@@ -611,7 +611,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               />
             </div>
           </Field>
-  <Field label={C.labels?.monthlySalary} tooltip={C.popups?.monthlySalary}>
+          <Field label={C.labels?.monthlySalary} tooltip={C.popups?.monthlySalary}>
             <CurrencyInput
               value={salary}
               onChange={setSalary}
