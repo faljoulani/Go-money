@@ -56,7 +56,8 @@ export function MobileFeaturesCarousel({
             key={card.id ?? i}
             data-slide={i}
             data-index={i}
-            className={`snap-center shrink-0 w-[250px] rounded-[32px] h-auto bg-white/10 py-10 flex flex-col items-center ${i === 0 ? 'ml-4' : ''} ${i === items.length - 1 ? 'mr-4' : ''}`}>
+            className={`snap-center shrink-0 w-[250px] rounded-[32px] h-auto bg-white/10 py-10 flex flex-col items-center border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF] ${i === 0 ? 'ml-4' : ''} ${i === items.length - 1 ? 'mr-4' : ''}`}
+          >
             {card.imgUrl && (
               <div className="relative overflow-hidden ">
                 <img
