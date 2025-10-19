@@ -244,20 +244,36 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     ISTEP = 1,
     IDEF = Math.trunc((IMIN + IMAX) / 2);
 
+  const employerSectorChoices: Choice[] = C.choices?.employerSectorChoices ?? [];
   const employerChoices: Choice[] = C.choices?.employerTypes ?? [];
   const lengthChoices: Choice[] = C.choices?.lengthOfServices ?? [];
   const nationalityChoices: Choice[] = C.choices?.nationalities ?? [];
 
+  const employerSectorOptions: Choice[] = employerSectorChoices.length
+    ? employerSectorChoices
+    : [
+        { id: 'GOVERNMENT', title: 'Government', value: 'GOVERNMENT' },
+        { id: 'PRV', title: 'Private', value: 'PRV' },
+        { id: 'PNS', title: 'Retired', value: 'PNS' },
+      ];
+
   const employerOptions: Choice[] = employerChoices.length
     ? employerChoices
-    : [{ id: 'GML', title: 'Government', value: 'GML' }];
+    : [
+        { id: 'GOV', title: 'Civilian', value: 'GOV' },
+        { id: 'GML', title: 'Military', value: 'GML' },
+        { id: 'MOE', title: 'Ministry Of Education', value: 'MOE' },
+        { id: 'SMG', title: 'Semi Government', value: 'SMG' },
+      ];
+
   const lengthOptions: Choice[] = lengthChoices.length
     ? lengthChoices
     : [
-        { id: '3', title: '3 Months', value: '3' },
-        { id: '6', title: '6 Months', value: '6' },
-        { id: '12', title: '1 Year', value: '12' },
+        { id: '3', title: 'Less than 3 Months', value: '3' },
+        { id: '6', title: '3 - 6 Months', value: '6' },
+        { id: '12', title: 'More than 6 Months', value: '12' },
       ];
+
   const nationalityOptions = nationalityChoices.length
     ? nationalityChoices.map((c) => c.title)
     : (['Saudi', 'Non-Saudi'] as string[]);
@@ -265,6 +281,10 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   // ---- state ----
   const [result, setResult] = useState<ResultState>(null);
   const [nationality, setNationality] = useState<Nationality>('Saudi');
+  const [employerSector, setEmployerSector] = useState<string>(
+    employerSectorOptions[0]?.value ?? '',
+  );
+
   const [employer, setEmployer] = useState<string>(employerOptions[0]?.value);
   const [serviceLength, setServiceLength] = useState<string>(lengthOptions[0]?.value ?? '3');
   const [dob, setDob] = useState('');
@@ -282,6 +302,17 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
   const [msg, setMsg] = useState<string>('');
   const [apiDown, setApiDown] = useState(false);
   const lastPayloadRef = useRef<any>(null);
+
+  const GOV_SECTOR_KEYS = ['GVT', 'GOV', 'GOVERNMENT'];
+  const isGovSector = GOV_SECTOR_KEYS.includes((employerSector || '').toUpperCase());
+
+  useEffect(() => {
+    if (!isGovSector) {
+      setEmployer('');
+    } else if (!employer) {
+      setEmployer('GOV');
+    }
+  }, [employerSector]);
 
   const amountFill = useRangeVars(
     requestedFinanceAmount,
@@ -331,10 +362,20 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     setSubmitting(true);
     setMsg('');
     setApiDown(false);
+    const sectorToEmployerType: Record<string, string> = {
+      PRV: 'PRV',
+      PNS: 'PNS',
+    };
 
+    const sectorKey = (employerSector || '').toUpperCase();
+
+    const employerTypeForPayload = isGovSector
+      ? employer || 'GOV'
+      : sectorToEmployerType[sectorKey] || '';
     const payload = {
-      EmployerType: employer,
+      employerTypeForPayload,
       Nationality: nationality,
+
       Gender: 'Male',
       FinanceAmt: String(requestedFinanceAmount),
       Tenure: String(installments),
@@ -422,14 +463,24 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Field label={C.labels?.employerType}>
+          <Field label={C.labels?.employerSectorLabel} tooltip={C.popups?.employerSector}>
             <Select
-              value={employer}
-              onChange={setEmployer}
-              placeholder={C.labels?.employerPlaceholder}
-              options={employerOptions}
+              value={employerSector}
+              onChange={setEmployerSector}
+              placeholder={C.labels?.employerSectorPlaceholder}
+              options={employerSectorOptions}
             />
           </Field>
+          {isGovSector && (
+            <Field label={C.labels?.employerType}>
+              <Select
+                value={employer}
+                onChange={setEmployer}
+                placeholder={C.labels?.employerPlaceholder}
+                options={employerOptions}
+              />
+            </Field>
+          )}
 
           <Field label={C.labels?.dateOfBirth} tooltip={C.popups?.dateOfBirth}>
             <div className="relative date-wrap">
