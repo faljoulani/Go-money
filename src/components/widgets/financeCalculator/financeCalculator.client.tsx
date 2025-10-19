@@ -376,9 +376,9 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     lastPayloadRef.current = payload;
 
     try {
-      // const res = await post(payload);
-      // if (res?.Data?.IsEligible) setResult('success');
-      if(requestedFinanceAmount > 7000) setResult('success');
+      const res = await post(payload);
+      if (res?.Data?.IsEligible) setResult('success');
+      // if(requestedFinanceAmount > 7000) setResult('success');
       else setResult('fail');
     } catch (err) {
       setApiDown(true);
