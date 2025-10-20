@@ -18,6 +18,9 @@ import { CardSectionEntity } from '../components/widgets/cards/card.entity';
 import Download from '../components/widgets/downloadApp/download';
 import { DownloadEntity } from '../components/widgets/downloadApp/download.entity';
 
+import ExecutiveManagement from '../components/widgets/executiveManagement/executiveManagement';
+import { ExectiveManagementEntity } from '../components/widgets/executiveManagement/executiveManagement.entity';
+
 import GridOfCards from '../components/widgets/cards/gridOfCards';
 
 import Footer from '../components/widgets/footer/footer-temp';
@@ -148,7 +151,12 @@ const customWidgetRegistry: WidgetRegistry = {
       ssr: true,
       editorMetadata: { Title: 'Download' },
     },
-
+    ExecutiveManagement: {
+      componentType: ExecutiveManagement,
+      entity: ExectiveManagementEntity,
+      ssr: true,
+      editorMetadata: { Title: 'ExectiveManagement' },
+    },
     FinanceBanner: {
       componentType: FinanceBanner,
       entity: FinanceBannerEntity,
