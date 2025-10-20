@@ -37,7 +37,7 @@ async function attemptRenderPage(
     const errorMessage = error?.message || String(error);
     
     // Check if it's a 404 error
-    const is404 = errorMessage.includes('404') || errorMessage.includes('NEXT_HTTP_ERROR_FALLBACK');
+    const is404 = errorMessage.includes('404') || errorMessage.includes('NEXT_NOT_FOUND');
     
     // Retry 404s up to 2 times (total 3 attempts) in case of temporary server issues
     // This handles cases where Sitefinity might be restarting or temporarily unresponsive
@@ -52,14 +52,16 @@ async function attemptRenderPage(
       return attemptRenderPage(resolvedParams, resolvedSearchParams, retryCount + 1);
     }
     
-    // Only log as error if all retries exhausted
-    console.error('[RenderPage Error]', {
-      slug: resolvedParams.slug,
-      error: errorMessage,
-      attempt: retryCount + 1,
-      stack: error?.stack,
-      timestamp: new Date().toISOString(),
-    });
+    // Only log as error if all retries exhausted or not a 404
+    if (!is404 || retryCount >= 2) {
+      console.error('[RenderPage Error]', {
+        slug: resolvedParams.slug,
+        error: errorMessage,
+        attempt: retryCount + 1,
+        digest: error?.digest,
+        timestamp: new Date().toISOString(),
+      });
+    }
     
     // After all retries exhausted, check if it's a server error or actual 404
     const isServerError = errorMessage.includes('502') || 

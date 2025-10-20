@@ -60,7 +60,6 @@ export default function ReportGridClient({
   );
 
   const files = data?.Files ?? [];
-
   const grouped = useMemo(() => {
     const map = new Map<string, ReportFile[]>();
     for (const f of files) {
@@ -76,7 +75,6 @@ export default function ReportGridClient({
   }, [files]);
 
   const list = activeYear ? grouped.get(activeYear) ?? [] : [];
-
   return (
     <div className="w-full md:mt-16">
       {(title || description) && (
