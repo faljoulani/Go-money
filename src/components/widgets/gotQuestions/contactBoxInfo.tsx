@@ -110,7 +110,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
     href ? (
       <a
         href={href}
-        className="block rounded-2xl border border-slate-200 bg-surface-section p-8 text-center shadow-sm transition hover:shadow-md"
+        className="block rounded-2xl border border-slate-200 bg-surface-section p-5 text-center transition"
       >
         {children}
       </a>
@@ -123,7 +123,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
   return (
     <section
       {...attrs}
-      className="relative mx-auto w-full max-w-[1240px] overflow-hidden rounded-[28px] border-none bg-surface-section px-6 xs:p-8 md:py-16 xs:text-left md:text-center shadow-sm  mb-10 mt-16"
+      className="relative mx-auto w-full max-w-[1240px] overflow-hidden xs:rounded-2xl md:rounded-[28px] border-none bg-surface-section px-6 xs:p-4 md:py-16 xs:text-left md:text-center  mb-10 mt-16"
     >
       {showCorner && (
         <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
@@ -140,20 +140,20 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       )}
 
       <div className="mx-auto max-w-3xl">
-        <h2 className="md:text-[48px] xs:text-[24px] font-bold leading-tight tracking-[-0.02em] text-primary text-start">
+        <h2 className="md:text-[48px] xs:text-[24px] font-bold leading-tight tracking-[-0.02em] text-primary xs:text-start md:text-center">
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-4 xs:text-[18px] text-lg leading-relaxed text-[#9E9E9E] text-start">{subtitle}</p>
+          <p className="mt-4 xs:text-[18px] text-lg leading-relaxed text-[#9E9E9E] xs:text-start md:text-center xs:max-w-[250px] md:max-w-full">{subtitle}</p>
         )}
       </div>
 
-      <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="mx-auto mt-10 grid max-w-[540px] grid-cols-1 gap-3 sm:grid-cols-2">
         <CardWrap href={phoneHref}>
           <div className="flex items-center justify-center gap-2 text-primary">
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               aria-hidden="true"
@@ -167,19 +167,19 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-base text-default font-semibold">{callLabel}</span>
+            <span className="text-[12px] text-default font-bold">{callLabel}</span>
           </div>
 
-          <div className="mx-auto my-5 h-px w-3/4 bg-[#E0E0E0] dark:bg-[#757575]" />
+          <div className="mx-auto my-3 h-px w-3/4 bg-[#E0E0E0] dark:bg-[#757575]" />
 
-          <div className="text-lg text-default">{phoneText || '-'}</div>
+          <div className="md:text-14px xs:text-[12px] text-default">{phoneText || '-'}</div>
         </CardWrap>
 
         <CardWrap href={emailHref}>
           <div className="flex items-center justify-center gap-2 text-default font-light">
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               aria-hidden="true"
@@ -193,12 +193,12 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-base font-semibold">{emailLabel}</span>
+            <span className="text-[12px] text-default font-bold">{emailLabel}</span>
           </div>
 
-          <div className="mx-auto my-5 h-px w-3/4 bg-[#E0E0E0] dark:bg-[#757575" />
+          <div className="mx-auto my-3 h-px w-3/4 bg-[#E0E0E0] dark:bg-[#757575" />
 
-          <div className="text-lg text-default break-all font-light">{emailText || '-'}</div>
+          <div className="md:text-14px xs:text-[12px] text-default break-all">{emailText || '-'}</div>
         </CardWrap>
       </div>
     </section>
