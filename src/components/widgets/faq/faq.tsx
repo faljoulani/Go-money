@@ -25,7 +25,8 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
 
   // Get current path to determine if we're on faq page
   const currentPath = (props.requestContext as any)?.url ?? '';
-  const isFaqPage = currentPath.toLowerCase().includes('faq');
+  const isFaqPage = currentPath.toLowerCase().includes('faq') || currentPath.toLowerCase().includes('الأسئلة-الشائعة')
+  
 
   let rootData: any = undefined;
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];

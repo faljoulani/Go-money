@@ -48,7 +48,7 @@ export default function QuestionsClient({
   return (
     <section
       className="
-        md:mx-20 overflow-clip xs:flex-col xs:gap-2 xs:pt-[30px]
+        md:mx-20 xs:flex-col xs:gap-2 xs:pt-[30px]
         md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16
       "
     >
@@ -59,7 +59,7 @@ export default function QuestionsClient({
             overflow-hidden rounded-2xl
             border border-line dark:border-white/10
             bg-surface-section
-          "
+            "
         >
           {categories.map((cat) => {
             const isActive = active === cat.Id;
