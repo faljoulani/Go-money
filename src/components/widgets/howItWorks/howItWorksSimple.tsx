@@ -22,34 +22,34 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
     const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
-    
+
     if (!id) {
       console.warn('HowItWorkSimple: No item ID found in selection');
     } else {
       try {
         item = await RestClient.getItem({
-        id,
-        provider,
-        type: SECTION_TYPE,
-        culture: props.requestContext.culture,
-        traceContext: props.traceContext,
-        fields: [
-          'Id',
-          'Title',
-          'UrlName',
-          'SubTitle',
-          'HeaderText',
-          'IntroLead',
-          'IntroSubLead',
-          'CTALabel',
-          'CTAExternalUrl',
-          'CTAURL',
-          'CTAInternalPage($select=Id,Title,DefaultUrl)',
-          'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
-          'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
-            'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
-        ],
-      });
+          id,
+          provider,
+          type: SECTION_TYPE,
+          culture: props.requestContext.culture,
+          traceContext: props.traceContext,
+          fields: [
+            'Id',
+            'Title',
+            'UrlName',
+            'SubTitle',
+            'HeaderText',
+            'IntroLead',
+            'IntroSubLead',
+            'CTALabel',
+            'CTAExternalUrl',
+            'CTAURL',
+            'CTAInternalPage($select=Id,Title,DefaultUrl)',
+            'PhoneMockup($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider)',
+            'Steps($select=Id,Title,Description,Order,StepNumber,IsVisible,' +
+              'Logo($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
+          ],
+        });
       } catch (e) {
         console.error('Error fetching HowItWork section:', e);
         // Don't throw - allow page to render without this widget
@@ -129,12 +129,15 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
   return (
     <section {...attrs} className="relative xs:flex xs:flex-col ">
       {/* Top headline block */}
-      <div className="mx-auto max-w-4xl text-center px-6">
+      <div className="mx-auto max-w-4xl text-center">
         {view.SubTitle && (
           <p className="xs:text-sm md:text-lg tracking-0 text-primary">{view.SubTitle}</p>
         )}
         {view.Title && (
-          <h1 className="mt-3 md:text-[48px] rtl:md:text-[40px]  xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary">
+          <h1
+            className="mt-3 md:text-[48px] rtl:md:text-[40px] 
+          xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary"
+          >
             {view.Title}
           </h1>
         )}
@@ -145,7 +148,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
         )}
       </div>
 
-      <section className="relative mx-auto w-full mb-10 xs:px-4 max-w-[1240px]">
+      <section className="relative mx-auto w-full mb-10 max-w-[1240px]">
         <div className="flex flex-col items-center relative rounded-3xl mt-10 bg-[linear-gradient(111.49deg,#000000_14.92%,#010552_46.49%,#0F148C_100.01%)] bg-cover bg-center dark:bg-[#131321] dark:bg-none">
           <img
             src="/assets/Vector.png"
@@ -155,13 +158,13 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           {/* Content */}
           <div className="relative z-[70] md:p-16 xs:p-6">
             {view.IntroLead && (
-              <h2 className="text-center text-white md:text-[36px] xs:text-[1.3rem]">
+              <h2 className="text-center text-white md:text-[36px] md:font-bold xs:font-medium xs:text-lg">
                 {view.IntroLead}
               </h2>
             )}
 
             {/* Steps */}
-            <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-12 md:grid-cols-3 xs:grid-cols-1">
+            <div className="md:mt-12 xs:mt-6 grid md:gap-8 xs:gap-12 md:grid-cols-3 xs:grid-cols-1">
               {view.Steps.map((s, i) => {
                 const logoSrc = mediaSrc(s.Logo);
                 const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
@@ -170,9 +173,9 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                 return (
                   <div
                     key={s.Id || `${s.Title}-${i}`}
-                    className="relative rounded-[32px] md:p-12 xs:p-8 rtl:p-14 text-white 
+                    className="relative md:rounded-[32px] xs:rounded-2xl md:p-12 xs:px-4 xs:pt-4 xs:pb-8 text-white 
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
-                                 before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
+                                 before:content-[''] before:absolute before:inset-0 before:md:rounded-[32px] before:xs:rounded-2xl
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"
                   >
@@ -209,7 +212,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                   className="group xs:max-w-[265px] inline-flex items-center gap-2 rounded-[20px] md:px-6 py-3
                           text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
                             border dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
-                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-12"
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-10"
                 >
                   <span className="mx-auto">{view.CTALabel}</span>
                   <svg

@@ -47,22 +47,42 @@ export default function LanguageSwitcher() {
   };
 
   useEffect(() => {
+    // Detect if we're in Sitefinity edit/preview mode
+    const isEditMode = typeof window !== 'undefined' && (
+      window.location.search.includes('sfaction=') ||
+      window.location.search.includes('sf_site=') ||
+      window.location.search.includes('sf-content-action=') ||
+      window.location.pathname.includes('/Sitefinity/') ||
+      window.location.pathname.includes('/sfrenderer/')
+    );
+
     const storedLang = typeof window !== 'undefined' ? localStorage.getItem('language') : null;
     const urlFirst = pathname?.split('/')[1]?.toLowerCase();
     const urlLang = supportedLanguages.includes(urlFirst || '')
       ? (urlFirst as string)
       : defaultCulture;
 
-    const effective = (storedLang || urlLang || defaultCulture).toLowerCase();
-    setCurrentLang(effective);
+    // Determine the effective language (stored preference takes priority)
+    const effectiveLang = (storedLang || urlLang || defaultCulture).toLowerCase();
+    setCurrentLang(effectiveLang);
 
+    // Skip redirect logic in edit/preview mode to avoid breaking CMS functionality
+    if (isEditMode) {
+      return;
+    }
+
+    // If user has a language preference that doesn't match the URL, redirect
     if (storedLang && storedLang.toLowerCase() !== urlLang) {
       const href = buildHrefForLang(storedLang.toLowerCase());
-      if (href !== window.location.pathname + (window.location.search || '')) {
+      const currentUrl = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
+      
+      // Only redirect if the built href is different from current URL
+      if (href !== currentUrl) {
         setIsPageLoading(true);
         window.location.replace(href);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const handleRedirect = (lang: string) => {

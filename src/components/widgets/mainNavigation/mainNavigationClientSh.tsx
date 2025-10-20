@@ -49,7 +49,9 @@ export default function MainNavigationClientShell({
     <header
       {...attrs}
       className={
-        `fixed left-1/2 -translate-x-1/2 z-[200] w-full md:w-[calc(100%-40px)] max-w-[1440px] md:rounded-3xl transition-surface duration-300 justify-center` +
+        // `fixed md:mx-5 mx-4 left-0 right-0 z-[200] md:rounded-3xl transition-surface duration-300  xxl:mx-auto ` +
+        `fixed top-0 left-1/2 -translate-x-1/2 z-[200] w-full md:w-[calc(100%-40px)] max-w-[1440px] 
+        md:rounded-3xl transition-surface duration-300 justify-center`+
         (scrolled
           ? `top-0 bg-surface dark:bg-[#000]
              text-black
@@ -57,7 +59,7 @@ export default function MainNavigationClientShell({
           : `bg-transparent text-white top-5 md:top-10 max-w-[2040px]`)
       }
     >
-      <div className="md:px-20 xs:px-4 md:py-3 py-3">
+      <div className="md:px-20 xs:px-8 pb-5 md:mt-5 xs:mt-4">
         <div className="flex items-center justify-between overflow-visible pointer-events-auto h-header max-w-container">
       
 

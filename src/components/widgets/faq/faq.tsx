@@ -26,6 +26,38 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
   // Get current path to determine if we're on faq page
   const currentPath = (props.requestContext as any)?.url ?? '';
   const isFaqPage = currentPath.toLowerCase().includes('faq');
+  
+  // Normalize the path by:
+  // 1. Ensure it starts with a /
+  // 2. Remove query params
+  // 3. Remove trailing slashes
+  let normalizedPath = currentPath.split('?')[0].replace(/\/+$/, '');
+  if (!normalizedPath.startsWith('/')) {
+    normalizedPath = '/' + normalizedPath;
+  }
+  
+  // Check if we're on homepage (root or language-prefixed root)
+  const isHomepage = normalizedPath === '' || 
+                     normalizedPath === '/' || 
+                     normalizedPath === '/en' || 
+                     normalizedPath === '/ar' ||
+                     normalizedPath === '/ar/الرئيسية' ||
+                     normalizedPath === '/en/home' ||
+                     normalizedPath === '/en/Home' ||
+                     normalizedPath === '/home' ||
+                     normalizedPath === '/Home' ||
+                     /^\/[a-z]{2}$/.test(normalizedPath) ||
+                     /^\/[a-z]{2}\/(الرئيسية|home|Home)$/i.test(normalizedPath);
+  
+  // Debug logging (can be removed after testing)
+  if (!isEdit) {
+    console.log('[FAQ Debug]', { 
+      originalPath: currentPath, 
+      normalizedPath, 
+      isHomepage,
+      lang 
+    });
+  }
 
   let rootData: any = undefined;
   let categories: Array<{ Id: string; Title: string; Order?: number }> = [];
@@ -82,7 +114,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
       <div className="md:mx-auto w-full flex flex-col gap-2 text-center justify-center xs:mt-4 items-center md:px-6 md:pt-12 md:pb-4 fadeupText">
         {rootData?.Eyebrow && (
           <Eyebrow
-            className={`text-primary ${!isFaqPage ? 'hidden' : ''}`}
+            className={`text-primary ${!isHomepage ? 'hidden' : ''}`}
           >
             {rootData.Eyebrow}
           </Eyebrow>
@@ -104,7 +136,7 @@ export async function FaqSection(props: WidgetContext<FaqSectionEntity>) {
 
         {rootData?.Description && (
           <Description
-            className={!isFaqPage ? 'hidden' : ''}
+            className={!isHomepage ? 'hidden' : ''}
           >
             {rootData.Description}
           </Description>

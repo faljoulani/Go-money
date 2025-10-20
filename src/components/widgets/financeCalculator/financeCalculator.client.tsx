@@ -415,13 +415,13 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
       <form
         ref={formRef}
         onSubmit={onSubmit}
-        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary p-8 shadow-sm "
+        className="mx-auto max-w-[1240px] rounded-3xl bg-secondary md:p-8 xs:px-4 xs:py-8 shadow-sm "
       >
-        <h2 className="xs:text-[24px] md:text-[28px] font-bold text-primary">
+        <h2 className="xs:text-[24px] md:text-[28px] font-bold text-primary tracking-[-0.02em]">
           {C.title || 'Enter your Finance details'}
         </h2>
         <div className="mt-4">
-          <p className="text-[15px] font-medium text-default">{C.labels?.nationality}</p>
+          <p className="text-[20px] font-semibold text-default">{C.labels?.nationality}</p>
           <div className="mt-2 flex items-center gap-6">
             {nationalityOptions.map((label) => {
               const val = normalizeNationality(label);
@@ -437,7 +437,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                     onChange={() => setNationality(val as Nationality)}
                     className="h-4 w-4 accent-primaryAlt"
                   />
-                  <span>{label}</span>
+                  <div className="text-base font-semibold text-default">{label}</div>
                 </label>
               );
             })}
@@ -473,7 +473,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
-                className={`sf-input  value-accent bg-secondary date-input ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
+                className={`sf-input  value-accent bg-secondary date-input max-h-[48px] ${dob ? 'has-value' : ''} ${dir === 'rtl' ? 'text-right' : ''} riyals-font`}
                 data-placeholder={C.labels?.dateOfBirthPlaceholder}
               />
               <span aria-hidden className="date-icon" />
@@ -485,6 +485,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
               onChange={setServiceLength}
               placeholder={C.labels?.lengthOfServicesPlaceholder}
               options={lengthOptions}
+              className="max-h-[48px]"
             />
           </Field>
 
@@ -516,7 +517,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                   setRequestedFinanceAmount(clamped);
                   setReqAmtField(String(clamped));
                 }}
-                className="sf-input bg-secondary riyals-font value-accent"
+                className="sf-input bg-secondary riyals-font value-accent max-h-[48px]"
                 aria-label={C.labels?.requestedAmount}
                 placeholder={C.labels?.requestedAmountPlaceholder || 'ريال'}
                 onKeyDown={(e) => {
@@ -549,7 +550,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                   setRequestedFinanceAmount(n);
                   setReqAmtField(String(n));
                 }}
-                className="sf-range bg-primaryAlt"
+                className="sf-range bg-primaryAlt max-h-[48px]"
                 style={amountFill as any}
                 aria-label="Requested amount"
               />
@@ -580,7 +581,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
                   setInstallments(clamped);
                   setInstField(String(clamped));
                 }}
-                className="sf-input bg-secondary value-accent"
+                className="sf-input bg-secondary value-accent max-h-[48px]"
                 aria-label={C.labels?.installments}
                 onKeyDown={(e) => {
                   if (['e', 'E', '+', '-', '.'].includes(e.key)) e.preventDefault();
@@ -666,7 +667,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-full bg-primaryAlt px-6 py-3 text-secondary hover:opacity-90 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-[18px] bg-primaryAlt px-6 py-3 text-secondary hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? 'Submitting…' : C.cta?.text || 'Check your eligibility Now'}
             <svg
@@ -988,7 +989,7 @@ function CurrencyInput({
         onChange(v === '' ? '' : Number(v));
       }}
       placeholder={placeholder || '0.00 ﷼'}
-      className="sf-input bg-secondary riyals-font value-accent "
+      className="sf-input bg-secondary riyals-font value-accent max-h-[48px]"
       onKeyDown={(e) => {
         if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
       }}
