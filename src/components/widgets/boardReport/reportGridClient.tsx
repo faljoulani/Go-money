@@ -1,89 +1,93 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSf } from '../../../utils/hooks/useSf';
 
-type ReportedFile = {
+type PdfFile = {
   Id: string;
   Title: string;
-  UrlName?: string;
+  Url: string;
+  Extension?: string;
+  MimeType?: string;
 };
 
-type ODataList<T> = {
-  value: T[];
-  '@odata.count'?: number;
+type ReportFile = {
+  Id: string;
+  Title: string;
+  ItemDefaultUrl?: string;
+  FileName?: string;
+  Year?: number;
+  PDF?: PdfFile[];
+};
+
+type BoardReportResponse = {
+  Id: string;
+  Title: string;
+  Description?: string;
+  Files?: ReportFile[];
 };
 
 export default function ReportGridClient({
   lang,
-  files,
-  pageSize,
-  initialOffset,
-  allowPagination,
-  urlName,
+  id,
   title,
-  years,
   description,
+  years,
+  allowPagination,
 }: {
   lang?: string;
-  files: Array<{ Id: string; Title: string; UrlName?: string }>;
-  pageSize: number;
-  initialOffset: number;
-  allowPagination: boolean;
+  id: string;
   title?: string;
-  years?: string[];
   description?: string;
-  urlName?: string;
+  years?: string[];
+  allowPagination?: boolean;
 }) {
   const [activeYear, setActiveYear] = useState<string | undefined>(
     years && years.length ? years[0] : undefined,
   );
 
-  const [offset, setOffset] = useState<number>(Math.max(0, initialOffset || 0));
-  const size = Math.max(0, pageSize || 0);
-
-  const params = useMemo(() => {
-    if (!activeYear) return null;
-    return {
-      $filter: `Year eq ${activeYear}`,
-      $orderby: 'Title asc',
-      $count: 'true',
-    };
-  }, [activeYear]);
-
-  const { data, error, isLoading } = useSf<ODataList<ReportedFile>>(
-    'api/default/reportedfiles',
+  const { data, error, isLoading } = useSf<BoardReportResponse>(
+    `api/default/boardreports/${id}`,
     {
+      $top: '100',
+      $expand:
+        "Files($select=Id,Title,ItemDefaultUrl,FileName,Year;$expand=PDF($select=Id,Title,Url,Extension,MimeType))",
       ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
-      ...(params ? params : {}),
     },
     {
       revalidateOnFocus: false,
-      keepPreviousData: true,
     },
   );
 
-  const items = data?.value ?? [];
+  const files = data?.Files ?? [];
 
-  const total = items.length;
-  const hasPaging = allowPagination && size > 0;
-  const pageItems = hasPaging ? items.slice(offset, offset + size) : items;
+  const grouped = useMemo(() => {
+    const map = new Map<string, ReportFile[]>();
+    for (const f of files) {
+      const y = String(f.Year ?? '');
+      if (!y) continue;
+      if (!map.has(y)) map.set(y, []);
+      map.get(y)!.push(f);
+    }
+    for (const [k, arr] of map) {
+      arr.sort((a, b) => a.Title.localeCompare(b.Title));
+    }
+    return map;
+  }, [files]);
 
-  const canPrev = hasPaging && offset > 0;
-  const canNext = hasPaging && offset + size < total;
+  const list = activeYear ? grouped.get(activeYear) ?? [] : [];
 
   return (
     <div className="w-full md:mt-16">
       {(title || description) && (
         <header className="mb-6">
           {title && (
-            <h2 className="md:text-5xl rtl:md:text-[40px] md:leading-[63px] rtl:md:leading-[75px] xs:text-2xl xs:leading-8 font-bold text-primary">
+            <h2 className="md:text-5xl xs:text-2xl font-bold text-primary">
               {title}
             </h2>
           )}
           {description && (
-            <p className="mt-4 text-default md:leading-5 rtl:md:leading-8 xs:leading-5">
-              {description}
-            </p>
+            <p className="mt-4 text-default">{description}</p>
           )}
         </header>
       )}
@@ -96,12 +100,9 @@ export default function ReportGridClient({
               <button
                 key={year}
                 type="button"
-                onClick={() => {
-                  setActiveYear(year);
-                  setOffset(0);
-                }}
+                onClick={() => setActiveYear(year)}
                 className={[
-                  'px-5 py-2 rounded-full text-base md:text-lg transition',
+                  'px-5 py-2 rounded-full text-base transition',
                   isActive
                     ? 'bg-primaryAlt text-whiteCta'
                     : 'bg-transparent text-slate-500 cursor-pointer',
@@ -115,53 +116,56 @@ export default function ReportGridClient({
         </div>
       )}
 
-      {/* add atom later for loading */}
       {isLoading && (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-2xl border border-slate-200 bg-white px-6 py-8 animate-pulse"
-            >
-              <div className="mx-auto mb-5 h-16 w-16 rounded-2xl bg-slate-100" />
-              <div className="mx-auto h-4 w-3/4 rounded bg-slate-100" />
-            </div>
-          ))}
-        </div>
+        <p className="text-center text-default">Loading reports…</p>
       )}
 
       {error && (
         <div className="rounded-md bg-red-50 p-4 text-red-700">
-          Failed to load reports for {activeYear}.
+          Failed to load reports.
         </div>
       )}
 
       {!isLoading && !error && (
-        <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {pageItems.map((f) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {list.map((file) => {
+            const pdf = file.PDF?.[0];
+            const href = pdf?.Url
+              ? pdf.Url
+              : file.ItemDefaultUrl
+              ? file.ItemDefaultUrl
+              : file.FileName
+              ? `/docs/default-source/default-document-library/${file.FileName}.pdf`
+              : undefined;
+
+            return (
               <article
-                key={f.Id}
+                key={file.Id}
                 className="rounded-2xl border border-slate-200 dark:border-none bg-white dark:bg-[#131321] 
                 shadow-sm px-6 pb-6 pt-10 flex flex-col items-center justify-center"
               >
                 <div className="mb-6 grid place-items-center w-16 h-16 rounded-2xl bg-[#f5f6ff] dark:bg-[#a6efd9]">
-                  <a href={`/docs/default-source/default-document-library/${urlName}.pdf`}>
-                    <span
-                      className="pdf-icon text-[#212121] dark:text-[#010663]"
-                      aria-hidden="true"
-                    ></span>
-                  </a>
+                  {href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${file.Title} (PDF)`}
+                    >
+                      <span className="pdf-icon text-[#212121] dark:text-[#010663]" aria-hidden="true" />
+                    </a>
+                  ) : (
+                    <span className="pdf-icon opacity-40" aria-hidden="true" />
+                  )}
                 </div>
                 <h3 className="text-center text-[16px] font-semibold text-[#212121] dark:text-[#fafafa]">
-                  {f.Title}
+                  {file.Title}
                 </h3>
               </article>
-            ))}
-          </div>
-        </>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 }
-
