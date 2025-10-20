@@ -142,7 +142,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
 
   return (
     <section {...attributes} className="w-full">
-      <div className="mx-auto md:px-20 xs:px-4">
+      <div className="mx-auto md:px-20 ">
         {/* rows */}
         <div className="">
           {childCardData.map((card, i) => {
@@ -184,7 +184,7 @@ export default async function AlternatingFeaturesCard(props: WidgetContext<CardS
                       {card.description && (
                         <Description
                           maxWidth={597}
-                          className="rtl:max-w-[760px] xs:leading-5"
+                          className="rtl:max-w-[760px] xs:leading-5 rtl:xs:leading-8"
                           html={card.description}
                         />
                       )}
