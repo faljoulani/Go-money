@@ -76,10 +76,14 @@ export default async function SupportInfoBox(props: WidgetContext<SupportInfoBox
   return (
     <section
       {...attrs}
-      className="max-w-[490px] relative flex flex-col items-start justify-between rounded-[20px] h-full bg-surface-input p-4 md:p-10 shadow-sm"
+      className="max-w-[490px] relative flex flex-col items-start justify-between rounded-[20px] h-full bg-surface-input p-4 md:p-10 shadow-sm overflow-hidden"
     >
       {item.HasLabel && (
-        <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] md:w-[124px] md:h-44 bg-primaryAlt md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px] xs:ltr:rounded-tl-[30px] xs:rtl:rounded-tr-[30px]">
+        <div
+          className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[44px] xs:h-[60px] 
+        md:w-[124px] md:h-44 bg-primaryAlt md:ltr:rounded-tl-[60px] md:rtl:rounded-tr-[60px] 
+        xs:ltr:rounded-tl-[30px] xs:rtl:rounded-tr-[30px]"
+        >
           <div className="absolute bottom-0 ltr:right-0 rtl:left-0 xs:w-[20px] xs:h-[30px] md:w-[78px] md:h-[115px] bg-surface-input"></div>
         </div>
       )}

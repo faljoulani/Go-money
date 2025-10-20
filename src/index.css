@@ -289,7 +289,7 @@ html.modal-open {
 @keyframes fadeRight {
   from {
     opacity: 0;
-    transform: translate(200px);
+    transform: translate(100px);
   }
   to {
     opacity: 1;
@@ -300,7 +300,7 @@ html.modal-open {
 @keyframes fadeLeft {
   from {
     opacity: 0;
-    transform: translate(-75px);
+    transform: translate(-100px);
   }
   to {
     opacity: 1;

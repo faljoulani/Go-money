@@ -128,7 +128,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       {showCorner && (
         <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
           <div
-            className="md:h-24 md:w-24 xs:w-[80px] xs:h-[80px] md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-[#0023F5]
+            className="md:h-24 md:w-24 xs:w-[70px] xs:h-[70px] md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-[#0023F5]
         dark:bg-primaryAlt rtl:rounded-br-[40px] rtl:rounded-bl-none xs:rtl:rounded-br-[25px] xs:rtl:rounded-bl-none"
           />
 
@@ -140,11 +140,11 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       )}
 
       <div className="mx-auto max-w-3xl">
-        <h2 className="md:text-[48px] xs:text-[24px] font-extrabold leading-tight tracking-[-0.02em] text-primary">
+        <h2 className="md:text-[48px] xs:text-[24px] font-bold leading-tight tracking-[-0.02em] text-primary text-start">
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-4 xs:text-[18px] text-lg leading-relaxed text-default ">{subtitle}</p>
+          <p className="mt-4 xs:text-[18px] text-lg leading-relaxed text-[#9E9E9E] text-start">{subtitle}</p>
         )}
       </div>
 
