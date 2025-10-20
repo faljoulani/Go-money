@@ -122,10 +122,10 @@ export default async function FeatureCards(props: WidgetContext<CardSectionEntit
   }
   return (
     <section {...attributes} className="w-full">
-      <div className="mx-auto md:px-20 xs:px-4">
+      <div className="mx-auto md:px-20">
         {/* Section header */}
         <div className="mb-8 text-center">
-          <Title className="md:text-[48px] xs:text-2xl md:leading-[63px] tracking-[-0.02em] text-center align-middle font-bold">
+          <Title className="md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] text-center align-middle font-bold">
             {sectionTitle}
           </Title>
           {sectionSubtitle && (
