@@ -134,7 +134,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 
   if (isSimple) {
     const breadcrumbSlot = (
-      <div className="mx-auto px-6 xs:mt-44 md:mt-32">
+      <div className="mx-auto px-6 xs:mt-44 md:mt-32 w-full">
         <div className="mb-5" data-sfcontainer="Breadcrumb">
           {breadcrumbs.map((y) =>
             RenderWidgetService.createComponent(y.model, props.requestContext),
