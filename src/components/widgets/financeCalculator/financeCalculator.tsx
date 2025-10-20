@@ -8,6 +8,8 @@ import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 const asString = (v: any) => (v == null ? '' : String(v));
 
 const FINANCE_DETAILS_TYPE = 'Telerik.Sitefinity.DynamicTypes.Model.FinanceDetails.FinanceDetails';
+const EMPLOYER_SECTOR =
+  'Telerik.Sitefinity.DynamicTypes.Model.EmployerSectorDropList.EmployerSectorDropList';
 const EMPLOYER_TYPE =
   'Telerik.Sitefinity.DynamicTypes.Model.EmployerTypeDropList.Employertypedroplist';
 const LENGTH_OF_SERVICE_TYPE =
@@ -56,16 +58,20 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       'TotalMonthlyExpensesPopup',
       'MortgageLiabilitiesPopup',
       'MonthlyFinancialLiabilitiesPopup',
+      'EmployerSectorPopup',
       'NoteDescription',
       'NationalityLabelChoices',
       'EmployerTypeLabel',
       'EmployerPlaceholder',
       'EmployerChoices',
+      'EmployerSectorChoices',
+      'EmployerSectorLabel',
+      'EmployerSectorPlaceholder',
       'DateOfBirthLabel',
       'DateOfBirthPlaceholder',
       'LengthOfServicesLabel',
       'LengthOfServicesPlaceholder',
-        'LengthOfServicesPopup',
+      'LengthOfServicesPopup',
       'MonthlySalaryLabel',
       'MonthlySalaryPlaceholder',
       'RequestedFinanceAmountLabel',
@@ -91,6 +97,7 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       'LengthOfServicesChoices/Id',
       'NationalityChoices/Id',
       'RelatedMessage/Id',
+      'EmployerSectorChoices/Id',
     ],
     { itemType: FINANCE_DETAILS_TYPE, single: true },
   );
@@ -110,53 +117,59 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       </section>
     ) : null;
   }
-
+  const employerSectorIds: string[] = (finance.EmployerSectorChoices || []).map((x: any) => x.Id);
   const employerIds: string[] = (finance.EmployerChoices || []).map((x: any) => x.Id);
   const lenServIds: string[] = (finance.LengthOfServicesChoices || []).map((x: any) => x.Id);
   const nationalityIds: string[] = (finance.NationalityChoices || []).map((x: any) => x.Id);
   const messageIds: string[] = (finance.RelatedMessage || []).map((x: any) => x.Id);
 
-  const [employers, lengthOfServices, nationalities, messages] = await Promise.all([
-    fetchData(employerIds, null, culture, ['Id', 'Key',  'Value'], {
-      itemType: EMPLOYER_TYPE,
-    }),
-    fetchData(lenServIds, null, culture, ['Id', 'Key',  'Value'], {
-      itemType: LENGTH_OF_SERVICE_TYPE,
-    }),
-    fetchData(nationalityIds, null, culture, ['Id', 'Key',  'Value'], {
-      itemType: NATIONALITY_TYPE,
-    }),
-    fetchData(
-      messageIds,
-      null,
-      culture,
-      [
-        'Id',
-        'Title',
-        'Description',
-        'NoteTitle',
-        'NoteDescription',
-        'ExploreLabel',
-        'ExploreUrl',
-        'DownloadLabel',
-        'BackLabel',
-        'ValidationText',
-        'BackUrl',
-        'Image/DefaultUrl',
-        'Image/AlternativeText',
-        'ActionsTitle',
-        'ActionsDescription',
-        'ReasonsTitle',
-        'ReasonsDescription',
-        'DownloadUrl/DefaultUrl',
-      ],
-      { itemType: MESSAGE_TYPE },
-    ),
-  ]);
+  const [employerSectors, employers, lengthOfServices, nationalities, messages] = await Promise.all(
+    [
+      fetchData(employerSectorIds, null, culture, ['Id', 'Key', 'Value'], {
+        itemType: EMPLOYER_SECTOR,
+      }),
+      fetchData(employerIds, null, culture, ['Id', 'Key', 'Value'], {
+        itemType: EMPLOYER_TYPE,
+      }),
+
+      fetchData(lenServIds, null, culture, ['Id', 'Key', 'Value'], {
+        itemType: LENGTH_OF_SERVICE_TYPE,
+      }),
+      fetchData(nationalityIds, null, culture, ['Id', 'Key', 'Value'], {
+        itemType: NATIONALITY_TYPE,
+      }),
+      fetchData(
+        messageIds,
+        null,
+        culture,
+        [
+          'Id',
+          'Title',
+          'Description',
+          'NoteTitle',
+          'NoteDescription',
+          'ExploreLabel',
+          'ExploreUrl',
+          'DownloadLabel',
+          'BackLabel',
+          'ValidationText',
+          'BackUrl',
+          'Image/DefaultUrl',
+          'Image/AlternativeText',
+          'ActionsTitle',
+          'ActionsDescription',
+          'ReasonsTitle',
+          'ReasonsDescription',
+          'DownloadUrl/DefaultUrl',
+        ],
+        { itemType: MESSAGE_TYPE },
+      ),
+    ],
+  );
   const toChoice = (x: any) => ({
     id: String(x?.Id ?? ''),
-    title: String(x?.Value?? x?.Name ?? x?.Name ?? ''),
-    value: String(x?.Key ?? x?.Value ?? x?.Name?? x?.Key ?? ''),
+    title: String(x?.Value ?? x?.Name ??  ''),
+    value: String(x?.Key ?? x?.Value ?? x?.Name  ?? ''),
   });
 
   const toMessage = (m: any) => ({
@@ -188,6 +201,8 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
     title: asString(finance?.Title),
     labels: {
       nationality: asString(finance?.NationalityLabelChoices),
+      employerSectorLabel: asString(finance?.EmployerSectorLabel),
+      employerSectorPlaceholder: asString(finance?.EmployerSectorPlaceholder),
       employerType: asString(finance?.EmployerTypeLabel),
       employerPlaceholder: asString(finance?.EmployerPlaceholder),
       dateOfBirth: asString(finance?.DateOfBirthLabel),
@@ -214,6 +229,7 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       ),
     },
     popups: {
+      employerSector: asString(finance?.EmployerSectorPopup),
       dateOfBirth: asString(finance?.DateOfBirthPopup),
       monthlySalary: asString(finance?.MonthlySalaryPopup),
       requestedAmount: asString(finance?.RequestedFinanceAmountPopup),
@@ -236,6 +252,7 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       url: asString(finance?.CtaUrl?.Href ?? finance?.CtaUrl),
     },
     choices: {
+      employerSectorChoices: Array.isArray(employerSectors) ? employerSectors.map(toChoice) : [],
       employerTypes: Array.isArray(employers) ? employers.map(toChoice) : [],
       lengthOfServices: Array.isArray(lengthOfServices) ? lengthOfServices.map(toChoice) : [],
       nationalities: Array.isArray(nationalities) ? nationalities.map(toChoice) : [],
@@ -243,7 +260,7 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
     messages: Array.isArray(messages) ? messages.map(toMessage) : [],
     culture,
   };
-console.log("zksfs", cfg.choices.employerTypes)
+  console.log('zksfs', cfg.choices.employerSectorChoices);
   return (
     <section data-sf-enhance {...attrs}>
       <FinanceCalculatorClient cfg={cfg} lang={lang} />

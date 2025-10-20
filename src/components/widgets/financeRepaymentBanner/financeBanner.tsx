@@ -168,8 +168,8 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
           <div className=" ">
             {!!financeRepaymentBanner.title && (
               <Title
-                className="md:text-5xl  font-bold md:tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px]  
-                md:max-w-[365px] xs:max-w-none xs:text-[24px] xs:leading-8 rtl:xs:leading-[45px]"
+                className="md:text-5xl font-bold md:tracking-[-0.02em] md:leading-[63px] rtl:md:leading-[90px]  
+                md:max-w-[450px] xs:max-w-none xs:text-[24px] xs:leading-8 rtl:xs:leading-[45px]"
                 color="text-white"
               >
                 {financeRepaymentBanner.title}

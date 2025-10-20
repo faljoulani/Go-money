@@ -31,7 +31,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
   if (selection?.Content?.length) {
     const id = selection?.ItemIdsOrdered?.[0]?.toString();
     const provider = selection?.Content?.[0]?.Variations?.[0]?.Source?.toString();
-    
+
     if (!id) {
       console.warn('HowItWork: No item ID found in selection');
     } else {
@@ -179,7 +179,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
       >
         <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[27%] ">
           <div className=" translatePhone  sticky md:top-20 flex justify-center">
-            <img src={phoneSrc} alt={phoneAlt} className="h-[565px] w-[440px]" />
+            <img
+              src={phoneSrc}
+              alt={phoneAlt}
+              className="h-[283px] w-[283px] md:h-[565px] md:w-[440px]"
+            />
           </div>
         </div>
         <div className="h-[140vh]" />
@@ -214,8 +218,10 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
             <div className="relative z-[70] mx-auto max-w-6xl px-6 xs:pt-24 xs:pb-20 md:pb-28 md:pt-32 ">
               {view.IntroLead && (
-                <h2 className="text-center text-white md:pt-10 xs:pt-28 xs:pb-5 xs:text-lg md:text-[36px] 
-                xs:leading-6 md:leading-9 rtl:xs:leading-7 md:fadeupText">
+                <h2
+                  className="text-center text-white md:pt-10 xs:pt-28 xs:pb-5 xs:text-lg md:text-[36px] 
+                xs:leading-6 md:leading-9 rtl:xs:leading-7 md:fadeupText"
+                >
                   {view.IntroLead}
                 </h2>
               )}

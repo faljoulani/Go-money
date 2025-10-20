@@ -23,6 +23,8 @@ export default function QuestionsClient({
     {
       $select: 'Id,Title,Answer,Order,ParentId,ItemDefaultUrl',
       $orderby: 'Order asc, Title asc',
+      $top: 100,
+      $count: true,
       ...(lang === 'ar' ? { sf_culture: 'ar' } : {}),
     },
     { revalidateOnFocus: true },

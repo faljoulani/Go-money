@@ -126,24 +126,26 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
       className="relative mx-auto w-full max-w-[1240px] overflow-hidden rounded-[28px] border-none bg-surface-section px-6 xs:p-8 md:py-16 xs:text-left md:text-center shadow-sm  mb-10 mt-16"
     >
       {showCorner && (
-       <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
-        <div
-          className="md:h-24 md:w-24 xs:w-[80px] xs:h-[80px] md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-[#0023F5]
+        <div className="absolute md:right-0 md:top-0 xs:-right-3 xs:top-0 rtl:left-0 rtl:right-auto">
+          <div
+            className="md:h-24 md:w-24 xs:w-[80px] xs:h-[80px] md:rounded-bl-[40px] xs:rounded-bl-[25px] bg-[#0023F5]
         dark:bg-primaryAlt rtl:rounded-br-[40px] rtl:rounded-bl-none xs:rtl:rounded-br-[25px] xs:rtl:rounded-bl-none"
-        />
+          />
 
-        <div
-          className="absolute right-0 top-0 rtl:left-0 rtl:right-auto md:h-12 md:w-12 xs:h-10 xs:w-10
+          <div
+            className="absolute right-0 top-0 rtl:left-0 rtl:right-auto md:h-12 md:w-12 xs:h-10 xs:w-10
          bg-white dark:bg-[#1d1d29]"
-        />
-      </div>
+          />
+        </div>
       )}
 
       <div className="mx-auto max-w-3xl">
         <h2 className="md:text-[48px] xs:text-[24px] font-extrabold leading-tight tracking-[-0.02em] text-primary">
           {title}
         </h2>
-        {subtitle && <p className="mt-4 xs:text-[18px] text-lg leading-relaxed text-default ">{subtitle}</p>}
+        {subtitle && (
+          <p className="mt-4 xs:text-[18px] text-lg leading-relaxed text-default ">{subtitle}</p>
+        )}
       </div>
 
       <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
