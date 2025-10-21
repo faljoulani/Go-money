@@ -175,6 +175,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     >
       <img
         src="/assets/HeroBackground.jpg"
+        alt="Hero Background"
         className="video-background absolute inset-0 -z-20 w-full h-full object-cover rounded-[30px] pointer-events-none"
       ></img>
       <video
