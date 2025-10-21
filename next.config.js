@@ -49,6 +49,11 @@ module.exports = {
             key: 'Content-Security-Policy',
             value: cspHeader.replace(/\n/g, ''),
           },
+          // Enable back/forward cache by allowing caching
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
         ],
       },
       // Cache static assets
@@ -95,6 +100,25 @@ module.exports = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Allow bfcache for pages
+      {
+        source: '/en/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/ar/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
           },
         ],
       },

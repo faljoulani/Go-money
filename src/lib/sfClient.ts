@@ -35,7 +35,7 @@ async function fetchToken(): Promise<{ access_token: string; expires_in: number 
     method: 'POST',
     headers,
     body,
-    cache: 'no-store',
+    cache: 'default',
     redirect: 'manual',
   });
   const text = await res.text();
@@ -160,7 +160,7 @@ export async function sfFetch<T>(
         method: opts.method || 'GET',
         headers,
         body: preparedBody,
-        cache: 'no-store',
+        cache: 'default',
         redirect: 'manual',
         signal: controller.signal,
       });

@@ -169,7 +169,7 @@ async function rewriteSystemRequest(request: NextRequest, bypassHost: string) {
   // nextjs issue - overriding of proxied headers is not working
   // https://github.com/vercel/next.js/issues/70515
   if (bypassHost) {
-    response.headers.set('sf-cache-control-override', 'no-cache');
+    response.headers.set('sf-cache-control-override', 'public, max-age=0, must-revalidate');
   }
 
   return response;

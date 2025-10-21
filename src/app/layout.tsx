@@ -2,6 +2,7 @@
 import './../index.css';
 import 'flag-icons/css/flag-icons.min.css';
 import RtlDirection from '../components/customComponents/rtlDirection/rtlDirection';
+import BFCacheHelper from '../components/customComponents/bfcacheHelper/bfcacheHelper';
 import { ThemeProvider } from 'next-themes';
 import { headers } from 'next/headers';
 
@@ -52,6 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="container-fluid">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <RtlDirection />
+          <BFCacheHelper />
           <div className="p-4 md:p-5">{children}</div>
         </ThemeProvider>
       </body>
