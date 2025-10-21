@@ -166,10 +166,11 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
       ),
     ],
   );
+  console.log('MESSAGES', messages);
   const toChoice = (x: any) => ({
     id: String(x?.Id ?? ''),
-    title: String(x?.Value ?? x?.Name ??  ''),
-    value: String(x?.Key ?? x?.Value ?? x?.Name  ?? ''),
+    title: String(x?.Value ?? x?.Name ?? ''),
+    value: String(x?.Key ?? x?.Value ?? x?.Name ?? ''),
   });
 
   const toMessage = (m: any) => ({

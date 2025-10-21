@@ -13,18 +13,17 @@ export type ResponseMessage = {
   downloadLabel: string;
   downloadUrl?: string;
   backLabel: string;
-  backUrl?: string; 
+  backUrl?: string;
   validationText: string;
   imageUrl?: string;
   imageAlt: string;
   reasonsTitle: string;
   reasonsDescription: string;
   actionsTitle: string;
-  actionsDescription: string; 
+  actionsDescription: string;
 };
 
 type Dir = 'rtl' | 'ltr';
-
 
 export function SuccessResponse({
   msg,
@@ -35,14 +34,20 @@ export function SuccessResponse({
   dir?: Dir;
   onBack: () => void;
 }) {
+  console.log('MSG', msg);
+
   return (
     <section className="w-full" dir={dir}>
       <div className="mx-auto max-w-[1240px] rounded-3xl bg-surface-section mt-16 p-8 text-center">
-        {msg.imageUrl && (
-          <div className="mx-auto mb-6 grid place-items-center">
-            <img src={msg.imageUrl} alt={msg.imageAlt} className="h-24 w-24 object-contain" />
-          </div>
-        )}
+        <div className="mx-auto mb-6 grid place-items-center">
+          <img
+            src={msg.imageUrl ?? '/assets/success.png'}
+            alt={msg.imageAlt || 'Success'}
+            className="h-24 w-24 object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
         {msg.title && (
           <h2 className="xs:text-[28px] md:text-[44px] font-semibold text-primary mb-3">
@@ -122,11 +127,15 @@ export function FailResponse({
   return (
     <section className="w-full" dir={dir}>
       <div className="mx-auto max-w-[1240px] rounded-3xl bg-surface-section mt-16 p-8 text-center">
-        {msg.imageUrl && (
-          <div className="mx-auto mb-6 grid place-items-center">
-            <img src={msg.imageUrl} alt={msg.imageAlt} className="h-24 w-24 object-contain" />
-          </div>
-        )}
+        <div className="mx-auto mb-6 grid place-items-center">
+          <img
+            src={msg.imageUrl ?? '/assets/failed.png'}
+            alt={msg.imageAlt || 'Failed'}
+            className="h-24 w-24 object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
         {msg.title && (
           <h2 className="text-[32px] md:text-[40px] font-semibold text-primary mb-2">
@@ -148,7 +157,9 @@ export function FailResponse({
           >
             <div className="rounded-xl dark:bg-[#23242C] bg-gray-100 p-5">
               {msg.reasonsTitle && (
-                <strong className="block mb-3 text-default xs:text-[20px] md:text-[16px]">{msg.reasonsTitle}</strong>
+                <strong className="block mb-3 text-default xs:text-[20px] md:text-[16px]">
+                  {msg.reasonsTitle}
+                </strong>
               )}
               {msg.reasonsDescription && (
                 <p
@@ -168,7 +179,9 @@ export function FailResponse({
           >
             <div className="rounded-xl dark:bg-[#23242C] bg-gray-100 p-5">
               {msg.actionsTitle && (
-                <strong className="block text-default xs:text-[20px] md:text-[16px]">{msg.actionsTitle}</strong>
+                <strong className="block text-default xs:text-[20px] md:text-[16px]">
+                  {msg.actionsTitle}
+                </strong>
               )}
               {msg.actionsDescription && (
                 <p

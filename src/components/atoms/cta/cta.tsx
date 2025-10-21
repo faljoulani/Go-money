@@ -112,7 +112,7 @@ export default function CTA({
       )}
 
       {icon === 'slot' && (
-        <img src="/icons/Icon's-Slot.svg" alt="Icon's-Slot" className="cta-arrow" />
+        <img src="/icons/Icon's-Slot.svg" width={25} height={25} alt="Icon's-Slot" className="cta-arrow" />
       )}
     </button>
   );

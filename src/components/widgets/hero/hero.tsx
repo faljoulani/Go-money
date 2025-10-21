@@ -146,10 +146,10 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
     return (
       <section
         {...attrs}
-        className={`max-w-[2000px] xxl:mx-auto relative isolate overflow-hidden text-white 
+        className={`max-w-[1440px] xxl:mx-auto relative isolate overflow-hidden text-white 
               flex flex-col items-center justify-start rounded-2xl
               min-h-[320px] h-[450px] px-4 
-              bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] 
+              bg-[url('/assets/HeroBackground.webp')] dark:bg-[url('/assets/HeroBackgroundDark.webp')] 
               bg-cover bg-center`}
       >
         <SimpleHeroDynamic
@@ -168,13 +168,14 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative max-w-[2000px] xxl:mx-auto overflow-hidden text-white md:rounded-[32px] xs:rounded-2xl
+      className="relative max-w-[1440p] xxl:mx-auto overflow-hidden text-white md:rounded-[32px] xs:rounded-2xl
       md:h-[700px] xs:flex xs:flex-col xs:h-[752px] 
       dark:bg-[linear-gradient(130deg,#001a52_15%,#010e4a_40%,#1DB5B3_100%)]
 "
     >
       <img
-        src="/assets/HeroBackground.jpg"
+        src="/assets/HeroBackgroundSimple.webp"
+        alt="Hero Background"
         className="video-background absolute inset-0 -z-20 w-full h-full object-cover rounded-[30px] pointer-events-none"
       ></img>
       <video

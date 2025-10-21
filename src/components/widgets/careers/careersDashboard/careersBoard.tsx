@@ -646,7 +646,7 @@ export default function CareersBoard({
   return (
     <section
       ref={widgetRef}
-      className={`w-full max-w-[1240px] mx-auto md:px-4 py-10 ${className ?? ''}`}
+      className={`relative w-full md:mx-auto md:w-[1240px] py-10 ${className ?? ''}`}
     >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[16rem_1fr]">
         {/* Sidebar (md+) */}
@@ -756,9 +756,9 @@ export default function CareersBoard({
         </aside>
 
         {/* Main column */}
-        <div className="md:min-w-[854px] flex min-h-[600px] flex-col gap-4">
+        <div className="min-w-0 flex min-h-[600px] flex-col gap-4">
           <div ref={topRef} tabIndex={-1} className="outline-none" />
-          <div className="flex items-center justify-between gap-3 mb-6 md:mb-8 md:px-6">
+          <div className="flex items-center justify-between gap-3 mb-6 md:mb-8">
             <h2
               id="careers-top"
               tabIndex={-1}
@@ -1059,3 +1059,4 @@ export default function CareersBoard({
     </section>
   );
 }
+

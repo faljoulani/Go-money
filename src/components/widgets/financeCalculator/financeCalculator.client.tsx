@@ -377,7 +377,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
     try {
       const res = await post(payload);
       if (res?.Data?.IsEligible === true) setResult('success');
-      // if(requestedFinanceAmount > 7000) setResult('success');
+      // if (requestedFinanceAmount > 7000) setResult('success');
       else setResult('fail');
     } catch (err) {
       setApiDown(true);
@@ -469,7 +469,7 @@ export default function FinanceCalculatorClient({ cfg, lang }: { cfg: any; lang:
           <Field label={C.labels?.dateOfBirth} tooltip={C.popups?.dateOfBirth}>
             <div className="relative date-wrap">
               <input
-                required
+              required
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
