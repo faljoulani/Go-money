@@ -150,7 +150,7 @@ export default async function Footer(props: WidgetContext<FooterEntity>) {
   return (
     <section
       {...attrs}
-      className="relative [perspective:1000px] xxxl:[perspective:none] overflow-x-clip max-w-[2000px] xxl:mx-auto"
+      className="relative [perspective:1000px] xxxl:[perspective:none] overflow-x-clip max-w-[1440px] xxl:mx-auto"
     >
       <footer className="text-gray-300 h-auto flip">
         {/* Background gradient */}

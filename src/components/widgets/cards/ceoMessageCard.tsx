@@ -129,7 +129,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
   });
 
   const wrapCls = toBool(isOverlay)
-    ? 'relative z-20 -mt-40 max-w-[90%] mx-auto xxl:max-w-[1200px]'
+    ? 'relative z-20 -mt-40 max-w-[92%] mx-auto xxl:max-w-[1300px]'
     : 'bg-[#EEEEEE] w-full px-20 pb-10 mt-16';
 
   const cardShellCls = isOverlay
@@ -164,7 +164,7 @@ export default async function CeoMessage(props: WidgetContext<CardSectionEntity>
           )}
           <div className={overlayPanelCls}>
             {items[0]?.description && (
-              <Description html={items[0].description} className="xs:text-14px xs:leading-[18px]"/>
+              <Description html={items[0].description} className="xs:text-14px xs:leading-[18px]" />
             )}
             {items[0]?.title && (
               <Title className="md:text-2xl xs:text-[18px] font-medium md:mt-3 xs:mt-2 text-primaryAlt">
