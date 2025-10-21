@@ -190,7 +190,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-auto">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-auto xs:h-auto">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
               src="/assets/BlackCurve.webp"
@@ -208,7 +208,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none  xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[56%] xl:h-[500px] select-none absolute left-0 xs:top-3 z-50"
+              className="pointer-events-none xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[60%] select-none absolute left-0 xs:top-3 z-50"
             />
             <img
               src="/assets/Vector.png"
@@ -216,7 +216,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               className="absolute object-cover z-[60] bottom-0 left-0"
             />
 
-            <div className="relative z-[70] mx-auto max-w-6xl xs:px-6 md:px-16 md:pt-32 xs:pt-24 xs:pb-6 md:pb-28">
+            <div className="relative z-[70] mx-auto max-w-6xl xs:px-6 md:px-16 md:pt-32 xs:pt-24 xs:pb-6 md:pb-16">
               {view.IntroLead && (
                 <h2
                   className="text-center text-white md:pt-10 xs:pt-28 xs:pb-5 xs:text-lg md:text-[36px] 
