@@ -190,7 +190,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
         {/* Navy pocket section */}
         <section className="relative w-full">
-          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-[1200px]">
+          <div className="flex flex-col items-center relative rounded-[30px] overflow-clip bg-black md:h-[725px] xs:h-auto">
             {/* semi-transparent curved overlay to keep top crop and blend */}
             <img
               src="/assets/BlackCurve.webp"
@@ -216,7 +216,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               className="absolute object-cover z-[60] bottom-0 left-0"
             />
 
-            <div className="relative z-[70] mx-auto max-w-6xl px-6 xs:pt-24 xs:pb-20 md:pb-28 md:pt-32 ">
+            <div className="relative z-[70] mx-auto max-w-6xl xs:px-6 md:px-16 md:pt-32 xs:pt-24 xs:pb-6 md:pb-28">
               {view.IntroLead && (
                 <h2
                   className="text-center text-white md:pt-10 xs:pt-28 xs:pb-5 xs:text-lg md:text-[36px] 
@@ -226,7 +226,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                 </h2>
               )}
 
-              <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-8 md:grid-cols-3 xs:grid-cols-1">
+              <div className="md:mt-12 xs:mt-4 grid md:gap-8 xs:gap-12 md:grid-cols-3 xs:grid-cols-1">
                 {view.Steps.map((s, i) => {
                   const logoSrc = mediaSrc(s.Logo);
                   const logoAlt = s.Logo?.AlternativeText || s.Logo?.Title || '';
@@ -235,11 +235,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                   return (
                     <div
                       key={s.Id || `${s.Title}-${i}`}
-                      className="relative rounded-[32px] md:p-12 xs:px-8 rtl:px-14 xs:rtl:p-4 text-white 
+                      className="relative xs:rounded-2xl md:rounded-[32px] md:px-12 md:py-14 xs:px-4 xs:py-10 text-white 
                                  ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
-                                 before:content-[''] before:absolute before:inset-0 before:rounded-[28px]
+                                 before:content-[''] before:absolute before:inset-0 before:xs:rounded-2xl before:md:rounded-[32px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
-                                 before:pointer-events-none md:h-[265px] xs:h-[220px]"
+                                 before:pointer-events-none md:h-auto xs:h-[220px]"
                     >
                       <div className="mx-auto md:mb-6  xs:mb-0  place-items-center">
                         {logoSrc ? (
@@ -253,12 +253,12 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
 
                       <h3 className="text-center md:text-2xl xs:text-xl">{s.Title}</h3>
                       {s.Description && (
-                        <p className="mt-2 text-center text-[16px] text-[#E0E0E0] mb-4">
+                        <p className="mt-2 text-center text-[16px] text-[#E0E0E0]">
                           {s.Description}
                         </p>
                       )}
 
-                      <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 grid h-12 w-12 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm font-bold  shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 text-[#0B1C5A] text-sm shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
                         {stepNo}
                       </div>
                     </div>
@@ -270,10 +270,10 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                 <div className="md:mt-[68px]  xs:mt-12 flex justify-center fadeupButton">
                   <a
                     href={CTAExternalUrl || '#'}
-                    className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
+                    className="group inline-flex items-center xs:rounded-[18px] md:rounded-[20px] md:px-6 py-4
                           text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
-                            border dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
-                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-[248px]"
+                            border dark:border-[#A6EFD9] hover:bg-white/10 hover:dark:bg-[#A6EFD9] 
+                            hover:dark:text-[#010663] transition xs:px-8 xs:w-full md:w-[250px] xs:h-12 md:h-14"
                   >
                     <span className="mx-auto">{view.CTALabel}</span>
                     <svg

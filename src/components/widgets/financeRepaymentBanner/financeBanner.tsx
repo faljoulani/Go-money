@@ -152,15 +152,18 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
 
         {/* Layer 2: content */}
 
-        <div className=" absolute  z-10 flex xs:w-full text-white xs:px-6 flex-col  md:pl-24 md:rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:mx-auto fadeRightFinance">
+        <div
+          className=" absolute xs:top-3 md:top-0 z-10 flex xs:w-full text-white xs:px-6 flex-col
+          md:pl-24 md:rtl:pr-24 md:h-full  md:max-w-[50%] md:py-20 xs:mx-auto fadeRightFinance"
+        >
           {financeRepaymentBanner.images.floatUrl.url && (
-            <div className="relative  w-full xs:h-[125px]  md:-ml-[22px] md:mr-[16px] md:rtl:-right-12  rounded-lg  xs:m-auto  ">
+            <div className="relative xs:w-[285px] md:w-[530px] xs:h-[90px] md:h-[150px] xs:rtl:-right-3 md:rtl:-right-12 xs:right-0 md:right-6">
               <Image
                 src={financeRepaymentBanner.images.floatUrl.url}
                 alt={financeRepaymentBanner.images.floatUrl.alt}
-                fill
                 priority
-                className=" drop-shadow"
+                fill
+                className="object-cover drop-shadow"
               />
             </div>
           )}
@@ -196,9 +199,9 @@ export default async function FinanceBanner(props: WidgetContext<FinanceBannerEn
             <div className="md:mt-[24px]  xs:mt-6 flex">
               <a
                 href={financeRepaymentBanner.ctaHref || '#'}
-                className="group inline-flex items-center  rounded-[20px] md:px-6 py-4
-                          text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
-                            border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
+                className="group inline-flex items-center xs:rounded-[18px] md:rounded-[20px] md:px-6 py-4
+                          text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base xs:h-12 md:h-14
+                            border-2 dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full xs:max-w-[265px]
                           hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-8 md:w-auto"
               >
                 <div className="mx-auto flex gap-4">
