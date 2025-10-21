@@ -149,7 +149,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
         className={`max-w-[1440px] xxl:mx-auto relative isolate overflow-hidden text-white 
               flex flex-col items-center justify-start rounded-2xl
               min-h-[320px] h-[450px] px-4 
-              bg-[url('/assets/HeroBackground.png')] dark:bg-[url('/assets/HeroBackgroundDark.png')] 
+              bg-[url('/assets/HeroBackground.webp')] dark:bg-[url('/assets/HeroBackgroundDark.webp')] 
               bg-cover bg-center`}
       >
         <SimpleHeroDynamic
@@ -174,7 +174,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 "
     >
       <img
-        src="/assets/HeroBackground.jpg"
+        src="/assets/HeroBackgroundSimple.webp"
         alt="Hero Background"
         className="video-background absolute inset-0 -z-20 w-full h-full object-cover rounded-[30px] pointer-events-none"
       ></img>
