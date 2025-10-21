@@ -6,9 +6,10 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ searchParams }: any): Promise<Metadata> {
   const baseMetadata = await pageMetadata({ params: { slug: [] }, searchParams });
   
-  // Add fallback meta description if not provided by Sitefinity
+  // Add fallback title and meta description if not provided by Sitefinity
   return {
     ...baseMetadata,
+    title: baseMetadata.title || 'GoMoney - Your Trusted Digital Financial Platform',
     description: baseMetadata.description || 'GoMoney - Your trusted digital financial platform. Secure, fast, and reliable financial services for all your banking needs.',
   };
 }
