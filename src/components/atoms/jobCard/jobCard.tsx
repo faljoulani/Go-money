@@ -63,13 +63,13 @@ export default function JobCard({ job, onOpen }: Props) {
       onClick={goToDetails}
       onKeyDown={onKey}
       className="
-        w-[336.67px] h-[218px] md:w-[274px] md:h-[218px] p-6 rounded-xl bg-surface-section
+        w-full h-full p-6 rounded-xl bg-surface-section
         shadow-md transition overflow-hidden
         flex flex-col items-center gap-4"
       aria-busy={loading}
       aria-label={`${job.title} - ${job.location}`}
     >
-      <div className="h-10 w-10 p-6 rounded-xl bg-[#E6E8FF] dark:bg-[#A6EFD9] m-auto flex  items-center justify-center">
+      <div className="h-10 w-10 p-6 rounded-xl bg-[#E6E8FF] dark:bg-[#A6EFD9] flex  items-center justify-center">
         <span className="text-xl">
           <BreifCasiIcon className="text-[#010663]" />
         </span>
