@@ -12,7 +12,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string }>;
 }): Promise<Metadata> {
-  return await pageMetadata({ params, searchParams });
+  const baseMetadata = await pageMetadata({ params, searchParams });
+  
+  // Add fallback meta description if not provided by Sitefinity
+  return {
+    ...baseMetadata,
+    description: baseMetadata.description || 'GoMoney - Your trusted digital financial platform. Secure, fast, and reliable financial services for all your banking needs.',
+  };
 }
 
 async function attemptRenderPage(
