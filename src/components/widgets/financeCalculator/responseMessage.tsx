@@ -142,13 +142,13 @@ export function FailResponse({
 
         {(msg.reasonsTitle || msg.reasonsDescription) && (
           <div
-            className={`mx-auto mt-8 w-[80%] grid grid-cols-1 gap-4 ${
+            className={`mx-auto mt-8 md:w-[80%] grid grid-cols-1 gap-4 ${
               dir === 'ltr' ? 'text-left' : 'text-right'
             }`}
           >
             <div className="rounded-xl dark:bg-[#23242C] bg-gray-100 p-5">
               {msg.reasonsTitle && (
-                <strong className="block mb-3 text-default">{msg.reasonsTitle}</strong>
+                <strong className="block mb-3 text-default xs:text-[20px] md:text-[16px]">{msg.reasonsTitle}</strong>
               )}
               {msg.reasonsDescription && (
                 <p
@@ -162,13 +162,13 @@ export function FailResponse({
 
         {(msg.actionsTitle || msg.actionsDescription) && (
           <div
-            className={`mx-auto mt-8 w-[80%] grid grid-cols-1 gap-4 ${
+            className={`mx-auto mt-8 md:w-[80%] grid grid-cols-1 gap-4 ${
               dir === 'ltr' ? 'text-left' : 'text-right'
             }`}
           >
             <div className="rounded-xl dark:bg-[#23242C] bg-gray-100 p-5">
               {msg.actionsTitle && (
-                <strong className="block text-default">{msg.actionsTitle}</strong>
+                <strong className="block text-default xs:text-[20px] md:text-[16px]">{msg.actionsTitle}</strong>
               )}
               {msg.actionsDescription && (
                 <p
