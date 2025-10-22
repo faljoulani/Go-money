@@ -178,7 +178,7 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
         }}
       >
         <div className="pointer-events-none md:h-[70%]  xs:h-[100%] absolute inset-0 z-40 md:mt-20 md:left-[170px] xs:left-[27%] ">
-          <div className=" translatePhone  sticky md:top-20 flex justify-center">
+          <div className=" translatePhone   md:top-20 flex justify-center">
             <img
               src={phoneSrc}
               alt={phoneAlt}
