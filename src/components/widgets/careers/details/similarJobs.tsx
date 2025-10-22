@@ -194,7 +194,7 @@ export default function SimilarJobs({
       )}
 
       {!loading && !error && filteredItems.length > 0 && (
-        <div className="mt-6 rounded-3xl bg-neutral-50 md:p-6">
+        <div className="mt-6 rounded-3xl bg-neutral-50 md:py-6">
           {/* Mobile: 1 col, then 2/3/4 as viewport grows */}
           <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6">
             {filteredItems.slice(0, 8).map((job) => (

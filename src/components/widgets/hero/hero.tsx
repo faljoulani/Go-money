@@ -168,7 +168,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative max-w-[1440p] xxl:mx-auto overflow-hidden text-white md:rounded-[32px] xs:rounded-2xl
+      className="relative max-w-[1440px] xxl:mx-auto overflow-hidden text-white md:rounded-[32px] xs:rounded-2xl
       md:h-[700px] xs:flex xs:flex-col xs:h-[752px] 
       dark:bg-[linear-gradient(130deg,#001a52_15%,#010e4a_40%,#1DB5B3_100%)]
 "
@@ -209,13 +209,13 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
 
           {fulltitle && (
-            <Title html={fulltitle}
+            <Title
+              html={fulltitle}
               color="text-white"
               className="mt-1 mx-0 md:max-w-[500px] xs:w-[80%] font-bold md:text-[48px] xs:text-2xl md:leading-[63px] rtl:md:leading-[90px] tracking-[-0.02em] xs:leading-8 rtl:xs:leading-[45px] mb-4"
             />
-             
           )}
-          
+
           {/* {title && (
             <Title
               color="text-white"
@@ -230,7 +230,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
 
           {ctaText && (
-            <div className=''>
+            <div className="">
               <CTA
                 variant="outline"
                 colorText="text-white"
@@ -281,3 +281,4 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
 }
 
 export default Hero;
+
