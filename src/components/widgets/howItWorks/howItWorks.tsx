@@ -208,7 +208,8 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
               src="/assets/pocketHQ.webp"
               alt=""
               aria-hidden
-              className="pointer-events-none xs:w-full xs:h-[675px] xs:object-fit  md:object-cover md:w-full md:h-[60%] select-none absolute left-0 xs:top-3 z-50"
+              className="pointer-events-none xs:w-full xs:h-[675px] xs:object-fit 
+              md:object-cover md:w-full md:h-[60%] select-none absolute left-0 md:top-3 xs:top-0 z-50"
             />
             <img
               src="/assets/Vector.png"
@@ -233,10 +234,11 @@ export async function HowItWork(props: WidgetContext<HowItWorkEntity>) {
                   const stepNo = String(s.StepNumber ?? i + 1).padStart(2, '0');
 
                   return (
+                    
                     <div
                       key={s.Id || `${s.Title}-${i}`}
                       className="relative xs:rounded-2xl md:rounded-[32px] md:px-12 md:py-14 xs:px-4 xs:py-10 text-white 
-                                 ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
+                                 ring-1 ring-white/15 bg-white/[0.06] backdrop-blur rounded-[32px] dark:border-none border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]
                                  before:content-[''] before:absolute before:inset-0 before:xs:rounded-2xl before:md:rounded-[32px]
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none md:h-auto xs:h-[220px]"
