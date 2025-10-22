@@ -136,7 +136,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
         {view.Title && (
           <h1
             className="mt-3 md:text-[48px] rtl:md:text-[40px] 
-          xs:leading-9 xs:text-[24px] font-bold tracking-[-0.02em] text-primary"
+          xs:leading-9 md:leading-[63px] rtl:md:leading-[75px] xs:text-[24px] font-bold tracking-[-0.02em] text-primary"
           >
             {view.Title}
           </h1>
@@ -148,7 +148,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
         )}
       </div>
 
-      <section className="relative mx-auto w-full mb-10 max-w-[1240px]">
+      <section className="relative mx-auto w-full max-w-[1240px]">
         <div className="flex flex-col items-center relative rounded-3xl mt-10 bg-[linear-gradient(111.49deg,#000000_14.92%,#010552_46.49%,#0F148C_100.01%)] bg-cover bg-center dark:bg-[#131321] dark:bg-none">
           <img
             src="/assets/Vector.png"
@@ -158,7 +158,7 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
           {/* Content */}
           <div className="relative z-[70] md:p-16 xs:p-6">
             {view.IntroLead && (
-              <h2 className="text-center text-white md:text-[36px] md:font-bold xs:font-medium xs:text-lg">
+              <h2 className="text-center text-white md:text-[36px] md:font-normal xs:font-medium xs:text-lg">
                 {view.IntroLead}
               </h2>
             )}
@@ -174,7 +174,8 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
                   <div
                     key={s.Id || `${s.Title}-${i}`}
                     className="relative md:rounded-[32px] xs:rounded-2xl md:p-12 xs:px-4 xs:pt-4 xs:pb-8 text-white 
-                                 ring-1 ring-white/15 bg-white/[0.06] backdrop-blur
+                                 ring-1 ring-white/15 bg-white/[0.06] backdrop-blur 
+                                 dark:border-none border-t border-l border-gradient-to-br from-[#FFFFFF00] to-[#FFFFFF]
                                  before:content-[''] before:absolute before:inset-0 before:md:rounded-[32px] before:xs:rounded-2xl
                                  before:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_40%)]
                                  before:pointer-events-none"

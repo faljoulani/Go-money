@@ -61,7 +61,7 @@ export async function BoardReport(props: WidgetContext<BoardReportEntity>) {
     .filter(Boolean);
 
   return (
-    <section {...attrs} className="md:px-20 xs:px-4 rounded-[32px]">
+    <section {...attrs} className="md:px-20 xs:px-0 rounded-[32px]">
       <ReportGridClient
         lang={lang}
         id={item.Id}
