@@ -162,13 +162,12 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
               <img
                 src={imgSrc}
                 alt={imgAlt}
-                className="block dark:hidden md:h-[600px] md:w-[525px] object-cover xs:h-[300px] xs:w-[300px]"
+                className="block dark:hidden md:h-[600px] md:w-[525px] object-cover xs:h-[460px] xs:w-[300px]"
                 draggable={false}
               />
             ) : (
               <div className="block dark:hidden h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-white to-slate-100" />
             )}
-
             {/* Dark mode image */}
             {darkImgSrc ? (
               <img
@@ -180,6 +179,8 @@ async function HighlightBlockDefault(props: WidgetContext<HighlightBlockEntity>)
             ) : (
               <div className="hidden dark:block h-[392px] w-[490px] rounded-3xl bg-gradient-to-br from-[#1a1a1f] to-[#0f0f15]" />
             )}
+
+            
           </div>
         </div>
       </div>
