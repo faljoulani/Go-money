@@ -155,7 +155,7 @@ export default function MobileNavbar({
         aria-modal={open ? 'true' : undefined}
         aria-label="Main menu"
         inert={!open ? true : undefined}
-        className={`transition-all duration-300 h-screen md:hidden fixed -top-5 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
+        className={`transition-all duration-300 h-screen md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
            bg-white dark:bg-[#000] shadow-xl flex flex-col
           ${open ? 'translate-x-0' : isRTL ? 'translate-x-[600px]' : 'translate-x-[-600px]'}`}
       >

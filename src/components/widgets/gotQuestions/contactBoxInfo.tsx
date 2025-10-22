@@ -150,7 +150,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
       <div className="mx-auto mt-10 grid max-w-[540px] grid-cols-1 gap-3 sm:grid-cols-2">
         <CardWrap href={phoneHref}>
-          <div className="flex items-center justify-center gap-2 text-primary">
+          <div className="flex items-center justify-center gap-2 text-default">
             <svg
               width="16"
               height="16"
