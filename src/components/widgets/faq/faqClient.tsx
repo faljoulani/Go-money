@@ -49,7 +49,7 @@ export default function QuestionsClient({
     <section
       className="
         md:mx-20 xs:flex-col xs:gap-2 xs:pt-[30px]
-        md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16 overflow-clip
+        md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16 xs:overflow-clip md:overflow-visible
       "
     >
       {/* LEFT: desktop categories */}
@@ -106,7 +106,7 @@ export default function QuestionsClient({
       {/* TOP: mobile categories (chips) */}
       <div className="md:hidden xs:block">
         <ul
-          className="flex flex-row snap-x snap-mandatory items-center gap-3 overflow-x-auto md:rounded-2xl md:border
+          className="flex flex-row snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden md:rounded-2xl md:border
             border-line md:dark:border-white/10 md:bg-surface-section md:px-8 py-4 pb-4
             [scrollbar-width:none] [-ms-overflow-style:none] h-12 mb-8"
         >
