@@ -112,14 +112,14 @@ export function MobileGridCarousel({
         })}
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-2">
+      <div className="mt-8 flex items-center justify-center gap-2">
         {items.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}
             aria-label={`Go to slide ${i + 1}`}
-            className={`h-2 rounded-full transition-[width,background-color] duration-300 ${
-              active === i ? 'w-6 bg-primary' : 'w-2 bg-slate-300'
+            className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
+              active === i ? 'w-12 bg-primary' : 'w-2 bg-slate-300'
             }`}
           />
         ))}

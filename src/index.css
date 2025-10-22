@@ -597,7 +597,7 @@ html.modal-open {
     transform: translateY(-50px);
   }
   to {
-    transform: translateY(200px);
+    transform: translateY(400px);
   }
 }
 

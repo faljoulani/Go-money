@@ -168,7 +168,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
   return (
     <section
       {...attrs}
-      className="relative max-w-[1440px] xxl:mx-auto overflow-hidden text-white rounded-[32px] 
+      className="relative max-w-[1440p] xxl:mx-auto overflow-hidden text-white md:rounded-[32px] xs:rounded-2xl
       md:h-[700px] xs:flex xs:flex-col xs:h-[752px] 
       dark:bg-[linear-gradient(130deg,#001a52_15%,#010e4a_40%,#1DB5B3_100%)]
 "
@@ -230,7 +230,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
           )}
 
           {ctaText && (
-            <div>
+            <div className=''>
               <CTA
                 variant="outline"
                 colorText="text-white"
@@ -239,6 +239,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
                 icon="slot"
                 bgColor="transparent"
                 href={ctaUrl || '#'}
+                className="md:w-[248px] xs:max-w-[190px] xs:w-full md:h-14 xs:h-12"
               >
                 {ctaText}
               </CTA>

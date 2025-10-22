@@ -69,12 +69,12 @@ export default function MobileNavbar({
   // Focus management: move focus into the panel when opened
   useEffect(() => {
     if (!open || !panelRef.current) return;
-    
+
     // Small delay to ensure the transition has started
     const timeoutId = setTimeout(() => {
       // Focus the first focusable element in the panel (the close button)
       const firstFocusable = panelRef.current?.querySelector<HTMLElement>(
-        'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       firstFocusable?.focus();
     }, 50);
@@ -124,7 +124,9 @@ export default function MobileNavbar({
       {/* Open (hamburger) button */}
       <button
         ref={btnRef}
-        className={`md:hidden inline-flex items-center justify-center rounded-xl p-2 ${textColorWhenScrolled} hover:bg-white/10 dark:text-white dark:hover:bg-white/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30`}
+        className={`md:hidden inline-flex items-center justify-center rounded-xl p-2 
+          ${textColorWhenScrolled} hover:bg-white/10 dark:text-white dark:hover:bg-white/10 
+          transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30`}
         aria-label="Open menu"
         aria-expanded={open}
         onClick={() => setOpen(true)}
@@ -153,7 +155,7 @@ export default function MobileNavbar({
         aria-modal={open ? 'true' : undefined}
         aria-label="Main menu"
         inert={!open ? true : undefined}
-        className={`transition-all duration-300 h-screen md:hidden fixed top-0 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
+        className={`transition-all duration-300 h-screen md:hidden fixed -top-5 ${isRTL ? 'right-0' : 'left-0'} z-[251] h-full w-[86vw] max-w-[360px]
            bg-white dark:bg-[#000] shadow-xl flex flex-col
           ${open ? 'translate-x-0' : isRTL ? 'translate-x-[600px]' : 'translate-x-[-600px]'}`}
       >
@@ -189,22 +191,22 @@ export default function MobileNavbar({
               const rawUrl = resolveItemUrl(item.url);
 
               if (!hasChildren) {
-              return (
-                <Link
-                  key={idx}
-                  href={rawUrl || '#'}
-                  prefetch={false}
-                  onClick={() => setOpen(false)}
-                  className={`block rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                return (
+                  <Link
+                    key={idx}
+                    href={rawUrl || '#'}
+                    prefetch={false}
+                    onClick={() => setOpen(false)}
+                    className={`block rounded-xl px-4 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30
                     ${
                       active
                         ? 'bg-primary/5 text-primary dark:bg-white/10 dark:text-white'
                         : 'text-[#0A1B2E] hover:bg-black/5 dark:text-white dark:hover:bg-white/10'
                     }`}
-                >
-                  {item.title}
-                </Link>
-              );
+                  >
+                    {item.title}
+                  </Link>
+                );
               }
 
               // Accordion group

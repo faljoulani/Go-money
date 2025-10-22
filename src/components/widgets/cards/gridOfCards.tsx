@@ -264,7 +264,7 @@ async function GridOfCards(props: WidgetContext<CardSectionEntity>) {
             icon="arrow"
             bgColor="transparent"
             href={ctaHref || '#'}
-            className="text-lg xs:w-full md:w-[270px]"
+            className="xs:text-base md:text-lg xs:w-full md:w-[248px] xs:h-12 md:h-14"
           >
             {ctaText}
           </CTA>

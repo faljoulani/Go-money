@@ -77,13 +77,13 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const right = items.find((x) => x !== left) ?? items[1];
 
   return (
-    <section {...attrs} className="px-4 md:px-20 overflow-clip mt-16 max-w-[1440px] xxl:mx-auto">
+    <section {...attrs} className="md:px-20 overflow-clip xs:mt-10 md:mt-16 max-w-[1440px] xxl:mx-auto">
       <div className="mx-auto max-w-[1240px">
         {parent?.Title && (
           <div className="mb-10">
             <Title
               color="text-primaryAlt"
-              className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px]"
+              className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px] md:rtl:leading-[75px] xs:leading-6"
             >
               {parent.Title}
             </Title>
@@ -118,7 +118,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
   const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px]  bg-surface-section p-6 md:p-8 flex flex-col justify-between ${className}`}
+      className={`relative overflow-hidden xs:rounded-2xl md:rounded-[32px] bg-surface-section p-6 md:p-8 flex flex-col justify-between ${className}`}
     >
       {/* Corner label only for contact variant */}
       {hasCorner && !isSubscribe && (
@@ -129,7 +129,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
                       bg-primaryAlt`}
         >
           <div
-            className={`absolute md:h-[52px] md:w-[52px] xs:h-[35px] xs:w-[35px] 
+            className={`absolute md:h-[52px] md:w-[52px] xs:h-[30px] xs:w-[30px] 
                       bg-[#FFFFFF] dark:bg-[#1d1d28]`}
           />
         </div>
@@ -179,7 +179,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
           <div className="grid md:grid-cols-2 xs:grid-cols-1 mb-8 w-full max-w-[520px] gap-3">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
-                <Image src="/icons/phone.svg" alt="phone" width={17} height={17} />
+                <Image src="/icons/phone.svg" alt="phone" width={17} height={17} className='dark:invert'/>
                 <span>{box.CallUsLabel || 'Call Us'}</span>
               </div>
               <div className="mt-2 h-px bg-lineMuted" />
@@ -189,7 +189,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             </div>
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
-                <Image src="/icons/mail.svg" alt="email" width={17} height={17} />
+                <Image src="/icons/mail.svg" alt="email" width={17} height={17} className='dark:invert'/>
                 <span className="text-xs">{box.EmailLabel || 'Email'}</span>
               </div>
               <div className="mt-2 h-px bg-lineMuted" />
@@ -206,7 +206,7 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
               borderColor="border-primaryAlt"
               variant="outline"
               icon="arrow"
-              className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] rounded-[20px] border-[2px] mt-auto px-6 py-[18px]"
+              className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] xs:rounded-[18px] md:rounded-[20px] border-[2px] mt-auto px-6 py-[18px] xs:h-12 md:h-14"
             >
               {ctaText}
             </CTA>

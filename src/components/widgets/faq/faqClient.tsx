@@ -49,7 +49,7 @@ export default function QuestionsClient({
     <section
       className="
         md:mx-20 xs:flex-col xs:gap-2 xs:pt-[30px]
-        md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16
+        md:flex md:flex-row md:gap-8 md:pt-[58px] md:pb-16 overflow-clip
       "
     >
       {/* LEFT: desktop categories */}
@@ -106,11 +106,9 @@ export default function QuestionsClient({
       {/* TOP: mobile categories (chips) */}
       <div className="md:hidden xs:block">
         <ul
-          className="
-            flex snap-x snap-mandatory items-center gap-3 overflow-x-auto md:rounded-2xl md:border
+          className="flex flex-row snap-x snap-mandatory items-center gap-3 overflow-x-auto md:rounded-2xl md:border
             border-line md:dark:border-white/10 md:bg-surface-section md:px-8 py-4 pb-4
-            [scrollbar-width:none] [-ms-overflow-style:none] h-[3.4rem] 
-          "
+            [scrollbar-width:none] [-ms-overflow-style:none] h-12 mb-8"
         >
           <style>{`ul::-webkit-scrollbar{display:none}`}</style>
           {categories.map((cat) => {
@@ -120,7 +118,7 @@ export default function QuestionsClient({
                 <button
                   onClick={() => setActive(cat.Id)}
                   className={[
-                    'rounded-xl px-5 py-2.5 text-sm whitespace-nowrap transition-colors',
+                    'rounded-xl block px-5 py-2.5 text-sm whitespace-nowrap transition-colors h-12',
                     isActive
                       ? 'bg-primaryAlt text-secondary shadow-sm'
                       : 'bg-surface-section text-default border border-line dark:border-white/10',

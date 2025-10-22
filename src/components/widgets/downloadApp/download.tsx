@@ -174,7 +174,7 @@ async function DownloadApp(props: WidgetContext<DownloadEntity>) {
                 {title}
               </Title>
             )}
-            {!!description && <Description html={description} className="mt-4" />}
+            {!!description && <Description html={description} className="mt-4 rtl:leading-[30px]" />}
 
             {/* Info chips from Certifications (max 2) */}
             {infoCards.length > 0 && (
