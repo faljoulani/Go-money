@@ -207,13 +207,13 @@ export async function HowItWorksSimple(props: WidgetContext<HowItWorkEntity>) {
 
             {/* CTA */}
             {view.CTALabel && (
-              <div className="md:mt-[68px]  xs:mt-12 flex justify-center">
+              <div className="md:mt-[68px] xs:mt-12 flex justify-center">
                 <a
                   href={CTAExternalUrl || '#'}
-                  className="group xs:max-w-[265px] inline-flex items-center gap-2 rounded-[20px] md:px-6 py-3
+                  className="group xs:max-w-[265px] inline-flex items-center gap-2 rounded-[20px] xs:px-8 md:px-6 py-3
                           text-white dark:text-[#A6EFD9] font-medium md:text-lg xs:text-base
                             border dark:border-[#A6EFD9] hover:bg-white/10 xs:w-full
-                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition xs:px-10"
+                          hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663] transition"
                 >
                   <span className="mx-auto">{view.CTALabel}</span>
                   <svg
