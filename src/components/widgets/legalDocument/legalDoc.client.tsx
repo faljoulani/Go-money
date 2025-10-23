@@ -15,7 +15,7 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
       }
 
       // Shared offset for sticky header
-      const HEADER_OFFSET = 50;
+      const HEADER_OFFSET = 70;
       const HEADER_Y_OFFSET = 120;
 
       // Clean up any existing event listeners
@@ -45,7 +45,7 @@ export default function ScriptForLegalDocument({ offset }: { offset: number }) {
           if (container && window.innerWidth < 768) {
             const containerRect = container.getBoundingClientRect();
             const linkRect = to.getBoundingClientRect();
-            const offset =
+            const offset = 
               linkRect.left - containerRect.left - containerRect.width / 2 + linkRect.width / 2;
 
             container.scrollBy({
