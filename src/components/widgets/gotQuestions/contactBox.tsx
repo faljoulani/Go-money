@@ -139,7 +139,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
         <div className="mt-12 flex flex-wrap xs:flex-col md:flex-row items-center justify-center gap-4 ">
           <a
             href={ctaHref}
-            className="group transition-colors inline-flex md:w-[189px] xs:w-[90%] 
+            className="group transition-colors inline-flex md:w-[189px] xs:w-[100%] xs:max-w-[280px]
             md:rtl:w-[168px] text-lg tracking-tight items-center justify-center gap-2 
             rounded-[20px] border-2 border-primaryAlt px-6 py-3 text-primaryAlt font-medium 
             hover:bg-primary hover:text-white hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663]"
@@ -167,7 +167,7 @@ export default async function ContactBox(props: WidgetContext<ContactBoxEntity>)
 
           <a
             href={faqurl}
-            className="group transition-colors inline-flex md:w-[200px] md:max-w-[300px] xs:w-[90%] 
+            className="group transition-colors inline-flex md:w-[200px] md:max-w-[300px] xs:w-[100%] xs:max-w-[280px]
             text-lg tracking-tight items-center justify-center gap-2 
             rounded-[20px] border-2 border-primaryAlt px-6 py-3 text-primaryAlt font-medium 
             hover:bg-primary hover:text-white hover:dark:bg-[#A6EFD9] hover:dark:text-[#010663]"

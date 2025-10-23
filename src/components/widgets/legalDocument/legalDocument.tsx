@@ -127,7 +127,7 @@ export default async function LegalDocument(props: WidgetContext<LegalDocumentEn
             <nav className="md:rounded-[15px] xs:rounded-xl">
               <ul
                 className="  md:rounded-[15px] xs:rounded-xl flex md:flex-col xs:flex-row xs:overflow-x-auto 
-              snap-x snap-mandatory no-scrollbar"
+              no-scrollbar"
               >
                 {sections.map((s, i) => {
                   const slug = slugify(s.SectionHeader || `section-${i + 1}`);
