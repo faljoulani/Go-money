@@ -180,7 +180,7 @@ export async function Hero(props: WidgetContext<HeroEntity>) {
       ></img>
       <video
         suppressHydrationWarning
-        className="video-background absolute inset-0 -z-10 w-full h-full object-cover rounded-[30px] pointer-events-none"
+        className="video-background absolute inset-0 -z-10 w-full h-full object-cover xs:rounded-2xl md:rounded-[32px] pointer-events-none"
         src={videoSrc}
         autoPlay
         muted
