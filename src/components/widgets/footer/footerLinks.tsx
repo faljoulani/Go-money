@@ -20,7 +20,7 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
   const dir: 'rtl' | 'ltr' = lang?.startsWith('ar') ? 'rtl' : 'ltr';
   return (
     <div
-      className={`flex-1 md:ltr:border-l md:border-white/15 md:rtl:border-r md:ltr:pl-[64px] 
+      className={`flex-1 md:ltr:border-l md:border-white/15 md:rtl:border-r md:ltr:pl-[64px]
         md:rtl:pr-[64px] grid md:grid-cols-3 xs:grid-cols-2 md:gap-8 xs:gap-x-0 xs:gap-y-6 justify-start my-8 z-60 rtl:pr-16 left-0 rtl:grid-col-reverse `}
     >
       {groups.map((group) => (
@@ -32,14 +32,22 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
           <h3 className="text-white md:text-[20px] xs:text-base font-semibold ">{group.title}</h3>
           <ul className="md:mt-8 xs:mt-6 space-y-2 ">
             {group.links.map((link) => {
-              const hrefNorm = routeMatchKey(cleanHref(link.href));
+              const href = link.href;
+              const locale = lang?.startsWith('ar') ? 'ar' : 'en';
+              const hasLocalePrefix = /^\/(ar|en)\//i.test(href);
+              const isAbsolutePath = href.startsWith('/');
+              const isDocs = typeof href === 'string' && href.toLowerCase().includes('consumer');
+              const finalHref =
+                isDocs || hasLocalePrefix ? href : `/${locale}${isAbsolutePath ? '' : '/'}${href}`;
 
               return (
                 <li key={link.id}>
                   <Link
-                    href={link.href}
+                    href={finalHref}
                     prefetch={false}
-                    className={`md:text-base xs:text-[12px] md:leading-5 xs:leading-4 no-underline transition-colors ${'text-[#E0E0E0]'}`}
+                    target={isDocs ? '_blank' : undefined}
+                    rel={isDocs ? 'noopener noreferrer' : undefined}
+                    className="md:text-base xs:text-[12px] md:leading-5 xs:leading-4 no-underline transition-colors text-[#E0E0E0]"
                   >
                     {link.title}
                   </Link>
@@ -52,4 +60,3 @@ export default function FooterLinks({ groups, className = '', lang }: Props) {
     </div>
   );
 }
-
