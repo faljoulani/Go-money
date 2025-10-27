@@ -2,7 +2,10 @@ import React from 'react';
 import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
 import type { FinanceCalculatorEntity } from './financeCalculator.entity';
 import FinanceCalculatorClient from './financeCalculator.client';
-import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import {
+  fetchData,
+  extractSelectionId,
+} from '../../../utils/sitefinity';
 import { resolveSitefinitySelection, mergeClasses } from '../../../utils/utils';
 
 const asString = (v: any) => (v == null ? '' : String(v));
@@ -161,12 +164,14 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
           'ReasonsTitle',
           'ReasonsDescription',
           'DownloadUrl/DefaultUrl',
+          'stores($select=Id,Title,Description,Order,IsVisible,' +
+        'Icon($select=Id,Url,MediaUrl,ThumbnailUrl,EmbedUrl,Title,AlternativeText,Urls,Provider))',
         ],
         { itemType: MESSAGE_TYPE },
       ),
     ],
   );
-  console.log('MESSAGES', messages);
+   
   const toChoice = (x: any) => ({
     id: String(x?.Id ?? ''),
     title: String(x?.Value ?? x?.Name ?? ''),
@@ -196,6 +201,7 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
     actionsDescription: String(m?.ActionsDescription ?? ''),
     reasonsTitle: String(m?.ReasonsTitle ?? ''),
     reasonsDescription: String(m?.ReasonsDescription ?? ''),
+    orderedStores: (m?.stores || [])
   });
 
   const cfg = {
@@ -261,7 +267,6 @@ export default async function FinanceCalculator(props: WidgetContext<FinanceCalc
     messages: Array.isArray(messages) ? messages.map(toMessage) : [],
     culture,
   };
-  console.log('zksfs', cfg.choices.employerSectorChoices);
   return (
     <section data-sf-enhance {...attrs}>
       <FinanceCalculatorClient cfg={cfg} lang={lang} />
