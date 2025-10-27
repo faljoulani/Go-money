@@ -77,13 +77,16 @@ export default async function ContactSubscription(props: WidgetContext<ContactSu
   const right = items.find((x) => x !== left) ?? items[1];
 
   return (
-    <section {...attrs} className="md:px-20 overflow-clip xs:mt-10 md:mt-16 max-w-[1440px] xxl:mx-auto">
+    <section
+      {...attrs}
+      className="md:px-20 overflow-clip xs:mt-10 md:mt-16 max-w-[1440px] xxl:mx-auto"
+    >
       <div className="mx-auto max-w-[1240px">
         {parent?.Title && (
           <div className="mb-10">
             <Title
-              color="text-primaryAlt"
-              className="md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px] md:rtl:leading-[75px] xs:leading-6"
+              color="text-neutral"
+              className="multiColored md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px] md:rtl:leading-[75px] xs:leading-6"
             >
               {parent.Title}
             </Title>
@@ -179,7 +182,13 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
           <div className="grid md:grid-cols-2 xs:grid-cols-1 mb-8 w-full max-w-[520px] gap-3">
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
-                <Image src="/icons/phone.svg" alt="phone" width={17} height={17} className='dark:invert'/>
+                <Image
+                  src="/icons/phone.svg"
+                  alt="phone"
+                  width={17}
+                  height={17}
+                  className="dark:invert"
+                />
                 <span>{box.CallUsLabel || 'Call Us'}</span>
               </div>
               <div className="mt-2 h-px bg-lineMuted" />
@@ -189,7 +198,13 @@ function Card({ box, className = '' }: { box: ContactBox; className?: string }) 
             </div>
             <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
               <div className="flex items-center justify-center gap-2 text-14px text-default">
-                <Image src="/icons/mail.svg" alt="email" width={17} height={17} className='dark:invert'/>
+                <Image
+                  src="/icons/mail.svg"
+                  alt="email"
+                  width={17}
+                  height={17}
+                  className="dark:invert"
+                />
                 <span className="text-xs">{box.EmailLabel || 'Email'}</span>
               </div>
               <div className="mt-2 h-px bg-lineMuted" />
