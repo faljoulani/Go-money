@@ -241,8 +241,8 @@ export default function CareersBoard({
   useEffect(() => {
     setApiResp(null);
     setFacetNames({ locations: [], departments: [] });
-    setHasAnyResponse(false); 
-    
+    setHasAnyResponse(false);
+
     setQuery((prev) => {
       if (prev.language === lang) return prev;
       const next = structuredClone(prev);
@@ -316,13 +316,15 @@ export default function CareersBoard({
   );
 
   useEffect(() => {
-    if (!isLanguageReady) return;
+    if (!isLanguageReady || query.language !== lang) return;
+
     if (skipFetchRef.current) {
       skipFetchRef.current = false;
       return;
     }
+
     fetchSearch(query);
-  }, [query, fetchSearch, isLanguageReady]);
+  }, [query, fetchSearch, isLanguageReady, lang]);
 
   const apiItems: CareersItem[] = useMemo(() => {
     const arr = apiResp?.Data?.Items ?? [];
