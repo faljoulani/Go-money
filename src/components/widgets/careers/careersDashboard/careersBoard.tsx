@@ -227,10 +227,8 @@ export default function CareersBoard({
     emitCareersActiveJob({ lang, title: null, mode: 'list' });
   }, [lang]);
 
-  // Set language ready flag after useDirection stabilizes
   useEffect(() => {
     if (!hasInitializedRef.current) {
-      // First time - wait for useDirection to determine the correct language
       const timer = setTimeout(() => {
         setIsLanguageReady(true);
         hasInitializedRef.current = true;
@@ -241,12 +239,10 @@ export default function CareersBoard({
   }, [lang]);
 
   useEffect(() => {
-    // Reset data & facets when language changes
     setApiResp(null);
     setFacetNames({ locations: [], departments: [] });
-    setHasAnyResponse(false); // 🔁 show loader until new fetch completes
-
-    // Update queries to new language
+    setHasAnyResponse(false); 
+    
     setQuery((prev) => {
       if (prev.language === lang) return prev;
       const next = structuredClone(prev);
