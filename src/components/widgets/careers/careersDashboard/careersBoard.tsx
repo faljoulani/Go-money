@@ -173,6 +173,8 @@ export default function CareersBoard({
   const [apiResp, setApiResp] = useState<SearchApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLanguageReady, setIsLanguageReady] = useState(false);
+  const hasInitializedRef = useRef(false);
 
   const [facetNames, setFacetNames] = useState<{ locations: string[]; departments: string[] }>({
     locations: [],
@@ -222,6 +224,19 @@ export default function CareersBoard({
 
   useEffect(() => {
     emitCareersActiveJob({ lang, title: null, mode: 'list' });
+  }, [lang]);
+
+  // Set language ready flag after useDirection stabilizes
+  useEffect(() => {
+    if (!hasInitializedRef.current) {
+      // First time - wait for useDirection to determine the correct language
+      const timer = setTimeout(() => {
+        setIsLanguageReady(true);
+        hasInitializedRef.current = true;
+      }, 0);
+      
+      return () => clearTimeout(timer);
+    }
   }, [lang]);
 
   useEffect(() => {
@@ -299,12 +314,13 @@ export default function CareersBoard({
   );
 
   useEffect(() => {
+    if (!isLanguageReady) return;
     if (skipFetchRef.current) {
       skipFetchRef.current = false;
       return;
     }
     fetchSearch(query);
-  }, [query, fetchSearch]);
+  }, [query, fetchSearch, isLanguageReady]);
 
   const apiItems: CareersItem[] = useMemo(() => {
     const arr = apiResp?.Data?.Items ?? [];
