@@ -173,6 +173,9 @@ export default function CareersBoard({
   const [apiResp, setApiResp] = useState<SearchApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLanguageReady, setIsLanguageReady] = useState(false);
+  const [hasAnyResponse, setHasAnyResponse] = useState<boolean>(false);
+  const hasInitializedRef = useRef(false);
 
   const [facetNames, setFacetNames] = useState<{ locations: string[]; departments: string[] }>({
     locations: [],
@@ -225,7 +228,20 @@ export default function CareersBoard({
   }, [lang]);
 
   useEffect(() => {
+    if (!hasInitializedRef.current) {
+      const timer = setTimeout(() => {
+        setIsLanguageReady(true);
+        hasInitializedRef.current = true;
+      }, 0);
+
+      return () => clearTimeout(timer);
+    }
+  }, [lang]);
+
+  useEffect(() => {
+    setApiResp(null);
     setFacetNames({ locations: [], departments: [] });
+    setHasAnyResponse(false);
 
     setQuery((prev) => {
       if (prev.language === lang) return prev;
@@ -293,18 +309,22 @@ export default function CareersBoard({
         setApiResp(null);
       } finally {
         setLoading(false);
+        setHasAnyResponse(true);
       }
     },
     [lang, postSearch],
   );
 
   useEffect(() => {
+    if (!isLanguageReady || query.language !== lang) return;
+
     if (skipFetchRef.current) {
       skipFetchRef.current = false;
       return;
     }
+
     fetchSearch(query);
-  }, [query, fetchSearch]);
+  }, [query, fetchSearch, isLanguageReady, lang]);
 
   const apiItems: CareersItem[] = useMemo(() => {
     const arr = apiResp?.Data?.Items ?? [];
@@ -638,6 +658,16 @@ export default function CareersBoard({
     Boolean((query.search ?? '').trim()) ||
     (query.locationNames?.length ?? 0) > 0 ||
     (query.departmentNames?.length ?? 0) > 0;
+
+  if (!isLanguageReady || loading || !hasAnyResponse) {
+    return (
+      <section className={`relative w-full md:mx-auto md:w-[1240px] py-10 ${className ?? ''}`}>
+        <div className="min-h-[600px] grid place-items-center">
+          <FullPageLoader />
+        </div>
+      </section>
+    );
+  }
 
   if (!loading && baseItems.length === 0 && !hasActiveFilters) {
     return <EmptyState />;

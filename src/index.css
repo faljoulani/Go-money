@@ -684,3 +684,6 @@ html.modal-open {
   -webkit-mask: url(/icons/pdfIcon.svg) no-repeat center / contain;
           mask: url(/icons/pdfIcon.svg) no-repeat center / contain;
 }
+.multiColored::first-line {
+  color: var(--color-primary-alt);
+}
