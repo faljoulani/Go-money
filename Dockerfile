@@ -84,11 +84,13 @@ RUN set -eux; \
   echo '--- Native .node files (oxide/lightningcss)'; \
   /bin/sh -lc "find node_modules -maxdepth 4 -type f -name '*.node' -print -ls | grep -E 'oxide|lightningcss' || true"
 
-# (no sharp rebuild step)
 
 # ---- Build (Tailwind runs here) -------------------------------------------
 RUN NODE_ENV=production npm run build
 
+RUN mkdir -p /out/www/1.0.0/_next /out/www/1.0.0/assets \
+ && cp -r .next/static/* /out/www/1.0.0/_next/ || true \
+ && cp -r public/assets/* /out/www/1.0.0/assets || true
 # ---- Slim prod deps --------------------------------------------------------
 RUN npm prune --omit=dev
 
@@ -99,21 +101,19 @@ RUN npm prune --omit=dev
 FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=9097
+ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/next.config.js ./
+COPY --from=build --chown=node:node /app/.next/standalone ./      
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build /out /
 
-EXPOSE 9097
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-  CMD curl -fsS http://127.0.0.1:${PORT}/api/health || exit 1
+EXPOSE 3000
 
-CMD ["npm", "run", "start", "--", "-p", "9097"]
+
+CMD ["node", "server.js"]
+
