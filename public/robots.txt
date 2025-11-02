@@ -1,0 +1,39 @@
+# GoMoney - Robots.txt
+# This file tells search engines which pages to crawl and which to avoid
+
+# Allow all crawlers by default
+User-agent: *
+
+# Allow public pages
+Allow: /
+Allow: /en/
+Allow: /ar/
+
+# Disallow CMS/Admin areas
+Disallow: /api/
+Disallow: /sf/
+Disallow: /sitefinity/
+Disallow: /Sitefinity/
+Disallow: /adminapp/
+Disallow: /admin-bridge/
+Disallow: /sfres/
+Disallow: /res/
+
+# Disallow technical Next.js routes
+Disallow: /_next/
+Disallow: /render/
+Disallow: /render-lazy/
+
+# Disallow utility endpoints
+Disallow: /api/template-interceptor/
+Disallow: /api/health/
+
+# Allow assets and icons
+Allow: /assets/
+Allow: /icons/
+
+# Sitemap location (update with your actual domain)
+Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://yourdomain.com/en/sitemap.xml
+Sitemap: https://yourdomain.com/ar/sitemap.xml
+

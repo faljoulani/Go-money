@@ -1,0 +1,613 @@
+'use client';
+
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
+import { useSfMutation } from '../../../../utils/hooks/useSfMutation';
+import { emitCareersActiveJob } from '../../../../utils/careersEvents';
+
+import { useScrollFocus } from '../../../../utils/hooks/useScrollFocus';
+import InputField from '../../../atoms/inputField/inputField';
+import SpinnerLoader from '../../../atoms/spinnerLoader/spinnerLoader';
+import CustomDropdown, {
+  DROPDOWN_BUTTON_BASE,
+  DROPDOWN_LIST_BASE,
+  DROPDOWN_OPTION_BASE,
+  DropdownOption,
+} from '../../../atoms/dropdown/dropdown';
+import ApplicationSuccess from './applicationSuccess';
+import { COUNTRY_LIST } from '../../../../utils/countries-emoji';
+import IndustryIcon from '../../../../../public/icons/industry_icon.svg';
+import MapIcon from '../../../../../public/icons/map_icon.svg';
+import OclockIcon from '../../../../../public/icons/oclock_icon.svg';
+
+type CareerDetails = {
+  Title?: string;
+  DepartmentName?: string;
+  LocationName?: string;
+  EmploymentType?: string;
+  Sections?: { OverviewHtml?: string };
+};
+
+type Props = {
+  className?: string;
+  backHref?: string;
+  form?: any;
+  cities?: any[];
+  jobTitle?: string;
+  jobId?: string;
+  language?: string;
+};
+
+type CityItem = { Key?: string; Value?: string };
+
+type FormDataState = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  city: string;
+  coverLetter: string;
+  resume?: File | null;
+};
+
+const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
+const maxBytes = 2 * 1024 * 1024;
+
+const citiesFrom = (form?: any, overrideCities?: any[]): CityItem[] => {
+  const a: CityItem[] = Array.isArray(form?.CityChoices) ? form.CityChoices : [];
+  const b: CityItem[] = Array.isArray(overrideCities) ? overrideCities : [];
+  const src = a.length ? a : b;
+  return src.map((c: any) => ({ Key: c?.Key ?? c?.key, Value: c?.Value ?? c?.value }));
+};
+
+function makeCountryOptions(): DropdownOption[] {
+  return COUNTRY_LIST.map((c) => ({
+    id: c.iso2,
+    value: c.iso2,
+    label: (
+      <span className="flex items-center gap-2">
+        <span className={`fi fi-${c.iso2.toLowerCase()}`} aria-hidden />
+        <span className="opacity-80">{c.dial}</span>
+      </span>
+    ),
+  }));
+}
+
+export default function ApplyForJob({
+  className,
+  form,
+  cities,
+  jobTitle,
+  jobId,
+  language = 'en',
+}: Props) {
+  const { post: submitApplication } = useSfMutation('api/default/applyjob');
+  const { post: fetchJobDetails } = useSfMutation('api/default/careers/details');
+
+  const [jobDetails, setJobDetails] = useState<CareerDetails | null>(null);
+  const [jobError, setJobError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const successRef = useRef<HTMLDivElement | null>(null);
+  const detailsRef = useRef<HTMLDivElement | null>(null);
+  const widgetRef = useRef<HTMLDivElement | null>(null);
+
+  const loading = Boolean(jobId && !jobError && !jobDetails);
+
+  const [data, setData] = useState<FormDataState>({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    email: '',
+    city: '',
+    coverLetter: '',
+    resume: null,
+  });
+
+  const [countryIso2, setCountryIso2] = useState<string>('SA');
+  const [countryDial, setCountryDial] = useState<string>('+966');
+  const [hasFormInteraction, setHasFormInteraction] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const cityChoices = useMemo(() => citiesFrom(form, cities), [form, cities]);
+  const countryOptions = useMemo(makeCountryOptions, []);
+  const normalizedLanguage = (language || '').toLowerCase();
+  const isRtl = form?.Direction === 'rtl' || normalizedLanguage.startsWith('ar');
+  const heroLang: 'en' | 'ar' = isRtl ? 'ar' : 'en';
+
+  useEffect(() => {
+    const heroTitle = heroLang === 'ar' ? 'التقدم لهذه الوظيفة' : 'Apply for this job';
+    emitCareersActiveJob({ lang: heroLang, title: heroTitle, mode: 'apply' });
+
+    return () => {
+      emitCareersActiveJob({ lang: heroLang, title: null, mode: 'list' });
+    };
+  }, [heroLang]);
+
+  const applyFieldChange = <K extends keyof FormDataState>(key: K, value: FormDataState[K]) => {
+    setHasFormInteraction(true);
+    setData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleResume = (file?: File | null) => {
+    if (!file) return;
+    setHasFormInteraction(true);
+    const err = !allowedTypes.includes(file.type)
+      ? isRtl
+        ? 'الأنواع المدعومة: PDF, JPG, PNG.'
+        : 'Supported formats: PDF, JPG, PNG.'
+      : file.size > maxBytes
+        ? isRtl
+          ? 'الحد الأقصى للحجم 2 ميجابايت.'
+          : 'Maximum file size is 2MB.'
+        : null;
+    setError(err);
+    if (!err) applyFieldChange('resume', file);
+  };
+
+  useEffect(() => {
+    setJobError(null);
+    setJobDetails(null);
+    if (!jobId) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const response: any = await fetchJobDetails({ id: jobId, language });
+        if (cancelled) return;
+        if (!response?.Success || !response?.Data) {
+          setJobError(
+            response?.Error ||
+              (isRtl ? 'فشل تحميل تفاصيل الوظيفة.' : 'Failed to load job details.'),
+          );
+          return;
+        }
+        setJobDetails(response.Data as CareerDetails);
+      } catch {
+        if (!cancelled) {
+          setJobError(
+            isRtl
+              ? 'فشل تحميل تفاصيل الوظيفة. الرجاء المحاولة مرة أخرى.'
+              : 'Failed to load job details. Please try again.',
+          );
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [jobId, language, fetchJobDetails, isRtl]);
+
+  const title = jobDetails?.Title || jobTitle;
+  const department = jobDetails?.DepartmentName ?? '';
+  const location = jobDetails?.LocationName ?? '';
+  const employmentType = jobDetails?.EmploymentType ?? '';
+  const overviewHtml = jobDetails?.Sections?.OverviewHtml ?? '';
+  const submissionTitle = title || (isRtl ? 'طلب وظيفة' : 'Job Application');
+
+  const onCountryChange = (opt: DropdownOption) => {
+    const iso2 = String(opt.value ?? opt.id);
+    const info = COUNTRY_LIST.find((c) => c.iso2 === iso2);
+    setCountryIso2(iso2);
+    setCountryDial(info?.dial ?? '');
+    setHasFormInteraction(true);
+  };
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setServerError(null);
+
+    const formElement = e.currentTarget;
+    const ok = formElement.checkValidity() && !error;
+    if (!ok) {
+      formElement.reportValidity();
+      return;
+    }
+    if (!data.resume) {
+      setError(
+        isRtl
+          ? 'يرجى إرفاق السيرة الذاتية (PDF/JPG/PNG، بحد أقصى 2MB).'
+          : 'Please attach your resume (PDF/JPG/PNG, max 2MB).',
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = new FormData();
+      payload.append('Title', submissionTitle);
+      payload.append('FirstName', data.firstName);
+      payload.append('LastName', data.lastName);
+      payload.append('City', data.city);
+      payload.append('PhoneNumber', `${countryDial}${data.phone}`);
+      payload.append('Email', data.email);
+      payload.append('CoverLetter', data.coverLetter);
+      payload.append('Language', language || 'en');
+      if (data.resume) payload.append('Resume', data.resume, data.resume.name);
+
+      await submitApplication(payload);
+      setSubmitted(true);
+    } catch {
+      setServerError(
+        isRtl
+          ? 'حدث خطأ أثناء إرسال الطلب. الرجاء المحاولة مرة أخرى.'
+          : 'Something went wrong while submitting your application. Please try again.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!submitted) return;
+
+    const detailsEl = detailsRef.current;
+    const successEl = successRef.current;
+    const targets = [detailsEl, successEl].filter(Boolean) as HTMLDivElement[];
+
+    if (targets.length === 0) return;
+
+    targets.forEach((el) => el.setAttribute('tabindex', '-1'));
+
+    const STICKY_HEADER_OFFSET_PX = 80;
+
+    const rafId = window.requestAnimationFrame(() => {
+      try {
+        const vh = window.innerHeight;
+        const currentScroll = window.scrollY;
+
+        const rects = targets.map((el) => {
+          const rect = el.getBoundingClientRect();
+          const top = currentScroll + rect.top;
+          const bottom = top + rect.height;
+          return { el, top, bottom };
+        });
+
+        const spanTop = Math.min(...rects.map((r) => r.top));
+        const spanBottom = Math.max(...rects.map((r) => r.bottom));
+        const spanHeight = spanBottom - spanTop;
+
+        const successTop = successEl
+          ? (rects.find((r) => r.el === successEl)?.top ?? spanTop)
+          : spanTop;
+
+        const targetTop =
+          spanHeight <= vh
+            ? Math.max(0, spanTop - (vh - spanHeight) / 2 - STICKY_HEADER_OFFSET_PX)
+            : Math.max(0, successTop - 24 - STICKY_HEADER_OFFSET_PX);
+
+        if (detailsEl) {
+          detailsEl.focus({ preventScroll: true });
+        }
+
+        window.scrollTo({ top: targetTop, behavior: 'smooth' });
+
+        if (successEl) {
+          window.setTimeout(() => successEl.focus({ preventScroll: true }), 250);
+        }
+      } catch {
+        successEl?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [submitted]);
+
+  const compositeKey = useMemo(() => `${jobId ?? ''}:${language ?? ''}`, [jobId, language]);
+
+  useEffect(() => {
+    setHasFormInteraction(false);
+  }, [compositeKey]);
+
+  const getWidgetTarget = useCallback(() => widgetRef.current, []);
+
+  const topRef = useScrollFocus({
+    ready: !!language && !loading && !hasFormInteraction,
+    deps: [compositeKey],
+    behavior: 'smooth',
+    target: getWidgetTarget,
+    offset: 80,
+    label: language === 'ar' ? 'تفاصيل الوظيفة' : 'Job details',
+  });
+
+  return (
+    <SpinnerLoader
+      show={loading}
+      message={isRtl ? 'جاري تحميل تفاصيل الوظيفة...' : 'Loading job details...'}
+    >
+      {/* PAGE WRAP — mobile first */}
+      <section
+        ref={widgetRef}
+        className={`mx-auto md:w-[1240px] py-10 md:py-10 ${className ?? ''}`}
+        dir={isRtl ? 'rtl' : 'ltr'}
+      >
+        <div ref={topRef} tabIndex={-1} className="outline-none" />
+        {/* Error top banner */}
+        {jobError && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {jobError}
+          </div>
+        )}
+
+        {/* Job header card */}
+        {jobDetails && (
+          <div
+            ref={detailsRef}
+            tabIndex={-1}
+            className="scroll-mt-24 w-full rounded-2xl bg-surface-section p-5 shadow-md md:p-6"
+          >
+            <h1 className="text-2xl font-bold leading-[100%] md:text-primary">{title}</h1>
+
+            {(department || location || employmentType) && (
+              <div className="mt-3 flex flex-col md:flex-row justify-start md:flex-wrap md:items-center gap-4 text-sm text-neutral-600">
+                {department && (
+                  <div className="flex items-center gap-2 text-[#000] dark:text-white">
+                    {/* Icon inherits from parent via stroke-current; no fill classes used */}
+                    <IndustryIcon className="h-6 w-6 stroke-current stroke-[1.5] [&_*]:stroke-current" />
+                    <span className="font-medium">{department}</span>
+                  </div>
+                )}
+                {location && (
+                  <div className="flex items-center gap-2 text-[#000] dark:text-white">
+                    <MapIcon className="h-6 w-6 stroke-current stroke-[1.5] [&_*]:stroke-current" />
+                    <span className="font-medium text-[#000] dark:text-white">{location}</span>
+                  </div>
+                )}
+                {employmentType && (
+                  <div className="flex items-center gap-2 text-[#000] dark:text-white">
+                    <OclockIcon className="h-6 w-6 stroke-current stroke-[1.5] [&_*]:stroke-current" />
+                    <span className="font-medium text-[#000] dark:text-white">
+                      {employmentType}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {overviewHtml && (
+              <div className="mt-5">
+                <div
+                  className="prose max-w-none text-[14px] leading-6 text-neutral-700 md:text-base descriptionHtml"
+                  dangerouslySetInnerHTML={{ __html: overviewHtml }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Form card OR Success */}
+        {submitted ? (
+          <section
+            aria-live="polite"
+            className="scroll-mt-24 mt-6 outline-none"
+            ref={successRef}
+            role="status"
+            tabIndex={-1}
+          >
+            <ApplicationSuccess />
+          </section>
+        ) : (
+          <form
+            noValidate
+            onSubmit={onSubmit}
+            className="mt-6 rounded-2xl bg-white dark:bg-[#05060799] p-5 shadow-xl md:p-7"
+          >
+            {/* Title + subtitle */}
+            <h2 className="text-2xl font-bold leading-tight md:text-primary">
+              {form?.Title ?? (isRtl ? 'نموذج التقديم' : 'Application form')}
+            </h2>
+            <p className="mt-2 mb-5 text-sm leading-6 text-default">
+              {form?.SubTitle ??
+                (isRtl
+                  ? 'يرجى ملء النموذج أدناه لإرسال طلبك'
+                  : 'Fill out the form below to submit your application')}
+            </p>
+
+            {/* Fields — single column on mobile, two on md+ */}
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* First name */}
+              <InputField label={form?.FirstNameLabel} required>
+                <input
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
+                  placeholder={form?.FirstNamePlaceholder}
+                  value={data.firstName}
+                  onChange={(e) => applyFieldChange('firstName', e.target.value)}
+                  required
+                />
+              </InputField>
+
+              {/* Last name */}
+              <InputField label={form?.LastNameLabel} required>
+                <input
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
+                  placeholder={form?.LastNamePlaceholder}
+                  value={data.lastName}
+                  onChange={(e) => applyFieldChange('lastName', e.target.value)}
+                  required
+                />
+              </InputField>
+
+              {/* Phone with country dropdown */}
+              <InputField
+                label={form?.PhoneNumberLabel || (isRtl ? 'رقم الهاتف' : 'Phone Number')}
+                required
+              >
+                <div className="grid grid-cols-[minmax(96px,auto),1fr] items-stretch gap-3">
+                  {/* Country pill */}
+                  <CustomDropdown
+                    name="Country"
+                    options={countryOptions}
+                    placeholder={isRtl ? 'اختر' : 'Select'}
+                    valueId={countryIso2}
+                    onChange={onCountryChange}
+                    className="relative inline-block"
+                    buttonClassName={`${DROPDOWN_BUTTON_BASE} min-w-[96px] w-[96px] md:min-w-[120px] md:w-[120px] justify-center gap-2 px-3 text-sm`}
+                    listClassName={`${DROPDOWN_LIST_BASE} max-h-72 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-white/20`}
+                    optionClassName={`${DROPDOWN_OPTION_BASE} text-sm`}
+                  />
+
+                  {/* Local phone input */}
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
+                    placeholder={form?.PhoneNumberPlaceholder}
+                    value={data.phone}
+                    onChange={(e) => {
+                      const onlyNums = e.target.value.replace(/\D/g, '');
+                      applyFieldChange('phone', onlyNums);
+                    }}
+                    required
+                  />
+                </div>
+              </InputField>
+
+              {/* Email */}
+              <InputField label={form?.EmailLabel} required>
+                <input
+                  className="h-12 w-full rounded-2xl border border-gray-200 px-4 text-14px outline-none transition bg-surface-input focus:border-primary"
+                  placeholder={form?.EmailPlaceholder}
+                  type="email"
+                  value={data.email}
+                  onChange={(e) => applyFieldChange('email', e.target.value)}
+                  required
+                />
+              </InputField>
+
+              {/* City — full width on md (matches Figma) */}
+              <InputField
+                label={form?.CityLabel}
+                required
+                className="md:col-span-2 bg-surface-input"
+              >
+                <CustomDropdown
+                  name="City"
+                  options={cityChoices.map((c, i) => {
+                    const label = c.Value ?? '';
+                    return { id: label || `city-${i}`, label, value: label };
+                  })}
+                  placeholder={
+                    form?.CityPlaceholder ?? (isRtl ? 'اختر مدينتك' : 'Select your city')
+                  }
+                  valueId={data.city || null}
+                  onChange={(opt) => applyFieldChange('city', (opt as any).value ?? opt.id)}
+                  className="relative w-full"
+                  buttonClassName={`${DROPDOWN_BUTTON_BASE} w-full ${isRtl ? 'text-right' : 'text-left'}`}
+                  listClassName={`${DROPDOWN_LIST_BASE} max-h-60 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent dark:scrollbar-thumb-white/20`}
+                  optionClassName={`${DROPDOWN_OPTION_BASE} text-sm`}
+                />
+              </InputField>
+
+              {/* Cover letter */}
+              <div className="md:col-span-2">
+                <InputField label={form?.CoverLetterLabel}>
+                  <textarea
+                    className="min-h-[120px] w-full rounded-2xl border-2 border-gray-200 p-4 text-14px outline-none transition bg-surface-input"
+                    placeholder={form?.CoverLetterPlaceholder}
+                    value={data.coverLetter}
+                    onChange={(e) => applyFieldChange('coverLetter', e.target.value)}
+                  />
+                </InputField>
+              </div>
+
+              {/* Resume uploader */}
+              <div className="col-span-1 md:col-span-2 py-6">
+                {form?.ResumeInstructions && (
+                  <div className="mb-2 text-center text-sm text-gray-600">
+                    {form?.ResumeInstructions}
+                  </div>
+                )}
+
+                <label
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleResume(e.dataTransfer.files?.[0]);
+                  }}
+                  className="block cursor-pointer rounded-2xl border-2 border-dashed border-[#7B80FF] dark:border-white bg-[#F5F6FF] dark:bg-[#054E42] p-5 text-center md:p-6"
+                >
+                  <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center">
+                    <Image
+                      src="/icons/upload_icon.png"
+                      alt="upload"
+                      width={24}
+                      height={24}
+                      className="dark:invert"
+                    />
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    className="hidden bg-surface-input"
+                    onChange={(e) => handleResume(e.target.files?.[0] ?? null)}
+                  />
+
+                  <div className="text-sm font-semibold text-default">
+                    {form?.ResumeSectionTitle ??
+                      (isRtl
+                        ? 'اسحب وأفلت الملفات هنا للتحميل'
+                        : 'Drag and drop files here to upload')}
+                  </div>
+                  <div className="mt-2 text-xs leading-5 text-default">
+                    {form?.ResumeFileNote ??
+                      (isRtl
+                        ? 'الحد الأقصى للحجم 2MB، الصيغ المدعومة: .jpg, .png, .pdf'
+                        : 'Maximum file size allowed is 2MB, supported file formats include .jpg, .png, and .pdf.')}
+                  </div>
+                  <div className="mt-4 text-center">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-sm font-semibold text-primaryAlt underline decoration-transparent hover:decoration-primary"
+                    >
+                      {form?.CtaText || (isRtl ? 'تصفح الملفات' : 'Browse Files')}
+                    </button>
+                  </div>
+                </label>
+
+                {/* File info + error */}
+                {data.resume && !error && (
+                  <div className="mt-2 text-sm text-default text-center">
+                    {isRtl ? 'الملف المحدد: ' : 'Selected: '} {data.resume.name}
+                  </div>
+                )}
+                {error && <div className="mt-2 text-sm text-red-600 text-center">{error}</div>}
+              </div>
+            </div>
+
+            {/* Submit row — full width on mobile */}
+            <div className="mt-6 flex items-center justify-center md:justify-end">
+              {serverError && (
+                <div className="mb-3 text-center text-sm text-red-600">{serverError}</div>
+              )}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex h-12 w-full items-center justify-center rounded-2xl bg-primaryAlt text-base font-semibold text-secondary shadow-sm hover:opacity-90 disabled:opacity-60 md:w-auto md:px-6 md:rounded-2xl"
+              >
+                {isRtl
+                  ? submitting
+                    ? 'جارٍ الإرسال…'
+                    : 'إرسال الطلب'
+                  : submitting
+                    ? 'Submitting…'
+                    : 'Submit Application'}
+              </button>
+            </div>
+          </form>
+        )}
+      </section>
+    </SpinnerLoader>
+  );
+}

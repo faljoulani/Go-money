@@ -1,0 +1,234 @@
+import { WidgetContext, htmlAttributes } from '@progress/sitefinity-nextjs-sdk';
+import { ContactSubscriptionEntity } from './contactSubscription.entity';
+import { fetchData, extractSelectionId } from '../../../utils/sitefinity';
+import { resolveSitefinitySelection, extractHref, linkToHref } from '../../../utils/utils';
+
+import SubscribeEmailForm from './subscribeEmailForm';
+import CTA from '../../atoms/cta/cta';
+import Title from '../../atoms/title/title';
+import Description from '../../atoms/description/description';
+import Image from 'next/image';
+
+type ContactBox = {
+  Id?: string;
+  Title?: string;
+  SubTitle?: string;
+  ButtonLabel?: string;
+  EmailLabel?: string;
+  EmailText?: string;
+  EmailPlaceholder?: string;
+  CallUsLabel?: string;
+  CallUsText?: string;
+  hasLabelCorner?: boolean | string;
+  HasLabelCorner?: boolean | string;
+  CTAURL?: any;
+  Variant?: 'subscribe' | 'contact';
+  Mode?: 'subscribe' | 'contact';
+  Layout?: 'subscribe' | 'contact';
+};
+
+type ContactSubscriptionParent = {
+  Id: string;
+  Title?: string;
+  Box?: ContactBox[] | ContactBox | null;
+};
+
+const getVariant = (box: ContactBox): 'subscribe' | 'contact' => {
+  const explicit = box.Variant || box.Mode || box.Layout;
+  if (explicit) return explicit as 'subscribe' | 'contact';
+  const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+  return hasCorner ? 'contact' : box.EmailPlaceholder ? 'subscribe' : 'contact';
+};
+
+export default async function ContactSubscription(props: WidgetContext<ContactSubscriptionEntity>) {
+  const attrs = htmlAttributes(props);
+  const { culture, isEdit } = props.requestContext;
+
+  const properties = (props.model?.Properties || {}) as any;
+  const rawSel =
+    resolveSitefinitySelection(properties?.ContactSubscription) ?? properties?.ContactSubscription;
+  const parentId = extractSelectionId(rawSel);
+
+  if (!parentId) {
+    return isEdit ? (
+      <section {...attrs}>
+        <div className="w-full rounded-2xl border border-dashed p-6 text-center text-default">
+          <strong>Contact Subscription</strong>
+          <div className="mt-1">Open the designer and select a Contact Subscription item.</div>
+        </div>
+      </section>
+    ) : null;
+  }
+
+  const parent = (await fetchData(
+    [parentId],
+    null,
+    culture,
+    [
+      'Id',
+      'Title',
+      'Box($select=Id,Title,SubTitle,CallUsLabel,CallUsText,CTAURL,EmailLabel,EmailText,EmailPlaceholder,ButtonLabel,hasLabelCorner,HasLabelCorner,Variant,Mode,Layout)',
+    ],
+    { itemType: rawSel?.Content?.[0]?.Type, single: true },
+  )) as ContactSubscriptionParent | null;
+
+  const items = Array.isArray(parent?.Box) ? parent!.Box : parent?.Box ? [parent!.Box] : [];
+  const left = items.find((x) => getVariant(x) === 'subscribe') ?? items[0];
+  const right = items.find((x) => x !== left) ?? items[1];
+
+  return (
+    <section
+      {...attrs}
+      className="md:px-20 overflow-clip xs:mt-10 md:mt-16 max-w-[1440px] xxl:mx-auto"
+    >
+      <div className="mx-auto max-w-[1240px">
+        {parent?.Title && (
+          <div className="mb-10">
+            <Title
+              color="text-neutral"
+              className="multiColored md:text-40px xs:text-[1.3rem] tracking-[-0.02em] max-w-[720px] md:leading-[52px] md:rtl:leading-[75px] xs:leading-6"
+            >
+              {parent.Title}
+            </Title>
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 xs:grid-cols-1 gap-8 items-stretch">
+          {left && <Card box={left} className="fadeLeftSubscribe h-full" />}
+          {right && <Card box={right} className="fadeRightSubscribe h-full" />}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Card({ box, className = '' }: { box: ContactBox; className?: string }) {
+  const variant = getVariant(box);
+  const isSubscribe = variant === 'subscribe';
+  const hasCorner = box.HasLabelCorner ?? box.hasLabelCorner;
+  let rawCtaUrl = box.CTAURL;
+
+  try {
+    if (typeof rawCtaUrl === 'string') {
+      rawCtaUrl = JSON.parse(rawCtaUrl);
+    }
+  } catch {
+    // If parsing fails, leave it as-is.
+  }
+
+  const ctaHref = linkToHref(rawCtaUrl);
+  const ctaText = box.ButtonLabel || box.CTAURL?.Text || box.CTAURL?.text || 'Contact Us';
+  const ctaTarget = (box.CTAURL?.Target || box.CTAURL?.target || '_self') as '_self' | '_blank';
+  return (
+    <div
+      className={`relative overflow-hidden xs:rounded-2xl md:rounded-[32px] bg-surface-section p-6 md:p-8 flex flex-col justify-between ${className}`}
+    >
+      {/* Corner label only for contact variant */}
+      {hasCorner && !isSubscribe && (
+        <div
+          className={`pointer-events-none absolute top-0 ltr:right-0 rtl:left-0 ltr:rounded-br-[24px] rtl:rounded-bl-[24px] 
+                      ltr:rotate-90 rtl:rotate-[270deg] 
+                      xs:h-[55px] xs:w-[55px] md:h-[90px] md:w-[90px] 
+                      bg-primaryAlt`}
+        >
+          <div
+            className={`absolute md:h-[52px] md:w-[52px] xs:h-[30px] xs:w-[30px] 
+                      bg-[#FFFFFF] dark:bg-[#1d1d28]`}
+          />
+        </div>
+      )}
+
+      {(box.Title || box.SubTitle) && (
+        <div className="flex flex-col gap-3">
+          {box.Title && (
+            <Title
+              color="text-primaryAlt"
+              className="xs:text-[24px] md:text-[28px] font-bold tracking-[-0.02em]"
+            >
+              {box.Title}
+            </Title>
+          )}
+          {box.SubTitle &&
+            (isSubscribe ? (
+              <Description
+                maxWidth="none"
+                className="mt-0 md:text-lg xs:text-[1rem] xs:mb-2 leading-6"
+              >
+                {box.SubTitle}
+              </Description>
+            ) : (
+              <Description
+                maxWidth="none"
+                className="mt-0 w-72 md:text-lg xs:text-[1rem] leading-6 mb-8"
+              >
+                {box.SubTitle}
+              </Description>
+            ))}
+        </div>
+      )}
+
+      {isSubscribe ? (
+        <div>
+          <SubscribeEmailForm
+            placeholder={box.EmailPlaceholder || 'Enter your email address'}
+            label={box.EmailLabel || 'Email'}
+            button={box.ButtonLabel || 'Subscribe Now'}
+            endpoint="api/default/subscriptions"
+            className="flex flex-col h-full [&>button[type=submit]]:mt-auto"
+          />
+        </div>
+      ) : (
+        <div className="flex flex-col justify-end items-center text-center h-full">
+          <div className="grid md:grid-cols-2 xs:grid-cols-1 mb-8 w-full max-w-[520px] gap-3">
+            <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
+              <div className="flex items-center justify-center gap-2 text-14px text-default">
+                <Image
+                  src="/icons/phone.svg"
+                  alt="phone"
+                  width={17}
+                  height={17}
+                  className="dark:invert"
+                />
+                <span>{box.CallUsLabel || 'Call Us'}</span>
+              </div>
+              <div className="mt-2 h-px bg-lineMuted" />
+              <div className="mt-2 text-xs text-default">
+                <span dir="ltr">{box.CallUsText || '+966 11 123 4567'}</span>
+              </div>
+            </div>
+            <div className="rounded-xl border border-lineMuted px-4 pb-3 pt-5">
+              <div className="flex items-center justify-center gap-2 text-14px text-default">
+                <Image
+                  src="/icons/mail.svg"
+                  alt="email"
+                  width={17}
+                  height={17}
+                  className="dark:invert"
+                />
+                <span className="text-xs">{box.EmailLabel || 'Email'}</span>
+              </div>
+              <div className="mt-2 h-px bg-lineMuted" />
+              <div className="mt-2 text-xs text-default">
+                {box.EmailText || 'support@go-money.sa'}
+              </div>
+            </div>
+          </div>
+          <div className=" w-full max-w-[525px]">
+            <CTA
+              href={ctaHref}
+              target={ctaTarget}
+              colorText="text-primaryAlt"
+              borderColor="border-primaryAlt"
+              variant="outline"
+              icon="arrow"
+              className="w-full max-w-[525px] text-lg font-medium tracking-[-0.025%em] xs:rounded-[18px] md:rounded-[20px] border-[2px] mt-auto px-6 py-[18px] xs:h-12 md:h-14"
+            >
+              {ctaText}
+            </CTA>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+

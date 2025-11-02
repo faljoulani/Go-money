@@ -1,15 +1,689 @@
-/*sc- is a selector prefix meaning 'sitefinity core'. It can be changed by your preference*/
-@import 'tailwindcss';
-@import url('https://fonts.cdnfonts.com/css/lufga'); /* Example CDN */
-
-@layer base {
-    .font-lufga {
-        font-family: 'Lufga', sans-serif;
-    }
-}
-
-/* index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* arabic */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscQyyS8p4_RHH1.woff2)
+    format('woff2');
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+    U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB,
+    U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22,
+    U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49,
+    U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F,
+    U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E,
+    U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscSCyS8p4_RHH1.woff2)
+    format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/cairo/v31/SLXVc1nY6HkvangtZmpQdkhzfH5lkSscRiyS8p4_RA.woff2)
+    format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local('Lufga'),
+    url('/assets/fonts/lufga/LufgaRegular.woff2') format('woff2'),
+    url('/assets/fonts/lufga/LufgaRegular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 500;
+  src:
+    local('Lufga'),
+    url('/assets/fonts/lufga/LufgaMedium.woff2') format('woff2'),
+    url('/assets/fonts/lufga/LufgaMedium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 600;
+  src:
+    local('Lufga'),
+    url('/assets/fonts/lufga/LufgaSemiBold.woff2') format('woff2'),
+    url('/assets/fonts/lufga/LufgaSemiBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    local('Lufga'),
+    url('/assets/fonts/lufga/LufgaBold.woff2') format('woff2'),
+    url('/assets/fonts/lufga/LufgaBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 800;
+  src:
+    local('Lufga'),
+    url('/assets/fonts/lufga/LufgaExtraBold.woff2') format('woff2'),
+    url('/assets/fonts/lufga/LufgaExtraBold.woff') format('woff');
+}
+@font-face {
+  font-family: 'UrpayAR';
+  src: url('/assets/fonts/lufga/UrpayAR.ttf') format('truetype');
+  font-display: swap;
+}
+.riyals-font {
+  font-family: 'UrpayAR';
+}
+
+:root {
+  --color-primary: #010663;
+  --color-primary-alt: #010663;
+  --color-default: #424242;
+  --color-secondary: #ffffff;
+  --color-accent: #ffffff;
+  --color-bg-alt: #ffffff;
+  --color-white-cta: #ffffff;
+  --surface-page: #eeeeee;
+  --surface-section: #ffffff;
+  --surface-input: #ffffff;
+  --surface-sheet: #e1f3f9;
+  --surface-gradient: linear-gradient(258.38deg, #6be5bf -1.4%, #b3dfef 100%);
+  --howitworks-bg: url('/assets/Shape.png');
+  --range-inner-circle: #ffffff;
+}
+html.dark {
+  --color-primary: #fafafa;
+  --color-primary-alt: #a6efd9;
+  --color-default: #f5f5f5;
+  --color-secondary: #000000;
+  --color-accent: #a6efd9;
+  --surface-page: #131321;
+  --color-bg-alt: #000000;
+  --color-white-cta: #010663;
+  --surface-section: #44444433;
+  --surface-input: #000000;
+  --surface-sheet: #004c86;
+  --surface-gradient: linear-gradient(258.38deg, #a6efd9 -1.4%, #006aa5 100%);
+  --howitworks-bg: url('/assets/circlesDark.png');
+  --range-inner-circle: #054e42;
+}
+
+body {
+  background-color: var(--surface-page);
+  font-family: 'Lufga', sans-serif;
+}
+[dir='rtl'] body {
+  font-family: 'Cairo', sans-serif;
+}
+.defaultBgColor {
+  background-color: var(--surface-page);
+}
+
+/* Dark mode base overrides (next-themes adds `dark` class to <html>) */
+html.dark {
+  color-scheme: dark;
+}
+html.dark body {
+  background-color: #131321;
+  color: #e5e5e5;
+}
+html.dark .defaultBgColor {
+  background-color: #131321;
+}
+
+html.modal-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+/* base helpers */
+[dir='rtl'] .cta-arrow {
+  transform: scaleX(-1);
+}
+
+/* [dir='rtl'] .cta-arrow { --tw-scale-x: -1; } */
+
+@layer base {
+  .font-lufga {
+    font-family: 'Lufga', sans-serif;
+  }
+}
+
+@layer utilities {
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+/* utilities & animations */
+@layer utilities {
+  @keyframes animate-float {
+    0% {
+      transform: translateY(-15px);
+    }
+    100% {
+      transform: translateY(15px);
+    }
+  }
+  .animate-float {
+    animation: animate-float 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fadeupButton {
+  from {
+    transform: translateY(100px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.fadeupButton {
+  animation: fadeupButton 2s ease-out;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
+}
+
+@keyframes fadeup {
+  from {
+    transform: translateY(150px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.fadeup {
+  animation: fadeup 2s linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
+}
+@keyframes fadeupHero {
+  from {
+    transform: translateY(150px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.fadeupHero {
+  animation: fadeupHero 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+}
+
+@keyframes fadeLeftFinance {
+  from {
+    opacity: 0;
+    transform: translate(-400px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes fadeRightFinance {
+  from {
+    opacity: 0;
+    transform: translate(200px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeLeftFinance,
+.fadeRightFinance {
+  animation: 3.5s ease-out both;
+  animation-timeline: view();
+  animation-range: entry 40% cover 40%;
+}
+
+.fadeRightFinance {
+  animation-name: fadeRightFinance;
+}
+.fadeLeftFinance {
+  animation-name: fadeLeftFinance;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRightFinance {
+  animation-name: fadeLeftFinance;
+}
+[dir='rtl'] .fadeLeftFinance {
+  animation-name: fadeRightFinance;
+}
+
+@keyframes fadeRight {
+  from {
+    opacity: 0;
+    transform: translate(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0px);
+  }
+}
+
+@keyframes fadeLeft {
+  from {
+    opacity: 0;
+    transform: translate(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+@keyframes fadeRightFinanceDetails {
+  from {
+    opacity: 0;
+    transform: translateX(400px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.fadeRightFinanceDetails {
+  animation: fadeRightFinanceDetails ease-in-out both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 30%;
+}
+
+.fadeLeft {
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
+}
+.fadeRight {
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 5% cover 30%;
+}
+@keyframes fadeRightFinanceButton {
+  from {
+    opacity: 0.5;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.fadeRightFinanceButton {
+  animation: 3.5s ease-in-out both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 10%;
+}
+.fadeRightFinanceButton {
+  animation-name: fadeRightFinanceButton;
+}
+.fadeLeft {
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 20%;
+}
+
+/* LTR defaults */
+.fadeRight {
+  animation-name: fadeRight;
+}
+.fadeLeft {
+  animation-name: fadeLeft;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRight {
+  animation-name: fadeLeft;
+}
+[dir='rtl'] .fadeLeft {
+  animation-name: fadeRight;
+}
+
+@keyframes fadeRightDownload {
+  from {
+    opacity: 0;
+    transform: translate(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes fadeLeftDownload {
+  from {
+    transform: translate(50px);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+
+.fadeRightDownload,
+.fadeLeftDownload {
+  animation-duration: 2s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 80%;
+}
+
+.fadeRightDownload {
+  animation-name: fadeRightDownload;
+}
+.fadeLeftDownload {
+  animation-name: fadeLeftDownload;
+}
+
+[dir='rtl'] .fadeRightDownload {
+  animation-name: fadeLeftDownload;
+}
+[dir='rtl'] .fadeLeftDownload {
+  animation-name: fadeRightDownload;
+}
+
+@keyframes fadeLeftHero {
+  from {
+    opacity: 0;
+    transform: translate(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+@keyframes fadeRightHero {
+  from {
+    opacity: 0;
+    transform: translate(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+
+.fadeLeftHero,
+.fadeRightHero {
+  animation: 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+}
+
+.fadeRightHero {
+  animation-name: fadeRightHero;
+}
+.fadeLeftHero {
+  animation-name: fadeLeftHero;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRightHero {
+  animation-name: fadeLeftHero;
+}
+[dir='rtl'] .fadeLeftHero {
+  animation-name: fadeRightHero;
+}
+
+@keyframes fadeRightSubscribe {
+  from {
+    transform: translate(75px);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+
+@keyframes fadeLeftSubscribe {
+  from {
+    transform: translate(-75px);
+  }
+  to {
+    transform: translate(0);
+  }
+}
+
+.fadeRightSubscribe,
+.fadeLeftSubscribe {
+  animation-duration: 3s;
+  animation-timing-function: cubic-bezier(0.1, -0.6, 0.2, 0);
+  animation-fill-mode: both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}
+
+/* LTR defaults */
+.fadeRightSubscribe {
+  animation-name: fadeRightSubscribe;
+}
+.fadeLeftSubscribe {
+  animation-name: fadeLeftSubscribe;
+}
+
+/* Flip in RTL */
+[dir='rtl'] .fadeRightSubscribe {
+  animation-name: fadeLeftSubscribe;
+}
+[dir='rtl'] .fadeLeftSubscribe {
+  animation-name: fadeRightSubscribe;
+}
+
+@keyframes scaleC {
+  from {
+    opacity: 0;
+    scale: 0.1;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.scaleC {
+  animation: scaleC 2s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 0% cover 100vh;
+}
+
+@keyframes fadeupCustom {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupCustom {
+  animation: fadeupCustom 2s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 50% cover 100vh;
+}
+
+@keyframes fadeScaleTranslate {
+  0% {
+    opacity: 0;
+    scale: 0.7;
+  }
+  40% {
+    opacity: 1;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.fadeScaleTranslate {
+  animation: fadeScaleTranslate cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-timeline: view();
+  animation-range: entry 10% cover;
+}
+
+.flip {
+  transform-style: preserve-3d;
+
+  animation: flip linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 40%;
+  will-change: transform;
+}
+
+@keyframes flip {
+  from {
+    transform: rotateX(20deg);
+  }
+  to {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes fadeupText {
+  from {
+    opacity: 0.5;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeupText {
+  animation: fadeupText 2s ease-out;
+  animation-timeline: view();
+  animation-range: entry 0% cover 40%;
+}
+
+@keyframes translatePhone {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(400px);
+  }
+}
+
+.translatePhone {
+  animation: translatePhone 2s linear both;
+  animation-timeline: view();
+  animation-range: entry 148% cover 95%;
+}
+
+.vertical-scroll::-webkit-scrollbar {
+  width: 46px;
+  height: 6px;
+}
+
+.vertical-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vertical-scroll::-webkit-scrollbar-thumb {
+  background: white;
+  border-radius: 7px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.descriptionHtml ul,
+.descriptionHtml ol {
+  list-style: revert;
+  margin: revert;
+  padding: revert;
+}
+
+@layer utilities {
+  .cms-bullets :where(p, li) {
+    position: relative;
+    margin-bottom: 0.5rem;
+    line-height: 1.5rem;
+    padding-left: 1.25rem;
+  }
+
+  .cms-bullets :where(p:last-child, li:last-child) {
+    margin-bottom: 0;
+  }
+
+  .cms-bullets :where(p, li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background-color: currentColor;
+  }
+
+  [dir='rtl'] .cms-bullets :where(p, li) {
+    padding-left: 0;
+    padding-right: 1.25rem; /* pr-5 */
+  }
+  [dir='rtl'] .cms-bullets :where(p, li)::before {
+    left: auto;
+    right: 0;
+  }
+
+  .cms-bullets-ring :where(p)::before {
+    background-color: transparent;
+    border: 1px solid currentColor;
+  }
+}
+
+.pdf-icon {
+  display:inline-block;
+  width:36px; height:36px;
+  background-color: currentColor;            
+  -webkit-mask: url(/icons/pdfIcon.svg) no-repeat center / contain;
+          mask: url(/icons/pdfIcon.svg) no-repeat center / contain;
+}
+.multiColored::first-line {
+  color: var(--color-primary-alt);
+}
